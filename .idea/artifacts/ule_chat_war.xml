@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="ule-chat:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>ule-chat</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="ule-chat-0.0.1.war">
+      <element id="artifact" artifact-name="ule-chat:war exploded" />
+    </root>
+  </artifact>
+</component>
