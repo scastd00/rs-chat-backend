@@ -109,6 +109,7 @@
           <element id="library" level="project" name="Maven: io.netty:netty-transport-classes-epoll:4.1.77.Final" />
           <element id="library" level="project" name="Maven: io.netty:netty-transport-native-unix-common:4.1.77.Final" />
           <element id="library" level="project" name="Maven: com.google.code.gson:gson:2.9.0" />
+          <element id="library" level="project" name="Maven: org.mindrot:jbcrypt:0.4" />
         </element>
       </element>
       <element id="directory" name="META-INF">

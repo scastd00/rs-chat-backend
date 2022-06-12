@@ -4,23 +4,25 @@ import AuthService from '../services/AuthService';
 
 function Login() {
   function handleLogin() {
-    AuthService.get(/*{ name: 'Samuel', password: 'Samuel' }*/)
-               .then((res) => {
-                 console.log(res);
-               });
-    AuthService.login({ text: 'Hola' })
-               .then((res) => {
-                 console.log(res);
-               });
+    AuthService
+      .get(/*{ name: 'Samuel', password: 'Samuel' }*/)
+      .then((res) => {
+        console.log(res);
+      });
+    AuthService
+      .login({ text: 'Hola' })
+      .then((res) => {
+        console.log(res);
+      });
   }
 
   return (
-      <h1>
-        Login
-        <p>
-          <Button onClick={handleLogin}>Hola</Button>
-        </p>
-      </h1>
+    <h1>
+      Login
+      <p>
+        <Button onClick={ handleLogin }>Hola</Button>
+      </p>
+    </h1>
   );
 }
 
