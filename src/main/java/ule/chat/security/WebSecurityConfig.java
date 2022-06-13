@@ -1,4 +1,4 @@
-package ule.chat;
+package ule.chat.security;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

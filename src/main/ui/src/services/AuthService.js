@@ -2,10 +2,10 @@ import Api from './Api';
 
 export default {
   login(credentials) {
-    return Api.post('/hello', credentials);
+    return Api.post('/login', credentials);
   },
 
   get() {
-    return Api.get("/hello");
+    return Api.get("/login");
   }
 };

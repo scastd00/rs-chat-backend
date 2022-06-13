@@ -10,7 +10,7 @@ function Login() {
         console.log(res);
       });
     AuthService
-      .login({ text: 'Hola' })
+      .login({ text: 'Hola', role: 'ROLE_USER' })
       .then((res) => {
         console.log(res);
       });

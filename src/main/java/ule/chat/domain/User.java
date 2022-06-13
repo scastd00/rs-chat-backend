@@ -36,8 +36,8 @@ public class User {
 	private String username;
 
 	@Basic
-	@Column(name = "password", nullable = false)
-	private byte[] password;
+	@Column(name = "password", nullable = false, length = 126)
+	private String password;
 
 	@Basic
 	@Column(name = "email", nullable = false, length = 70)
