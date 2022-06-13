@@ -1,8 +1,8 @@
 package ule.chat.model;
 
-import ule.chat.model.auto._Files;
+import ule.chat.model.auto._Subject;
 
-public class Files extends _Files {
+public class Subject extends _Subject {
 
 	private static final long serialVersionUID = 1L;
 

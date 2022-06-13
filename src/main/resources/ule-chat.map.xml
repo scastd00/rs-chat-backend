@@ -53,10 +53,10 @@
 		<db-attribute name="role" type="VARCHAR" isMandatory="true" length="13"/>
 		<db-attribute name="username" type="VARCHAR" isMandatory="true" length="20"/>
 	</db-entity>
-	<obj-entity name="Degrees" className="ule.chat.model.Degrees" dbEntityName="degrees">
+	<obj-entity name="Degree" className="ule.chat.model.Degree" dbEntityName="degrees">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
 	</obj-entity>
-	<obj-entity name="Files" className="ule.chat.model.Files" dbEntityName="files">
+	<obj-entity name="File" className="ule.chat.model.File" dbEntityName="files">
 		<obj-attribute name="dateUploaded" type="java.time.LocalDateTime" db-attribute-path="date_uploaded"/>
 		<obj-attribute name="metadata" type="java.lang.String" db-attribute-path="metadata"/>
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
@@ -64,19 +64,19 @@
 		<obj-attribute name="size" type="int" db-attribute-path="size"/>
 		<obj-attribute name="type" type="java.lang.String" db-attribute-path="type"/>
 	</obj-entity>
-	<obj-entity name="Sessions" className="ule.chat.model.Sessions" dbEntityName="sessions">
+	<obj-entity name="Session" className="ule.chat.model.Session" dbEntityName="sessions">
 		<obj-attribute name="dateStarted" type="java.time.LocalDateTime" db-attribute-path="date_started"/>
 		<obj-attribute name="srcIp" type="java.lang.String" db-attribute-path="src_ip"/>
 		<obj-attribute name="token" type="java.lang.String" db-attribute-path="token"/>
 	</obj-entity>
-	<obj-entity name="Subjects" className="ule.chat.model.Subjects" dbEntityName="subjects">
+	<obj-entity name="Subject" className="ule.chat.model.Subject" dbEntityName="subjects">
 		<obj-attribute name="credits" type="short" db-attribute-path="credits"/>
 		<obj-attribute name="grade" type="short" db-attribute-path="grade"/>
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
 		<obj-attribute name="subjPeriod" type="java.lang.String" db-attribute-path="subj_period"/>
 		<obj-attribute name="type" type="java.lang.String" db-attribute-path="type"/>
 	</obj-entity>
-	<obj-entity name="Users" className="ule.chat.model.Users" dbEntityName="users">
+	<obj-entity name="User" className="ule.chat.model.User" dbEntityName="users">
 		<obj-attribute name="age" type="short" db-attribute-path="age"/>
 		<obj-attribute name="birthdate" type="java.time.LocalDate" db-attribute-path="birthdate"/>
 		<obj-attribute name="blockUntil" type="java.time.LocalDateTime" db-attribute-path="block_until"/>
@@ -128,16 +128,16 @@
 	<db-relationship name="teaSubjs" source="users" target="tea_subj" toDependentPK="true" toMany="true">
 		<db-attribute-pair source="id" target="teacher_id"/>
 	</db-relationship>
-	<obj-relationship name="subjects" source="Degrees" target="Subjects" deleteRule="Deny" db-relationship-path="subjects"/>
-	<obj-relationship name="user" source="Files" target="Users" deleteRule="Nullify" db-relationship-path="user"/>
-	<obj-relationship name="user" source="Sessions" target="Users" deleteRule="Nullify" db-relationship-path="user"/>
-	<obj-relationship name="degree" source="Subjects" target="Degrees" deleteRule="Nullify" db-relationship-path="degree"/>
-	<obj-relationship name="students" source="Subjects" target="Users" db-relationship-path="stuSubjs.student"/>
-	<obj-relationship name="teachers" source="Subjects" target="Users" db-relationship-path="teaSubjs.teacher"/>
-	<obj-relationship name="files" source="Users" target="Files" deleteRule="Deny" db-relationship-path="files"/>
-	<obj-relationship name="sessions" source="Users" target="Sessions" deleteRule="Deny" db-relationship-path="sessions"/>
-	<obj-relationship name="subjectsOfStudent" source="Users" target="Subjects" db-relationship-path="stuSubjs.subject"/>
-	<obj-relationship name="subjectsOfTeacher" source="Users" target="Subjects" db-relationship-path="teaSubjs.subject"/>
+	<obj-relationship name="subjects" source="Degree" target="Subject" deleteRule="Deny" db-relationship-path="subjects"/>
+	<obj-relationship name="user" source="File" target="User" deleteRule="Nullify" db-relationship-path="user"/>
+	<obj-relationship name="user" source="Session" target="User" deleteRule="Nullify" db-relationship-path="user"/>
+	<obj-relationship name="degree" source="Subject" target="Degree" deleteRule="Nullify" db-relationship-path="degree"/>
+	<obj-relationship name="students" source="Subject" target="User" db-relationship-path="stuSubjs.student"/>
+	<obj-relationship name="teachers" source="Subject" target="User" db-relationship-path="teaSubjs.teacher"/>
+	<obj-relationship name="files" source="User" target="File" deleteRule="Deny" db-relationship-path="files"/>
+	<obj-relationship name="sessions" source="User" target="Session" deleteRule="Deny" db-relationship-path="sessions"/>
+	<obj-relationship name="subjectsOfStudent" source="User" target="Subject" db-relationship-path="stuSubjs.subject"/>
+	<obj-relationship name="subjectsOfTeacher" source="User" target="Subject" db-relationship-path="teaSubjs.subject"/>
 	<dbImport xmlns="http://cayenne.apache.org/schema/10/dbimport">
 		<catalog>
 			<name>ule_chat</name>
@@ -155,6 +155,7 @@
 		<usePrimitives>true</usePrimitives>
 	</dbImport>
 	<cgen xmlns="http://cayenne.apache.org/schema/10/cgen">
+		<excludeEntities>User,Degree,File,Subject,Session</excludeEntities>
 		<destDir>../java</destDir>
 		<mode>entity</mode>
 		<template>templates/v4_1/subclass.vm</template>

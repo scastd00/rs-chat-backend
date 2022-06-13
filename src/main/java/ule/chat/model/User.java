@@ -1,8 +1,8 @@
 package ule.chat.model;
 
-import ule.chat.model.auto._Degrees;
+import ule.chat.model.auto._User;
 
-public class Degrees extends _Degrees {
+public class User extends _User {
 
 	private static final long serialVersionUID = 1L;
 
