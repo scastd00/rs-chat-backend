@@ -1,5 +1,12 @@
 package ule.chat.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import org.hibernate.Hibernate;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,9 +15,15 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.sql.Timestamp;
+import java.util.Objects;
 
 @Entity
 @Table(name = "sessions", schema = "ule_chat")
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class Session {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Id
@@ -33,43 +46,18 @@ public class Session {
 	@Column(name = "user_id", nullable = false)
 	private Long userId;
 
-	public Long getId() {
-		return this.id;
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
+			return false;
+		}
+		Session session = (Session) o;
+		return id != null && Objects.equals(id, session.id);
 	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getSrcIp() {
-		return this.srcIp;
-	}
-
-	public void setSrcIp(String srcIp) {
-		this.srcIp = srcIp;
-	}
-
-	public Timestamp getDateStarted() {
-		return this.dateStarted;
-	}
-
-	public void setDateStarted(Timestamp dateStarted) {
-		this.dateStarted = dateStarted;
-	}
-
-	public String getToken() {
-		return this.token;
-	}
-
-	public void setToken(String token) {
-		this.token = token;
-	}
-
-	public Long getUserId() {
-		return this.userId;
-	}
-
-	public void setUserId(Long userId) {
-		this.userId = userId;
+	@Override
+	public int hashCode() {
+		return getClass().hashCode();
 	}
 }

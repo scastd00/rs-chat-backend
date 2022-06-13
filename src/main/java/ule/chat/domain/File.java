@@ -1,5 +1,12 @@
 package ule.chat.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import org.hibernate.Hibernate;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,9 +15,15 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.sql.Timestamp;
+import java.util.Objects;
 
 @Entity
 @Table(name = "files", schema = "ule_chat")
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class File {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Id
@@ -45,67 +58,18 @@ public class File {
 	@Column(name = "user_id", nullable = false)
 	private Long userId;
 
-	public Long getId() {
-		return this.id;
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
+			return false;
+		}
+		File file = (File) o;
+		return id != null && Objects.equals(id, file.id);
 	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return this.name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public Timestamp getDateUploaded() {
-		return this.dateUploaded;
-	}
-
-	public void setDateUploaded(Timestamp dateUploaded) {
-		this.dateUploaded = dateUploaded;
-	}
-
-	public Integer getSize() {
-		return this.size;
-	}
-
-	public void setSize(Integer size) {
-		this.size = size;
-	}
-
-	public String getPath() {
-		return this.path;
-	}
-
-	public void setPath(String path) {
-		this.path = path;
-	}
-
-	public String getMetadata() {
-		return this.metadata;
-	}
-
-	public void setMetadata(String metadata) {
-		this.metadata = metadata;
-	}
-
-	public String getType() {
-		return this.type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	public Long getUserId() {
-		return this.userId;
-	}
-
-	public void setUserId(Long userId) {
-		this.userId = userId;
+	@Override
+	public int hashCode() {
+		return getClass().hashCode();
 	}
 }

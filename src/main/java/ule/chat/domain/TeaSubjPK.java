@@ -1,5 +1,10 @@
 package ule.chat.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -7,6 +12,10 @@ import javax.persistence.Id;
 import java.io.Serializable;
 import java.util.Objects;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class TeaSubjPK implements Serializable {
 	@Column(name = "subject_id", nullable = false)
 	@Id
@@ -17,22 +26,6 @@ public class TeaSubjPK implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long teacherId;
-
-	public Long getSubjectId() {
-		return this.subjectId;
-	}
-
-	public void setSubjectId(Long subjectId) {
-		this.subjectId = subjectId;
-	}
-
-	public Long getTeacherId() {
-		return this.teacherId;
-	}
-
-	public void setTeacherId(Long teacherId) {
-		this.teacherId = teacherId;
-	}
 
 	@Override
 	public int hashCode() {
