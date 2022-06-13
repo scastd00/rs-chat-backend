@@ -15,12 +15,12 @@ import java.util.Map;
 @RequestMapping("/api")
 @CrossOrigin(origins = "http://localhost:3000")
 public class FirstController {
-	@GetMapping("/hello")
+	@GetMapping("/login")
 	public String login() {
 		return "<h1>Hello World!</h1>";
 	}
 
-	@PostMapping("/hello")
+	@PostMapping("/login")
 	public void post(@RequestBody Map<String, String> text) {
 		log.info("{}", text);
 		log.info("{}", text.get("text"));

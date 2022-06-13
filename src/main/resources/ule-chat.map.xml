@@ -3,7 +3,7 @@
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	 xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap https://cayenne.apache.org/schema/10/modelMap.xsd"
 	 project-version="10">
-	<property name="defaultPackage" value="ule.chat.model"/>
+	<property name="defaultPackage" value="ule.chat.domain"/>
 	<db-entity name="degrees" catalog="ule_chat">
 		<db-attribute name="id" type="BIGINT" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="19"/>
 		<db-attribute name="name" type="VARCHAR" isMandatory="true" length="255"/>
@@ -53,10 +53,10 @@
 		<db-attribute name="role" type="VARCHAR" isMandatory="true" length="13"/>
 		<db-attribute name="username" type="VARCHAR" isMandatory="true" length="20"/>
 	</db-entity>
-	<obj-entity name="Degree" className="ule.chat.model.Degree" dbEntityName="degrees">
+	<obj-entity name="Degree" className="ule.chat.domain.Degree" dbEntityName="degrees">
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
 	</obj-entity>
-	<obj-entity name="File" className="ule.chat.model.File" dbEntityName="files">
+	<obj-entity name="File" className="ule.chat.domain.File" dbEntityName="files">
 		<obj-attribute name="dateUploaded" type="java.time.LocalDateTime" db-attribute-path="date_uploaded"/>
 		<obj-attribute name="metadata" type="java.lang.String" db-attribute-path="metadata"/>
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
@@ -64,19 +64,19 @@
 		<obj-attribute name="size" type="int" db-attribute-path="size"/>
 		<obj-attribute name="type" type="java.lang.String" db-attribute-path="type"/>
 	</obj-entity>
-	<obj-entity name="Session" className="ule.chat.model.Session" dbEntityName="sessions">
+	<obj-entity name="Session" className="ule.chat.domain.Session" dbEntityName="sessions">
 		<obj-attribute name="dateStarted" type="java.time.LocalDateTime" db-attribute-path="date_started"/>
 		<obj-attribute name="srcIp" type="java.lang.String" db-attribute-path="src_ip"/>
 		<obj-attribute name="token" type="java.lang.String" db-attribute-path="token"/>
 	</obj-entity>
-	<obj-entity name="Subject" className="ule.chat.model.Subject" dbEntityName="subjects">
+	<obj-entity name="Subject" className="ule.chat.domain.Subject" dbEntityName="subjects">
 		<obj-attribute name="credits" type="short" db-attribute-path="credits"/>
 		<obj-attribute name="grade" type="short" db-attribute-path="grade"/>
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
 		<obj-attribute name="subjPeriod" type="java.lang.String" db-attribute-path="subj_period"/>
 		<obj-attribute name="type" type="java.lang.String" db-attribute-path="type"/>
 	</obj-entity>
-	<obj-entity name="User" className="ule.chat.model.User" dbEntityName="users">
+	<obj-entity name="User" className="ule.chat.domain.User" dbEntityName="users">
 		<obj-attribute name="age" type="short" db-attribute-path="age"/>
 		<obj-attribute name="birthdate" type="java.time.LocalDate" db-attribute-path="birthdate"/>
 		<obj-attribute name="blockUntil" type="java.time.LocalDateTime" db-attribute-path="block_until"/>
@@ -155,7 +155,6 @@
 		<usePrimitives>true</usePrimitives>
 	</dbImport>
 	<cgen xmlns="http://cayenne.apache.org/schema/10/cgen">
-		<excludeEntities>User,Degree,File,Subject,Session</excludeEntities>
 		<destDir>../java</destDir>
 		<mode>entity</mode>
 		<template>templates/v4_1/subclass.vm</template>
