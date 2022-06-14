@@ -9,7 +9,7 @@ public final class Utils {
 	private Utils() {
 	}
 
-	public static <K, V> Type getTypeTokenFromClasses(Class<K> keyClass, Class<V> valueClass) {
+	public static <K, V> Type typeToken() {
 		return new TypeToken<Map<K, V>>() {
 		}.getType();
 	}

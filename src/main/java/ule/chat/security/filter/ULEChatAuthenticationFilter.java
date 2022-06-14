@@ -78,7 +78,7 @@ public class ULEChatAuthenticationFilter extends UsernamePasswordAuthenticationF
 		new ObjectMapper().writeValue(response.getWriter(), tokens);
 		response.setStatus(HttpStatus.CONTINUE.value());
 
-		request.setAttribute("SESSION:TOKEN", Constants.GSON.toJson(tokens));
+		request.setAttribute("USER:TOKENS", Constants.GSON.toJson(tokens));
 
 		//! IMPORTANT: this enables calling the controller after the token is created
 		//! in order to call the controller, we need to add the token to a request attribute.
