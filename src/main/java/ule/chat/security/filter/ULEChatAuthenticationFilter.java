@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import org.apache.shiro.crypto.hash.Hash;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -27,10 +27,10 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static ule.chat.utils.Constants.ALGORITHM;
 
 @Slf4j
-public class ULEChatCustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+public class ULEChatAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 	private final AuthenticationManager authenticationManager;
 
-	public ULEChatCustomAuthenticationFilter(AuthenticationManager authenticationManager) {
+	public ULEChatAuthenticationFilter(AuthenticationManager authenticationManager) {
 		this.authenticationManager = authenticationManager;
 	}
 
@@ -58,17 +58,17 @@ public class ULEChatCustomAuthenticationFilter extends UsernamePasswordAuthentic
 		User user = (User) authentication.getPrincipal();
 
 		String accessToken = JWT.create()
-		                  .withSubject(user.getUsername())
-		                  .withExpiresAt(new Date(System.currentTimeMillis() + Constants.TOKEN_EXPIRATION_TIME))
-		                  .withIssuer(request.getRequestURL().toString()) // URL of our application.
-		                  .withClaim("role", user.getAuthorities().iterator().next().getAuthority()) // Only one role is in DB.
-		                  .sign(ALGORITHM);
+		                        .withSubject(user.getUsername())
+		                        .withExpiresAt(new Date(System.currentTimeMillis() + Constants.TOKEN_EXPIRATION_TIME))
+		                        .withIssuer(request.getRequestURL().toString()) // URL of our application.
+		                        .withClaim("role", user.getAuthorities().iterator().next().getAuthority()) // Only one role is in DB.
+		                        .sign(ALGORITHM);
 
 		String refreshToken = JWT.create()
-		                  .withSubject(user.getUsername())
-		                  .withExpiresAt(new Date(System.currentTimeMillis() + Constants.TOKEN_EXPIRATION_TIME))
-		                  .withIssuer(request.getRequestURL().toString()) // URL of our application.
-		                  .sign(ALGORITHM);
+		                         .withSubject(user.getUsername())
+		                         .withExpiresAt(new Date(System.currentTimeMillis() + Constants.TOKEN_EXPIRATION_TIME))
+		                         .withIssuer(request.getRequestURL().toString()) // URL of our application.
+		                         .sign(ALGORITHM);
 
 		Map<String, String> tokens = new HashMap<>();
 		tokens.put("access_token", accessToken);
@@ -76,5 +76,12 @@ public class ULEChatCustomAuthenticationFilter extends UsernamePasswordAuthentic
 
 		response.setContentType(APPLICATION_JSON_VALUE);
 		new ObjectMapper().writeValue(response.getWriter(), tokens);
+		response.setStatus(HttpStatus.CONTINUE.value());
+
+		request.setAttribute("SESSION:TOKEN", Constants.GSON.toJson(tokens));
+
+		//! IMPORTANT: this enables calling the controller after the token is created
+		//! in order to call the controller, we need to add the token to a request attribute.
+		chain.doFilter(request, response);
 	}
 }

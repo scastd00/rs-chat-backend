@@ -1,4 +1,4 @@
-package ule.chat.repository;
+package ule.chat.domain.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import ule.chat.domain.Degree;

@@ -1,8 +1,7 @@
-package ule.chat.service;
+package ule.chat.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -10,7 +9,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ule.chat.domain.User;
-import ule.chat.repository.UserRepository;
+import ule.chat.domain.repository.UserRepository;
+import ule.chat.service.UserService;
 
 import java.util.List;
 
