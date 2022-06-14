@@ -1,28 +1,59 @@
 package ule.chat.security;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import ule.chat.security.filter.ULEChatCustomAuthenticationFilter;
+import ule.chat.security.filter.ULEChatCustomAuthorizationFilter;
+
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 // https://youtu.be/VVn9OG9nfH0?t=2983
+// Refresh token -> 1:10:00 approximately.
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
+@Slf4j
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+	private final UserDetailsService userDetailsService;
+	private final BCryptPasswordEncoder passwordEncoder;
+
+	@Override
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+		auth.userDetailsService(this.userDetailsService)
+		    .passwordEncoder(this.passwordEncoder);
+	}
+
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		//! IMPORTANT NOTE: antMatchers() is for specifying the path that do not
-		//! care about which HttpMethod is used.
+//		http.cors();
+		http.csrf().disable();
+		http.sessionManagement().sessionCreationPolicy(STATELESS);
+		http.authorizeRequests().antMatchers("/login/**", "/api/token/refresh/**").permitAll();
+		http.authorizeRequests().antMatchers(GET, "/api/user/**").hasAnyRole("ROLE_STUDENT");
+		http.authorizeRequests().antMatchers(POST, "/api/user/save/**").hasAnyAuthority("ROLE_ADMINISTRATOR");
+		http.authorizeRequests().antMatchers(GET, "/api/users").authenticated();
+		http.authorizeRequests().anyRequest().authenticated();
+		http.addFilter(new ULEChatCustomAuthenticationFilter(this.authenticationManagerBean()));
+		http.addFilterBefore(new ULEChatCustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+	}
 
-		http.authorizeRequests()
-		    .antMatchers("/").permitAll() // Any user
-		    .antMatchers("/login").permitAll()
-//		    .anyRequest().authenticated()
-		    .and().httpBasic() // Authenticate with username and password.
-		    //For REST services disable CSRF protection.
-		    //See https://docs.spring.io/spring-security/site/docs/current/reference/html/csrf.html#when-to-use-csrf-protection
-		    .and().cors()
-		    .and().csrf().disable();
+	@Bean
+	@Override
+	public AuthenticationManager authenticationManagerBean() throws Exception {
+		return super.authenticationManagerBean();
 	}
 }

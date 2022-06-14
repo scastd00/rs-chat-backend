@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -56,12 +57,16 @@ public class User {
 	private Date birthdate;
 
 	@Basic
-	@Column(name = "role", nullable = false, length = 13)
+	@Column(name = "role", nullable = false, length = 25)
 	private String role;
 
 	@Basic
 	@Column(name = "block_until")
 	private Timestamp blockUntil;
+
+	public SimpleGrantedAuthority getSimpleGrantedAuthority() {
+		return new SimpleGrantedAuthority(this.role);
+	}
 
 	@Override
 	public boolean equals(Object o) {

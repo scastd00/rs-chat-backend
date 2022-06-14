@@ -137,7 +137,7 @@
 				<column name="birthdate" nullable="false" precision="-1"/>
 			</basic>
 			<basic name="role">
-				<column name="role" length="13"/>
+				<column name="role" length="25"/>
 			</basic>
 			<basic name="blockUntil">
 				<column name="block_until" nullable="false" precision="-1"/>
