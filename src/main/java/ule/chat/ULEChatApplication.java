@@ -7,9 +7,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootApplication
-public class UleChatApplication {
+public class ULEChatApplication {
 	public static void main(String[] args) {
-		SpringApplication.run(UleChatApplication.class, args);
+		SpringApplication.run(ULEChatApplication.class, args);
 	}
 
 	@Bean
