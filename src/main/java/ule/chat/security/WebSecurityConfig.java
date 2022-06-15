@@ -52,16 +52,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 		this.authorizeRequests(http);
 
-//		http.logout().permitAll().logoutSuccessHandler(this.getLogoutSuccessHandler());
-
 		this.addFilters(http);
 	}
 
 	private void authorizeRequests(HttpSecurity http) throws Exception {
-		http.authorizeRequests().antMatchers(LOGIN.getUrl(), REFRESH_TOKEN.getUrl(), LOGOUT.getUrl()).permitAll();
-		http.authorizeRequests().antMatchers(GET, USER.getUrl()).hasAnyRole(STUDENT_ROLE);
-		http.authorizeRequests().antMatchers(POST, USER_SAVE.getUrl()).hasAuthority(ADMIN_ROLE);
-		http.authorizeRequests().antMatchers(GET, USERS.getUrl()).authenticated();
+		http.authorizeRequests().antMatchers(LOGIN.url(), REFRESH_TOKEN.url(), LOGOUT.url()).permitAll();
+		http.authorizeRequests().antMatchers(USER.method(), USER.url()).hasAnyRole(STUDENT_ROLE);
+		http.authorizeRequests().antMatchers(USER_SAVE.method(), USER_SAVE.url()).hasAuthority(ADMIN_ROLE);
+		http.authorizeRequests().antMatchers(USERS.method(), USERS.url()).authenticated();
 
 		http.authorizeRequests().anyRequest().authenticated();
 	}
@@ -69,7 +67,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	private void addFilters(HttpSecurity http) throws Exception {
 		http.addFilter(this.getULEChatCustomAuthenticationFilter());
 		http.addFilterBefore(new ULEChatAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
-//		http.addFilterAfter(new ULEChatLogoutFilter(), ULEChatAuthenticationFilter.class);
 	}
 
 	@Bean
@@ -81,7 +78,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	private ULEChatAuthenticationFilter getULEChatCustomAuthenticationFilter() throws Exception {
 		ULEChatAuthenticationFilter authenticationFilter =
 				new ULEChatAuthenticationFilter(this.authenticationManagerBean());
-		authenticationFilter.setFilterProcessesUrl(LOGIN.getUrl());
+		authenticationFilter.setFilterProcessesUrl(LOGIN.url());
 		return authenticationFilter;
 	}
 }

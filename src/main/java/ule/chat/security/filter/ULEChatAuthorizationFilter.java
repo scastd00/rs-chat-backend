@@ -22,6 +22,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static ule.chat.router.Routes.LOGIN;
+import static ule.chat.router.Routes.LOGOUT;
 import static ule.chat.router.Routes.REFRESH_TOKEN;
 import static ule.chat.utils.Constants.JWT_TOKEN_PREFIX;
 import static ule.chat.utils.Constants.JWT_VERIFIER;
@@ -29,9 +30,10 @@ import static ule.chat.utils.Constants.JWT_VERIFIER;
 @Slf4j
 public class ULEChatAuthorizationFilter extends OncePerRequestFilter {
 	@Override
-	protected void doFilterInternal(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain) throws ServletException, IOException {
-		if (request.getServletPath().equals(LOGIN.getUrl()) ||
-				request.getServletPath().equals(REFRESH_TOKEN.getUrl())) {
+	protected void doFilterInternal(@NotNull HttpServletRequest request,
+	                                @NotNull HttpServletResponse response,
+	                                @NotNull FilterChain filterChain) throws ServletException, IOException {
+		if (this.isExcludedPath(request.getServletPath())) {
 			filterChain.doFilter(request, response);
 			return;
 		}
@@ -59,15 +61,20 @@ public class ULEChatAuthorizationFilter extends OncePerRequestFilter {
 				filterChain.doFilter(request, response);
 			} catch (Exception e) {
 				log.error("Error logging in: {}", e.getMessage());
-				response.setHeader("error", e.getMessage());
 				response.setStatus(FORBIDDEN.value());
 
-				Map<String, String> tokens = new HashMap<>();
-				tokens.put("error_message", e.getMessage());
+				Map<String, String> error = new HashMap<>();
+				error.put("error_message", e.getMessage());
 
 				response.setContentType(APPLICATION_JSON_VALUE);
-				new ObjectMapper().writeValue(response.getWriter(), tokens);
+				new ObjectMapper().writeValue(response.getWriter(), error);
 			}
 		}
+	}
+
+	private boolean isExcludedPath(String path) {
+		return path.equals(LOGIN.url()) ||
+				path.equals(REFRESH_TOKEN.url()) ||
+				path.equals(LOGOUT.url());
 	}
 }
