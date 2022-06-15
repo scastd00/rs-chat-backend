@@ -1,6 +1,5 @@
 package ule.chat.utils;
 
-import org.apache.commons.io.IOUtils;
 import org.springframework.util.StreamUtils;
 
 import javax.servlet.ServletInputStream;

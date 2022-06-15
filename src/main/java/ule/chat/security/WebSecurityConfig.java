@@ -15,8 +15,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import ule.chat.security.filter.ULEChatAuthenticationFilter;
 import ule.chat.security.filter.ULEChatAuthorizationFilter;
 
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 import static ule.chat.router.Routes.LOGIN;
 import static ule.chat.router.Routes.LOGOUT;
