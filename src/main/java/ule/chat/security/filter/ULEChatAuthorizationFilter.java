@@ -1,7 +1,5 @@
 package ule.chat.security.filter;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -23,28 +21,34 @@ import java.util.Map;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static ule.chat.utils.Constants.ALGORITHM;
+import static ule.chat.router.Routes.LOGIN;
+import static ule.chat.router.Routes.REFRESH_TOKEN;
+import static ule.chat.utils.Constants.JWT_TOKEN_PREFIX;
+import static ule.chat.utils.Constants.JWT_VERIFIER;
 
 @Slf4j
 public class ULEChatAuthorizationFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain filterChain) throws ServletException, IOException {
-		if (request.getServletPath().equals("/api/login") ||
-				request.getServletPath().equals("/api/token/refresh")) {
+		if (request.getServletPath().equals(LOGIN.getUrl()) ||
+				request.getServletPath().equals(REFRESH_TOKEN.getUrl())) {
 			filterChain.doFilter(request, response);
 			return;
 		}
 
 		String authorizationHeader = request.getHeader(AUTHORIZATION);
+
 		if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
 			filterChain.doFilter(request, response);
 		} else {
 			try {
-				String token = authorizationHeader.substring("Bearer ".length());
-				JWTVerifier verifier = JWT.require(ALGORITHM).build();
-				DecodedJWT decodedJWT = verifier.verify(token);
+				String token = authorizationHeader.substring(JWT_TOKEN_PREFIX.length());
+				DecodedJWT decodedJWT = JWT_VERIFIER.verify(token);
 				String username = decodedJWT.getSubject();
 				String role = decodedJWT.getClaim("role").asString();
+
+				log.info("User {} with role {} has been authorized", username, role);
+
 				SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role);
 				UsernamePasswordAuthenticationToken authenticationToken =
 						new UsernamePasswordAuthenticationToken(

@@ -1,11 +1,9 @@
 package ule.chat.security.filter;
 
 import com.auth0.jwt.JWT;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,7 +21,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static ule.chat.utils.Constants.ALGORITHM;
 
 @Slf4j
@@ -54,9 +51,11 @@ public class ULEChatAuthenticationFilter extends UsernamePasswordAuthenticationF
 	}
 
 	@Override
-	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
+	protected void successfulAuthentication(HttpServletRequest request,
+	                                        HttpServletResponse response,
+	                                        FilterChain chain,
+	                                        Authentication authentication) throws IOException, ServletException {
 		User user = (User) authentication.getPrincipal();
-
 		String accessToken = JWT.create()
 		                        .withSubject(user.getUsername())
 		                        .withExpiresAt(new Date(System.currentTimeMillis() + Constants.TOKEN_EXPIRATION_TIME))
@@ -66,19 +65,16 @@ public class ULEChatAuthenticationFilter extends UsernamePasswordAuthenticationF
 
 		String refreshToken = JWT.create()
 		                         .withSubject(user.getUsername())
-		                         .withExpiresAt(new Date(System.currentTimeMillis() + Constants.TOKEN_EXPIRATION_TIME))
+		                         .withExpiresAt(new Date(System.currentTimeMillis() + Constants.REFRESH_TOKEN_EXPIRATION_TIME))
 		                         .withIssuer(request.getRequestURL().toString()) // URL of our application.
 		                         .sign(ALGORITHM);
 
 		Map<String, String> tokens = new HashMap<>();
 		tokens.put("access_token", accessToken);
-		tokens.put("refresh_token", refreshToken);
-
-		response.setContentType(APPLICATION_JSON_VALUE);
-		new ObjectMapper().writeValue(response.getWriter(), tokens);
-		response.setStatus(HttpStatus.CONTINUE.value());
+		tokens.put("refresh_token", refreshToken); // Todo: can be one attr for each token.
 
 		request.setAttribute("USER:TOKENS", Constants.GSON.toJson(tokens));
+		request.setAttribute("USER:USERNAME", user.getUsername());
 
 		//! IMPORTANT: this enables calling the controller after the token is created
 		//! in order to call the controller, we need to add the token to a request attribute.

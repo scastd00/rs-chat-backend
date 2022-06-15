@@ -21,11 +21,11 @@ import java.io.IOException;
 @WebFilter(filterName = "ContentCachingFilter", urlPatterns = "/*")
 public class HttpRequestContentCachingFilter extends OncePerRequestFilter {
 	@Override
-	protected void doFilterInternal(@NotNull HttpServletRequest httpServletRequest,
-	                                @NotNull HttpServletResponse httpServletResponse,
+	protected void doFilterInternal(@NotNull HttpServletRequest request,
+	                                @NotNull HttpServletResponse response,
 	                                FilterChain filterChain) throws ServletException, IOException {
-		log.info("IN ContentCachingFilter");
-		CachedBodyHttpServletRequest cachedBodyHttpServletRequest = new CachedBodyHttpServletRequest(httpServletRequest);
-		filterChain.doFilter(cachedBodyHttpServletRequest, httpServletResponse);
+		log.info("IN ContentCachingFilter -> Path: {}", request.getServletPath());
+		CachedBodyHttpServletRequest cachedBodyHttpServletRequest = new CachedBodyHttpServletRequest(request);
+		filterChain.doFilter(cachedBodyHttpServletRequest, response);
 	}
 }
