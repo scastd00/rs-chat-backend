@@ -39,8 +39,12 @@ public class Session {
 	private Timestamp dateStarted;
 
 	@Basic
-	@Column(name = "token", nullable = false, length = 128)
-	private String token;
+	@Column(name = "access_token", nullable = false, length = 300)
+	private String accessToken;
+
+	@Basic
+	@Column(name = "refresh_token", nullable = false, length = 300)
+	private String refreshToken;
 
 	@Basic
 	@Column(name = "user_id", nullable = false)

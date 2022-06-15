@@ -54,8 +54,11 @@
 			<basic name="dateStarted">
 				<column name="date_started" precision="-1"/>
 			</basic>
-			<basic name="token">
-				<column name="token" length="128"/>
+			<basic name="accessToken">
+				<column name="access_token" length="300"/>
+			</basic>
+			<basic name="refreshToken">
+				<column name="refresh_token" length="300"/>
 			</basic>
 			<basic name="userId">
 				<column name="user_id" precision="-1"/>
