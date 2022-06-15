@@ -35,6 +35,7 @@ public class ULEChatAuthenticationFilter extends UsernamePasswordAuthenticationF
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 		try {
 			String body = IOUtils.toString(request.getReader());
+			log.info("Body: {}", body);
 			JsonObject jsonBody = Constants.GSON.fromJson(body, JsonObject.class);
 
 			String username = jsonBody.get("username").getAsString();

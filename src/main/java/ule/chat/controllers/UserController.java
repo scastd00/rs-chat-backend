@@ -3,10 +3,10 @@ package ule.chat.controllers;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ule.chat.domain.User;
@@ -17,19 +17,23 @@ import javax.servlet.http.HttpServletResponse;
 import java.net.URI;
 import java.util.List;
 
+import static ule.chat.router.Routes.REFRESH_TOKEN_URL;
+import static ule.chat.router.Routes.USERS_URL;
+import static ule.chat.router.Routes.USER_SAVE_URL;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
 	private final UserService userService;
 
-	@GetMapping("/users")
+	@GetMapping(USERS_URL)
 	public ResponseEntity<List<User>> getUsers() {
 		return ResponseEntity.ok(this.userService.getUsers());
 	}
 
-	@PostMapping("/user/save")
+	@PostMapping(USER_SAVE_URL)
 	public ResponseEntity<User> saveUser(@RequestBody User user) {
 		URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath()
 		                                                .path("/api/user/save")
@@ -38,7 +42,7 @@ public class UserController {
 		                     .body(this.userService.saveUser(user));
 	}
 
-	@GetMapping("/token/refresh")
+	@GetMapping(REFRESH_TOKEN_URL)
 	public void refreshToken(HttpServletRequest request, HttpServletResponse response) {
 //		String authorizationHeader = request.getHeader(AUTHORIZATION);
 //
