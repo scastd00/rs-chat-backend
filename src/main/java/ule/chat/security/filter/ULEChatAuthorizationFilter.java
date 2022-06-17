@@ -11,6 +11,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -22,12 +23,12 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static ule.chat.router.Routes.LOGIN;
-import static ule.chat.router.Routes.LOGOUT;
 import static ule.chat.router.Routes.REFRESH_TOKEN;
 import static ule.chat.utils.Constants.JWT_TOKEN_PREFIX;
 import static ule.chat.utils.Constants.JWT_VERIFIER;
 
 @Slf4j
+@WebFilter(filterName = "AuthorizationFilter")
 public class ULEChatAuthorizationFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(@NotNull HttpServletRequest request,
@@ -40,7 +41,7 @@ public class ULEChatAuthorizationFilter extends OncePerRequestFilter {
 
 		String authorizationHeader = request.getHeader(AUTHORIZATION);
 
-		if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+		if (authorizationHeader == null || !authorizationHeader.startsWith(JWT_TOKEN_PREFIX)) {
 			filterChain.doFilter(request, response);
 		} else {
 			try {

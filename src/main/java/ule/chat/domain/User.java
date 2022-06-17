@@ -16,7 +16,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.sql.Date;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
@@ -60,9 +60,8 @@ public class User {
 	@Column(name = "role", nullable = false, length = 25)
 	private String role;
 
-	@Basic
 	@Column(name = "block_until")
-	private Timestamp blockUntil;
+	private LocalDateTime blockUntil;
 
 	public SimpleGrantedAuthority getSimpleGrantedAuthority() {
 		return new SimpleGrantedAuthority(this.role);
