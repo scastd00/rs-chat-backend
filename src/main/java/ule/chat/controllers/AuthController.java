@@ -3,7 +3,6 @@ package ule.chat.controllers;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
-import com.google.gson.stream.JsonReader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -18,7 +17,6 @@ import ule.chat.service.SessionService;
 import ule.chat.service.UserService;
 import ule.chat.utils.Constants;
 
-import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
