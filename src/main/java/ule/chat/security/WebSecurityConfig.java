@@ -54,7 +54,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	private void authorizeRequests(HttpSecurity http) throws Exception {
-		http.authorizeRequests().antMatchers(LOGIN.url(), REFRESH_TOKEN.url(), LOGOUT.url()).permitAll();
+		http.authorizeRequests().antMatchers(LOGIN.url(), REFRESH_TOKEN.url()).permitAll();
 		http.authorizeRequests().antMatchers(USER.method(), USER.url()).hasAnyRole(STUDENT_ROLE);
 		http.authorizeRequests().antMatchers(USER_SAVE.method(), USER_SAVE.url()).hasAuthority(ADMIN_ROLE);
 		http.authorizeRequests().antMatchers(USERS.method(), USERS.url()).authenticated();

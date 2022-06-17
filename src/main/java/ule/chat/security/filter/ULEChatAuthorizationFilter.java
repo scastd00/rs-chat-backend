@@ -60,7 +60,6 @@ public class ULEChatAuthorizationFilter extends OncePerRequestFilter {
 				SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 				filterChain.doFilter(request, response);
 			} catch (Exception e) {
-				log.error("Error logging in: {}", e.getMessage());
 				response.setStatus(FORBIDDEN.value());
 
 				Map<String, String> error = new HashMap<>();
@@ -74,7 +73,6 @@ public class ULEChatAuthorizationFilter extends OncePerRequestFilter {
 
 	private boolean isExcludedPath(String path) {
 		return path.equals(LOGIN.url()) ||
-				path.equals(REFRESH_TOKEN.url()) ||
-				path.equals(LOGOUT.url());
+				path.equals(REFRESH_TOKEN.url());
 	}
 }

@@ -8,7 +8,6 @@ import ule.chat.domain.Session;
 import ule.chat.domain.User;
 import ule.chat.domain.repository.SessionRepository;
 import ule.chat.domain.repository.UserRepository;
-import ule.chat.exceptions.NotFoundException;
 
 import java.util.List;
 
@@ -30,9 +29,8 @@ public class SessionService {
 
 	public void deleteSession(String token) {
 		log.info("Removing session: {}", token);
-		Session session = this.sessionRepository.findByAccessToken(token)
-		                                        .orElseThrow(() -> new NotFoundException("Session not found"));
-		this.sessionRepository.delete(session);
+		this.sessionRepository.findByAccessToken(token)
+		                      .ifPresent(this.sessionRepository::delete);
 	}
 
 	public void deleteAllSessionsOfUser(String username) {

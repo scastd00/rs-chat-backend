@@ -24,7 +24,6 @@ public class HttpRequestContentCachingFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(@NotNull HttpServletRequest request,
 	                                @NotNull HttpServletResponse response,
 	                                FilterChain filterChain) throws ServletException, IOException {
-		log.info("IN ContentCachingFilter -> Path: {}", request.getServletPath());
 		CachedBodyHttpServletRequest cachedBodyHttpServletRequest = new CachedBodyHttpServletRequest(request);
 		filterChain.doFilter(cachedBodyHttpServletRequest, response);
 	}
