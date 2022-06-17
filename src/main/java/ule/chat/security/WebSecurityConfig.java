@@ -12,6 +12,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.util.PathMatcher;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import ule.chat.security.filter.ULEChatAuthenticationFilter;
 import ule.chat.security.filter.ULEChatAuthorizationFilter;
 
@@ -32,6 +34,7 @@ import static ule.chat.utils.Constants.STUDENT_ROLE;
 @EnableWebSecurity
 @RequiredArgsConstructor
 @Slf4j
+@SuppressWarnings("deprecation")
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	private final UserDetailsService userDetailsService;
 	private final BCryptPasswordEncoder passwordEncoder;

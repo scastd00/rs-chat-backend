@@ -14,7 +14,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
@@ -34,8 +34,9 @@ public class Session {
 	@Column(name = "src_ip", nullable = false, length = 16)
 	private String srcIp;
 
+	@Basic
 	@Column(name = "date_started", nullable = false)
-	private LocalDateTime dateStarted;
+	private Timestamp dateStarted;
 
 	@Basic
 	@Column(name = "access_token", nullable = false, length = 300)

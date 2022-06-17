@@ -14,7 +14,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
@@ -34,8 +34,9 @@ public class File {
 	@Column(name = "name", nullable = false)
 	private String name;
 
+	@Basic
 	@Column(name = "date_uploaded", nullable = false)
-	private LocalDateTime dateUploaded;
+	private Timestamp dateUploaded;
 
 	@Basic
 	@Column(name = "size", nullable = false)
