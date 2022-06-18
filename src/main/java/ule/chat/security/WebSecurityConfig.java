@@ -12,14 +12,11 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.util.PathMatcher;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import ule.chat.security.filter.ULEChatAuthenticationFilter;
 import ule.chat.security.filter.ULEChatAuthorizationFilter;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 import static ule.chat.router.Routes.LOGIN;
-import static ule.chat.router.Routes.LOGOUT;
 import static ule.chat.router.Routes.REFRESH_TOKEN;
 import static ule.chat.router.Routes.USER;
 import static ule.chat.router.Routes.USERS;
@@ -47,7 +44,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.cors(); //! Enable CORS. In every controller put the @CrossOrigin annotation.
+		http.cors();
 		http.csrf().disable();
 		http.sessionManagement().sessionCreationPolicy(STATELESS);
 

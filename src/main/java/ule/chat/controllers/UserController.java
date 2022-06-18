@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ule.chat.domain.User;
+import ule.chat.router.Routes;
 import ule.chat.service.UserService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,22 +17,18 @@ import javax.servlet.http.HttpServletResponse;
 import java.net.URI;
 import java.util.List;
 
-import static ule.chat.router.Routes.REFRESH_TOKEN_URL;
-import static ule.chat.router.Routes.USERS_URL;
-import static ule.chat.router.Routes.USER_SAVE_URL;
-
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 public class UserController {
 	private final UserService userService;
 
-	@GetMapping(USERS_URL)
+	@GetMapping(Routes.USERS_URL)
 	public ResponseEntity<List<User>> getUsers() {
 		return ResponseEntity.ok(this.userService.getUsers());
 	}
 
-	@PostMapping(USER_SAVE_URL)
+	@PostMapping(Routes.USER_SAVE_URL)
 	public ResponseEntity<User> saveUser(@RequestBody User user) {
 		URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath()
 		                                                .path("/api/user/save")
@@ -40,7 +37,7 @@ public class UserController {
 		                     .body(this.userService.saveUser(user));
 	}
 
-	@GetMapping(REFRESH_TOKEN_URL)
+	@GetMapping(Routes.REFRESH_TOKEN_URL)
 	public void refreshToken(HttpServletRequest request, HttpServletResponse response) {
 //		String authorizationHeader = request.getHeader(AUTHORIZATION);
 //
