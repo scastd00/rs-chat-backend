@@ -58,6 +58,11 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
@@ -70,18 +75,6 @@
 		</dependency>
 
 		<!-- Custom dependencies -->
-		<dependency>
-			<groupId>org.apache.cayenne</groupId>
-			<artifactId>cayenne-server</artifactId>
-			<version>4.1.1</version>
-		</dependency>
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>8.0.29</version>
-		</dependency>
-
-		<!-- Log4J with slf4j -->
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
@@ -97,20 +90,7 @@
 			<artifactId>slf4j-api</artifactId>
 		</dependency>
 
-		<!-- JUnit5 (Tests) -->
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter</artifactId>
-			<version>5.8.2</version>
-			<scope>test</scope>
-		</dependency>
-
-		<!-- Password hashing -->
-		<dependency>
-			<groupId>org.apache.shiro</groupId>
-			<artifactId>shiro-crypto-hash</artifactId>
-			<version>1.9.0</version>
-		</dependency>
+		<!-- Testing env is already configured by spring-boot-starter-test -->
 
 		<!-- Guava for caching data -->
 		<dependency>
@@ -130,12 +110,6 @@
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.11.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apiguardian</groupId>
-			<artifactId>apiguardian-api</artifactId>
-			<version>1.1.2</version>
 		</dependency>
 
 		<dependency>

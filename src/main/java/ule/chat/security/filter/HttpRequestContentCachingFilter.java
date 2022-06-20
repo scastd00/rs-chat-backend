@@ -6,7 +6,8 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import ule.chat.utils.CachedBodyHttpServletRequest;
+import ule.chat.net.HttpRequest;
+import ule.chat.net.HttpResponse;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -15,6 +16,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * Class that caches the request received in the server. This allows to
+ * read the body of the request multiple times.
+ *
+ * <b>This is the first entry point of all the requests that arrive to the
+ * server.</b>
+ */
 @Component
 @Slf4j
 @Order(value = Ordered.HIGHEST_PRECEDENCE)
@@ -24,7 +32,6 @@ public class HttpRequestContentCachingFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(@NotNull HttpServletRequest request,
 	                                @NotNull HttpServletResponse response,
 	                                FilterChain filterChain) throws ServletException, IOException {
-		CachedBodyHttpServletRequest cachedBodyHttpServletRequest = new CachedBodyHttpServletRequest(request);
-		filterChain.doFilter(cachedBodyHttpServletRequest, response);
+		filterChain.doFilter(new HttpRequest(request), new HttpResponse(response));
 	}
 }

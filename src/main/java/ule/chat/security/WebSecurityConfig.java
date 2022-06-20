@@ -18,6 +18,7 @@ import ule.chat.security.filter.ULEChatAuthorizationFilter;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 import static ule.chat.router.Routes.LOGIN;
 import static ule.chat.router.Routes.REFRESH_TOKEN;
+import static ule.chat.router.Routes.REGISTER;
 import static ule.chat.router.Routes.USER;
 import static ule.chat.router.Routes.USERS;
 import static ule.chat.router.Routes.USER_SAVE;
@@ -49,15 +50,31 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		http.sessionManagement().sessionCreationPolicy(STATELESS);
 
 		this.authorizeRequests(http);
-
 		this.addFilters(http);
 	}
 
 	private void authorizeRequests(HttpSecurity http) throws Exception {
-		http.authorizeRequests().antMatchers(LOGIN.url(), REFRESH_TOKEN.url()).permitAll();
-		http.authorizeRequests().antMatchers(USER.method(), USER.url()).hasAnyRole(STUDENT_ROLE);
-		http.authorizeRequests().antMatchers(USER_SAVE.method(), USER_SAVE.url()).hasAuthority(ADMIN_ROLE);
-		http.authorizeRequests().antMatchers(USERS.method(), USERS.url()).authenticated();
+		http.authorizeRequests()
+		    .antMatchers(
+				    LOGIN.url(),
+				    REFRESH_TOKEN.url(),
+				    REGISTER.url())
+		    .permitAll();
+
+		// Public routes
+		http.authorizeRequests()
+		    .antMatchers(USER.method(), USER.url())
+		    .hasAnyRole(STUDENT_ROLE);
+
+		// Admin routes
+		http.authorizeRequests()
+		    .antMatchers(USER_SAVE.method(), USER_SAVE.url())
+		    .hasAuthority(ADMIN_ROLE);
+
+		// Private routes
+		http.authorizeRequests()
+		    .antMatchers(USERS.method(), USERS.url())
+		    .authenticated();
 
 		http.authorizeRequests().anyRequest().authenticated();
 	}

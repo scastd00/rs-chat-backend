@@ -7,17 +7,19 @@ public final class Routes {
 	private Routes() {
 	}
 
-	public static final String LOGIN_URL = "/api/login";
-	public static final String LOGOUT_URL = "/api/logout";
-	public static final String REGISTER_URL = "/api/register";
-	public static final String UNREGISTER_URL = "/api/unregister";
-	public static final String USER_URL = "/api/user";
-	public static final String USERS_URL = "/api/users";
-	public static final String USER_BY_ID_URL = "/api/user/{id}";
-	public static final String USER_BY_USERNAME_URL = "/api/user/{username}";
-	public static final String USER_BY_EMAIL_URL = "/api/user/{email}";
-	public static final String USER_SAVE_URL = "/api/user/save";
-	public static final String REFRESH_TOKEN_URL = "/api/token/refresh";
+	private static final String API_URL_PREFIX = "/api/v1";
+
+	public static final String LOGIN_URL = API_URL_PREFIX + "/login";
+	public static final String LOGOUT_URL = API_URL_PREFIX + "/logout";
+	public static final String REGISTER_URL = API_URL_PREFIX + "/register";
+	public static final String UNREGISTER_URL = API_URL_PREFIX + "/unregister";
+	public static final String USER_URL = API_URL_PREFIX + "/user";
+	public static final String USERS_URL = API_URL_PREFIX + "/users";
+	public static final String USER_BY_ID_URL = API_URL_PREFIX + "/user/{id}";
+	public static final String USER_BY_USERNAME_URL = API_URL_PREFIX + "/user/{username}";
+	public static final String USER_BY_EMAIL_URL = API_URL_PREFIX + "/user/{email}";
+	public static final String USER_SAVE_URL = API_URL_PREFIX + "/user/save";
+	public static final String REFRESH_TOKEN_URL = API_URL_PREFIX + "/token/refresh";
 
 	public static final Route LOGIN = new Route(GET, LOGIN_URL);
 	public static final Route LOGOUT = new Route(GET, LOGOUT_URL);

@@ -1,9 +1,10 @@
-package ule.chat.utils;
+package ule.chat.net;
 
 import com.google.gson.JsonObject;
 import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
 import org.springframework.util.StreamUtils;
+import ule.chat.utils.Utils;
 
 import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
@@ -15,10 +16,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-public class CachedBodyHttpServletRequest extends HttpServletRequestWrapper {
+public class HttpRequest extends HttpServletRequestWrapper {
 	private final byte[] cachedBody;
 
-	public CachedBodyHttpServletRequest(HttpServletRequest request) throws IOException {
+	/**
+	 * Constructs a request object wrapping the given request.
+	 *
+	 * @param request The request to wrap.
+	 *
+	 * @throws IllegalArgumentException if the request is null.
+	 */
+	public HttpRequest(HttpServletRequest request) throws IOException {
 		super(request);
 		InputStream in = request.getInputStream();
 		this.cachedBody = StreamUtils.copyToByteArray(in);

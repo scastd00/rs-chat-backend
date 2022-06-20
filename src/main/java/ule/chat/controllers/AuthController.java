@@ -11,6 +11,8 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ule.chat.domain.Session;
+import ule.chat.net.HttpRequest;
+import ule.chat.net.HttpResponse;
 import ule.chat.router.Routes;
 import ule.chat.service.SessionService;
 import ule.chat.service.UserService;
@@ -21,13 +23,16 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static ule.chat.utils.Constants.JWT_TOKEN_PREFIX;
 import static ule.chat.utils.Constants.JWT_VERIFIER;
-import static ule.chat.utils.Utils.typeToken;
+import static ule.chat.utils.Utils.readJson;
+import static ule.chat.utils.Utils.sendError;
 
 @Slf4j
 @RestController
@@ -37,22 +42,24 @@ public class AuthController {
 	private final SessionService sessionService;
 
 	@PostMapping(Routes.LOGIN_URL)
-	public void login(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		Object jsonTokens = request.getAttribute("USER:TOKENS");
+	public void login(HttpRequest request, HttpResponse response) throws IOException {
+		// log.info("Body login: {}", request.body());
+
+		String jsonTokens = request.getAttribute("USER:TOKENS").toString();
 		String username = (String) request.getAttribute("USER:USERNAME");
 
 		request.removeAttribute("USER:TOKENS");
 		request.removeAttribute("USER:USERNAME");
 
-		Map<String, String> tokenMap = Constants.GSON.fromJson(jsonTokens.toString(), typeToken());
+		JsonObject tokenMap = readJson(jsonTokens);
 
 		Session savedSession = this.sessionService.saveSession(
 				new Session(
 						null,
 						request.getRemoteAddr(),
 						Timestamp.from(Instant.now()),
-						tokenMap.get("access_token"),
-						tokenMap.get("refresh_token"),
+						tokenMap.get("access_token").getAsString(),
+						tokenMap.get("refresh_token").getAsString(),
 						this.userService.getUser(username).getId()
 				)
 		);
@@ -62,12 +69,37 @@ public class AuthController {
 		new ObjectMapper().writeValue(response.getWriter(), savedSession);
 	}
 
+	@PostMapping(Routes.REGISTER_URL)
+	public void register(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		String body = IOUtils.toString(request.getReader());
+		JsonObject jsonRequest = readJson(body);
+		Map<String, String> res = new HashMap<>();
+		response.setContentType(APPLICATION_JSON_VALUE);
+
+		if (!jsonRequest.has("agreeTerms") ||
+				!jsonRequest.get("agreeTerms").getAsBoolean()) {
+			sendError(response, "You must accept the terms and conditions.", BAD_REQUEST);
+			return;
+		}
+
+		String jsonTokens = request.getAttribute("USER:TOKENS").toString();
+		String username = (String) request.getAttribute("USER:USERNAME");
+
+		request.removeAttribute("USER:TOKENS");
+		request.removeAttribute("USER:USERNAME");
+
+		response.setStatus(HttpStatus.OK.value());
+		new ObjectMapper().writeValue(response.getWriter(), res);
+
+		// Register the session
+	}
+
 	@PostMapping(Routes.LOGOUT_URL)
 	public void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		String authorizationHeader = request.getHeader(AUTHORIZATION);
 
 		if (authorizationHeader == null) { // If request does not contain authorization header send error.
-			response.setStatus(HttpStatus.BAD_REQUEST.value());
+			response.setStatus(BAD_REQUEST.value());
 			response.setContentType(APPLICATION_JSON_VALUE);
 			new ObjectMapper().writeValue(response.getWriter(), "You must provide the authorization token");
 			return;
