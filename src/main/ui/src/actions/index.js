@@ -1,5 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
-import { SET_USER, SET_USER_TOKEN, LOG_OUT, CHANGE_THEME } from './constants';
+import { CHANGE_THEME, LOG_OUT, SET_USER, SET_USER_TOKEN } from './constants';
 
 export const setUser = createAction(SET_USER, (user) => {
   return { payload: user };

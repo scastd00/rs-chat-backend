@@ -1,5 +1,5 @@
 import React from 'react';
-import { isLoggedIn, isAdmin } from './utils';
+import { isAdmin, isLoggedIn } from './utils';
 import { Navigate } from 'react-router';
 
 /**

@@ -1,6 +1,6 @@
 import storage from 'redux-persist/lib/storage';
 import { configureStore } from '@reduxjs/toolkit';
-import { persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
+import { FLUSH, PAUSE, PERSIST, persistReducer, PURGE, REGISTER, REHYDRATE } from 'redux-persist';
 import appReducer from '../reducers';
 
 const persistConfig = {
@@ -12,7 +12,7 @@ const rootReducer = (state, action) => {
   if (action.type === 'logOut') {
     storage.removeItem('persist:state');
 
-    return appReducer(undefined, action); // Set default state of the store
+    return appReducer(undefined, action); // Set default state of the store on logout
   }
 
   return appReducer(state, action);
