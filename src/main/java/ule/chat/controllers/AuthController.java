@@ -70,7 +70,7 @@ public class AuthController {
 	}
 
 	@PostMapping(Routes.REGISTER_URL)
-	public void register(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public void register(HttpRequest request, HttpResponse response) throws IOException {
 		String body = IOUtils.toString(request.getReader());
 		JsonObject jsonRequest = readJson(body);
 		Map<String, String> res = new HashMap<>();
@@ -95,7 +95,7 @@ public class AuthController {
 	}
 
 	@PostMapping(Routes.LOGOUT_URL)
-	public void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public void logout(HttpRequest request, HttpResponse response) throws IOException {
 		String authorizationHeader = request.getHeader(AUTHORIZATION);
 
 		if (authorizationHeader == null) { // If request does not contain authorization header send error.

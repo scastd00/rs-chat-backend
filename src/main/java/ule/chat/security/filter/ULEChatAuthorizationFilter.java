@@ -8,6 +8,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
+import ule.chat.net.HttpRequest;
+import ule.chat.net.HttpResponse;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -24,6 +26,7 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static ule.chat.router.Routes.LOGIN;
 import static ule.chat.router.Routes.REFRESH_TOKEN;
+import static ule.chat.router.Routes.REGISTER;
 import static ule.chat.utils.Constants.JWT_TOKEN_PREFIX;
 import static ule.chat.utils.Constants.JWT_VERIFIER;
 
@@ -74,6 +77,7 @@ public class ULEChatAuthorizationFilter extends OncePerRequestFilter {
 
 	private boolean isExcludedPath(String path) {
 		return path.equals(LOGIN.url()) ||
-				path.equals(REFRESH_TOKEN.url());
+				path.equals(REFRESH_TOKEN.url()) ||
+				path.equals(REGISTER.url());
 	}
 }

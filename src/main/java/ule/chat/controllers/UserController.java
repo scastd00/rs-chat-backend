@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ule.chat.domain.User;
+import ule.chat.net.HttpRequest;
+import ule.chat.net.HttpResponse;
 import ule.chat.router.Routes;
 import ule.chat.service.UserService;
 
@@ -38,7 +40,7 @@ public class UserController {
 	}
 
 	@GetMapping(Routes.REFRESH_TOKEN_URL)
-	public void refreshToken(HttpServletRequest request, HttpServletResponse response) {
+	public void refreshToken(HttpRequest request, HttpResponse response) {
 //		String authorizationHeader = request.getHeader(AUTHORIZATION);
 //
 //		if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
