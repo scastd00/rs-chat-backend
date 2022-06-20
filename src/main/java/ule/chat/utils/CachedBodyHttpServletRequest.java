@@ -1,7 +1,11 @@
 package ule.chat.utils;
 
+import com.google.gson.JsonObject;
+import lombok.SneakyThrows;
+import org.apache.commons.io.IOUtils;
 import org.springframework.util.StreamUtils;
 
+import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -29,5 +33,38 @@ public class CachedBodyHttpServletRequest extends HttpServletRequestWrapper {
 	public BufferedReader getReader() {
 		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(this.cachedBody);
 		return new BufferedReader(new InputStreamReader(byteArrayInputStream));
+	}
+
+	public JsonObject body() throws IOException {
+		return Utils.readJson(IOUtils.toString(this.getReader()));
+	}
+
+	static class CachedBodyServletInputStream extends ServletInputStream {
+		private final InputStream cachedBodyInputStream;
+
+		public CachedBodyServletInputStream(byte[] cachedBody) {
+			this.cachedBodyInputStream = new ByteArrayInputStream(cachedBody);
+		}
+
+		@SneakyThrows(IOException.class)
+		@Override
+		public boolean isFinished() {
+			return this.cachedBodyInputStream.available() == 0;
+		}
+
+		@Override
+		public boolean isReady() {
+			return true;
+		}
+
+		@Override
+		public void setReadListener(ReadListener listener) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public int read() throws IOException {
+			return cachedBodyInputStream.read();
+		}
 	}
 }
