@@ -14,7 +14,7 @@ public class CorsConfig {
 			@Override
 			public void addCorsMappings(@NotNull CorsRegistry registry) {
 				registry.addMapping("/**")
-				        .allowedOrigins("http://0.0.0.0");
+				        .allowedOrigins("http://127.0.0.1:3000");
 			}
 		};
 	}
