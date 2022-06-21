@@ -15,7 +15,7 @@ function TermsAndConditions() {
 
       <p>
         These terms and conditions outline the rules and regulations for the use of ULE Chat's Website, located at{' '}
-        <a href='https://leather-master.herokuapp.com/'>https://leather-master.herokuapp.com/</a>.
+        <a href='src/main/react/src/pages/TermsAndConditions'>https://leather-master.herokuapp.com/</a>.
       </p>
 
       <p>

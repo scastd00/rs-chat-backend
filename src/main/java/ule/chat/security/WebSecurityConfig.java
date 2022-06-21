@@ -19,6 +19,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 import static ule.chat.router.Routes.LOGIN;
 import static ule.chat.router.Routes.REFRESH_TOKEN;
 import static ule.chat.router.Routes.REGISTER;
+import static ule.chat.router.Routes.ROOT;
 import static ule.chat.router.Routes.USER;
 import static ule.chat.router.Routes.USERS;
 import static ule.chat.router.Routes.USER_SAVE;
@@ -56,6 +57,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	private void authorizeRequests(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
 		    .antMatchers(
+				    ROOT.url(),
 				    LOGIN.url(),
 				    REFRESH_TOKEN.url(),
 				    REGISTER.url())

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { AppBar, Button, Grid, IconButton, Menu, MenuItem, Toolbar, Typography } from '@mui/material';
 import { useNavigate } from 'react-router';
 import { connect, useDispatch, useStore } from 'react-redux';
-import { changeTheme, logOut } from '../actions/index';
+import { changeTheme, logOut } from '../actions';
 import ShoppingCartTwoToneIcon from '@mui/icons-material/ShoppingCartTwoTone';
 import HomeTwoToneIcon from '@mui/icons-material/HomeTwoTone';
 import DarkModeTwoToneIcon from '@mui/icons-material/DarkModeTwoTone';

@@ -11,7 +11,7 @@ function PrivacyPolicy() {
 
       <p>
         At ULE Chat, accessible from{' '}
-        <a href='https://leather-master.herokuapp.com/'>https://leather-master.herokuapp.com/</a>, one of our main
+        <a href='src/main/react/src/pages/PrivacyPolicy'>https://leather-master.herokuapp.com/</a>, one of our main
         priorities is the privacy of our visitors. This Privacy Policy document contains types of information that is
         collected and recorded by ULE Chat and how we use it.
       </p>
@@ -25,7 +25,7 @@ function PrivacyPolicy() {
         This Privacy Policy applies only to our online activities and is valid for visitors to our website with regards
         to the information that they shared and/or collect in ULE Chat. This policy is not applicable to any
         information collected offline or via channels other than this website. Our Privacy Policy was created with the
-        help of the <a href='https://www.generateprivacypolicy.com/'>Free Privacy Policy Generator</a>.
+        help of the <a href='src/main/react/src/pages/PrivacyPolicy'>Free Privacy Policy Generator</a>.
       </p>
       {/*Todo: DELETE CREATED WITH THE HELP OF...*/}
 

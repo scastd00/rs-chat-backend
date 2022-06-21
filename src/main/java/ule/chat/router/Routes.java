@@ -9,6 +9,7 @@ public final class Routes {
 
 	private static final String API_URL_PREFIX = "/api/v1";
 
+	public static final String ROOT_URL = "/";
 	public static final String LOGIN_URL = API_URL_PREFIX + "/login";
 	public static final String LOGOUT_URL = API_URL_PREFIX + "/logout";
 	public static final String REGISTER_URL = API_URL_PREFIX + "/register";
@@ -21,6 +22,7 @@ public final class Routes {
 	public static final String USER_SAVE_URL = API_URL_PREFIX + "/user/save";
 	public static final String REFRESH_TOKEN_URL = API_URL_PREFIX + "/token/refresh";
 
+	public static final Route ROOT = new Route(GET, ROOT_URL);
 	public static final Route LOGIN = new Route(GET, LOGIN_URL);
 	public static final Route LOGOUT = new Route(GET, LOGOUT_URL);
 	public static final Route REGISTER = new Route(POST, REGISTER_URL);
