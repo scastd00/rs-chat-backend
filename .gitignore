@@ -42,5 +42,6 @@ logs
 node_modules
 package-lock.json
 node
+run.sh
 .idea/workspace.xml
 .idea/dataSources
