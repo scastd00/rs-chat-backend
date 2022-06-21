@@ -18,8 +18,6 @@ import ule.chat.service.SessionService;
 import ule.chat.service.UserService;
 import ule.chat.utils.Constants;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -43,8 +41,6 @@ public class AuthController {
 
 	@PostMapping(Routes.LOGIN_URL)
 	public void login(HttpRequest request, HttpResponse response) throws IOException {
-		// log.info("Body login: {}", request.body());
-
 		String jsonTokens = request.getAttribute("USER:TOKENS").toString();
 		String username = (String) request.getAttribute("USER:USERNAME");
 

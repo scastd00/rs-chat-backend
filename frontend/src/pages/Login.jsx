@@ -12,6 +12,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { useNavigate } from 'react-router';
+import AuthService from '../services/AuthService';
 
 function Login() {
   const navigate = useNavigate();
@@ -19,6 +20,9 @@ function Login() {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+    AuthService
+      .login({ username: data.get('username'), password: data.get('password') })
+      .then((res) => console.log(res));
   };
 
   return (
@@ -46,10 +50,10 @@ function Login() {
             margin='normal'
             required
             fullWidth
-            id='email'
-            label='Email Address'
-            name='email'
-            autoComplete='email'
+            id='username'
+            label='Username'
+            name='username'
+            autoComplete='username'
             autoFocus
           />
 

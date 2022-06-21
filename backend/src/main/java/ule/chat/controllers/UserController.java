@@ -14,8 +14,6 @@ import ule.chat.net.HttpResponse;
 import ule.chat.router.Routes;
 import ule.chat.service.UserService;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.net.URI;
 import java.util.List;
 

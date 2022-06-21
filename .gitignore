@@ -36,8 +36,11 @@ build/
 ### VS Code ###
 .vscode/
 
-
-### Log files ###
+### Custom ###
 logs
-
 .jpb
+node_modules
+package-lock.json
+node
+.idea/workspace.xml
+.idea/dataSources
