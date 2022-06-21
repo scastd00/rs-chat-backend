@@ -3,6 +3,7 @@ const { spawn } = require('child_process');
 // Load environment variables to process.env
 require('dotenv').config();
 
+// Run Spring API
 const server = spawn('java', ['-jar', 'target/ule-chat-0.0.1.jar']);
 
 server.stdout.on("data", (data) => {
