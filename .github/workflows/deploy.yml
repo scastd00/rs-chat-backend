@@ -1,0 +1,19 @@
+name: Node.js CI
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - if: contains(github.event.head_commit.message, 'DTH') # Must contain DTH (Deploy To Heroku) message.
+              uses: akhileshns/heroku-deploy@v3.12.12 # This is the action to deploy in Heroku
+              with:
+                  heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+                  heroku_app_name: 'spring-chat-scastd00'
+                  heroku_email: 'scastd00@estudiantes.unileon.es'
