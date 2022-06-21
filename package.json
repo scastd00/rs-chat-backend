@@ -1,0 +1,22 @@
+{
+  "name": "ule-chat",
+  "version": "0.0.1",
+  "scripts": {
+	  "server": "node main_backend.js",
+	  "client": "node main_frontend.js",
+	  "start": "concurrently --raw \"npm run server\" \"npm run client\"",
+	  "heroku-postbuild": "cd src/main/react && npm install && npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com-university:scastd00/ule-chat.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "concurrently": "^7.2.2",
+    "cors": "^2.8.5",
+    "express": "^4.18.1"
+  }
+}

@@ -57,7 +57,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	private void authorizeRequests(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
 		    .antMatchers(
-				    ROOT.url(),
+					ROOT.url(),
 				    LOGIN.url(),
 				    REFRESH_TOKEN.url(),
 				    REGISTER.url())
