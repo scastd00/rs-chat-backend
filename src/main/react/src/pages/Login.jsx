@@ -22,7 +22,8 @@ function Login() {
     const data = new FormData(event.currentTarget);
     AuthService
       .login({ username: data.get('username'), password: data.get('password') })
-      .then((res) => console.log(res));
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err.message));
   };
 
   return (
