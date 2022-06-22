@@ -4,7 +4,7 @@
   "scripts": {
     "server": "node main_backend.js",
     "client": "node main_frontend.js",
-    "start": "concurrently --raw \"npm run server\" \"npm run client\"",
+    "start_dev": "concurrently --raw \"npm run server\" \"npm run client\"",
     "heroku-postbuild": "cd src/main/react && npm install && npm run build"
   },
   "repository": {
