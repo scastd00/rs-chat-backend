@@ -26,7 +26,7 @@ function Login() {
               password: data.get('password'),
             })
             .then((res) => console.log(res))
-            .catch((err) => console.log(err.message));
+            .catch((err) => console.log(err));
   };
 
   return (
