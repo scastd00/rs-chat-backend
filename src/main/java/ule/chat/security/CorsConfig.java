@@ -13,8 +13,7 @@ public class CorsConfig {
 		return new WebMvcConfigurer() {
 			@Override
 			public void addCorsMappings(@NotNull CorsRegistry registry) {
-				registry.addMapping("/**")
-						.allowedOrigins("*");
+				registry.addMapping("/**");
 			}
 		};
 	}
