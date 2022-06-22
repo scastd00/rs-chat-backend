@@ -104,16 +104,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		return authenticationFilter;
 	}
 
-	@Bean
-	public CorsConfigurationSource corsConfigurationSource() {
-		final CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(List.of("https://boot-hheroku.herokuapp.com"));
-		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"));
-		configuration.setAllowedHeaders(List.of("Access-Control-Allow-Headers", "Access-Control-Allow-Origin",
-				"Access-Control-Request-Method", "Access-Control-Request-Headers", "Origin",
-				"Cache-Control", "Content-Type"));
-		final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/**", configuration);
-		return source;
-	}
+//	@Bean
+//	public CorsConfigurationSource corsConfigurationSource() {
+//		final CorsConfiguration configuration = new CorsConfiguration();
+//		configuration.setAllowedOrigins(List.of("https://spring-chat-rs.herokuapp.com/"));
+//		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"));
+//		configuration.setAllowedHeaders(List.of("Access-Control-Allow-Headers", "Access-Control-Allow-Origin",
+//				"Access-Control-Request-Method", "Access-Control-Request-Headers", "Origin",
+//				"Cache-Control", "Content-Type"));
+//		final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//		source.registerCorsConfiguration("/**", configuration);
+//		return source;
+//	}
 }

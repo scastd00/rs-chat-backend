@@ -8,7 +8,6 @@ import org.springframework.http.MediaType;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,14 +15,10 @@ public final class Utils {
 	private Utils() {
 	}
 
-	public static Type typeToken() {
-		// @formatter:off
-		return new TypeToken<JsonObject>() {}.getType();
-		// @formatter:on
-	}
-
 	public static JsonObject readJson(String jsonString) {
-		return Constants.GSON.fromJson(jsonString, typeToken());
+		// @formatter:off
+		return Constants.GSON.fromJson(jsonString, new TypeToken<JsonObject>() {}.getType());
+		// @formatter:on
 	}
 
 	public static void sendError(HttpServletResponse response, String message, HttpStatus status) throws IOException {
