@@ -6,7 +6,7 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 app.use(cors());
 
-const dist = 'src/main/react/dist'
+const dist = 'src/main/react/dist';
 app.use(express.static(`${dist}`));
 
 app.get('*', (_req, res) => {
