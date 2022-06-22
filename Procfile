@@ -1,2 +1,2 @@
 web: npm run client
-web: java -jar target/ule-chat-0.0.1.jar
+worker: java -jar target/ule-chat-0.0.1.jar
