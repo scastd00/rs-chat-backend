@@ -1,6 +1,5 @@
 package ule.chat.security;
 
-import com.google.common.collect.ImmutableList;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -63,7 +62,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	private void authorizeRequests(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
 		    .antMatchers(
-					ROOT.url(),
+				    ROOT.url(),
 				    LOGIN.url(),
 				    REFRESH_TOKEN.url(),
 				    REGISTER.url())
@@ -108,11 +107,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		final CorsConfiguration configuration = new CorsConfiguration();
-		configuration.setAllowedOrigins(List.of("*"));
-		configuration.setAllowedMethods(List.of("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH"));
-		configuration.setAllowCredentials(true);
-		configuration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
-
+		configuration.setAllowedOrigins(List.of("https://boot-hheroku.herokuapp.com"));
+		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"));
+		configuration.setAllowedHeaders(List.of("Access-Control-Allow-Headers", "Access-Control-Allow-Origin",
+				"Access-Control-Request-Method", "Access-Control-Request-Headers", "Origin",
+				"Cache-Control", "Content-Type"));
 		final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
 		return source;

@@ -12,10 +12,10 @@
 	</parent>
 
 	<groupId>ule.chat</groupId>
-	<artifactId>ule-chat</artifactId>
+	<artifactId>ule-chat-backend</artifactId>
 	<version>0.0.1</version>
 	<packaging>jar</packaging>
-	<name>ule-chat</name>
+	<name>ule-chat-backend</name>
 	<description>Chat application for ULE</description>
 
 	<properties>
