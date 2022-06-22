@@ -1,5 +1,6 @@
 package ule.chat.security;
 
+import com.google.common.collect.ImmutableList;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -12,8 +13,13 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import ule.chat.security.filter.ULEChatAuthenticationFilter;
 import ule.chat.security.filter.ULEChatAuthorizationFilter;
+
+import java.util.List;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 import static ule.chat.router.Routes.LOGIN;
@@ -97,5 +103,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				new ULEChatAuthenticationFilter(this.authenticationManagerBean());
 		authenticationFilter.setFilterProcessesUrl(LOGIN.url());
 		return authenticationFilter;
+	}
+
+	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+		final CorsConfiguration configuration = new CorsConfiguration();
+		configuration.setAllowedOrigins(List.of("*"));
+		configuration.setAllowedMethods(List.of("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH"));
+		configuration.setAllowCredentials(true);
+		configuration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
+
+		final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", configuration);
+		return source;
 	}
 }

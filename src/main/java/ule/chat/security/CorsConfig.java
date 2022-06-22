@@ -14,9 +14,7 @@ public class CorsConfig {
 			@Override
 			public void addCorsMappings(@NotNull CorsRegistry registry) {
 				registry.addMapping("/**")
-						.allowedOrigins("*",
-								"https://spring-chat-scastd00.herokuapp.com",
-								"http://127.0.0.1");
+				        .allowedMethods("HEAD", "GET", "PUT", "POST", "DELETE", "PATCH");
 			}
 		};
 	}
