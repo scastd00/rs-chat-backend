@@ -12,13 +12,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import ule.chat.security.filter.ULEChatAuthenticationFilter;
 import ule.chat.security.filter.ULEChatAuthorizationFilter;
-
-import java.util.List;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 import static ule.chat.router.Routes.LOGIN;
@@ -103,17 +98,4 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		authenticationFilter.setFilterProcessesUrl(LOGIN.url());
 		return authenticationFilter;
 	}
-
-//	@Bean
-//	public CorsConfigurationSource corsConfigurationSource() {
-//		final CorsConfiguration configuration = new CorsConfiguration();
-//		configuration.setAllowedOrigins(List.of("https://spring-chat-rs.herokuapp.com/"));
-//		configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"));
-//		configuration.setAllowedHeaders(List.of("Access-Control-Allow-Headers", "Access-Control-Allow-Origin",
-//				"Access-Control-Request-Method", "Access-Control-Request-Headers", "Origin",
-//				"Cache-Control", "Content-Type"));
-//		final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//		source.registerCorsConfiguration("/**", configuration);
-//		return source;
-//	}
 }
