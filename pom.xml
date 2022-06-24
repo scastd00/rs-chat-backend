@@ -11,12 +11,12 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
-	<groupId>ule.chat</groupId>
-	<artifactId>ule-chat-backend</artifactId>
+	<groupId>rs.chat</groupId>
+	<artifactId>rs-chat-backend</artifactId>
 	<version>0.0.1</version>
 	<packaging>jar</packaging>
-	<name>ule-chat-backend</name>
-	<description>Chat application for ULE</description>
+	<name>rs-chat-backend</name>
+	<description>Chat application</description>
 
 	<properties>
 		<java.version>17</java.version>

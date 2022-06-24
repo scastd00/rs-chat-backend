@@ -15,7 +15,7 @@ mysqldump -h "$DB_HOST" \
 	--single-transaction \
 	--routines \
 	--triggers \
-	--databases ule_chat > rds-dump.sql
+	--databases rs_chat > rds-dump.sql
 
 sed -e '/INSERT/,/!/!d' < rds-dump.sql > inserts.sql
 grep 'INSERT' inserts.sql > data.sql

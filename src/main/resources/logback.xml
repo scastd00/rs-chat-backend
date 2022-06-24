@@ -19,7 +19,7 @@
 		</encoder>
 	</appender>
 
-	<logger name="ule.chat" level="debug" additivity="false">
+	<logger name="rs.chat" level="debug" additivity="false">
 		<appender-ref ref="CONSOLE"/>
 		<appender-ref ref="FILE"/>
 	</logger>

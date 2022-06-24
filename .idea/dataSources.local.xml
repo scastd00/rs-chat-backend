@@ -13,7 +13,7 @@
         <introspection-scope>
           <node kind="schema">
             <name qname="@" />
-            <name qname="ule_chat" />
+            <name qname="rs_chat" />
           </node>
         </introspection-scope>
       </schema-mapping>
