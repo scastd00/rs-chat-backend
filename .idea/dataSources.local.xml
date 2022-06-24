@@ -11,7 +11,10 @@
       <user-name>admin_LM_IS1</user-name>
       <schema-mapping>
         <introspection-scope>
-          <node kind="schema" qname="@" />
+          <node kind="schema">
+            <name qname="@" />
+            <name qname="ule_chat" />
+          </node>
         </introspection-scope>
       </schema-mapping>
     </data-source>

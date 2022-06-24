@@ -6,8 +6,8 @@ CREATE TABLE subjects
 (
 	id          bigint      NOT NULL AUTO_INCREMENT,
 	name        varchar(30) NOT NULL,
-	subj_period varchar(15) NOT NULL,
-	type        varchar(50) NOT NULL,
+	subj_period varchar(2)  NOT NULL,
+	type        char(2)     NOT NULL,
 	credits     tinyint     NOT NULL,
 	grade       tinyint     NOT NULL,
 	degree_id   bigint      NOT NULL,
@@ -60,13 +60,13 @@ CREATE TABLE files
 CREATE TABLE users
 (
 	id          bigint       NOT NULL AUTO_INCREMENT,
-	username    varchar(20)  NOT NULL,
+	username    varchar(15)  NOT NULL,
 	password    varchar(126) NOT NULL,              -- Hashed password using Bcrypt and applied Base64 encoding.
 	email       varchar(70)  NOT NULL,
 	full_name   varchar(100) NOT NULL,
 	age         tinyint      NULL,
 	birthdate   date         NULL,
-	role        varchar(25)  NOT NULL DEFAULT 'STUDENT',
+	role        varchar(13)  NOT NULL DEFAULT 'STUDENT',
 	block_until datetime     NULL     DEFAULT NULL, -- If null, user can login. If date is stored, user cannot login until it has expired.
 
 	CONSTRAINT pk_user_id PRIMARY KEY (id),
@@ -81,7 +81,7 @@ CREATE TABLE users
 CREATE TABLE sessions
 (
 	id            bigint       NOT NULL AUTO_INCREMENT,
-	src_ip        varchar(16)  NOT NULL,
+	src_ip        varchar(32)  NOT NULL, -- In case we support IPv6
 	date_started  datetime     NOT NULL,
 	access_token  varchar(300) NOT NULL,
 	refresh_token varchar(300) NOT NULL,

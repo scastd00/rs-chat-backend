@@ -5,63 +5,47 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.Hibernate;
 
-import javax.persistence.Basic;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import java.sql.Timestamp;
-import java.util.Objects;
+import java.time.Instant;
 
-@Entity
-@Table(name = "sessions", schema = "ule_chat")
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
-@AllArgsConstructor
+@Entity
+@Table(name = "sessions", schema = "ule_chat")
 public class Session {
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", nullable = false)
 	private Long id;
 
-	@Basic
-	@Column(name = "src_ip", nullable = false, length = 16)
+	@Column(name = "src_ip", nullable = false, length = 32)
 	private String srcIp;
 
-	@Basic
+	@Convert(disableConversion = true)
 	@Column(name = "date_started", nullable = false)
-	private Timestamp dateStarted;
+	private Instant dateStarted;
 
-	@Basic
 	@Column(name = "access_token", nullable = false, length = 300)
 	private String accessToken;
 
-	@Basic
 	@Column(name = "refresh_token", nullable = false, length = 300)
 	private String refreshToken;
 
-	@Basic
-	@Column(name = "user_id", nullable = false)
-	private Long userId;
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
-			return false;
-		}
-		Session session = (Session) o;
-		return id != null && Objects.equals(id, session.id);
-	}
-
-	@Override
-	public int hashCode() {
-		return getClass().hashCode();
-	}
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "user_id", nullable = false)
+	@ToString.Exclude
+	private User user;
 }

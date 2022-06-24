@@ -5,66 +5,47 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.Hibernate;
 
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import java.util.Objects;
 
-@Entity
-@Table(name = "subjects", schema = "ule_chat")
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
-@AllArgsConstructor
+@Entity
+@Table(name = "subjects", schema = "ule_chat")
 public class Subject {
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", nullable = false)
 	private Long id;
 
-	@Basic
 	@Column(name = "name", nullable = false, length = 30)
 	private String name;
 
-	@Basic
-	@Column(name = "subj_period", nullable = false, length = 15)
+	@Column(name = "subj_period", nullable = false, length = 2)
 	private String subjPeriod;
 
-	@Basic
-	@Column(name = "type", nullable = false, length = 50)
+	@Column(name = "type", nullable = false, length = 2)
 	private String type;
 
-	@Basic
 	@Column(name = "credits", nullable = false)
-	private Byte credits;
+	private Integer credits;
 
-	@Basic
 	@Column(name = "grade", nullable = false)
-	private Byte grade;
+	private Integer grade;
 
-	@Basic
-	@Column(name = "degree_id", nullable = false)
-	private Long degreeId;
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
-			return false;
-		}
-		Subject subject = (Subject) o;
-		return id != null && Objects.equals(id, subject.id);
-	}
-
-	@Override
-	public int hashCode() {
-		return getClass().hashCode();
-	}
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "degree_id", nullable = false)
+	@ToString.Exclude
+	private Degree degree;
 }

@@ -23,7 +23,7 @@ class UserRepositoryTest {
 				"12345",
 				"david@hello.com",
 				"David Gar Dom",
-				(byte) 21,
+				21,
 				null,
 				Constants.STUDENT_ROLE,
 				null
@@ -32,7 +32,7 @@ class UserRepositoryTest {
 
 		// When
 		String username = "david";
-		User expected = underTest.findByUsername(username);
+		User   expected = underTest.findByUsername(username);
 
 		// Then
 		assertThat(expected).isNotNull();

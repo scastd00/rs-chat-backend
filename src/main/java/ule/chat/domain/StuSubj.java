@@ -5,49 +5,35 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.Hibernate;
 
-import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
 import javax.persistence.Table;
-import java.util.Objects;
 
-@Entity
-@Table(name = "stu_subj", schema = "ule_chat")
-@IdClass(StuSubjPK.class)
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
-@AllArgsConstructor
+@Entity
+@Table(name = "stu_subj", schema = "ule_chat")
 public class StuSubj {
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Id
-	@Column(name = "subject_id", nullable = false)
-	private Long subjectId;
+	@EmbeddedId
+	private StuSubjId id;
 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Id
-	@Column(name = "student_id", nullable = false)
-	private Long studentId;
+	@MapsId("subjectId")
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "subject_id", nullable = false)
+	@ToString.Exclude
+	private Subject subject;
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
-			return false;
-		}
-		StuSubj stuSubj = (StuSubj) o;
-		return subjectId != null && Objects.equals(subjectId, stuSubj.subjectId)
-				&& studentId != null && Objects.equals(studentId, stuSubj.studentId);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(subjectId, studentId);
-	}
+	@MapsId("studentId")
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "student_id", nullable = false)
+	@ToString.Exclude
+	private User student;
 }
