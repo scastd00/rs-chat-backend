@@ -27,7 +27,6 @@ public class HttpResponse extends HttpServletResponseWrapper {
 	 */
 	public HttpResponse(HttpServletResponse response) {
 		super(response);
-		this.setContentType(APPLICATION_JSON_VALUE);
 	}
 
 	public HttpResponse status(@NotNull HttpStatus status) {
@@ -37,10 +36,10 @@ public class HttpResponse extends HttpServletResponseWrapper {
 	}
 
 	public void send() throws IOException {
-		this.send(new HttpResponseBody());
+		this.send(HttpResponseBody.EMPTY);
 	}
 
-	public void sendStatus(@NotNull HttpStatus status) throws IOException {
+	public void sendStatus(HttpStatus status) throws IOException {
 		this.status(status).send();
 	}
 
@@ -50,7 +49,7 @@ public class HttpResponse extends HttpServletResponseWrapper {
 			throw new InternalServerException("Please try again later.");
 		}
 
-		// Todo: Check response.isEmpty()
+		this.setContentType(APPLICATION_JSON_VALUE);
 		this.objectMapper.writeValue(this.getWriter(), response.getData());
 	}
 }

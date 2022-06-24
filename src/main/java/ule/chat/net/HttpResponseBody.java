@@ -10,6 +10,7 @@ import java.util.Map;
 @NoArgsConstructor
 public class HttpResponseBody {
 	private final Map<String, Object> data = new HashMap<>();
+	public static final HttpResponseBody EMPTY = new HttpResponseBody("data", "");
 
 	public HttpResponseBody(String key, Object value) {
 		this.addSingle(key, value);
