@@ -37,7 +37,6 @@ public class ULEChatAuthenticationFilter extends UsernamePasswordAuthenticationF
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 		try {
 			String body = IOUtils.toString(request.getReader());
-			log.info("Body: {}", body);
 			JsonObject jsonBody = Constants.GSON.fromJson(body, JsonObject.class);
 
 			String username = jsonBody.get("username").getAsString();
@@ -74,8 +73,10 @@ public class ULEChatAuthenticationFilter extends UsernamePasswordAuthenticationF
 
 		Map<String, String> tokens = new HashMap<>();
 		tokens.put("access_token", accessToken);
-		tokens.put("refresh_token", refreshToken); // Todo: can be one attr for each token.
+		tokens.put("refresh_token", refreshToken);
 
+		//! In the filters we must use the methods provided in the interfaces.
+		//! In the controllers we can cast to our HttpRequest without throwing exception
 		request.setAttribute("USER:TOKENS", Constants.GSON.toJson(tokens));
 		request.setAttribute("USER:USERNAME", user.getUsername());
 

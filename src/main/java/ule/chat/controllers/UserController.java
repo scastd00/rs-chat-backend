@@ -60,7 +60,7 @@ public class UserController {
 //
 //			} catch (Exception e) {
 //				response.setHeader("error", e.getMessage());
-//				response.setStatus(FORBIDDEN.value());
+//				response.status(FORBIDDEN.value());
 //
 //				Map<String, String> tokens = new HashMap<>();
 //				tokens.put("error_message", e.getMessage());

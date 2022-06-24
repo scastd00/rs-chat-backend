@@ -47,6 +47,12 @@ public class HttpRequest extends HttpServletRequestWrapper {
 		return Utils.readJson(IOUtils.toString(this.getReader()));
 	}
 
+	public Object get(String key) {
+		Object result = this.getAttribute(key);
+		this.removeAttribute(key);
+		return result;
+	}
+
 	static class CachedBodyServletInputStream extends ServletInputStream {
 		private final InputStream cachedBodyInputStream;
 

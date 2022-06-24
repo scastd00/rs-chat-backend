@@ -21,16 +21,14 @@ import ule.chat.utils.Constants;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static ule.chat.utils.Constants.JWT_TOKEN_PREFIX;
 import static ule.chat.utils.Constants.JWT_VERIFIER;
 import static ule.chat.utils.Utils.readJson;
-import static ule.chat.utils.Utils.sendError;
 
 @Slf4j
 @RestController
@@ -41,53 +39,43 @@ public class AuthController {
 
 	@PostMapping(Routes.LOGIN_URL)
 	public void login(HttpRequest request, HttpResponse response) throws IOException {
-		String jsonTokens = request.getAttribute("USER:TOKENS").toString();
-		String username = (String) request.getAttribute("USER:USERNAME");
+		String jsonTokens = request.get("USER:TOKENS").toString();
+		String username = (String) request.get("USER:USERNAME");
 
-		request.removeAttribute("USER:TOKENS");
-		request.removeAttribute("USER:USERNAME");
-
-		JsonObject tokenMap = readJson(jsonTokens);
+		JsonObject tokens = readJson(jsonTokens);
 
 		Session savedSession = this.sessionService.saveSession(
 				new Session(
 						null,
 						request.getRemoteAddr(),
 						Timestamp.from(Instant.now()),
-						tokenMap.get("access_token").getAsString(),
-						tokenMap.get("refresh_token").getAsString(),
+						tokens.get("access_token").getAsString(),
+						tokens.get("refresh_token").getAsString(),
 						this.userService.getUser(username).getId()
 				)
 		);
 
-		response.setStatus(HttpStatus.OK.value());
-		response.setContentType(APPLICATION_JSON_VALUE);
-		new ObjectMapper().writeValue(response.getWriter(), savedSession);
+		response.status(HttpStatus.OK).send(savedSession);
 	}
 
 	@PostMapping(Routes.REGISTER_URL)
 	public void register(HttpRequest request, HttpResponse response) throws IOException {
-		String body = IOUtils.toString(request.getReader());
-		JsonObject jsonRequest = readJson(body);
-		Map<String, String> res = new HashMap<>();
-		response.setContentType(APPLICATION_JSON_VALUE);
+		JsonObject body = request.body();
 
-		if (!jsonRequest.has("agreeTerms") ||
-				!jsonRequest.get("agreeTerms").getAsBoolean()) {
-			sendError(response, "You must accept the terms and conditions.", BAD_REQUEST);
+		if (!body.has("agreeTerms") || !body.get("agreeTerms").getAsBoolean()) {
+			response.status(BAD_REQUEST).send("You must accept the terms and conditions.");
 			return;
 		}
 
-		String jsonTokens = request.getAttribute("USER:TOKENS").toString();
-		String username = (String) request.getAttribute("USER:USERNAME");
+		// Todo: check all the conditions
+		String username = body.get("username").getAsString();
 
-		request.removeAttribute("USER:TOKENS");
-		request.removeAttribute("USER:USERNAME");
-
-		response.setStatus(HttpStatus.OK.value());
-		new ObjectMapper().writeValue(response.getWriter(), res);
 
 		// Register the session
+
+		// Generate tokens
+
+		response.sendStatus(OK);
 	}
 
 	@PostMapping(Routes.LOGOUT_URL)
