@@ -11,15 +11,17 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ule.chat.domain.Session;
+import ule.chat.domain.User;
 import ule.chat.net.HttpRequest;
 import ule.chat.net.HttpResponse;
+import ule.chat.policies.Policies;
 import ule.chat.router.Routes;
 import ule.chat.service.SessionService;
 import ule.chat.service.UserService;
 import ule.chat.utils.Constants;
+import ule.chat.utils.Utils;
 
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.time.Instant;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -28,6 +30,7 @@ import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static ule.chat.utils.Constants.JWT_TOKEN_PREFIX;
 import static ule.chat.utils.Constants.JWT_VERIFIER;
+import static ule.chat.utils.Constants.STUDENT_ROLE;
 import static ule.chat.utils.Utils.readJson;
 
 @Slf4j
@@ -48,10 +51,10 @@ public class AuthController {
 				new Session(
 						null,
 						request.getRemoteAddr(),
-						Timestamp.from(Instant.now()),
-						tokens.get("access_token").getAsString(),
-						tokens.get("refresh_token").getAsString(),
-						this.userService.getUser(username).getId()
+						Instant.now(), // Todo: pass a clock as parameter to test better
+						tokens.get("accessToken").getAsString(),
+						tokens.get("refreshToken").getAsString(),
+						this.userService.getUser(username)
 				)
 		);
 
@@ -62,20 +65,27 @@ public class AuthController {
 	public void register(HttpRequest request, HttpResponse response) throws IOException {
 		JsonObject body = request.body();
 
-		if (!body.has("agreeTerms") || !body.get("agreeTerms").getAsBoolean()) {
-			response.status(BAD_REQUEST).send("You must accept the terms and conditions.");
-			return;
-		}
+		// Check if all the body contains all the necessary fields.
+		Policies.checkRegister(body);
 
-		// Todo: check all the conditions
-		String username = body.get("username").getAsString();
-
-
-		// Register the session
+		// Register the user and the session.
+		User user = new User(
+				null,
+				body.get("username").getAsString(),
+				body.get("password").getAsString(),
+				body.get("email").getAsString(),
+				body.get("fullName").getAsString(),
+				null,
+				null,
+				STUDENT_ROLE,
+				null
+		);
+		this.userService.saveUser(user);
 
 		// Generate tokens
 
-		response.sendStatus(OK);
+		response.status(OK)
+		        .send(Utils.generateTokens(user.getUsername(), request, user.getRole()));
 	}
 
 	@PostMapping(Routes.LOGOUT_URL)

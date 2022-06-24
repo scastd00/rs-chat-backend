@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static ule.chat.utils.Constants.ERROR_JSON_KEY;
 
 @Slf4j
 public class HttpResponse extends HttpServletResponseWrapper {
@@ -44,10 +45,16 @@ public class HttpResponse extends HttpServletResponseWrapper {
 		Object response = o;
 
 		if (this.status.isError()) {
-			response = Map.of("error", (String) o);
+			if (o instanceof String msg) {
+				response = Map.of(ERROR_JSON_KEY, msg);
+			} else if (o instanceof Map<?, ?> content) {
+				response = Map.of(ERROR_JSON_KEY, content);
+			} else {
+				throw new InternalServerException("Error is not a String");
+			}
 		}
 
-		new ObjectMapper().writeValue(this.getWriter(), response); // We do not know how to create a Map to pass to json().
+		new ObjectMapper().writeValue(this.getWriter(), response);
 	}
 
 	private void checkStatus() {

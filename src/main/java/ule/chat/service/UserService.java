@@ -42,9 +42,17 @@ public class UserService implements UserDetailsService {
 		return this.userRepository.findAll();
 	}
 
+	/**
+	 * Saves a user to the database. The password must be the
+	 * one received from the frontend (raw).
+	 *
+	 * @param user
+	 * @return
+	 */
 	public User saveUser(User user) {
 		log.info("Saving user: {}", user.getUsername());
-		user.setPassword(this.passwordEncoder.encode(user.getPassword()));
+		String rawPassword = user.getPassword();
+		user.setPassword(this.passwordEncoder.encode(rawPassword));
 		return this.userRepository.save(user);
 	}
 

@@ -1,6 +1,5 @@
 package ule.chat.security.filter;
 
-import com.auth0.jwt.JWT;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -11,6 +10,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import ule.chat.utils.Constants;
+import ule.chat.utils.Utils;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -18,11 +18,7 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
-
-import static ule.chat.utils.Constants.ALGORITHM;
 
 @Slf4j
 @WebFilter(filterName = "AuthenticationFilter")
@@ -58,22 +54,7 @@ public class ULEChatAuthenticationFilter extends UsernamePasswordAuthenticationF
 	                                        FilterChain chain,
 	                                        Authentication authentication) throws IOException, ServletException {
 		User user = (User) authentication.getPrincipal();
-		String accessToken = JWT.create()
-		                        .withSubject(user.getUsername())
-		                        .withExpiresAt(new Date(System.currentTimeMillis() + Constants.TOKEN_EXPIRATION_TIME))
-		                        .withIssuer(request.getRequestURL().toString()) // URL of our application.
-		                        .withClaim("role", user.getAuthorities().iterator().next().getAuthority()) // Only one role is in DB.
-		                        .sign(ALGORITHM);
-
-		String refreshToken = JWT.create()
-		                         .withSubject(user.getUsername())
-		                         .withExpiresAt(new Date(System.currentTimeMillis() + Constants.REFRESH_TOKEN_EXPIRATION_TIME))
-		                         .withIssuer(request.getRequestURL().toString()) // URL of our application.
-		                         .sign(ALGORITHM);
-
-		Map<String, String> tokens = new HashMap<>();
-		tokens.put("access_token", accessToken);
-		tokens.put("refresh_token", refreshToken);
+		Map<String, String> tokens = Utils.generateTokens(user.getUsername(), request, user.getAuthorities().iterator().next().getAuthority());
 
 		//! In the filters we must use the methods provided in the interfaces.
 		//! In the controllers we can cast to our HttpRequest without throwing exception
