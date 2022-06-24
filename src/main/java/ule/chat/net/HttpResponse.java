@@ -9,10 +9,8 @@ import ule.chat.exceptions.InternalServerException;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 import java.io.IOException;
-import java.util.Map;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static ule.chat.utils.Constants.ERROR_JSON_KEY;
 
 @Slf4j
 public class HttpResponse extends HttpServletResponseWrapper {
@@ -37,30 +35,15 @@ public class HttpResponse extends HttpServletResponseWrapper {
 	}
 
 	public void sendStatus(@NotNull HttpStatus status) throws IOException {
-		this.status(status).send("");
+		this.status(status).send(new HttpResponseBody());
 	}
 
-	public void send(Object o) throws IOException {
-		this.checkStatus();
-		Object response = o;
-
-		if (this.status.isError()) {
-			if (o instanceof String msg) {
-				response = Map.of(ERROR_JSON_KEY, msg);
-			} else if (o instanceof Map<?, ?> content) {
-				response = Map.of(ERROR_JSON_KEY, content);
-			} else {
-				throw new InternalServerException("Error is not a String");
-			}
-		}
-
-		new ObjectMapper().writeValue(this.getWriter(), response);
-	}
-
-	private void checkStatus() {
+	public void send(HttpResponseBody response) throws IOException {
 		if (this.status == null) {
 			log.error("Http response status must not be null");
 			throw new InternalServerException("Please try again later.");
 		}
+
+		new ObjectMapper().writeValue(this.getWriter(), response.getData());
 	}
 }

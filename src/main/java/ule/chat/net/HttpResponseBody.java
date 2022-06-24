@@ -1,21 +1,18 @@
 package ule.chat.net;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import java.util.HashMap;
 import java.util.Map;
 
+@Getter
+@NoArgsConstructor
 public class HttpResponseBody {
-	private final Map<String, Object> data;
-
-	public HttpResponseBody() {
-		this.data = new HashMap<>();
-	}
+	private final Map<String, Object> data = new HashMap<>();
 
 	public HttpResponseBody(String key, Object value) {
-		this.data = Map.of(key, value);
-	}
-
-	public Map<String, Object> getData() {
-		return this.data;
+		this.addSingle(key, value);
 	}
 
 	public HttpResponseBody addSingle(String key, Object value) {
@@ -23,7 +20,7 @@ public class HttpResponseBody {
 		return this;
 	}
 
-	public HttpResponseBody addObject(String key, Map<String, Object> value) {
+	public HttpResponseBody addObject(String key, Map<String, ?> value) {
 		this.data.put(key, value);
 		return this;
 	}

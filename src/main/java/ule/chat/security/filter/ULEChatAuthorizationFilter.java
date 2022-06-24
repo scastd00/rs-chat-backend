@@ -8,6 +8,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 import ule.chat.net.HttpResponse;
+import ule.chat.net.HttpResponseBody;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -22,6 +23,7 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static ule.chat.router.Routes.LOGIN;
 import static ule.chat.router.Routes.REFRESH_TOKEN;
 import static ule.chat.router.Routes.REGISTER;
+import static ule.chat.utils.Constants.ERROR_JSON_KEY;
 import static ule.chat.utils.Constants.JWT_TOKEN_PREFIX;
 import static ule.chat.utils.Constants.JWT_VERIFIER;
 
@@ -58,7 +60,8 @@ public class ULEChatAuthorizationFilter extends OncePerRequestFilter {
 				SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 				filterChain.doFilter(request, response);
 			} catch (Exception e) {
-				((HttpResponse) response).status(FORBIDDEN).send(e.getMessage());
+				((HttpResponse) response).status(FORBIDDEN)
+				                         .send(new HttpResponseBody(ERROR_JSON_KEY, e.getMessage()));
 			}
 		}
 	}

@@ -14,6 +14,7 @@ import ule.chat.domain.Session;
 import ule.chat.domain.User;
 import ule.chat.net.HttpRequest;
 import ule.chat.net.HttpResponse;
+import ule.chat.net.HttpResponseBody;
 import ule.chat.policies.Policies;
 import ule.chat.router.Routes;
 import ule.chat.service.SessionService;
@@ -23,6 +24,7 @@ import ule.chat.utils.Utils;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.Map;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -58,7 +60,8 @@ public class AuthController {
 				)
 		);
 
-		response.status(HttpStatus.OK).send(savedSession);
+		response.status(HttpStatus.OK)
+		        .send(new HttpResponseBody("session", savedSession));
 	}
 
 	@PostMapping(Routes.REGISTER_URL)
@@ -69,7 +72,7 @@ public class AuthController {
 		Policies.checkRegister(body);
 
 		// Register the user and the session.
-		User user = new User(
+		User user = this.userService.saveUser(new User(
 				null,
 				body.get("username").getAsString(),
 				body.get("password").getAsString(),
@@ -79,13 +82,28 @@ public class AuthController {
 				null,
 				STUDENT_ROLE,
 				null
-		);
-		this.userService.saveUser(user);
+		));
+
 
 		// Generate tokens
+		Map<String, String> tokens = Utils.generateTokens(user.getUsername(), request, user.getRole());
 
-		response.status(OK)
-		        .send(Utils.generateTokens(user.getUsername(), request, user.getRole()));
+		Session session = this.sessionService.saveSession(
+				new Session(
+						null,
+						request.getRemoteAddr(),
+						Instant.now(), // Todo: pass a clock as parameter to test better
+						tokens.get("accessToken"),
+						tokens.get("refreshToken"),
+						user
+				)
+		);
+
+		HttpResponseBody res = new HttpResponseBody()
+				.addObject("tokens", tokens)
+				.addSingle("session", session);
+
+		response.status(OK).send(res);
 	}
 
 	@PostMapping(Routes.LOGOUT_URL)
