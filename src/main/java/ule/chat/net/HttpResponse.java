@@ -1,6 +1,7 @@
 package ule.chat.net;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Slf4j
 public class HttpResponse extends HttpServletResponseWrapper {
 	private HttpStatus status = null;
+	private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
 	/**
 	 * Constructs a response adaptor wrapping the given response.
@@ -34,8 +36,12 @@ public class HttpResponse extends HttpServletResponseWrapper {
 		return this;
 	}
 
+	public void send() throws IOException {
+		this.send(new HttpResponseBody());
+	}
+
 	public void sendStatus(@NotNull HttpStatus status) throws IOException {
-		this.status(status).send(new HttpResponseBody());
+		this.status(status).send();
 	}
 
 	public void send(HttpResponseBody response) throws IOException {
@@ -44,6 +50,7 @@ public class HttpResponse extends HttpServletResponseWrapper {
 			throw new InternalServerException("Please try again later.");
 		}
 
-		new ObjectMapper().writeValue(this.getWriter(), response.getData());
+		// Todo: Check response.isEmpty()
+		this.objectMapper.writeValue(this.getWriter(), response.getData());
 	}
 }

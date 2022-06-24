@@ -1,7 +1,6 @@
 package ule.chat.controllers;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +28,7 @@ import java.util.Map;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static ule.chat.utils.Constants.ERROR_JSON_KEY;
 import static ule.chat.utils.Constants.JWT_TOKEN_PREFIX;
 import static ule.chat.utils.Constants.JWT_VERIFIER;
 import static ule.chat.utils.Constants.STUDENT_ROLE;
@@ -84,7 +83,6 @@ public class AuthController {
 				null
 		));
 
-
 		// Generate tokens
 		Map<String, String> tokens = Utils.generateTokens(user.getUsername(), request, user.getRole());
 
@@ -111,9 +109,8 @@ public class AuthController {
 		String authorizationHeader = request.getHeader(AUTHORIZATION);
 
 		if (authorizationHeader == null) { // If request does not contain authorization header send error.
-			response.setStatus(BAD_REQUEST.value());
-			response.setContentType(APPLICATION_JSON_VALUE);
-			new ObjectMapper().writeValue(response.getWriter(), "You must provide the authorization token");
+			response.status(BAD_REQUEST)
+			        .send(new HttpResponseBody(ERROR_JSON_KEY, "You must provide the authorization token"));
 			return;
 		}
 
@@ -135,5 +132,6 @@ public class AuthController {
 
 		// Logout from Spring.
 		new SecurityContextLogoutHandler().logout(request, null, null);
+		response.sendStatus(OK);
 	}
 }
