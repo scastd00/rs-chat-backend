@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -55,8 +54,4 @@ public class User {
 	@Convert(disableConversion = true)
 	@Column(name = "block_until")
 	private Instant blockUntil;
-
-	public SimpleGrantedAuthority getSimpleGrantedAuthority() {
-		return new SimpleGrantedAuthority(this.role);
-	}
 }

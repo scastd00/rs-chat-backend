@@ -2,6 +2,7 @@ package ule.chat.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -34,7 +35,7 @@ public class UserService implements UserDetailsService {
 		log.info("User found: {}, Role: {}", username, user.getRole());
 
 		return new org.springframework.security.core.userdetails.User(
-				user.getUsername(), user.getPassword(), List.of(user.getSimpleGrantedAuthority())
+				user.getUsername(), user.getPassword(), List.of(new SimpleGrantedAuthority(user.getRole()))
 		);
 	}
 
