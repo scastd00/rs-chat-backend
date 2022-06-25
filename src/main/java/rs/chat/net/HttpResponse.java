@@ -43,6 +43,10 @@ public class HttpResponse extends HttpServletResponseWrapper {
 		this.status(status).send();
 	}
 
+	public void send(String key, Object value) throws IOException {
+		this.send(new HttpResponseBody(key, value));
+	}
+
 	public void send(HttpResponseBody response) throws IOException {
 		if (this.status == null) {
 			log.error("Http response status must not be null");

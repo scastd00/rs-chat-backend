@@ -13,15 +13,10 @@ public class HttpResponseBody {
 	public static final HttpResponseBody EMPTY = new HttpResponseBody("data", "");
 
 	public HttpResponseBody(String key, Object value) {
-		this.addSingle(key, value);
+		this.add(key, value);
 	}
 
-	public HttpResponseBody addSingle(String key, Object value) {
-		this.data.put(key, value);
-		return this;
-	}
-
-	public HttpResponseBody addObject(String key, Map<String, ?> value) {
+	public HttpResponseBody add(String key, Object value) {
 		this.data.put(key, value);
 		return this;
 	}

@@ -60,7 +60,7 @@ public class AuthController {
 		);
 
 		response.status(HttpStatus.OK)
-		        .send(new HttpResponseBody("session", savedSession));
+		        .send("session", savedSession);
 	}
 
 	@PostMapping(Routes.REGISTER_URL)
@@ -97,9 +97,7 @@ public class AuthController {
 				)
 		);
 
-		HttpResponseBody res = new HttpResponseBody()
-				.addObject("tokens", tokens)
-				.addSingle("session", session);
+		HttpResponseBody res = new HttpResponseBody("tokens", tokens).add("session", session);
 
 		response.status(OK).send(res);
 	}
@@ -110,7 +108,7 @@ public class AuthController {
 
 		if (authorizationHeader == null) { // If request does not contain authorization header send error.
 			response.status(BAD_REQUEST)
-			        .send(new HttpResponseBody(ERROR_JSON_KEY, "You must provide the authorization token"));
+			        .send(ERROR_JSON_KEY, "You must provide the authorization token");
 			return;
 		}
 

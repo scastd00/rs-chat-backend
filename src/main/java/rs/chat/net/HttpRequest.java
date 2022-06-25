@@ -15,9 +15,12 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
 
 public class HttpRequest extends HttpServletRequestWrapper {
 	private final byte[] cachedBody;
+	private final Map<String, Object> data = new HashMap<>();
 
 	/**
 	 * Constructs a request object wrapping the given request.
@@ -48,9 +51,11 @@ public class HttpRequest extends HttpServletRequestWrapper {
 	}
 
 	public Object get(String key) {
-		Object result = this.getAttribute(key);
-		this.removeAttribute(key);
-		return result;
+		return this.data.get(key);
+	}
+
+	public void set(String key, Object value) {
+		this.data.put(key, value);
 	}
 
 	static class CachedBodyServletInputStream extends ServletInputStream {

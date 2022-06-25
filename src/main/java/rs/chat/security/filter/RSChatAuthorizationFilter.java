@@ -8,7 +8,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 import rs.chat.net.HttpResponse;
-import rs.chat.net.HttpResponseBody;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -60,8 +59,8 @@ public class RSChatAuthorizationFilter extends OncePerRequestFilter {
 				SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 				filterChain.doFilter(request, response);
 			} catch (Exception e) {
-				((HttpResponse) response).status(FORBIDDEN)
-				                         .send(new HttpResponseBody(ERROR_JSON_KEY, e.getMessage()));
+				new HttpResponse(response).status(FORBIDDEN)
+				                          .send(ERROR_JSON_KEY, e.getMessage());
 			}
 		}
 	}
