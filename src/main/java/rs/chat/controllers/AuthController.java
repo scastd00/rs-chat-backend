@@ -13,7 +13,6 @@ import rs.chat.domain.Session;
 import rs.chat.domain.User;
 import rs.chat.net.HttpRequest;
 import rs.chat.net.HttpResponse;
-import rs.chat.net.HttpResponseBody;
 import rs.chat.policies.Policies;
 import rs.chat.router.Routes;
 import rs.chat.service.SessionService;
@@ -59,8 +58,8 @@ public class AuthController {
 				)
 		);
 
-		response.status(HttpStatus.OK)
-		        .send("session", savedSession);
+		savedSession.getUser().setPassword(null); // Password not visible in the response
+		response.status(HttpStatus.OK).send("session", savedSession);
 	}
 
 	@PostMapping(Routes.REGISTER_URL)
@@ -97,9 +96,7 @@ public class AuthController {
 				)
 		);
 
-		HttpResponseBody res = new HttpResponseBody("tokens", tokens).add("session", session);
-
-		response.status(OK).send(res);
+		response.status(OK).send("session", session);
 	}
 
 	@PostMapping(Routes.LOGOUT_URL)

@@ -51,7 +51,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
 	}
 
 	public Object get(String key) {
-		return this.data.get(key);
+		return this.data.remove(key);
 	}
 
 	public void set(String key, Object value) {
