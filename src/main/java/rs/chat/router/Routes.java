@@ -21,6 +21,7 @@ public final class Routes {
 	public static final String USER_BY_EMAIL_URL = API_URL_PREFIX + "/user/{email}";
 	public static final String USER_SAVE_URL = API_URL_PREFIX + "/user/save";
 	public static final String REFRESH_TOKEN_URL = API_URL_PREFIX + "/token/refresh";
+	public static final String OPENED_SESSIONS_URL = API_URL_PREFIX + "/sessions/{username}";
 
 	public static final Route ROOT = new Route(GET, ROOT_URL);
 	public static final Route LOGIN = new Route(GET, LOGIN_URL);
@@ -34,4 +35,5 @@ public final class Routes {
 	public static final Route USER_BY_EMAIL = new Route(GET, USER_BY_EMAIL_URL);
 	public static final Route USER_SAVE = new Route(POST, USER_SAVE_URL);
 	public static final Route REFRESH_TOKEN = new Route(POST, REFRESH_TOKEN_URL);
+	public static final Route OPENED_SESSIONS = new Route(GET, OPENED_SESSIONS_URL);
 }

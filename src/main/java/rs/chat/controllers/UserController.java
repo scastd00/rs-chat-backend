@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,16 +13,21 @@ import rs.chat.domain.User;
 import rs.chat.net.HttpRequest;
 import rs.chat.net.HttpResponse;
 import rs.chat.router.Routes;
+import rs.chat.service.SessionService;
 import rs.chat.service.UserService;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.OK;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 public class UserController {
 	private final UserService userService;
+	private final SessionService sessionService;
 
 	@GetMapping(Routes.USERS_URL)
 	public ResponseEntity<List<User>> getUsers() {
@@ -69,5 +75,14 @@ public class UserController {
 //				new ObjectMapper().writeValue(response.getWriter(), tokens);
 //			}
 //		}
+	}
+
+	@GetMapping(Routes.OPENED_SESSIONS_URL)
+	public void openedSessions(HttpRequest request,
+	                           HttpResponse response,
+	                           @PathVariable String username) throws IOException {
+		List<String> sessionsOfUser = this.sessionService.getSessionsOfUser(username);
+
+		response.status(OK).send("sessions", sessionsOfUser);
 	}
 }

@@ -43,5 +43,5 @@ node
 run.sh
 .idea/workspace.xml
 .idea/dataSources
-src/main/react/dist/
+.idea/httpRequests
 .env

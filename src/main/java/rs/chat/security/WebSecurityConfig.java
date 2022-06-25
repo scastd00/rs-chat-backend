@@ -16,8 +16,11 @@ import rs.chat.security.filter.RSChatAuthenticationFilter;
 import rs.chat.security.filter.RSChatAuthorizationFilter;
 import rs.chat.utils.Constants;
 
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 import static rs.chat.router.Routes.LOGIN;
+import static rs.chat.router.Routes.OPENED_SESSIONS;
 import static rs.chat.router.Routes.REFRESH_TOKEN;
 import static rs.chat.router.Routes.REGISTER;
 import static rs.chat.router.Routes.ROOT;
@@ -54,6 +57,63 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	private void authorizeRequests(HttpSecurity http) throws Exception {
+		publicRoutes(http);
+
+		// Private routes
+
+		studentGETRoutes(http);
+		studentPOSTRoutes(http);
+		studentPUTRoutes(http);
+
+		teacherGETRoutes(http);
+		teacherPOSTRoutes(http);
+		teacherPUTRoutes(http);
+
+		adminGETRoutes(http);
+		adminPOSTRoutes(http);
+		adminPUTRoutes(http);
+
+		http.authorizeRequests()
+		    .antMatchers(USERS.method(), USERS.url())
+		    .authenticated();
+
+		http.authorizeRequests().anyRequest().authenticated();
+	}
+
+	private void studentGETRoutes(HttpSecurity http) throws Exception {
+		http.authorizeRequests()
+		    .antMatchers(GET, USER.url(), OPENED_SESSIONS.url())
+		    .hasAnyAuthority(Constants.STUDENT_ROLE, Constants.TEACHER_ROLE, Constants.ADMIN_ROLE);
+	}
+
+	private void studentPOSTRoutes(HttpSecurity http) throws Exception {
+	}
+
+	private void studentPUTRoutes(HttpSecurity http) throws Exception {
+	}
+
+	private void teacherGETRoutes(HttpSecurity http) throws Exception {
+	}
+
+	private void teacherPOSTRoutes(HttpSecurity http) throws Exception {
+	}
+
+	private void teacherPUTRoutes(HttpSecurity http) throws Exception {
+	}
+
+	private void adminGETRoutes(HttpSecurity http) throws Exception {
+	}
+
+	private void adminPOSTRoutes(HttpSecurity http) throws Exception {
+		http.authorizeRequests()
+		    .antMatchers(POST, USER_SAVE.url())
+		    .hasAuthority(Constants.ADMIN_ROLE);
+	}
+
+	private void adminPUTRoutes(HttpSecurity http) {
+	}
+
+	private void publicRoutes(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
 		    .antMatchers(
 				    ROOT.url(),
@@ -61,23 +121,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				    REFRESH_TOKEN.url(),
 				    REGISTER.url())
 		    .permitAll();
-
-		// Public routes
-		http.authorizeRequests()
-		    .antMatchers(USER.method(), USER.url())
-		    .hasAnyRole(Constants.STUDENT_ROLE);
-
-		// Admin routes
-		http.authorizeRequests()
-		    .antMatchers(USER_SAVE.method(), USER_SAVE.url())
-		    .hasAuthority(Constants.ADMIN_ROLE);
-
-		// Private routes
-		http.authorizeRequests()
-		    .antMatchers(USERS.method(), USERS.url())
-		    .authenticated();
-
-		http.authorizeRequests().anyRequest().authenticated();
 	}
 
 	private void addFilters(HttpSecurity http) throws Exception {

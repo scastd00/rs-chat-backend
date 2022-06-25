@@ -96,6 +96,7 @@ public class AuthController {
 				)
 		);
 
+		session.getUser().setPassword(null); // Password not visible in the response
 		response.status(OK).send("session", session);
 	}
 

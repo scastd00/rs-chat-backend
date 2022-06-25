@@ -43,6 +43,14 @@ public class SessionService {
 		                             .orElse(null);
 	}
 
+	public List<String> getSessionsOfUser(String username) {
+		Long userId = this.userRepository.findByUsername(username).getId();
+		return this.sessionRepository.findAllByUserId(userId)
+		                             .stream()
+		                             .map(Session::getSrcIp)
+		                             .toList();
+	}
+
 	public void updateSession(String username, String accessToken, String refreshToken) {
 		User user = this.userRepository.findByUsername(username);
 		this.sessionRepository.findByUserId(user.getId())
