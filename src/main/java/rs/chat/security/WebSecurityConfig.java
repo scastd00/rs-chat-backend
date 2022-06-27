@@ -19,14 +19,14 @@ import rs.chat.utils.Constants;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
-import static rs.chat.router.Routes.LOGIN;
-import static rs.chat.router.Routes.OPENED_SESSIONS;
-import static rs.chat.router.Routes.REFRESH_TOKEN;
-import static rs.chat.router.Routes.REGISTER;
-import static rs.chat.router.Routes.ROOT;
-import static rs.chat.router.Routes.USER;
-import static rs.chat.router.Routes.USERS;
-import static rs.chat.router.Routes.USER_SAVE;
+import static rs.chat.router.Routes.LOGIN_URL;
+import static rs.chat.router.Routes.OPENED_SESSIONS_URL;
+import static rs.chat.router.Routes.REFRESH_TOKEN_URL;
+import static rs.chat.router.Routes.REGISTER_URL;
+import static rs.chat.router.Routes.ROOT_URL;
+import static rs.chat.router.Routes.USERS_URL;
+import static rs.chat.router.Routes.USER_SAVE_URL;
+import static rs.chat.router.Routes.USER_URL;
 
 // https://youtu.be/VVn9OG9nfH0?t=2983
 // Refresh token -> 1:10:00 approximately.
@@ -73,16 +73,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		adminPOSTRoutes(http);
 		adminPUTRoutes(http);
 
-		http.authorizeRequests()
-		    .antMatchers(USERS.method(), USERS.url())
-		    .authenticated();
-
 		http.authorizeRequests().anyRequest().authenticated();
 	}
 
 	private void studentGETRoutes(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
-		    .antMatchers(GET, USER.url(), OPENED_SESSIONS.url())
+		    .antMatchers(GET, USER_URL, OPENED_SESSIONS_URL)
 		    .hasAnyAuthority(Constants.STUDENT_ROLE, Constants.TEACHER_ROLE, Constants.ADMIN_ROLE);
 	}
 
@@ -102,11 +98,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	private void adminGETRoutes(HttpSecurity http) throws Exception {
+		http.authorizeRequests()
+		    .antMatchers(GET, USERS_URL)
+		    .authenticated();
 	}
 
 	private void adminPOSTRoutes(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
-		    .antMatchers(POST, USER_SAVE.url())
+		    .antMatchers(POST, USER_SAVE_URL)
 		    .hasAuthority(Constants.ADMIN_ROLE);
 	}
 
@@ -116,10 +115,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	private void publicRoutes(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
 		    .antMatchers(
-				    ROOT.url(),
-				    LOGIN.url(),
-				    REFRESH_TOKEN.url(),
-				    REGISTER.url())
+				    ROOT_URL,
+				    LOGIN_URL,
+				    REFRESH_TOKEN_URL,
+				    REGISTER_URL)
 		    .permitAll();
 	}
 
@@ -137,7 +136,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	private RSChatAuthenticationFilter getRSChatCustomAuthenticationFilter() throws Exception {
 		RSChatAuthenticationFilter authenticationFilter =
 				new RSChatAuthenticationFilter(this.authenticationManagerBean());
-		authenticationFilter.setFilterProcessesUrl(LOGIN.url());
+		authenticationFilter.setFilterProcessesUrl(LOGIN_URL);
 		return authenticationFilter;
 	}
 }

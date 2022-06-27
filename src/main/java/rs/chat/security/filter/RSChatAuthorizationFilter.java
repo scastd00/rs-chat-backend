@@ -19,9 +19,9 @@ import java.util.Collections;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
-import static rs.chat.router.Routes.LOGIN;
-import static rs.chat.router.Routes.REFRESH_TOKEN;
-import static rs.chat.router.Routes.REGISTER;
+import static rs.chat.router.Routes.LOGIN_URL;
+import static rs.chat.router.Routes.REFRESH_TOKEN_URL;
+import static rs.chat.router.Routes.REGISTER_URL;
 import static rs.chat.utils.Constants.ERROR_JSON_KEY;
 import static rs.chat.utils.Constants.JWT_TOKEN_PREFIX;
 import static rs.chat.utils.Constants.JWT_VERIFIER;
@@ -66,8 +66,8 @@ public class RSChatAuthorizationFilter extends OncePerRequestFilter {
 	}
 
 	private boolean isExcludedPath(String path) {
-		return path.equals(LOGIN.url()) ||
-				path.equals(REFRESH_TOKEN.url()) ||
-				path.equals(REGISTER.url());
+		return path.equals(LOGIN_URL) ||
+				path.equals(REFRESH_TOKEN_URL) ||
+				path.equals(REGISTER_URL);
 	}
 }
