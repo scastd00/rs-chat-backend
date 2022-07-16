@@ -5,6 +5,8 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.google.gson.Gson;
 
+import java.net.URI;
+
 public final class Constants {
 	private Constants() {
 	}
@@ -22,4 +24,7 @@ public final class Constants {
 
 	public static final JWTVerifier JWT_VERIFIER = JWT.require(ALGORITHM).build();
 	public static final String JWT_TOKEN_PREFIX = "Bearer ";
+
+	public static final String S3_BUCKET_NAME = System.getenv("AWS_S3_BUCKET_NAME");
+	public static final URI S3_ENDPOINT_URI = URI.create("http://localhost:4566");
 }

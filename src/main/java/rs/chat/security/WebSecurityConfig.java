@@ -73,7 +73,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		adminPOSTRoutes(http);
 		adminPUTRoutes(http);
 
-		http.authorizeRequests().anyRequest().authenticated();
+		http.authorizeRequests()
+		    .anyRequest()
+		    .authenticated();
 	}
 
 	private void studentGETRoutes(HttpSecurity http) throws Exception {
