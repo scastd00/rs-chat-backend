@@ -35,12 +35,12 @@ public class HttpResponse extends HttpServletResponseWrapper {
 		return this;
 	}
 
-	public void send() throws IOException {
-		this.send(HttpResponseBody.EMPTY);
-	}
-
 	public void sendStatus(HttpStatus status) throws IOException {
 		this.status(status).send();
+	}
+
+	public void send() throws IOException {
+		this.send(HttpResponseBody.EMPTY);
 	}
 
 	public void send(String key, Object value) throws IOException {

@@ -14,11 +14,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import rs.chat.security.filter.RSChatAuthenticationFilter;
 import rs.chat.security.filter.RSChatAuthorizationFilter;
-import rs.chat.utils.Constants;
 
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
+import static rs.chat.router.Routes.CHANGE_PASSWORD_URL;
 import static rs.chat.router.Routes.LOGIN_URL;
 import static rs.chat.router.Routes.OPENED_SESSIONS_URL;
 import static rs.chat.router.Routes.REFRESH_TOKEN_URL;
@@ -27,6 +28,8 @@ import static rs.chat.router.Routes.ROOT_URL;
 import static rs.chat.router.Routes.USERS_URL;
 import static rs.chat.router.Routes.USER_SAVE_URL;
 import static rs.chat.router.Routes.USER_URL;
+import static rs.chat.utils.Constants.LOW_TIER_ROLES;
+import static rs.chat.utils.Constants.TOP_TIER_ROLES;
 
 // https://youtu.be/VVn9OG9nfH0?t=2983
 // Refresh token -> 1:10:00 approximately.
@@ -61,57 +64,60 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 		// Private routes
 
-		studentGETRoutes(http);
-		studentPOSTRoutes(http);
-		studentPUTRoutes(http);
+		lowTierGETRoutes(http);
+		lowTierPOSTRoutes(http);
+		lowTierPUTRoutes(http);
 
-		teacherGETRoutes(http);
-		teacherPOSTRoutes(http);
-		teacherPUTRoutes(http);
+		mediumTierGETRoutes(http);
+		mediumTierPOSTRoutes(http);
+		mediumTierPUTRoutes(http);
 
-		adminGETRoutes(http);
-		adminPOSTRoutes(http);
-		adminPUTRoutes(http);
+		topTierGETRoutes(http);
+		topTierPOSTRoutes(http);
+		topTierPUTRoutes(http);
 
 		http.authorizeRequests()
 		    .anyRequest()
 		    .authenticated();
 	}
 
-	private void studentGETRoutes(HttpSecurity http) throws Exception {
+	private void lowTierGETRoutes(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
 		    .antMatchers(GET, USER_URL, OPENED_SESSIONS_URL)
-		    .hasAnyAuthority(Constants.STUDENT_ROLE, Constants.TEACHER_ROLE, Constants.ADMIN_ROLE);
+		    .hasAnyAuthority(LOW_TIER_ROLES);
 	}
 
-	private void studentPOSTRoutes(HttpSecurity http) throws Exception {
+	private void lowTierPOSTRoutes(HttpSecurity http) throws Exception {
 	}
 
-	private void studentPUTRoutes(HttpSecurity http) throws Exception {
+	private void lowTierPUTRoutes(HttpSecurity http) throws Exception {
+		http.authorizeRequests()
+		    .antMatchers(PUT, CHANGE_PASSWORD_URL)
+		    .hasAnyAuthority(LOW_TIER_ROLES);
 	}
 
-	private void teacherGETRoutes(HttpSecurity http) throws Exception {
+	private void mediumTierGETRoutes(HttpSecurity http) throws Exception {
 	}
 
-	private void teacherPOSTRoutes(HttpSecurity http) throws Exception {
+	private void mediumTierPOSTRoutes(HttpSecurity http) throws Exception {
 	}
 
-	private void teacherPUTRoutes(HttpSecurity http) throws Exception {
+	private void mediumTierPUTRoutes(HttpSecurity http) throws Exception {
 	}
 
-	private void adminGETRoutes(HttpSecurity http) throws Exception {
+	private void topTierGETRoutes(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
 		    .antMatchers(GET, USERS_URL)
-		    .authenticated();
+		    .hasAnyAuthority(TOP_TIER_ROLES);
 	}
 
-	private void adminPOSTRoutes(HttpSecurity http) throws Exception {
+	private void topTierPOSTRoutes(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
 		    .antMatchers(POST, USER_SAVE_URL)
-		    .hasAuthority(Constants.ADMIN_ROLE);
+		    .hasAnyAuthority(TOP_TIER_ROLES);
 	}
 
-	private void adminPUTRoutes(HttpSecurity http) {
+	private void topTierPUTRoutes(HttpSecurity http) {
 	}
 
 	private void publicRoutes(HttpSecurity http) throws Exception {
@@ -120,7 +126,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				    ROOT_URL,
 				    LOGIN_URL,
 				    REFRESH_TOKEN_URL,
-				    REGISTER_URL)
+				    REGISTER_URL
+		    )
 		    .permitAll();
 	}
 

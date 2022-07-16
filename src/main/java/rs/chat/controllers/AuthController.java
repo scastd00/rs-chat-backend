@@ -7,7 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 import rs.chat.domain.Session;
 import rs.chat.domain.User;
@@ -128,6 +130,25 @@ public class AuthController {
 
 		// Logout from Spring.
 		new SecurityContextLogoutHandler().logout(request, null, null);
+		response.sendStatus(OK);
+	}
+
+	@PutMapping(Routes.CHANGE_PASSWORD_URL)
+	public void changePassword(HttpRequest request,
+	                           HttpResponse response,
+	                           @PathVariable String username) throws IOException {
+		JsonObject body = request.body();
+
+		// Check if both passwords are correct.
+		Policies.checkPasswords(body);
+
+		// We can update the session or keep the same and send the new one when
+		// the user enters the page the next time.
+
+		User user = this.userService.getUser(username);
+		user.setPassword(body.get("newPassword").getAsString());
+		this.userService.saveUser(user);
+
 		response.sendStatus(OK);
 	}
 }

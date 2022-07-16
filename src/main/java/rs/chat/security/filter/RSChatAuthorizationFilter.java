@@ -59,6 +59,7 @@ public class RSChatAuthorizationFilter extends OncePerRequestFilter {
 				SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 				filterChain.doFilter(request, response);
 			} catch (Exception e) {
+				log.error(e.getMessage(), e);
 				new HttpResponse(response).status(FORBIDDEN)
 				                          .send(ERROR_JSON_KEY, e.getMessage());
 			}

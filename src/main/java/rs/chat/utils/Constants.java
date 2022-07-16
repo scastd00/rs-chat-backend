@@ -19,8 +19,11 @@ public final class Constants {
 	public static final Algorithm ALGORITHM = Algorithm.HMAC256(System.getenv("TOKEN_SECRET").getBytes());
 
 	public static final String STUDENT_ROLE = "STUDENT";
-	public static final String ADMIN_ROLE = "ADMINISTRATOR";
 	public static final String TEACHER_ROLE = "TEACHER";
+	public static final String ADMIN_ROLE = "ADMINISTRATOR";
+	public static final String[] LOW_TIER_ROLES = { STUDENT_ROLE, TEACHER_ROLE, ADMIN_ROLE };
+	public static final String[] MEDIUM_TIER_ROLES = { TEACHER_ROLE, ADMIN_ROLE };
+	public static final String[] TOP_TIER_ROLES = { ADMIN_ROLE };
 
 	public static final JWTVerifier JWT_VERIFIER = JWT.require(ALGORITHM).build();
 	public static final String JWT_TOKEN_PREFIX = "Bearer ";

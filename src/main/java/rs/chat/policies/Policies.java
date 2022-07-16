@@ -23,12 +23,12 @@ public final class Policies {
 	}
 
 	public static void checkRegister(JsonObject body) {
-		String username = getIfPresent(body, "username").getAsString().trim();
-		String fullName = getIfPresent(body, "fullName").getAsString().trim();
-		String password = getIfPresent(body, "password").getAsString().trim();
-		String email = getIfPresent(body, "email").getAsString().trim();
-		String confirmPassword = getIfPresent(body, "confirmPassword").getAsString().trim();
-		boolean agreeTerms = getIfPresent(body, "agreeTerms").getAsBoolean();
+		String username = get(body, "username").getAsString().trim();
+		String fullName = get(body, "fullName").getAsString().trim();
+		String password = get(body, "password").getAsString().trim();
+		String email = get(body, "email").getAsString().trim();
+		String confirmPassword = get(body, "confirmPassword").getAsString().trim();
+		boolean agreeTerms = get(body, "agreeTerms").getAsBoolean();
 
 		if (!agreeTerms) {
 			throw new BadRequestException("You must accept the terms and conditions before using the app.");
@@ -54,6 +54,10 @@ public final class Policies {
 			throw new MaliciousCodeInjectionException("Password", excludedCharacters);
 		}
 
+		checkPasswords(password, confirmPassword);
+	}
+
+	private static void checkPasswords(String password, String confirmPassword) {
 		if (password.length() < 8) {
 			throw new InvalidPasswordException("Password is too simple, please provide 8 or more characters (up to 28).");
 		}
@@ -71,11 +75,18 @@ public final class Policies {
 		return excludedCharacters.stream().anyMatch(password::contains);
 	}
 
-	private static JsonElement getIfPresent(JsonObject object, String key) {
-		if (!object.has(key)) {
+	private static JsonElement get(JsonObject json, String key) {
+		if (!json.has(key)) {
 			throw new MinimumRequirementsNotMetException(key + " is not present in the request body.");
 		}
 
-		return object.get(key);
+		return json.get(key);
+	}
+
+	public static void checkPasswords(JsonObject body) {
+		String newPassword = get(body, "newPassword").getAsString().trim();
+		String confirmPassword = get(body, "confirmPassword").getAsString().trim();
+
+		checkPasswords(newPassword, confirmPassword);
 	}
 }
