@@ -1,5 +1,6 @@
 package rs.chat.controllers;
 
+import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import rs.chat.net.HttpRequest;
 import rs.chat.net.HttpResponse;
 import rs.chat.router.Routes;
+
+import java.io.IOException;
 
 @Slf4j
 @RestController
@@ -33,7 +36,9 @@ public class ChatController {
 	@PostMapping(Routes.CHAT_SEND_TEXT_MESSAGE_URL)
 	public void sendTextMessage(HttpRequest request,
 	                            HttpResponse response,
-	                            @PathVariable String id) {
-		//
+	                            @PathVariable String chatId) throws IOException {
+		JsonObject body = request.body();
+		log.info(body.get("message").getAsString());
+		log.info(body.get("username").getAsString());
 	}
 }

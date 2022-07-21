@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="JpaBuddyIdeaProjectConfig">
+  <component name="JpaBuddyIdeaProjectConfig" ddlActionDbType="mysql">
     <option name="defaultUnitInitialized" value="true" />
     <option name="reverseEngineeringLastDbConnectionId" value="df4b5217-39de-4f5c-afab-5d5b630a681f" />
-    <option name="reLastEntityCreationPackage" value="src/main/java/ule/chat/domain" />
+    <option name="reLastEntityCreationPackage" value="src/main/java/rs/chat/domain" />
     <option name="reIgnoreSlowDbConnections">
       <ignoreDs id="df4b5217-39de-4f5c-afab-5d5b630a681f" />
     </option>
