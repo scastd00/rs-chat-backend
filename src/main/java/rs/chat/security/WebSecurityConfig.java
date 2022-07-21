@@ -15,7 +15,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import rs.chat.security.filter.RSChatAuthenticationFilter;
 import rs.chat.security.filter.RSChatAuthorizationFilter;
-import rs.chat.security.filter.RouterSecurityConfig;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 import static rs.chat.router.Routes.CHANGE_PASSWORD_URL;

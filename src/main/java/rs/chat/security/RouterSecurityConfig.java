@@ -1,4 +1,4 @@
-package rs.chat.security.filter;
+package rs.chat.security;
 
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
