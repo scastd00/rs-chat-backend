@@ -5,7 +5,9 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.google.gson.Gson;
 
+import java.io.File;
 import java.net.URI;
+import java.nio.file.Path;
 
 public final class Constants {
 	private Constants() {
@@ -14,6 +16,7 @@ public final class Constants {
 	public static final Gson GSON = new Gson();
 	public static final String ERROR_JSON_KEY = "error";
 
+	public static final String CHAT_FILES_PATH = Path.of("/tmp") + File.separator;
 	public static final String[] STRING_ARRAY = new String[0];
 	public static final int TOKEN_EXPIRATION_TIME = 1000 * 60 * 60 * 4; // 4 hours
 	public static final int REFRESH_TOKEN_EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 15; // 15 days

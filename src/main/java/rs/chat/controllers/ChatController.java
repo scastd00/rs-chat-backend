@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import rs.chat.net.HttpRequest;
 import rs.chat.net.HttpResponse;
 import rs.chat.router.Routes;
+import rs.chat.utils.ChatFiles;
 
 import java.io.IOException;
 
@@ -38,7 +39,7 @@ public class ChatController {
 	                            HttpResponse response,
 	                            @PathVariable String chatId) throws IOException {
 		JsonObject body = request.body();
-		log.info(body.get("message").getAsString());
-		log.info(body.get("username").getAsString());
+		log.info(body.toString());
+		ChatFiles.writeMessage(body.toString());
 	}
 }
