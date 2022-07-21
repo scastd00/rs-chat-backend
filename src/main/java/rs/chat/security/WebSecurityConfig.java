@@ -20,6 +20,8 @@ import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 import static rs.chat.router.Routes.CHANGE_PASSWORD_URL;
+import static rs.chat.router.Routes.CHAT_CONTENT_URL;
+import static rs.chat.router.Routes.CHAT_METADATA_URL;
 import static rs.chat.router.Routes.LOGIN_URL;
 import static rs.chat.router.Routes.OPENED_SESSIONS_URL;
 import static rs.chat.router.Routes.REFRESH_TOKEN_URL;
@@ -83,7 +85,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	private void lowTierGETRoutes(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
-		    .antMatchers(GET, USER_URL, OPENED_SESSIONS_URL)
+		    .antMatchers(GET, USER_URL, OPENED_SESSIONS_URL, CHAT_METADATA_URL, CHAT_CONTENT_URL)
 		    .hasAnyAuthority(LOW_TIER_ROLES);
 	}
 

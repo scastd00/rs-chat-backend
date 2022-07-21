@@ -30,4 +30,13 @@ public final class Constants {
 
 	public static final String S3_BUCKET_NAME = System.getenv("AWS_S3_BUCKET_NAME");
 	public static final URI S3_ENDPOINT_URI = URI.create("http://localhost:4566");
+
+	public static final String USER_CHAT = "U";
+	public static final String GROUP_CHAT = "G";
+	public static final String SUBJECT_CHAT = "S";
+
+	public static final String TEXT_FILE = "TEXT";
+	public static final String IMAGE_FILE = "IMAGE";
+	public static final String AUDIO_FILE = "AUDIO";
+	public static final String VIDEO_FILE = "VIDEO";
 }
