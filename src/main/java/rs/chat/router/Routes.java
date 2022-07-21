@@ -22,4 +22,5 @@ public final class Routes {
 	public static final String CHANGE_PASSWORD_URL = API_URL_PREFIX + "/changePassword/{username}";
 	public static final String CHAT_METADATA_URL = API_URL_PREFIX + "/chat/metadata/{type}/{id}";
 	public static final String CHAT_CONTENT_URL = API_URL_PREFIX + "/chat/content/{type}/{id}";
+	public static final String CHAT_SEND_TEXT_MESSAGE_URL = API_URL_PREFIX + "/chat/send/{id}";
 }

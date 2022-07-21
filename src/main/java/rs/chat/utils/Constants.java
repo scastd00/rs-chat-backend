@@ -14,6 +14,7 @@ public final class Constants {
 	public static final Gson GSON = new Gson();
 	public static final String ERROR_JSON_KEY = "error";
 
+	public static final String[] STRING_ARRAY = new String[0];
 	public static final int TOKEN_EXPIRATION_TIME = 1000 * 60 * 60 * 4; // 4 hours
 	public static final int REFRESH_TOKEN_EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 15; // 15 days
 	public static final Algorithm ALGORITHM = Algorithm.HMAC256(System.getenv("TOKEN_SECRET").getBytes());

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import rs.chat.net.HttpRequest;
 import rs.chat.net.HttpResponse;
@@ -26,6 +27,13 @@ public class ChatController {
 	                           HttpResponse response,
 	                           @PathVariable String type,
 	                           @PathVariable String id) {
+		//
+	}
+
+	@PostMapping(Routes.CHAT_SEND_TEXT_MESSAGE_URL)
+	public void sendTextMessage(HttpRequest request,
+	                            HttpResponse response,
+	                            @PathVariable String id) {
 		//
 	}
 }

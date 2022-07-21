@@ -1,6 +1,7 @@
 package rs.chat.security;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,14 +15,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import rs.chat.security.filter.RSChatAuthenticationFilter;
 import rs.chat.security.filter.RSChatAuthorizationFilter;
+import rs.chat.security.filter.RouterSecurityConfig;
 
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.POST;
-import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 import static rs.chat.router.Routes.CHANGE_PASSWORD_URL;
 import static rs.chat.router.Routes.CHAT_CONTENT_URL;
 import static rs.chat.router.Routes.CHAT_METADATA_URL;
+import static rs.chat.router.Routes.CHAT_SEND_TEXT_MESSAGE_URL;
 import static rs.chat.router.Routes.LOGIN_URL;
 import static rs.chat.router.Routes.OPENED_SESSIONS_URL;
 import static rs.chat.router.Routes.REFRESH_TOKEN_URL;
@@ -31,6 +31,7 @@ import static rs.chat.router.Routes.USERS_URL;
 import static rs.chat.router.Routes.USER_SAVE_URL;
 import static rs.chat.router.Routes.USER_URL;
 import static rs.chat.utils.Constants.LOW_TIER_ROLES;
+import static rs.chat.utils.Constants.MEDIUM_TIER_ROLES;
 import static rs.chat.utils.Constants.TOP_TIER_ROLES;
 
 // https://youtu.be/VVn9OG9nfH0?t=2983
@@ -65,61 +66,49 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		publicRoutes(http);
 
 		// Private routes
-
-		lowTierGETRoutes(http);
-		lowTierPOSTRoutes(http);
-		lowTierPUTRoutes(http);
-
-		mediumTierGETRoutes(http);
-		mediumTierPOSTRoutes(http);
-		mediumTierPUTRoutes(http);
-
-		topTierGETRoutes(http);
-		topTierPOSTRoutes(http);
-		topTierPUTRoutes(http);
+		lowTierRoutes(http);
+		mediumTierRoutes(http);
+		topTierRoutes(http);
 
 		http.authorizeRequests()
 		    .anyRequest()
 		    .authenticated();
 	}
 
-	private void lowTierGETRoutes(HttpSecurity http) throws Exception {
-		http.authorizeRequests()
-		    .antMatchers(GET, USER_URL, OPENED_SESSIONS_URL, CHAT_METADATA_URL, CHAT_CONTENT_URL)
-		    .hasAnyAuthority(LOW_TIER_ROLES);
+	@SneakyThrows(Exception.class)
+	private void lowTierRoutes(HttpSecurity http) {
+		RouterSecurityConfig lowTierRoutes = new RouterSecurityConfig(http, LOW_TIER_ROLES);
+
+		lowTierRoutes
+				.addGETRoutes(USER_URL, OPENED_SESSIONS_URL, CHAT_METADATA_URL, CHAT_CONTENT_URL)
+				.addPOSTRoutes(CHAT_SEND_TEXT_MESSAGE_URL)
+				.addPUTRoutes(CHANGE_PASSWORD_URL)
+				.addDELETERoutes()
+				.registerRoutes();
 	}
 
-	private void lowTierPOSTRoutes(HttpSecurity http) throws Exception {
+	@SneakyThrows(Exception.class)
+	private void mediumTierRoutes(HttpSecurity http) {
+		RouterSecurityConfig mediumTierRoutes = new RouterSecurityConfig(http, MEDIUM_TIER_ROLES);
+
+		mediumTierRoutes
+				.addGETRoutes()
+				.addPOSTRoutes()
+				.addPUTRoutes()
+				.addDELETERoutes()
+				.registerRoutes();
 	}
 
-	private void lowTierPUTRoutes(HttpSecurity http) throws Exception {
-		http.authorizeRequests()
-		    .antMatchers(PUT, CHANGE_PASSWORD_URL)
-		    .hasAnyAuthority(LOW_TIER_ROLES);
-	}
+	@SneakyThrows(Exception.class)
+	private void topTierRoutes(HttpSecurity http) {
+		RouterSecurityConfig topTierRoutes = new RouterSecurityConfig(http, TOP_TIER_ROLES);
 
-	private void mediumTierGETRoutes(HttpSecurity http) throws Exception {
-	}
-
-	private void mediumTierPOSTRoutes(HttpSecurity http) throws Exception {
-	}
-
-	private void mediumTierPUTRoutes(HttpSecurity http) throws Exception {
-	}
-
-	private void topTierGETRoutes(HttpSecurity http) throws Exception {
-		http.authorizeRequests()
-		    .antMatchers(GET, USERS_URL)
-		    .hasAnyAuthority(TOP_TIER_ROLES);
-	}
-
-	private void topTierPOSTRoutes(HttpSecurity http) throws Exception {
-		http.authorizeRequests()
-		    .antMatchers(POST, USER_SAVE_URL)
-		    .hasAnyAuthority(TOP_TIER_ROLES);
-	}
-
-	private void topTierPUTRoutes(HttpSecurity http) {
+		topTierRoutes
+				.addGETRoutes(USERS_URL)
+				.addPOSTRoutes(USER_SAVE_URL)
+				.addPUTRoutes()
+				.addDELETERoutes()
+				.registerRoutes();
 	}
 
 	private void publicRoutes(HttpSecurity http) throws Exception {
