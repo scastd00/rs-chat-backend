@@ -54,6 +54,11 @@ public class HttpResponse extends HttpServletResponseWrapper {
 		}
 
 		this.setContentType(APPLICATION_JSON_VALUE);
-		this.objectMapper.writeValue(this.getWriter(), response.getData());
+
+		if (response == HttpResponseBody.EMPTY) {
+			this.getWriter().print(""); // Empty body
+		} else {
+			this.objectMapper.writeValue(this.getWriter(), response.getData());
+		}
 	}
 }
