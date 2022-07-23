@@ -124,6 +124,13 @@
 			<artifactId>java-jwt</artifactId>
 			<version>3.19.2</version>
 		</dependency>
+
+		<!-- WebSockets -->
+		<dependency>
+			<groupId>org.java-websocket</groupId>
+			<artifactId>Java-WebSocket</artifactId>
+			<version>1.5.3</version>
+		</dependency>
 	</dependencies>
 
 	<dependencyManagement>
