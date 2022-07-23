@@ -9,7 +9,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import rs.chat.exceptions.CouldNotAuthenticate;
-import rs.chat.net.HttpRequest;
+import rs.chat.net.http.HttpRequest;
 import rs.chat.utils.Constants;
 import rs.chat.utils.Utils;
 
@@ -55,7 +55,12 @@ public class RSChatAuthenticationFilter extends UsernamePasswordAuthenticationFi
 	                                        FilterChain chain,
 	                                        Authentication authentication) throws IOException, ServletException {
 		User user = (User) authentication.getPrincipal();
-		Map<String, String> tokens = Utils.generateTokens(user.getUsername(), request, user.getAuthorities().iterator().next().getAuthority());
+		Map<String, String> tokens = Utils.generateTokens(user.getUsername(),
+		                                                  request,
+		                                                  user.getAuthorities()
+		                                                      .iterator()
+		                                                      .next()
+		                                                      .getAuthority());
 
 		HttpRequest req = new HttpRequest(request);
 		req.set("USER:TOKENS", Constants.GSON.toJson(tokens));

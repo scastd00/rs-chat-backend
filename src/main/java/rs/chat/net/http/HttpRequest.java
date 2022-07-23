@@ -1,4 +1,4 @@
-package rs.chat.net;
+package rs.chat.net.http;
 
 import com.google.gson.JsonObject;
 import lombok.SneakyThrows;

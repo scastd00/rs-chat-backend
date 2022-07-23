@@ -12,14 +12,12 @@ import static rs.chat.utils.Constants.CHAT_FILES_PATH;
 @Slf4j
 public class ChatFiles {
 
-	private static final String FILE = CHAT_FILES_PATH + "Test.txt";
-
 	private ChatFiles() {
 	}
 
-	public static void writeMessage(String message) {
+	public static void writeMessage(String message, String chatId) {
 		try (
-				FileWriter f = new FileWriter(FILE, true);
+				FileWriter f = new FileWriter(CHAT_FILES_PATH + chatId + ".txt", true);
 				PrintWriter writer = new PrintWriter(new BufferedWriter(f))
 		) {
 			writer.println(message);

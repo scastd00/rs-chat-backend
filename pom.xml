@@ -23,7 +23,6 @@
 	</properties>
 
 	<dependencies>
-		<!-- To serve react frontend -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -82,10 +81,6 @@
 			<version>1.2.11</version>
 		</dependency>
 
-		<!--
-			slf4j (logging facade) for visualizing Apache Cayenne
-			logs when committing changes to DB
-		-->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>

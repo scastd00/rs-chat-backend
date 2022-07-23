@@ -1,4 +1,4 @@
-package rs.chat.net;
+package rs.chat.net.http;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

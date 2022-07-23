@@ -6,8 +6,8 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import rs.chat.net.HttpRequest;
-import rs.chat.net.HttpResponse;
+import rs.chat.net.http.HttpRequest;
+import rs.chat.net.http.HttpResponse;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;

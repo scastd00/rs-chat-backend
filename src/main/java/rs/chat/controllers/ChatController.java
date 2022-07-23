@@ -7,12 +7,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
-import rs.chat.net.HttpRequest;
-import rs.chat.net.HttpResponse;
+import rs.chat.net.http.HttpRequest;
+import rs.chat.net.http.HttpResponse;
 import rs.chat.router.Routes;
 import rs.chat.utils.ChatFiles;
 
 import java.io.IOException;
+
+import static org.springframework.http.HttpStatus.OK;
 
 @Slf4j
 @RestController
@@ -40,6 +42,7 @@ public class ChatController {
 	                            @PathVariable String chatId) throws IOException {
 		JsonObject body = request.body();
 		log.info(body.toString());
-		ChatFiles.writeMessage(body.toString());
+		ChatFiles.writeMessage(body.toString(), chatId);
+		response.sendStatus(OK);
 	}
 }
