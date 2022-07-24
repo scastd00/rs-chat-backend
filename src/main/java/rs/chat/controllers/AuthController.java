@@ -33,7 +33,7 @@ import static rs.chat.utils.Constants.ERROR_JSON_KEY;
 import static rs.chat.utils.Constants.JWT_TOKEN_PREFIX;
 import static rs.chat.utils.Constants.JWT_VERIFIER;
 import static rs.chat.utils.Constants.STUDENT_ROLE;
-import static rs.chat.utils.Utils.readJson;
+import static rs.chat.utils.Utils.parseJson;
 
 @Slf4j
 @RestController
@@ -47,7 +47,7 @@ public class AuthController {
 		String jsonTokens = request.get("USER:TOKENS").toString();
 		String username = (String) request.get("USER:USERNAME");
 
-		JsonObject tokens = readJson(jsonTokens);
+		JsonObject tokens = parseJson(jsonTokens);
 
 		Session savedSession = this.sessionService.saveSession(
 				new Session(

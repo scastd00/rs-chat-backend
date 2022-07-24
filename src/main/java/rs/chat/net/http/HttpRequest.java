@@ -47,7 +47,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
 	}
 
 	public JsonObject body() throws IOException {
-		return Utils.readJson(IOUtils.toString(this.getReader()));
+		return Utils.parseJson(IOUtils.toString(this.getReader()));
 	}
 
 	public Object get(String key) {

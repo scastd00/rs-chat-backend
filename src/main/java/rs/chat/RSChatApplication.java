@@ -1,10 +1,7 @@
 package rs.chat;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import rs.chat.net.ws.RSChatWSServer;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import rs.chat.net.ws.RSChatWebSocketServer;
 
 @SpringBootApplication
 public class RSChatApplication {
@@ -13,13 +10,7 @@ public class RSChatApplication {
 
 //		S3.getInstance().logAllFilesInBucket();
 
-		RSChatWSServer server = RSChatWSServer.getInstance();
+		RSChatWebSocketServer server = RSChatWebSocketServer.getInstance();
 		server.start();
-
-		BufferedReader sysin = new BufferedReader(new InputStreamReader(System.in));
-		while (true) {
-			String in = sysin.readLine();
-			server.broadcast(in);
-		}
 	}
 }

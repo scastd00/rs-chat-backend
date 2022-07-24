@@ -10,14 +10,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static rs.chat.utils.Constants.ALGORITHM;
+import static rs.chat.utils.Constants.GSON;
 
 public final class Utils {
 	private Utils() {
 	}
 
-	public static JsonObject readJson(String jsonString) {
+	public static JsonObject parseJson(String jsonString) {
 		// @formatter:off
-		return Constants.GSON.fromJson(jsonString, new TypeToken<JsonObject>() {}.getType());
+		return GSON.fromJson(jsonString, new TypeToken<JsonObject>() {}.getType());
 		// @formatter:on
 	}
 
@@ -41,5 +42,9 @@ public final class Utils {
 		tokens.put("refreshToken", refreshToken);
 
 		return tokens;
+	}
+
+	public static String shortJsonString(String key, String value) {
+		return GSON.toJson(Map.of(key, value));
 	}
 }
