@@ -20,6 +20,7 @@ public class WebSocketChatMap {
 		for (RSChatWebSocketClient client : this.chats.get(chatId)) {
 			if (client.getUsername().equals(username)) {
 				clientFound = client;
+				break;
 			}
 		}
 
@@ -48,14 +49,24 @@ public class WebSocketChatMap {
 
 	public void broadcastToSingleChat(String chatId, String message) {
 		for (RSChatWebSocketClient client : this.chats.get(chatId)) {
-			client.getSocket().send(message);
+			client.send(message);
+		}
+	}
+
+	public void broadcastToSingleChatAndExcludeClient(String chatId,
+	                                                  String message,
+	                                                  RSChatWebSocketClient client) {
+		for (RSChatWebSocketClient socketClient : this.chats.get(chatId)) {
+			if (!socketClient.equals(client)) {
+				socketClient.send(message);
+			}
 		}
 	}
 
 	public void totalBroadcast(String message) {
 		for (CopyOnWriteArrayList<RSChatWebSocketClient> chatList : chats.values()) {
 			for (RSChatWebSocketClient client : chatList) {
-				client.getSocket().send(message);
+				client.send(message);
 			}
 		}
 	}

@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.java_websocket.WebSocket;
+import org.java_websocket.framing.CloseFrame;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 import rs.chat.utils.Utils;
@@ -70,16 +71,25 @@ public class RSChatWebSocketServer extends WebSocketServer {
 		String username = headers.get("username").getAsString();
 		String chatId = headers.get("chatId").getAsString();
 		JsonElement dateSignIn = headers.get("dateSignIn"); // Could be null, so we take the value when we need it
+		String type = headers.get("type").getAsString();
 
 		JsonObject body = (JsonObject) jsonObject.get("body");
 		String encoding = body.get("encoding").getAsString();
 		String content = body.get("content").getAsString();
 
-		switch (jsonObject.get("type").getAsString()) {
+		switch (type) {
 			case NEW_USER -> this.chatMap.addClientToChat(new RSChatWebSocketClient(conn, username, chatId));
-			case END_CONNECTION -> this.chatMap.getClientByUsernameAndDate(chatId, username, dateSignIn.getAsLong());
+			case END_CONNECTION -> {
+				RSChatWebSocketClient remoteClient = getRsChatWebSocketClient(username, chatId, dateSignIn);
+				this.chatMap.removeClientFromChat(remoteClient);
+				remoteClient.close(CloseFrame.NORMAL, "Exited successfully");
+			}
 			case USER_JOINED -> log.info("");
-			case TEXT_MESSAGE -> log.info("");
+			case TEXT_MESSAGE -> {
+				RSChatWebSocketClient remoteClient = getRsChatWebSocketClient(username, chatId, dateSignIn);
+				this.chatMap.broadcastToSingleChatAndExcludeClient(chatId, message, remoteClient);
+//				this.chatMap.broadcastToSingleChat(chatId, message);
+			}
 			case IMAGE_MESSAGE -> log.info("");
 			case AUDIO_MESSAGE -> log.info("");
 			case VIDEO_MESSAGE -> log.info("");
@@ -90,6 +100,12 @@ public class RSChatWebSocketServer extends WebSocketServer {
 		}
 
 		log.info("Message: " + message);
+	}
+
+	private RSChatWebSocketClient getRsChatWebSocketClient(String username, String chatId, JsonElement dateSignIn) {
+		return this.chatMap.getClientByUsernameAndDate(chatId,
+		                                               username,
+		                                               dateSignIn.getAsLong());
 	}
 
 	@Override

@@ -11,7 +11,6 @@ import java.util.Objects;
 @ServerEndpoint("/ws/chat/")
 @Slf4j
 public class RSChatWebSocketClient {
-	private final RSChatWebSocketServer server = RSChatWebSocketServer.getInstance();
 	private final WebSocket socket;
 	private final String username;
 	private final String chatId;
@@ -21,10 +20,6 @@ public class RSChatWebSocketClient {
 		this.socket = socket;
 		this.username = username;
 		this.chatId = chatId;
-	}
-
-	public WebSocket getSocket() {
-		return this.socket;
 	}
 
 	public String getUsername() {
@@ -37,6 +32,14 @@ public class RSChatWebSocketClient {
 
 	public long getCreated() {
 		return this.created;
+	}
+
+	public void send(String message) {
+		this.socket.send(message);
+	}
+
+	public void close(int code, String message) {
+		this.socket.close(code, message);
 	}
 
 	@Override
