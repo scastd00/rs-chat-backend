@@ -3,23 +3,20 @@ package rs.chat.net.ws;
 import lombok.extern.slf4j.Slf4j;
 import org.java_websocket.WebSocket;
 
-import javax.websocket.ClientEndpoint;
-import javax.websocket.server.ServerEndpoint;
 import java.util.Objects;
 
-@ClientEndpoint
-@ServerEndpoint("/ws/chat/")
 @Slf4j
 public class RSChatWebSocketClient {
 	private final WebSocket socket;
 	private final String username;
 	private final String chatId;
-	private final long created = System.currentTimeMillis();
+	private final long sessionId;
 
-	public RSChatWebSocketClient(WebSocket socket, String username, String chatId) {
+	public RSChatWebSocketClient(WebSocket socket, String username, String chatId, long sessionId) {
 		this.socket = socket;
 		this.username = username;
 		this.chatId = chatId;
+		this.sessionId = sessionId;
 	}
 
 	public String getUsername() {
@@ -30,8 +27,8 @@ public class RSChatWebSocketClient {
 		return this.chatId;
 	}
 
-	public long getCreated() {
-		return this.created;
+	public long getSessionId() {
+		return this.sessionId;
 	}
 
 	public void send(String message) {
@@ -51,11 +48,11 @@ public class RSChatWebSocketClient {
 
 		return this.getUsername().equals(that.getUsername()) &&
 				this.getChatId().equals(that.getChatId()) &&
-				this.getCreated() == that.getCreated();
+				this.getSessionId() == that.getSessionId();
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.getUsername(), this.getChatId(), this.getCreated());
+		return Objects.hash(this.getUsername(), this.getChatId(), this.getSessionId());
 	}
 }
