@@ -13,6 +13,7 @@ import java.net.InetSocketAddress;
 import static rs.chat.net.ws.WebSocketMessageType.ACTIVE_USERS_MESSAGE;
 import static rs.chat.net.ws.WebSocketMessageType.AUDIO_MESSAGE;
 import static rs.chat.net.ws.WebSocketMessageType.IMAGE_MESSAGE;
+import static rs.chat.net.ws.WebSocketMessageType.SERVER_INFO_MESSAGE;
 import static rs.chat.net.ws.WebSocketMessageType.TEXT_MESSAGE;
 import static rs.chat.net.ws.WebSocketMessageType.USER_CONNECTED;
 import static rs.chat.net.ws.WebSocketMessageType.USER_DISCONNECTED;
@@ -99,13 +100,14 @@ public class RSChatWebSocketServer extends WebSocketServer {
 						new RSChatWebSocketClient(socket, wsClientID)
 				);
 				this.chatMap.broadcastToSingleChatAndExcludeClient(
-						wsClientID, Utils.createServerMessage(username + " has joined the chat")
+						wsClientID, Utils.createServerMessage(username + " has joined the chat", USER_CONNECTED)
 				);
 			}
 
 			case USER_DISCONNECTED -> {
 				this.chatMap.removeClientFromChat(wsClientID);
-				this.chatMap.broadcastToSingleChat(chatId, Utils.createServerMessage(username + " has disconnected from the chat"));
+				this.chatMap.broadcastToSingleChat(chatId, Utils.createServerMessage(username + " has disconnected from the chat",
+				                                                                     USER_DISCONNECTED));
 				// Closed from the frontend
 			}
 
@@ -123,7 +125,7 @@ public class RSChatWebSocketServer extends WebSocketServer {
 
 			case ACTIVE_USERS_MESSAGE -> log.info("");
 
-			default -> socket.send(Utils.createServerMessage("ERROR: type property is not present in the content of the JSON"));
+			default -> socket.send(Utils.createServerMessage("ERROR: type property is not present in the content of the JSON", SERVER_INFO_MESSAGE));
 		}
 
 		log.info("Message: " + message);

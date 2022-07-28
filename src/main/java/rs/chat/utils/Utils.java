@@ -9,7 +9,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static rs.chat.net.ws.WebSocketMessageType.SERVER_INFO_MESSAGE;
 import static rs.chat.utils.Constants.ALGORITHM;
 import static rs.chat.utils.Constants.GSON;
 
@@ -45,8 +44,8 @@ public final class Utils {
 		return tokens;
 	}
 
-	public static String createServerMessage(String message) {
-		return createMessage("Server", "ALL", -1, SERVER_INFO_MESSAGE, null, "UTF-8", message);
+	public static String createServerMessage(String message, String type) {
+		return createMessage("Server", "ALL", -1, type, null, "UTF-8", message);
 	}
 
 	public static String createMessage(String username, String chatId, long sessionId, String type,
