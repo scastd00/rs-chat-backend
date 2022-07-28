@@ -30,6 +30,7 @@ public class RSChatWebSocketServer extends WebSocketServer {
 	 */
 	public RSChatWebSocketServer() {
 		this(Constants.getWSPort());
+		this.setReuseAddr(true);
 	}
 
 	/**
