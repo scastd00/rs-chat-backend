@@ -8,6 +8,8 @@ import org.java_websocket.server.WebSocketServer;
 import rs.chat.utils.Constants;
 import rs.chat.utils.Utils;
 
+import javax.websocket.ClientEndpoint;
+import javax.websocket.server.ServerEndpoint;
 import java.net.InetSocketAddress;
 
 import static rs.chat.net.ws.WebSocketMessageType.ACTIVE_USERS_MESSAGE;
@@ -19,6 +21,8 @@ import static rs.chat.net.ws.WebSocketMessageType.USER_CONNECTED;
 import static rs.chat.net.ws.WebSocketMessageType.USER_DISCONNECTED;
 import static rs.chat.net.ws.WebSocketMessageType.VIDEO_MESSAGE;
 
+@ClientEndpoint
+@ServerEndpoint(value = "/chat/")
 @Slf4j
 public class RSChatWebSocketServer extends WebSocketServer {
 	private static final RSChatWebSocketServer INSTANCE = new RSChatWebSocketServer();
