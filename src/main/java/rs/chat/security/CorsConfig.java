@@ -16,7 +16,7 @@ public class CorsConfig {
 				registry.addMapping("/**")
 						.allowedMethods("*")
 				        .allowedOrigins(
-						        "https://spring-chat-rs.herokuapp.com/",
+						        "https://rschat-ws.herokuapp.com/",
 						        "http://localhost:3000"
 				        );
 			}
