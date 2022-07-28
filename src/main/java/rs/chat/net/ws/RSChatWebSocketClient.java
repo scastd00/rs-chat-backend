@@ -8,27 +8,15 @@ import java.util.Objects;
 @Slf4j
 public class RSChatWebSocketClient {
 	private final WebSocket socket;
-	private final String username;
-	private final String chatId;
-	private final long sessionId;
+	private final WSClientID wsClientID;
 
-	public RSChatWebSocketClient(WebSocket socket, String username, String chatId, long sessionId) {
+	public RSChatWebSocketClient(WebSocket socket, WSClientID wsClientID) {
 		this.socket = socket;
-		this.username = username;
-		this.chatId = chatId;
-		this.sessionId = sessionId;
+		this.wsClientID = wsClientID;
 	}
 
-	public String getUsername() {
-		return this.username;
-	}
-
-	public String getChatId() {
-		return this.chatId;
-	}
-
-	public long getSessionId() {
-		return this.sessionId;
+	public WSClientID getWSClientID() {
+		return this.wsClientID;
 	}
 
 	public void send(String message) {
@@ -46,13 +34,11 @@ public class RSChatWebSocketClient {
 
 		RSChatWebSocketClient that = (RSChatWebSocketClient) o;
 
-		return this.getUsername().equals(that.getUsername()) &&
-				this.getChatId().equals(that.getChatId()) &&
-				this.getSessionId() == that.getSessionId();
+		return this.wsClientID.equals(that.wsClientID);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.getUsername(), this.getChatId(), this.getSessionId());
+		return Objects.hash(this.wsClientID);
 	}
 }

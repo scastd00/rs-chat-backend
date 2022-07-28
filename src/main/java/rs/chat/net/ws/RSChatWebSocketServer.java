@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
+import rs.chat.utils.Constants;
 import rs.chat.utils.Utils;
 
 import java.net.InetSocketAddress;
@@ -20,28 +21,40 @@ import static rs.chat.net.ws.WebSocketMessageType.VIDEO_MESSAGE;
 @Slf4j
 public class RSChatWebSocketServer extends WebSocketServer {
 	private static final RSChatWebSocketServer INSTANCE = new RSChatWebSocketServer();
-
 	private final WebSocketChatMap chatMap = new WebSocketChatMap();
 
+	/**
+	 * Default constructor. Creates an instance with the port specified in
+	 * the application.properties file.
+	 */
 	public RSChatWebSocketServer() {
-		this(9090);
+		this(Constants.getWSPort());
 	}
 
+	/**
+	 * Creates an instance with the specified port.
+	 *
+	 * @param port port to which the server will be bound.
+	 */
 	public RSChatWebSocketServer(int port) {
-		this(new InetSocketAddress(port));
+		super(new InetSocketAddress(port));
 	}
 
-	public RSChatWebSocketServer(InetSocketAddress address) {
-		super(address);
-	}
-
+	/**
+	 * Returns the single instance of the class.
+	 *
+	 * @return instance of the class.
+	 */
 	public static RSChatWebSocketServer getInstance() {
 		return INSTANCE;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onOpen(WebSocket socket, ClientHandshake handshake) {
-		socket.send("Welcome to the server!");
+//		socket.send("Welcome to the server!");
 
 		InetSocketAddress remoteSocketAddress = socket.getRemoteSocketAddress();
 		String hostAddress = remoteSocketAddress.getAddress().getHostAddress();
@@ -52,12 +65,18 @@ public class RSChatWebSocketServer extends WebSocketServer {
 		// Broadcast in the chat that a client has connected.
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onClose(WebSocket socket, int code, String reason, boolean remote) {
 		// Broadcast in the chat that a client has disconnected.
 		log.info(socket + " has left the room!");
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onMessage(WebSocket socket, String message) {
 		JsonObject jsonMessage = Utils.parseJson(message);
@@ -72,26 +91,28 @@ public class RSChatWebSocketServer extends WebSocketServer {
 //		JsonObject body = (JsonObject) jsonMessage.get("body");
 //		String encoding = body.get("encoding").getAsString();
 //		String content = body.get("content").getAsString();
+		WSClientID wsClientID = new WSClientID(username, chatId, sessionId);
 
 		switch (type) {
 			case USER_CONNECTED -> {
-				RSChatWebSocketClient client = new RSChatWebSocketClient(socket, username, chatId, sessionId);
-				this.chatMap.addClientToChat(client);
-				this.chatMap.broadcastToSingleChatAndExcludeClient(chatId, Utils.createServerMessage(username + " has joined the chat"), client);
+				this.chatMap.addClientToChat(
+						new RSChatWebSocketClient(socket, wsClientID)
+				);
+				this.chatMap.broadcastToSingleChatAndExcludeClient(
+						wsClientID, Utils.createServerMessage(username + " has joined the chat")
+				);
 			}
 
 			case USER_DISCONNECTED -> {
-				RSChatWebSocketClient remoteClient = this.getRsChatWebSocketClient(username, chatId, sessionId);
-				this.chatMap.removeClientFromChat(remoteClient);
+				this.chatMap.removeClientFromChat(wsClientID);
 				this.chatMap.broadcastToSingleChat(chatId, Utils.createServerMessage(username + " has disconnected from the chat"));
 				// Closed from the frontend
 			}
 
 			case TEXT_MESSAGE -> {
 				// Clear the sensitive data to send the message to other clients
-				String response = this.clearSensitiveDataAndBuildResponse(jsonMessage);
-				RSChatWebSocketClient remoteClient = this.getRsChatWebSocketClient(username, chatId, sessionId);
-				this.chatMap.broadcastToSingleChatAndExcludeClient(chatId, response, remoteClient);
+				String response = this.clearSensitiveDataChangeDateAndBuildResponse(jsonMessage);
+				this.chatMap.broadcastToSingleChatAndExcludeClient(wsClientID, response);
 			}
 
 			case IMAGE_MESSAGE -> log.info("");
@@ -102,32 +123,41 @@ public class RSChatWebSocketServer extends WebSocketServer {
 
 			case ACTIVE_USERS_MESSAGE -> log.info("");
 
-			default -> socket.send(Utils.shortJsonString("error", "type property is not present in the content of the JSON"));
+			default -> socket.send(Utils.createServerMessage("ERROR: type property is not present in the content of the JSON"));
 		}
 
 		log.info("Message: " + message);
 	}
 
-	private String clearSensitiveDataAndBuildResponse(JsonObject message) {
+	/**
+	 * Removes the fields of the message received to be able to send it to
+	 * other clients without sensitive information. In addition, it appends
+	 * a new {@code date} field. Only headers are modified.
+	 *
+	 * @param message received message to remove fields.
+	 *
+	 * @return a new {@link String} message without the sensitive information
+	 * and a new field.
+	 */
+	private String clearSensitiveDataChangeDateAndBuildResponse(JsonObject message) {
 		JsonObject headers = (JsonObject) message.get("headers");
 		headers.remove("sessionId");
 		headers.remove("token");
-		headers.addProperty("date", System.currentTimeMillis());
-		// body remains unmodified
+		headers.addProperty("date", System.currentTimeMillis()); // Modify property
 		return message.toString();
 	}
 
-	private RSChatWebSocketClient getRsChatWebSocketClient(String username, String chatId, long sessionId) {
-		return this.chatMap.getClientByUsernameAndDate(chatId,
-		                                               username,
-		                                               sessionId);
-	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onError(WebSocket socket, Exception ex) {
 
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onStart() {
 		log.info("Server started at port " + this.getPort());

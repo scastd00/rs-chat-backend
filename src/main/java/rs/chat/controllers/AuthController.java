@@ -85,7 +85,9 @@ public class AuthController {
 		));
 
 		// Generate tokens
-		Map<String, String> tokens = Utils.generateTokens(user.getUsername(), request, user.getRole());
+		Map<String, String> tokens = Utils.generateTokens(user.getUsername(),
+		                                                  request.getRequestURL().toString(),
+		                                                  user.getRole());
 
 		Session session = this.sessionService.saveSession(
 				new Session(

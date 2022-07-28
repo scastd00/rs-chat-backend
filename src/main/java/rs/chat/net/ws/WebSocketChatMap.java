@@ -9,14 +9,17 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Class that manages the chats to which the clients connect.
+ * Class that manages the chats to which the clients are connected.
  */
 @NoArgsConstructor
 public class WebSocketChatMap {
+	/**
+	 * Map to store each chat. The mapping key is the chatId.
+	 */
 	private final Map<String, CopyOnWriteArrayList<RSChatWebSocketClient>> chats = new HashMap<>();
 
 	/**
-	 * Creates a new {@link CopyOnWriteArrayList} for the specified key.
+	 * Creates a new chat ({@link CopyOnWriteArrayList}) for the specified key.
 	 *
 	 * @param chatId key of the chat to create.
 	 */
@@ -40,7 +43,7 @@ public class WebSocketChatMap {
 	 * it does not exist. <b>Use with caution, if the returned list is
 	 * an empty one, no elements will be stored in the real chat.</b>
 	 *
-	 * @param chatId chatId of the chat to get.
+	 * @param chatId id of the chat to get.
 	 *
 	 * @return the required chat or an empty list.
 	 */
@@ -50,36 +53,31 @@ public class WebSocketChatMap {
 	}
 
 	/**
-	 * Returns the client that is stored in the chat and has the specified
-	 * username and session id.
+	 * Returns the client that is stored in the chat and has the specified ID.
 	 *
-	 * @param chatId    chat where the user is to be found.
-	 * @param username  username of the user we want to get.
-	 * @param sessionId session id of the user we want to get.
+	 * @param clientID ID of the client.
 	 *
 	 * @return a {@link RSChatWebSocketClient} if the user is in the chat,
 	 * {@code null} otherwise (if the chat is empty or the user is disconnected).
 	 */
-	public synchronized RSChatWebSocketClient getClientByUsernameAndDate(String chatId,
-	                                                                     String username,
-	                                                                     long sessionId) {
+	public synchronized RSChatWebSocketClient getClient(WSClientID clientID) {
 		List<RSChatWebSocketClient> clientFoundList =
-				this.get(chatId)
+				this.get(clientID.chatId())
 				    .stream()
-				    .filter(client -> client.getUsername().equals(username))
+				    .filter(client -> client.getWSClientID().equals(clientID))
 				    .toList();
 
 		return clientFoundList.isEmpty() ? null : clientFoundList.get(0);
 	}
 
 	/**
-	 * Adds a client to the specified chat (stored in the {@code chatId} attribute
+	 * Adds a client to the specified chat (stored in the {@code wsClientID} attribute
 	 * of {@link RSChatWebSocketClient}).
 	 *
 	 * @param client new client to add to the chat.
 	 */
 	public synchronized void addClientToChat(RSChatWebSocketClient client) {
-		String chatId = client.getChatId();
+		String chatId = client.getWSClientID().chatId();
 
 		if (!this.chatExists(chatId)) {
 			this.createChat(chatId);
@@ -89,7 +87,7 @@ public class WebSocketChatMap {
 	}
 
 	/**
-	 * Removes the client from the specified chat (stored in the {@code chatId} attribute
+	 * Removes the client from the specified chat (stored in the {@code wsClientID} attribute
 	 * of {@link RSChatWebSocketClient}). If the resulting chat is empty, the mapping is
 	 * removed (so {@link #chatExists(String)} and {@link Map#get(Object)} will
 	 * return {@code false}).
@@ -97,16 +95,16 @@ public class WebSocketChatMap {
 	 * Precondition: the client is connected to the chat (so {@link #get(String)} will
 	 * return a non-empty list).
 	 *
-	 * @param client client to remove from the chat.
+	 * @param clientID client to remove from the chat.
 	 */
-	public synchronized void removeClientFromChat(RSChatWebSocketClient client) {
-		String chatId = client.getChatId();
-		String username = client.getUsername();
+	public synchronized void removeClientFromChat(WSClientID clientID) {
+		String chatId = clientID.chatId();
 
-		this.get(chatId).remove(client);
+		// Remove the user from the chat.
+		this.get(chatId).removeIf(client -> client.getWSClientID().equals(clientID));
 
 		if (this.get(chatId).isEmpty()) {
-			// Delete the entry of the chat since there are no more clients in it.
+			// Delete the entry of the chat if there are no more clients connected to it.
 			this.chats.remove(chatId);
 		}
 	}
@@ -125,17 +123,14 @@ public class WebSocketChatMap {
 	 * Sends a message to all clients connected to the chat except from the
 	 * client that sent the message.
 	 *
-	 * @param chatId  chat id to which the message should be sent.
+	 * @param clientID  client to "ignore".
 	 * @param message message to send.
-	 * @param client  client to "ignore".
 	 */
-	public void broadcastToSingleChatAndExcludeClient(String chatId,
-	                                                  String message,
-	                                                  RSChatWebSocketClient client) {
-		this.get(chatId)
+	public void broadcastToSingleChatAndExcludeClient(WSClientID clientID, String message) {
+		this.get(clientID.chatId())
 		    .stream()
-		    .filter(c -> !c.equals(client))
-		    .forEach(c -> c.send(message));
+		    .filter(client -> !client.getWSClientID().equals(clientID))
+		    .forEach(client -> client.send(message));
 	}
 
 	/**

@@ -39,8 +39,12 @@ public final class Constants {
 	public static final String GROUP_CHAT = "G";
 	public static final String SUBJECT_CHAT = "S";
 
-	public static final String TEXT_FILE = "TEXT";
-	public static final String IMAGE_FILE = "IMAGE";
-	public static final String AUDIO_FILE = "AUDIO";
-	public static final String VIDEO_FILE = "VIDEO";
+	public static int getWSPort() {
+		String env = System.getenv("ENV").toLowerCase();
+		if (env.startsWith("dev")) {
+			return 9090;
+		}
+
+		return Integer.parseInt(System.getenv("PORT"));
+	}
 }

@@ -56,7 +56,7 @@ public class RSChatAuthenticationFilter extends UsernamePasswordAuthenticationFi
 	                                        Authentication authentication) throws IOException, ServletException {
 		User user = (User) authentication.getPrincipal();
 		Map<String, String> tokens = Utils.generateTokens(user.getUsername(),
-		                                                  request,
+		                                                  request.getRequestURL().toString(),
 		                                                  user.getAuthorities()
 		                                                      .iterator()
 		                                                      .next()
