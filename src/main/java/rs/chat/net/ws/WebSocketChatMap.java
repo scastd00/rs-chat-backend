@@ -16,7 +16,7 @@ public class WebSocketChatMap {
 	/**
 	 * Map to store each chat. The mapping key is the chatId.
 	 */
-	private final Map<String, CopyOnWriteArrayList<RSChatWebSocketClient>> chats = new HashMap<>();
+	private final Map<String, CopyOnWriteArrayList<WSClient>> chats = new HashMap<>();
 
 	/**
 	 * Creates a new chat ({@link CopyOnWriteArrayList}) for the specified key.
@@ -48,7 +48,7 @@ public class WebSocketChatMap {
 	 * @return the required chat or an empty list.
 	 */
 	@NotNull
-	private synchronized List<RSChatWebSocketClient> get(String chatId) {
+	private synchronized List<WSClient> get(String chatId) {
 		return this.chatExists(chatId) ? this.chats.get(chatId) : List.of();
 	}
 
@@ -57,11 +57,11 @@ public class WebSocketChatMap {
 	 *
 	 * @param clientID ID of the client.
 	 *
-	 * @return a {@link RSChatWebSocketClient} if the user is in the chat,
+	 * @return a {@link WSClient} if the user is in the chat,
 	 * {@code null} otherwise (if the chat is empty or the user is disconnected).
 	 */
-	public synchronized RSChatWebSocketClient getClient(WSClientID clientID) {
-		List<RSChatWebSocketClient> clientFoundList =
+	public synchronized WSClient getClient(WSClientID clientID) {
+		List<WSClient> clientFoundList =
 				this.get(clientID.chatId())
 				    .stream()
 				    .filter(client -> client.getWSClientID().equals(clientID))
@@ -72,11 +72,11 @@ public class WebSocketChatMap {
 
 	/**
 	 * Adds a client to the specified chat (stored in the {@code wsClientID} attribute
-	 * of {@link RSChatWebSocketClient}).
+	 * of {@link WSClient}).
 	 *
 	 * @param client new client to add to the chat.
 	 */
-	public synchronized void addClientToChat(RSChatWebSocketClient client) {
+	public synchronized void addClientToChat(WSClient client) {
 		String chatId = client.getWSClientID().chatId();
 
 		if (!this.chatExists(chatId)) {
@@ -88,7 +88,7 @@ public class WebSocketChatMap {
 
 	/**
 	 * Removes the client from the specified chat (stored in the {@code wsClientID} attribute
-	 * of {@link RSChatWebSocketClient}). If the resulting chat is empty, the mapping is
+	 * of {@link WSClient}). If the resulting chat is empty, the mapping is
 	 * removed (so {@link #chatExists(String)} and {@link Map#get(Object)} will
 	 * return {@code false}).
 	 * <p>
