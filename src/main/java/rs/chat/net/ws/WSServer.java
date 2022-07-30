@@ -33,14 +33,13 @@ public class WSServer {
 		JavaxWebSocketServletContainerInitializer.configure(context, (servletContext, wsContainer) -> {
 			// Configure defaults for container
 			wsContainer.setDefaultMaxTextMessageBufferSize(65535);
-//			wsContainer.setDefaultMaxSessionIdleTimeout(-1); // Infinite timeout TODO: ¿clients are disconnected?
+			wsContainer.setDefaultMaxSessionIdleTimeout(-1); // Infinite timeout
 
 			// Add WebSocket endpoint to javax.websocket layer
 			wsContainer.addEndpoint(WSEndpoint.class);
 		});
 
 		connector.setReuseAddress(true);
-//		this.connector.setIdleTimeout(-1); // Permanently connected sockets
 
 		// When closing the VM, stop WS server
 		Runtime.getRuntime().addShutdownHook(new Thread(this::stop));

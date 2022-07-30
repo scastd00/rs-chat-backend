@@ -27,12 +27,11 @@ import static rs.chat.net.ws.WebSocketMessageType.VIDEO_MESSAGE;
 @ClientEndpoint
 @ServerEndpoint(value = "/rschat/")
 public class WSEndpoint {
-	// Todo: configure server to not close the connection
 	private final WSServer server = WSServer.getInstance();
 
 	@OnOpen
 	public void onConnect(Session session) {
-		System.out.println("Socket Connected: " + session);
+		log.debug("Socket Connected: " + session);
 		// Send to the client the time of the server, to sync all the messages
 	}
 
@@ -96,8 +95,8 @@ public class WSEndpoint {
 	}
 
 	@OnClose
-	public void onClose(CloseReason reason) {
-
+	public void onClose(Session session, CloseReason reason) {
+		log.debug("Socket Disconnected: " + session);
 	}
 
 	@OnError
