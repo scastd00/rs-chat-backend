@@ -1,4 +1,4 @@
-package rs.chat.security;
+package rs.chat.config.security;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -13,8 +13,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import rs.chat.security.filter.RSChatAuthenticationFilter;
-import rs.chat.security.filter.RSChatAuthorizationFilter;
+import rs.chat.config.security.filter.RSChatAuthenticationFilter;
+import rs.chat.config.security.filter.RSChatAuthorizationFilter;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 import static rs.chat.router.Routes.CHANGE_PASSWORD_URL;

@@ -1,4 +1,4 @@
-package rs.chat.security.filter;
+package rs.chat.config.security.filter;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.extern.slf4j.Slf4j;

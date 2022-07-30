@@ -1,4 +1,4 @@
-package rs.chat.security.filter;
+package rs.chat.config.security.filter;
 
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;

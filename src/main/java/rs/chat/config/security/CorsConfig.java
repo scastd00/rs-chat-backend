@@ -1,4 +1,4 @@
-package rs.chat.security;
+package rs.chat.config.security;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Bean;
