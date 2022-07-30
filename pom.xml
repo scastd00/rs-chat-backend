@@ -138,6 +138,10 @@
 			<version>10.0.0-alpha0</version>
 			<classifier>uber</classifier>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-websocket</artifactId>
+		</dependency>
 	</dependencies>
 
 	<dependencyManagement>
