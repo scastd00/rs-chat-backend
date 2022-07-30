@@ -2,14 +2,14 @@ package rs.chat.net.ws;
 
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import rs.chat.utils.Utils;
 
 import javax.websocket.ClientEndpoint;
 import javax.websocket.CloseReason;
+import javax.websocket.OnClose;
+import javax.websocket.OnError;
+import javax.websocket.OnMessage;
+import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
@@ -30,14 +30,13 @@ public class WSEndpoint {
 	// Todo: configure server to not close the connection
 	private final WSServer server = WSServer.getInstance();
 
-	@OnWebSocketConnect
-	@SuppressWarnings("unused")
+	@OnOpen
 	public void onConnect(Session session) {
+		System.out.println("Socket Connected: " + session);
 		// Send to the client the time of the server, to sync all the messages
 	}
 
-	@OnWebSocketMessage
-	@SuppressWarnings("unused")
+	@OnMessage
 	public void onMessage(Session session, String message) throws IOException {
 		JsonObject jsonMessage = Utils.parseJson(message);
 
@@ -46,6 +45,7 @@ public class WSEndpoint {
 		String chatId = headers.get("chatId").getAsString();
 		long sessionId = headers.get("sessionId").getAsLong();
 		String type = headers.get("type").getAsString();
+//		long date = headers.get("date").getAsLong();
 //		String token = headers.get("token").getAsString();
 
 //		JsonObject body = (JsonObject) jsonMessage.get("body");
@@ -95,14 +95,12 @@ public class WSEndpoint {
 		log.info("Message: " + message);
 	}
 
-	@OnWebSocketClose
-	@SuppressWarnings("unused")
+	@OnClose
 	public void onClose(CloseReason reason) {
 
 	}
 
-	@OnWebSocketError
-	@SuppressWarnings("unused")
+	@OnError
 	public void onError(Throwable cause) {
 		cause.printStackTrace();
 	}

@@ -1,27 +1,27 @@
 package rs.chat.net.ws;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.websocket.javax.server.JavaxWebSocketServletContainerInitializer;
 
-import javax.websocket.ClientEndpoint;
-import javax.websocket.server.ServerEndpoint;
+import java.net.InetSocketAddress;
 
 @Slf4j
-@ClientEndpoint
-@ServerEndpoint(value = "/chat/")
 public class WSServer {
-	private static final WSServer INSTANCE = new WSServer();
-	private final Server server = new Server();
-	private final ServerConnector connector = new ServerConnector(this.server);
+	private static final WSServer INSTANCE = new WSServer(Integer.parseInt(System.getenv("WS_PORT")));
+	private final Server server;
+
 	// Todo: refactor this to include a chatMap in each endpoint (to have clients
 	//  associated in each endpoint).
 	private final WebSocketChatMap chatMap = new WebSocketChatMap();
 
-	public WSServer() {
-		this.server.addConnector(this.connector);
+	private WSServer(int port) {
+		this.server = new Server(new InetSocketAddress(port));
+		ServerConnector connector = new ServerConnector(this.server);
+		this.server.addConnector(connector);
 
 		// Set up the basic application "context" for this application at "/"
 		// This is also known as the handler tree (in jetty speak)
@@ -33,14 +33,17 @@ public class WSServer {
 		JavaxWebSocketServletContainerInitializer.configure(context, (servletContext, wsContainer) -> {
 			// Configure defaults for container
 			wsContainer.setDefaultMaxTextMessageBufferSize(65535);
-			wsContainer.setDefaultMaxSessionIdleTimeout(-1); // Infinite timeout TODO: ¿clients are disconnected?
+//			wsContainer.setDefaultMaxSessionIdleTimeout(-1); // Infinite timeout TODO: ¿clients are disconnected?
 
 			// Add WebSocket endpoint to javax.websocket layer
 			wsContainer.addEndpoint(WSEndpoint.class);
 		});
 
-//		this.connector.setReuseAddress(true);
+		connector.setReuseAddress(true);
 //		this.connector.setIdleTimeout(-1); // Permanently connected sockets
+
+		// When closing the VM, stop WS server
+		Runtime.getRuntime().addShutdownHook(new Thread(this::stop));
 	}
 
 	public static WSServer getInstance() {
@@ -51,16 +54,16 @@ public class WSServer {
 		return this.chatMap;
 	}
 
-	public void setPort(int port) {
-		this.connector.setPort(port);
-	}
-
-	public void start() throws Exception {
+	@SneakyThrows(Exception.class)
+	public void start() {
 		this.server.start();
+		log.debug("Server started at {}", this.server.getURI());
 	}
 
-	public void stop() throws Exception {
+	@SneakyThrows(Exception.class)
+	public void stop() {
 		this.server.stop();
+		log.debug("Server stopped");
 	}
 
 	public void join() throws InterruptedException {

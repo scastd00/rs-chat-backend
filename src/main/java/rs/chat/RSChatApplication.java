@@ -12,7 +12,7 @@ public class RSChatApplication {
 //		S3.getInstance().logAllFilesInBucket();
 
 		WSServer server = WSServer.getInstance();
-		server.setPort(Integer.parseInt(System.getenv("PORT")));
 		server.start();
+		server.join();
 	}
 }
