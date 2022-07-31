@@ -115,7 +115,7 @@ public class WebSocketChatMap {
 	 * @param chatId  chat id to which the message should be sent.
 	 * @param message message to send.
 	 */
-	public void broadcastToSingleChat(String chatId, String message) {
+	public synchronized void broadcastToSingleChat(String chatId, String message) {
 		this.get(chatId).forEach(client -> client.send(message));
 	}
 
@@ -126,7 +126,7 @@ public class WebSocketChatMap {
 	 * @param clientID  client to "ignore".
 	 * @param message message to send.
 	 */
-	public void broadcastToSingleChatAndExcludeClient(WSClientID clientID, String message) {
+	public synchronized void broadcastToSingleChatAndExcludeClient(WSClientID clientID, String message) {
 		this.get(clientID.chatId())
 		    .stream()
 		    .filter(client -> !client.getWSClientID().equals(clientID))

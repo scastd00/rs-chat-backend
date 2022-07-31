@@ -4,10 +4,12 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.google.gson.Gson;
+import org.springframework.util.unit.DataSize;
 
 import java.io.File;
 import java.net.URI;
 import java.nio.file.Path;
+import java.time.Duration;
 
 public final class Constants {
 	private Constants() {
@@ -35,16 +37,10 @@ public final class Constants {
 	public static final String S3_BUCKET_NAME = System.getenv("AWS_S3_BUCKET_NAME");
 	public static final URI S3_ENDPOINT_URI = URI.create("http://localhost:4566");
 
+	public static final long IDLE_TIMEOUT_WEB_SOCKET = Duration.ofHours(2).getSeconds() * 1000;
+	public static final int WEB_SOCKET_BUFFER_SIZE = (int) DataSize.ofKilobytes(32).toBytes();
+
 	public static final String USER_CHAT = "U";
 	public static final String GROUP_CHAT = "G";
 	public static final String SUBJECT_CHAT = "S";
-
-	public static int getWSPort() {
-		String env = System.getenv("ENV").toLowerCase();
-		if (env.startsWith("dev")) {
-			return 9090;
-		}
-
-		return Integer.parseInt(System.getenv("PORT"));
-	}
 }

@@ -29,6 +29,7 @@ import static rs.chat.router.Routes.ROOT_URL;
 import static rs.chat.router.Routes.USERS_URL;
 import static rs.chat.router.Routes.USER_SAVE_URL;
 import static rs.chat.router.Routes.USER_URL;
+import static rs.chat.router.Routes.WS_CHAT_ENDPOINT;
 import static rs.chat.utils.Constants.LOW_TIER_ROLES;
 import static rs.chat.utils.Constants.MEDIUM_TIER_ROLES;
 import static rs.chat.utils.Constants.TOP_TIER_ROLES;
@@ -116,7 +117,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				    ROOT_URL,
 				    LOGIN_URL,
 				    REFRESH_TOKEN_URL,
-				    REGISTER_URL
+				    REGISTER_URL,
+				    WS_CHAT_ENDPOINT
 		    )
 		    .permitAll();
 	}

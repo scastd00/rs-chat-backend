@@ -1,19 +1,18 @@
 package rs.chat.net.ws;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 
-import javax.websocket.CloseReason;
-import javax.websocket.CloseReason.CloseCode;
-import javax.websocket.Session;
 import java.io.IOException;
 import java.util.Objects;
 
 @Slf4j
 public class WSClient {
-	private final Session session;
+	private final WebSocketSession session;
 	private final WSClientID wsClientID;
 
-	public WSClient(Session session, WSClientID wsClientID) {
+	public WSClient(WebSocketSession session, WSClientID wsClientID) {
 		this.session = session;
 		this.wsClientID = wsClientID;
 	}
@@ -22,17 +21,17 @@ public class WSClient {
 		return this.wsClientID;
 	}
 
-	public void send(String message) {
+	public synchronized void send(String message) {
 		try {
-			this.session.getBasicRemote().sendText(message);
+			this.session.sendMessage(new TextMessage(message));
 		} catch (IOException e) {
 			log.error("Could not send message to client", e);
 		}
 	}
 
-	public void close(CloseCode code, String message) {
+	public void close() {
 		try {
-			this.session.close(new CloseReason(code, message));
+			this.session.close();
 		} catch (IOException e) {
 			log.error("Could not close socket normally", e);
 		}
