@@ -23,7 +23,7 @@ import static rs.chat.net.ws.WebSocketMessageType.USER_DISCONNECTED;
 import static rs.chat.net.ws.WebSocketMessageType.VIDEO_MESSAGE;
 
 @Slf4j
-public class JsonWebSocketHandler extends TextWebSocketHandler {
+public class WebSocketHandler extends TextWebSocketHandler {
 	private final WebSocketChatMap chatMap = new WebSocketChatMap();
 
 	@Override

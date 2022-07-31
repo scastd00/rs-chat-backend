@@ -52,6 +52,12 @@ public class WebSocketChatMap {
 		return this.chatExists(chatId) ? this.extendedChats.get(chatId).getClients() : List.of();
 	}
 
+	private void saveMessage(String chatId, String message) {
+		if (this.chatExists(chatId)) {
+			this.extendedChats.get(chatId).saveMessageToChatFile(message);
+		}
+	}
+
 	/**
 	 * Returns the client that is stored in the chat and has the specified ID.
 	 *
@@ -119,6 +125,7 @@ public class WebSocketChatMap {
 	 */
 	public synchronized void broadcastToSingleChat(String chatId, String message) {
 		this.getClientsOf(chatId).forEach(client -> client.send(message));
+		this.saveMessage(chatId, message);
 	}
 
 	/**
@@ -133,6 +140,7 @@ public class WebSocketChatMap {
 		    .stream()
 		    .filter(client -> !client.wsClientID().equals(clientID))
 		    .forEach(client -> client.send(message));
+		this.saveMessage(clientID.chatId(), message);
 	}
 
 	/**
