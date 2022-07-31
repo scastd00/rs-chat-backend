@@ -1,4 +1,4 @@
-package rs.chat.net.ws;
+package rs.chat.net.ws.handlers;
 
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
@@ -6,6 +6,9 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+import rs.chat.net.ws.WSClient;
+import rs.chat.net.ws.WSClientID;
+import rs.chat.net.ws.WebSocketChatMap;
 import rs.chat.utils.Utils;
 
 import java.io.IOException;
@@ -26,7 +29,6 @@ public class JsonWebSocketHandler extends TextWebSocketHandler {
 	@Override
 	protected void handleTextMessage(@NotNull WebSocketSession session,
 	                                 @NotNull TextMessage message) throws IOException {
-		log.info(message.getPayload());
 		JsonObject jsonMessage = Utils.parseJson(message.getPayload());
 
 		JsonObject headers = (JsonObject) jsonMessage.get("headers");
@@ -83,8 +85,6 @@ public class JsonWebSocketHandler extends TextWebSocketHandler {
 					)
 			);
 		}
-
-		log.info("Message: " + message);
 	}
 
 	/**

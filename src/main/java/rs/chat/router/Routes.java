@@ -24,5 +24,5 @@ public final class Routes {
 	public static final String CHAT_CONTENT_URL = API_URL_PREFIX + "/chat/content/{type}/{id}";
 	public static final String CHAT_SEND_TEXT_MESSAGE_URL = API_URL_PREFIX + "/chat/send/{chatId}";
 
-	public static final String WS_CHAT_ENDPOINT = "/rschat";
+	public static final String WS_CHAT_ENDPOINT = "/ws/rschat";
 }
