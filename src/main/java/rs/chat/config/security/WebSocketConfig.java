@@ -14,9 +14,9 @@ public class WebSocketConfig implements WebSocketConfigurer {
 	@Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
 		registry.addHandler(new JsonWebSocketHandler(), WS_CHAT_ENDPOINT)
-				.setAllowedOrigins(
-						"https://rschat-ws.herokuapp.com/",
-						"http://localhost:3000"
-				);
+		        .setAllowedOrigins(
+				        "https://rschat-ws.herokuapp.com/",
+				        "http://localhost:3000"
+		        );
 	}
 }

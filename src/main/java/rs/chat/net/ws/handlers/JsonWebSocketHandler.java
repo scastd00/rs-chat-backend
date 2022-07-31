@@ -15,8 +15,8 @@ import java.io.IOException;
 
 import static rs.chat.net.ws.WebSocketMessageType.ACTIVE_USERS_MESSAGE;
 import static rs.chat.net.ws.WebSocketMessageType.AUDIO_MESSAGE;
+import static rs.chat.net.ws.WebSocketMessageType.ERROR_MESSAGE;
 import static rs.chat.net.ws.WebSocketMessageType.IMAGE_MESSAGE;
-import static rs.chat.net.ws.WebSocketMessageType.SERVER_INFO_MESSAGE;
 import static rs.chat.net.ws.WebSocketMessageType.TEXT_MESSAGE;
 import static rs.chat.net.ws.WebSocketMessageType.USER_CONNECTED;
 import static rs.chat.net.ws.WebSocketMessageType.USER_DISCONNECTED;
@@ -37,15 +37,20 @@ public class JsonWebSocketHandler extends TextWebSocketHandler {
 		long sessionId = headers.get("sessionId").getAsLong();
 		String type = headers.get("type").getAsString();
 //		long date = headers.get("date").getAsLong();
-//		String token = headers.get("token").getAsString();
+		String token = headers.get("token").getAsString();
 
 //		JsonObject body = (JsonObject) jsonMessage.get("body");
 //		String encoding = body.get("encoding").getAsString();
 //		String content = body.get("content").getAsString();
+
+		// FIXME: A user that did not send the USER_CONNECTED message could send messages
+		//  but cannot receive them
 		WSClientID wsClientID = new WSClientID(username, chatId, sessionId);
 
 		switch (type) {
 			case USER_CONNECTED -> {
+				Utils.checkAuthorizationToken(token);
+
 				this.chatMap.addClientToChat(new WSClient(session, wsClientID));
 				this.chatMap.broadcastToSingleChatAndExcludeClient(
 						wsClientID,
@@ -80,22 +85,29 @@ public class JsonWebSocketHandler extends TextWebSocketHandler {
 					new TextMessage(
 							Utils.createServerMessage(
 									"ERROR: type property is not present in the content of the JSON",
-									SERVER_INFO_MESSAGE
+									ERROR_MESSAGE
 							)
 					)
 			);
 		}
 	}
 
+	@Override
+	public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
+		session.sendMessage(
+				new TextMessage(Utils.createServerMessage(exception.getMessage(), ERROR_MESSAGE))
+		);
+	}
+
 	/**
 	 * Removes the fields of the message received to be able to send it to
-	 * other clients without sensitive information. In addition, it appends
-	 * a new {@code date} field. Only headers are modified.
+	 * other clients without sensitive information. In addition, it updates
+	 * the {@code date} field. Only headers are modified.
 	 *
 	 * @param message received message to remove fields.
 	 *
-	 * @return a new {@link String} message without the sensitive information
-	 * and a new field.
+	 * @return the {@link String} message without the sensitive information
+	 * and the date of the server.
 	 */
 	private String clearSensitiveDataChangeDateAndBuildResponse(JsonObject message) {
 		JsonObject headers = (JsonObject) message.get("headers");

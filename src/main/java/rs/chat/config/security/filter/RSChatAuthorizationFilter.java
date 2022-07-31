@@ -8,6 +8,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 import rs.chat.net.http.HttpResponse;
+import rs.chat.utils.Utils;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -24,7 +25,6 @@ import static rs.chat.router.Routes.REFRESH_TOKEN_URL;
 import static rs.chat.router.Routes.REGISTER_URL;
 import static rs.chat.utils.Constants.ERROR_JSON_KEY;
 import static rs.chat.utils.Constants.JWT_TOKEN_PREFIX;
-import static rs.chat.utils.Constants.JWT_VERIFIER;
 
 @Slf4j
 @WebFilter(filterName = "AuthorizationFilter")
@@ -41,12 +41,11 @@ public class RSChatAuthorizationFilter extends OncePerRequestFilter {
 		String authorizationHeader = request.getHeader(AUTHORIZATION);
 
 		if (authorizationHeader == null || !authorizationHeader.startsWith(JWT_TOKEN_PREFIX)) {
-			// Todo: what is this case ???
+			// Todo: what is this case. Login, register and others are checked in the previous if ???
 			filterChain.doFilter(request, response);
 		} else {
 			try {
-				String token = authorizationHeader.substring(JWT_TOKEN_PREFIX.length());
-				DecodedJWT decodedJWT = JWT_VERIFIER.verify(token);
+				DecodedJWT decodedJWT = Utils.checkAuthorizationToken(authorizationHeader);
 				String username = decodedJWT.getSubject();
 				String role = decodedJWT.getClaim("role").asString();
 

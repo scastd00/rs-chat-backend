@@ -8,7 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import rs.chat.exceptions.CouldNotAuthenticate;
+import rs.chat.exceptions.CouldNotAuthenticateException;
 import rs.chat.net.http.HttpRequest;
 import rs.chat.utils.Constants;
 import rs.chat.utils.Utils;
@@ -45,7 +45,7 @@ public class RSChatAuthenticationFilter extends UsernamePasswordAuthenticationFi
 					new UsernamePasswordAuthenticationToken(username, password)
 			);
 		} catch (IOException e) {
-			throw new CouldNotAuthenticate(e.getMessage());
+			throw new CouldNotAuthenticateException(e.getMessage());
 		}
 	}
 

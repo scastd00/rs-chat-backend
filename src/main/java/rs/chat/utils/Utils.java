@@ -1,6 +1,8 @@
 package rs.chat.utils;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.reflect.TypeToken;
@@ -11,6 +13,8 @@ import java.util.Map;
 
 import static rs.chat.utils.Constants.ALGORITHM;
 import static rs.chat.utils.Constants.GSON;
+import static rs.chat.utils.Constants.JWT_TOKEN_PREFIX;
+import static rs.chat.utils.Constants.JWT_VERIFIER;
 
 public final class Utils {
 	private Utils() {
@@ -42,6 +46,16 @@ public final class Utils {
 		tokens.put("refreshToken", refreshToken);
 
 		return tokens;
+	}
+
+	public static DecodedJWT checkAuthorizationToken(String fullToken) throws JWTVerificationException {
+		if (!fullToken.startsWith(JWT_TOKEN_PREFIX)) {
+			throw new JWTVerificationException(
+					"Token does not start with the string '%s'".formatted(JWT_TOKEN_PREFIX)
+			);
+		}
+
+		return JWT_VERIFIER.verify(fullToken.substring(JWT_TOKEN_PREFIX.length()));
 	}
 
 	public static String createServerMessage(String message, String type) {

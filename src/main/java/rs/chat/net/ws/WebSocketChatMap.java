@@ -16,7 +16,7 @@ public class WebSocketChatMap {
 	/**
 	 * Map to store each chat. The mapping key is the chatId.
 	 */
-	private final Map<String, CopyOnWriteArrayList<WSClient>> chats = new HashMap<>();
+	private final Map<String, Chat> extendedChats = new HashMap<>();
 
 	/**
 	 * Creates a new chat ({@link CopyOnWriteArrayList}) for the specified key.
@@ -24,7 +24,7 @@ public class WebSocketChatMap {
 	 * @param chatId key of the chat to create.
 	 */
 	private synchronized void createChat(String chatId) {
-		this.chats.put(chatId, new CopyOnWriteArrayList<>());
+		this.extendedChats.put(chatId, new Chat(chatId));
 	}
 
 	/**
@@ -35,7 +35,7 @@ public class WebSocketChatMap {
 	 * @return {@code true} if the chat exists, {@code false} otherwise.
 	 */
 	private synchronized boolean chatExists(String chatId) {
-		return this.chats.containsKey(chatId);
+		return this.extendedChats.containsKey(chatId);
 	}
 
 	/**
@@ -48,8 +48,8 @@ public class WebSocketChatMap {
 	 * @return the required chat or an empty list.
 	 */
 	@NotNull
-	private synchronized List<WSClient> get(String chatId) {
-		return this.chatExists(chatId) ? this.chats.get(chatId) : List.of();
+	private synchronized List<WSClient> getClientsOf(String chatId) {
+		return this.chatExists(chatId) ? this.extendedChats.get(chatId).getClients() : List.of();
 	}
 
 	/**
@@ -62,7 +62,7 @@ public class WebSocketChatMap {
 	 */
 	public synchronized WSClient getClient(WSClientID clientID) {
 		List<WSClient> clientFoundList =
-				this.get(clientID.chatId())
+				this.getClientsOf(clientID.chatId())
 				    .stream()
 				    .filter(client -> client.getWSClientID().equals(clientID))
 				    .toList();
@@ -83,7 +83,7 @@ public class WebSocketChatMap {
 			this.createChat(chatId);
 		}
 
-		this.get(chatId).add(client);
+		this.getClientsOf(chatId).add(client);
 	}
 
 	/**
@@ -92,7 +92,7 @@ public class WebSocketChatMap {
 	 * removed (so {@link #chatExists(String)} and {@link Map#get(Object)} will
 	 * return {@code false}).
 	 * <p>
-	 * Precondition: the client is connected to the chat (so {@link #get(String)} will
+	 * Precondition: the client is connected to the chat (so {@link #getClientsOf(String)} will
 	 * return a non-empty list).
 	 *
 	 * @param clientID client to remove from the chat.
@@ -101,12 +101,18 @@ public class WebSocketChatMap {
 		String chatId = clientID.chatId();
 
 		// Remove the user from the chat.
-		this.get(chatId).removeIf(client -> client.getWSClientID().equals(clientID));
+		this.getClientsOf(chatId)
+		    .removeIf(client -> client.getWSClientID().equals(clientID));
 
-		if (this.get(chatId).isEmpty()) {
+		if (this.getClientsOf(chatId).isEmpty()) {
 			// Delete the entry of the chat if there are no more clients connected to it.
-			this.chats.remove(chatId);
+			this.closeChat(chatId);
+			this.extendedChats.remove(chatId);
 		}
+	}
+
+	private void closeChat(String chatId) {
+		this.extendedChats.get(chatId).finish();
 	}
 
 	/**
@@ -116,18 +122,18 @@ public class WebSocketChatMap {
 	 * @param message message to send.
 	 */
 	public synchronized void broadcastToSingleChat(String chatId, String message) {
-		this.get(chatId).forEach(client -> client.send(message));
+		this.getClientsOf(chatId).forEach(client -> client.send(message));
 	}
 
 	/**
 	 * Sends a message to all clients connected to the chat except from the
 	 * client that sent the message.
 	 *
-	 * @param clientID  client to "ignore".
-	 * @param message message to send.
+	 * @param clientID client to "ignore".
+	 * @param message  message to send.
 	 */
 	public synchronized void broadcastToSingleChatAndExcludeClient(WSClientID clientID, String message) {
-		this.get(clientID.chatId())
+		this.getClientsOf(clientID.chatId())
 		    .stream()
 		    .filter(client -> !client.getWSClientID().equals(clientID))
 		    .forEach(client -> client.send(message));
@@ -142,7 +148,7 @@ public class WebSocketChatMap {
 	 * @param message message to send.
 	 */
 	public void totalBroadcast(String message) {
-		this.chats.values()
-		          .forEach(chat -> chat.forEach(client -> client.send(message)));
+		this.extendedChats.values()
+		                  .forEach(chat -> chat.getClients().forEach(client -> client.send(message)));
 	}
 }
