@@ -64,7 +64,7 @@ public class WebSocketChatMap {
 		List<WSClient> clientFoundList =
 				this.getClientsOf(clientID.chatId())
 				    .stream()
-				    .filter(client -> client.getWSClientID().equals(clientID))
+				    .filter(client -> client.wsClientID().equals(clientID))
 				    .toList();
 
 		return clientFoundList.isEmpty() ? null : clientFoundList.get(0);
@@ -77,7 +77,7 @@ public class WebSocketChatMap {
 	 * @param client new client to add to the chat.
 	 */
 	public synchronized void addClientToChat(WSClient client) {
-		String chatId = client.getWSClientID().chatId();
+		String chatId = client.wsClientID().chatId();
 
 		if (!this.chatExists(chatId)) {
 			this.createChat(chatId);
@@ -102,17 +102,13 @@ public class WebSocketChatMap {
 
 		// Remove the user from the chat.
 		this.getClientsOf(chatId)
-		    .removeIf(client -> client.getWSClientID().equals(clientID));
+		    .removeIf(client -> client.wsClientID().equals(clientID));
 
+		// Delete the entry of the chat if there are no more clients connected to it.
 		if (this.getClientsOf(chatId).isEmpty()) {
-			// Delete the entry of the chat if there are no more clients connected to it.
-			this.closeChat(chatId);
+			this.extendedChats.get(chatId).finish();
 			this.extendedChats.remove(chatId);
 		}
-	}
-
-	private void closeChat(String chatId) {
-		this.extendedChats.get(chatId).finish();
 	}
 
 	/**
@@ -135,7 +131,7 @@ public class WebSocketChatMap {
 	public synchronized void broadcastToSingleChatAndExcludeClient(WSClientID clientID, String message) {
 		this.getClientsOf(clientID.chatId())
 		    .stream()
-		    .filter(client -> !client.getWSClientID().equals(clientID))
+		    .filter(client -> !client.wsClientID().equals(clientID))
 		    .forEach(client -> client.send(message));
 	}
 

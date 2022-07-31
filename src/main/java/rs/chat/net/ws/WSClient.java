@@ -8,19 +8,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 @Slf4j
-public class WSClient {
-	private final WebSocketSession session;
-	private final WSClientID wsClientID;
-
-	public WSClient(WebSocketSession session, WSClientID wsClientID) {
-		this.session = session;
-		this.wsClientID = wsClientID;
-	}
-
-	public WSClientID getWSClientID() {
-		return this.wsClientID;
-	}
-
+public record WSClient(WebSocketSession session, WSClientID wsClientID) {
 	public synchronized void send(String message) {
 		try {
 			this.session.sendMessage(new TextMessage(message));
