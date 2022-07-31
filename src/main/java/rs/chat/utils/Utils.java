@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.File;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -81,5 +82,9 @@ public final class Utils {
 		fullMessage.add("body", body);
 
 		return fullMessage.toString();
+	}
+
+	public static File getChatFile(String fileNameWithoutExtension) {
+		return new File(Constants.CHAT_FILES_PATH + fileNameWithoutExtension + ".txt");
 	}
 }
