@@ -8,7 +8,7 @@
 		"sessionId": "<sessionId>",
 		"type": "<typeConstant>",
 		"date": "<currentDate>",
-		"token": "<accessToken>"
+		"token": "Bearer <accessToken>"
 	},
 	"body": {
 		"encoding": "regex(UTF-8|base64)",
