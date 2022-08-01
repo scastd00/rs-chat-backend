@@ -2,17 +2,17 @@ package rs.chat.storage;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import rs.chat.utils.Constants;
 import rs.chat.utils.Utils;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.awscore.exception.AwsServiceException;
-import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.core.sync.ResponseTransformer;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
@@ -22,9 +22,15 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Object;
 
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 
+import static rs.chat.net.ws.WebSocketMessageType.AUDIO_MESSAGE;
+import static rs.chat.net.ws.WebSocketMessageType.IMAGE_MESSAGE;
+import static rs.chat.net.ws.WebSocketMessageType.TEXT_MESSAGE;
+import static rs.chat.net.ws.WebSocketMessageType.VIDEO_MESSAGE;
+import static rs.chat.utils.Constants.CHAT_FILES_PATH;
 import static rs.chat.utils.Constants.S3_BUCKET_NAME;
 
 @Slf4j
@@ -70,6 +76,21 @@ public class S3 {
 		}
 	}
 
+	public void uploadFile(String fileNameWithoutExtension, String messageType) {
+		switch (messageType) {
+			case TEXT_MESSAGE -> this.uploadFile(getFile("chats/", fileNameWithoutExtension, ".rsJson")); // Without opening and closing braces
+			case IMAGE_MESSAGE -> this.uploadFile(getFile("images/", fileNameWithoutExtension, ".rsImg"));
+			case AUDIO_MESSAGE -> this.uploadFile(getFile("audios/", fileNameWithoutExtension, ".rsAud"));
+			case VIDEO_MESSAGE -> this.uploadFile(getFile("videos/", fileNameWithoutExtension, ".rsVid"));
+			default -> throw new IllegalArgumentException("Unknown message type: " + messageType);
+		}
+	}
+
+	@NotNull
+	private File getFile(String x, String fileNameWithoutExtension, String x1) {
+		return new File(CHAT_FILES_PATH + x + fileNameWithoutExtension + x1);
+	}
+
 	public void uploadFile(File file) {
 		this.s3Client.putObject(
 				PutObjectRequest.builder()
@@ -78,27 +99,31 @@ public class S3 {
 				                .build(),
 				RequestBody.fromFile(file)
 		);
+
+		try {
+			Files.delete(file.toPath());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
 		this.logAllFilesInBucket();
 	}
 
 	@SneakyThrows
 	public File downloadFile(String key) {
 		File file = Utils.getChatFile(key);
-		FileOutputStream outputStream = new FileOutputStream(file);
 
-		if (this.existsKeyInBucket(key)) {
-			ResponseInputStream<GetObjectResponse> object = this.s3Client.getObject(
+		if (this.existsKeyInBucket(key + ".txt")) {
+			this.s3Client.getObject(
 					GetObjectRequest.builder()
 					                .bucket(S3_BUCKET_NAME)
-					                .key(key)
-					                .build()
+					                .key(key + ".txt")
+					                .build(),
+					ResponseTransformer.toFile(file)
 			);
-
-			object.transferTo(outputStream);
 		}
 
 		this.logAllFilesInBucket();
-		outputStream.close();
 		return file;
 	}
 

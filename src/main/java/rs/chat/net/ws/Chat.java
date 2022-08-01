@@ -9,9 +9,7 @@ import rs.chat.utils.Utils;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.file.Files;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Getter
@@ -42,11 +40,6 @@ public class Chat {
 
 		File chatFile = Utils.getChatFile(this.chatId);
 		S3.getInstance().uploadFile(chatFile);
-		try {
-			Files.delete(chatFile.toPath());
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
 
 		log.info("Uploaded file");
 	}
