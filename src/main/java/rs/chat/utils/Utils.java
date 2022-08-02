@@ -4,8 +4,8 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import com.google.gson.reflect.TypeToken;
+import rs.chat.net.ws.JsonMessageWrapper;
 
 import java.io.File;
 import java.util.Date;
@@ -60,28 +60,20 @@ public final class Utils {
 	}
 
 	public static String createServerMessage(String message, String type) {
-		return createMessage("Server", "ALL", -1, type, null, "UTF-8", message);
-	}
-
-	public static String createMessage(String username, String chatId, long sessionId, String type,
-	                                   String token, String encoding, String content) {
-		JsonObject headers = new JsonObject();
-		headers.addProperty("username", username);
-		headers.addProperty("chatId", chatId);
-		headers.addProperty("sessionId", sessionId);
-		headers.addProperty("type", type);
-		headers.addProperty("date", System.currentTimeMillis());
-		headers.addProperty("token", token);
-
-		JsonObject body = new JsonObject();
-		body.add("encoding", new JsonPrimitive(encoding));
-		body.add("content", new JsonPrimitive(content));
-
-		JsonObject fullMessage = new JsonObject();
-		fullMessage.add("headers", headers);
-		fullMessage.add("body", body);
-
-		return fullMessage.toString();
+		return JsonMessageWrapper.builder()
+		                         /* Headers */
+		                         .username("Server")
+		                         .chatId("ALL")
+		                         .sessionId(-1)
+		                         .type(type)
+		                         .date(System.currentTimeMillis())
+		                         .token(null)
+		                         /* Body */
+		                         .encoding("UTF-8")
+		                         .content(message)
+		                         .build()
+		                         /* JsonObject */
+		                         .toString();
 	}
 
 	public static File getChatFile(String fileNameWithoutExtension) {

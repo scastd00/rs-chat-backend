@@ -3,6 +3,7 @@ package rs.chat.storage;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import rs.chat.net.ws.WSMessage;
 import rs.chat.utils.Constants;
 import rs.chat.utils.Utils;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -26,10 +27,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
-import static rs.chat.net.ws.WebSocketMessageType.AUDIO_MESSAGE;
-import static rs.chat.net.ws.WebSocketMessageType.IMAGE_MESSAGE;
-import static rs.chat.net.ws.WebSocketMessageType.TEXT_MESSAGE;
-import static rs.chat.net.ws.WebSocketMessageType.VIDEO_MESSAGE;
 import static rs.chat.utils.Constants.CHAT_FILES_PATH;
 import static rs.chat.utils.Constants.S3_BUCKET_NAME;
 
@@ -76,14 +73,8 @@ public class S3 {
 		}
 	}
 
-	public void uploadFile(String fileNameWithoutExtension, String messageType) {
-		switch (messageType) {
-			case TEXT_MESSAGE -> this.uploadFile(getFile("chats/", fileNameWithoutExtension, ".rsJson")); // Without opening and closing braces
-			case IMAGE_MESSAGE -> this.uploadFile(getFile("images/", fileNameWithoutExtension, ".rsImg"));
-			case AUDIO_MESSAGE -> this.uploadFile(getFile("audios/", fileNameWithoutExtension, ".rsAud"));
-			case VIDEO_MESSAGE -> this.uploadFile(getFile("videos/", fileNameWithoutExtension, ".rsVid"));
-			default -> throw new IllegalArgumentException("Unknown message type: " + messageType);
-		}
+	public void uploadFile(String fileNameWithoutExtension, WSMessage messageType) {
+
 	}
 
 	@NotNull

@@ -6,21 +6,23 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+import rs.chat.net.ws.JsonMessageWrapper;
 import rs.chat.net.ws.WSClient;
 import rs.chat.net.ws.WSClientID;
+import rs.chat.net.ws.WSMessage;
 import rs.chat.net.ws.WebSocketChatMap;
 import rs.chat.utils.Utils;
 
 import java.io.IOException;
 
-import static rs.chat.net.ws.WebSocketMessageType.ACTIVE_USERS_MESSAGE;
-import static rs.chat.net.ws.WebSocketMessageType.AUDIO_MESSAGE;
-import static rs.chat.net.ws.WebSocketMessageType.ERROR_MESSAGE;
-import static rs.chat.net.ws.WebSocketMessageType.IMAGE_MESSAGE;
-import static rs.chat.net.ws.WebSocketMessageType.TEXT_MESSAGE;
-import static rs.chat.net.ws.WebSocketMessageType.USER_CONNECTED;
-import static rs.chat.net.ws.WebSocketMessageType.USER_DISCONNECTED;
-import static rs.chat.net.ws.WebSocketMessageType.VIDEO_MESSAGE;
+import static rs.chat.net.ws.WSMessage.ACTIVE_USERS_MESSAGE;
+import static rs.chat.net.ws.WSMessage.AUDIO_MESSAGE;
+import static rs.chat.net.ws.WSMessage.ERROR_MESSAGE;
+import static rs.chat.net.ws.WSMessage.IMAGE_MESSAGE;
+import static rs.chat.net.ws.WSMessage.TEXT_MESSAGE;
+import static rs.chat.net.ws.WSMessage.USER_CONNECTED;
+import static rs.chat.net.ws.WSMessage.USER_DISCONNECTED;
+import static rs.chat.net.ws.WSMessage.VIDEO_MESSAGE;
 
 @Slf4j
 public class WebSocketHandler extends TextWebSocketHandler {
@@ -29,65 +31,55 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	@Override
 	protected void handleTextMessage(@NotNull WebSocketSession session,
 	                                 @NotNull TextMessage message) throws IOException {
-		JsonObject jsonMessage = Utils.parseJson(message.getPayload());
+		JsonMessageWrapper wrappedMessage = new JsonMessageWrapper(message.getPayload());
 
-		JsonObject headers = (JsonObject) jsonMessage.get("headers");
-		String username = headers.get("username").getAsString();
-		String chatId = headers.get("chatId").getAsString();
-		long sessionId = headers.get("sessionId").getAsLong();
-		String type = headers.get("type").getAsString();
-//		long date = headers.get("date").getAsLong();
-		String token = headers.get("token").getAsString();
+		String username = wrappedMessage.username();
+		String chatId = wrappedMessage.chatId();
+		long sessionId = wrappedMessage.sessionId();
+		String type = wrappedMessage.type();
+//		long date = wrappedMessage.date();
+		String token = wrappedMessage.token();
 
-//		JsonObject body = (JsonObject) jsonMessage.get("body");
-//		String encoding = body.get("encoding").getAsString();
-//		String content = body.get("content").getAsString();
+//		String encoding = wrappedMessage.encoding();
+//		String content = wrappedMessage.content();
 
 		// FIXME: A user that did not send the USER_CONNECTED message could send messages
 		//  but cannot receive them
 		WSClientID wsClientID = new WSClientID(username, chatId, sessionId);
+		WSMessage receivedMessageType = new WSMessage(type, null, null);
 
-		switch (type) {
-			case USER_CONNECTED -> {
-				Utils.checkAuthorizationToken(token);
+		if (USER_CONNECTED.equals(receivedMessageType)) {
+			Utils.checkAuthorizationToken(token);
 
-				this.chatMap.addClientToChat(new WSClient(session, wsClientID));
-				this.chatMap.broadcastToSingleChatAndExcludeClient(
-						wsClientID,
-						Utils.createServerMessage(username + " has joined the chat", USER_CONNECTED)
-				);
-			}
-
-			case USER_DISCONNECTED -> {
-				this.chatMap.removeClientFromChat(wsClientID);
-				this.chatMap.broadcastToSingleChat(
-						chatId,
-						Utils.createServerMessage(username + " has disconnected from the chat", USER_DISCONNECTED)
-				);
-				// Closed from the frontend
-			}
-
-			case TEXT_MESSAGE -> {
-				// Clear the sensitive data to send the message to other clients
-				String response = this.clearSensitiveDataChangeDateAndBuildResponse(jsonMessage);
-				this.chatMap.broadcastToSingleChatAndExcludeClient(wsClientID, response);
-			}
-
-			case IMAGE_MESSAGE -> log.info("");
-
-			case AUDIO_MESSAGE -> log.info("");
-
-			case VIDEO_MESSAGE -> log.info("");
-
-			case ACTIVE_USERS_MESSAGE -> log.info("");
-
-			default -> session.sendMessage(
-					new TextMessage(
-							Utils.createServerMessage(
-									"ERROR: type property is not present in the content of the JSON",
-									ERROR_MESSAGE
-							)
-					)
+			this.chatMap.addClientToChat(new WSClient(session, wsClientID));
+			this.chatMap.broadcastToSingleChatAndExcludeClient(
+					wsClientID,
+					Utils.createServerMessage(username + " has joined the chat", USER_CONNECTED.type())
+			);
+		} else if (USER_DISCONNECTED.equals(receivedMessageType)) {
+			this.chatMap.removeClientFromChat(wsClientID);
+			this.chatMap.broadcastToSingleChat(
+					chatId,
+					Utils.createServerMessage(username + " has disconnected from the chat", USER_DISCONNECTED.type())
+			);
+			// Closed from the frontend
+		} else if (TEXT_MESSAGE.equals(receivedMessageType)) {// Clear the sensitive data to send the message to other clients
+			String response = this.clearSensitiveDataChangeDateAndBuildResponse(wrappedMessage.getParsedPayload());
+			this.chatMap.broadcastToSingleChatAndExcludeClient(wsClientID, response);
+		} else if (IMAGE_MESSAGE.equals(receivedMessageType)) {
+			log.info("");
+		} else if (AUDIO_MESSAGE.equals(receivedMessageType)) {
+			log.info("");
+		} else if (VIDEO_MESSAGE.equals(receivedMessageType)) {
+			log.info("");
+		} else if (ACTIVE_USERS_MESSAGE.equals(receivedMessageType)) {
+			log.info("");
+		} else {
+			session.sendMessage(new TextMessage(
+					Utils.createServerMessage(
+							"ERROR: type property is not present in the content of the JSON",
+							ERROR_MESSAGE.type()
+					))
 			);
 		}
 	}
@@ -95,7 +87,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	@Override
 	public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
 		session.sendMessage(
-				new TextMessage(Utils.createServerMessage(exception.getMessage(), ERROR_MESSAGE))
+				new TextMessage(Utils.createServerMessage(exception.getMessage(), ERROR_MESSAGE.type()))
 		);
 	}
 
