@@ -7,7 +7,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import rs.chat.net.ws.JsonMessageWrapper;
 
-import java.io.File;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -64,7 +63,7 @@ public final class Utils {
 		                         /* Headers */
 		                         .username("Server")
 		                         .chatId("ALL")
-		                         .sessionId(-1)
+		                         /*.sessionId(-1)*/
 		                         .type(type)
 		                         .date(System.currentTimeMillis())
 		                         .token(null)
@@ -74,9 +73,5 @@ public final class Utils {
 		                         .build()
 		                         /* JsonObject */
 		                         .toString();
-	}
-
-	public static File getChatFile(String fileNameWithoutExtension) {
-		return new File(Constants.CHAT_FILES_PATH + fileNameWithoutExtension + ".txt");
 	}
 }

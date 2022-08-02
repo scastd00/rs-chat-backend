@@ -2,10 +2,8 @@ package rs.chat.storage;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import rs.chat.net.ws.WSMessage;
 import rs.chat.utils.Constants;
-import rs.chat.utils.Utils;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.awscore.exception.AwsServiceException;
 import software.amazon.awssdk.core.exception.SdkClientException;
@@ -27,7 +25,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
-import static rs.chat.utils.Constants.CHAT_FILES_PATH;
 import static rs.chat.utils.Constants.S3_BUCKET_NAME;
 
 @Slf4j
@@ -74,19 +71,12 @@ public class S3 {
 	}
 
 	public void uploadFile(String fileNameWithoutExtension, WSMessage messageType) {
+		File file = messageType.buildFileInDisk(fileNameWithoutExtension);
 
-	}
-
-	@NotNull
-	private File getFile(String x, String fileNameWithoutExtension, String x1) {
-		return new File(CHAT_FILES_PATH + x + fileNameWithoutExtension + x1);
-	}
-
-	public void uploadFile(File file) {
 		this.s3Client.putObject(
 				PutObjectRequest.builder()
 				                .bucket(S3_BUCKET_NAME)
-				                .key(file.getName())
+				                .key(messageType.s3Key(fileNameWithoutExtension))
 				                .build(),
 				RequestBody.fromFile(file)
 		);
@@ -96,29 +86,27 @@ public class S3 {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-
-		this.logAllFilesInBucket();
 	}
 
-	@SneakyThrows
-	public File downloadFile(String key) {
-		File file = Utils.getChatFile(key);
+	@SneakyThrows(AwsServiceException.class)
+	public File downloadFile(String fileNameWithoutExtension, WSMessage messageType) {
+		File file = messageType.buildFileInDisk(fileNameWithoutExtension);
+		String s3Key = messageType.s3Key(fileNameWithoutExtension);
 
-		if (this.existsKeyInBucket(key + ".txt")) {
+		if (this.existsKeyInBucket(s3Key, messageType)) {
 			this.s3Client.getObject(
 					GetObjectRequest.builder()
 					                .bucket(S3_BUCKET_NAME)
-					                .key(key + ".txt")
+					                .key(s3Key)
 					                .build(),
 					ResponseTransformer.toFile(file)
 			);
 		}
 
-		this.logAllFilesInBucket();
 		return file;
 	}
 
-	private boolean existsKeyInBucket(String key) {
+	private boolean existsKeyInBucket(String key, WSMessage messageType) {
 		HeadObjectResponse response;
 
 		try {
@@ -128,7 +116,6 @@ public class S3 {
 					                 .key(key)
 					                 .build()
 			);
-			log.info("");
 		} catch (NoSuchKeyException ignored) {
 			return false;
 		} catch (AwsServiceException | SdkClientException e) {

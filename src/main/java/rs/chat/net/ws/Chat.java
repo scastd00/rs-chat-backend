@@ -4,13 +4,15 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import rs.chat.storage.S3;
-import rs.chat.utils.Utils;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import static rs.chat.net.ws.WSMessage.TEXT_MESSAGE;
 
 @Getter
 @Slf4j
@@ -19,12 +21,12 @@ public class Chat {
 	private final CopyOnWriteArrayList<WSClient> clients;
 	private final PrintWriter writer;
 
-	@SneakyThrows
+	@SneakyThrows(IOException.class)
 	public Chat(String chatId) {
 		this.chatId = chatId;
 		this.clients = new CopyOnWriteArrayList<>();
 
-		File downloadFile = S3.getInstance().downloadFile(chatId);
+		File downloadFile = S3.getInstance().downloadFile(chatId, TEXT_MESSAGE);
 
 		FileWriter fileWriter = new FileWriter(downloadFile, true);
 		BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
@@ -38,8 +40,7 @@ public class Chat {
 	public void finish() {
 		this.writer.close();
 
-		File chatFile = Utils.getChatFile(this.chatId);
-		S3.getInstance().uploadFile(chatFile);
+		S3.getInstance().uploadFile(this.chatId, TEXT_MESSAGE);
 
 		log.info("Uploaded file");
 	}
