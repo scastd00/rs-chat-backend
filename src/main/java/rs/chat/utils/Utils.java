@@ -74,4 +74,8 @@ public final class Utils {
 		                         /* JsonObject */
 		                         .toString();
 	}
+
+	public static boolean isDevEnv() {
+		return System.getenv("ENV").toLowerCase().startsWith("dev");
+	}
 }

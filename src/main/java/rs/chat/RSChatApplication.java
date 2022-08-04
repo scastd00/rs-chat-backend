@@ -9,6 +9,6 @@ public class RSChatApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(RSChatApplication.class, args);
 
-		S3.getInstance().logAllFilesInBucket();
+		S3.getInstance().checkS3BucketConnectivity();
 	}
 }
