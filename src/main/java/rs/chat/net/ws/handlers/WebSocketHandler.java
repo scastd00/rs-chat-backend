@@ -20,8 +20,8 @@ import static rs.chat.net.ws.WSMessage.AUDIO_MESSAGE;
 import static rs.chat.net.ws.WSMessage.ERROR_MESSAGE;
 import static rs.chat.net.ws.WSMessage.IMAGE_MESSAGE;
 import static rs.chat.net.ws.WSMessage.TEXT_MESSAGE;
-import static rs.chat.net.ws.WSMessage.USER_CONNECTED;
-import static rs.chat.net.ws.WSMessage.USER_DISCONNECTED;
+import static rs.chat.net.ws.WSMessage.USER_JOINED;
+import static rs.chat.net.ws.WSMessage.USER_LEFT;
 import static rs.chat.net.ws.WSMessage.VIDEO_MESSAGE;
 
 @Slf4j
@@ -48,19 +48,19 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		WSClientID wsClientID = new WSClientID(username, chatId, sessionId);
 		WSMessage receivedMessageType = new WSMessage(type, null, null);
 
-		if (USER_CONNECTED.equals(receivedMessageType)) {
+		if (USER_JOINED.equals(receivedMessageType)) {
 			Utils.checkAuthorizationToken(token);
 
 			this.chatMap.addClientToChat(new WSClient(session, wsClientID));
 			this.chatMap.broadcastToSingleChatAndExcludeClient(
 					wsClientID,
-					Utils.createServerMessage(username + " has joined the chat", USER_CONNECTED.type())
+					Utils.createServerMessage(username + " has joined the chat", USER_JOINED.type())
 			);
-		} else if (USER_DISCONNECTED.equals(receivedMessageType)) {
+		} else if (USER_LEFT.equals(receivedMessageType)) {
 			this.chatMap.removeClientFromChat(wsClientID);
 			this.chatMap.broadcastToSingleChat(
 					chatId,
-					Utils.createServerMessage(username + " has disconnected from the chat", USER_DISCONNECTED.type())
+					Utils.createServerMessage(username + " has disconnected from the chat", USER_LEFT.type())
 			);
 			// Closed from the frontend
 		} else if (TEXT_MESSAGE.equals(receivedMessageType)) {// Clear the sensitive data to send the message to other clients

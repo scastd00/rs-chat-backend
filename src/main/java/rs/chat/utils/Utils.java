@@ -66,7 +66,7 @@ public final class Utils {
 		                         /*.sessionId(-1)*/
 		                         .type(type)
 		                         .date(System.currentTimeMillis())
-		                         .token(null)
+		                         /*.token(null)*/
 		                         /* Body */
 		                         .encoding("UTF-8")
 		                         .content(message)

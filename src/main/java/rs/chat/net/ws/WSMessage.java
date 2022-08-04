@@ -6,12 +6,14 @@ import java.util.Objects;
 import static rs.chat.utils.Constants.LOCAL_FILES_PATH;
 
 public record WSMessage(String type, String filePrefix, String extension) {
-	public static final WSMessage USER_CONNECTED = new WSMessage("USER_CONNECTED", null, null);
-	public static final WSMessage USER_DISCONNECTED = new WSMessage("USER_DISCONNECTED", null, null);
+	public static final WSMessage USER_JOINED = new WSMessage("USER_JOINED", null, null);
+	public static final WSMessage USER_LEFT = new WSMessage("USER_LEFT", null, null);
+
 	public static final WSMessage TEXT_MESSAGE = new WSMessage("TEXT_MESSAGE", "chat/", ".rsJson");
 	public static final WSMessage IMAGE_MESSAGE = new WSMessage("IMAGE_MESSAGE", "images/", ".rsImg");
 	public static final WSMessage AUDIO_MESSAGE = new WSMessage("AUDIO_MESSAGE", "audios/", ".rsAud");
 	public static final WSMessage VIDEO_MESSAGE = new WSMessage("VIDEO_MESSAGE", "videos/", ".rsVid");
+
 	public static final WSMessage ACTIVE_USERS_MESSAGE = new WSMessage("ACTIVE_USERS", null, null);
 	public static final WSMessage SERVER_INFO_MESSAGE = new WSMessage("SERVER_INFO", null, null);
 	public static final WSMessage ERROR_MESSAGE = new WSMessage("ERROR_MESSAGE", null, null);
@@ -20,7 +22,7 @@ public record WSMessage(String type, String filePrefix, String extension) {
 		File file = new File(LOCAL_FILES_PATH + this.s3Key(fileNameWithoutExtension));
 
 		if (file.getParentFile() != null) {
-			file.getParentFile().mkdirs();
+			file.getParentFile().mkdirs(); // Create parent folder
 		}
 
 		return file;
