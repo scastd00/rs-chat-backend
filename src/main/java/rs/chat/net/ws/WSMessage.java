@@ -5,6 +5,14 @@ import java.util.Objects;
 
 import static rs.chat.utils.Constants.LOCAL_FILES_PATH;
 
+/**
+ * Record that specifies properties of the messages.
+ * There are some default messages that the application uses.
+ *
+ * @param type       {@link String} that specifies the message type (SCREAMING_SNAKE_CASE).
+ * @param filePrefix path prefix of the files where the messages are stored.
+ * @param extension  extension of the file created for a specific type of message.
+ */
 public record WSMessage(String type, String filePrefix, String extension) {
 	public static final WSMessage USER_JOINED = new WSMessage("USER_JOINED", null, null);
 	public static final WSMessage USER_LEFT = new WSMessage("USER_LEFT", null, null);

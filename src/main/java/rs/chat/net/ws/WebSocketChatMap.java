@@ -6,7 +6,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Class that manages the chats to which the clients are connected.
@@ -19,7 +18,7 @@ public class WebSocketChatMap {
 	private final Map<String, Chat> chats = new HashMap<>();
 
 	/**
-	 * Creates a new chat ({@link CopyOnWriteArrayList}) for the specified key.
+	 * Creates a new chat ({@link Chat}) for the specified key.
 	 *
 	 * @param chatId key of the chat to create.
 	 */
@@ -39,7 +38,7 @@ public class WebSocketChatMap {
 	}
 
 	/**
-	 * Returns the chat identified by the chatId or an empty list if
+	 * Returns the clients of the chat identified by the chatId or an empty list if
 	 * it does not exist. <b>Use with caution, if the returned list is
 	 * an empty one, no elements will be stored in the real chat.</b>
 	 *
@@ -67,13 +66,11 @@ public class WebSocketChatMap {
 	 * {@code null} otherwise (if the chat is empty or the user is disconnected).
 	 */
 	public synchronized WSClient getClient(WSClientID clientID) {
-		List<WSClient> clientFoundList =
-				this.getClientsOf(clientID.chatId())
-				    .stream()
-				    .filter(client -> client.wsClientID().equals(clientID))
-				    .toList();
-
-		return clientFoundList.isEmpty() ? null : clientFoundList.get(0);
+		return this.getClientsOf(clientID.chatId())
+		           .stream()
+		           .filter(client -> client.wsClientID().equals(clientID))
+		           .findFirst()
+		           .orElse(null);
 	}
 
 	/**
@@ -101,7 +98,7 @@ public class WebSocketChatMap {
 	 * Precondition: the client is connected to the chat (so {@link #getClientsOf(String)} will
 	 * return a non-empty list).
 	 *
-	 * @param clientID client to remove from the chat.
+	 * @param clientID id of the client to remove from the chat.
 	 */
 	public synchronized void removeClientFromChat(WSClientID clientID) {
 		String chatId = clientID.chatId();
@@ -110,7 +107,7 @@ public class WebSocketChatMap {
 		this.getClientsOf(chatId)
 		    .removeIf(client -> client.wsClientID().equals(clientID));
 
-		// Delete the entry of the chat if there are no more clients connected to it.
+		// Delete the chat and its entry in the map if there are no more clients connected to it.
 		if (this.getClientsOf(chatId).isEmpty()) {
 			this.chats.get(chatId).finish();
 			this.chats.remove(chatId);
@@ -140,6 +137,7 @@ public class WebSocketChatMap {
 		    .stream()
 		    .filter(client -> !client.wsClientID().equals(clientID))
 		    .forEach(client -> client.send(message));
+
 		this.saveMessage(clientID.chatId(), message);
 	}
 

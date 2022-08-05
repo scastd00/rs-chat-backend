@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static rs.chat.net.ws.WSMessage.ERROR_MESSAGE;
 import static rs.chat.utils.Constants.ALGORITHM;
 import static rs.chat.utils.Constants.GSON;
 import static rs.chat.utils.Constants.JWT_TOKEN_PREFIX;
@@ -20,6 +21,13 @@ public final class Utils {
 	private Utils() {
 	}
 
+	/**
+	 * Parses a JSON string into a {@link JsonObject}.
+	 *
+	 * @param jsonString
+	 *
+	 * @return
+	 */
 	public static JsonObject parseJson(String jsonString) {
 		// @formatter:off
 		return GSON.fromJson(jsonString, new TypeToken<JsonObject>() {}.getType());
@@ -75,6 +83,28 @@ public final class Utils {
 		                         .toString();
 	}
 
+	public static String createServerErrorMessage(String message) {
+		return JsonMessageWrapper.builder()
+		                         /* Headers */
+		                         .username("Server")
+		                         .chatId("NONE")
+		                         /*.sessionId(-1)*/
+		                         .type(ERROR_MESSAGE.type())
+		                         .date(System.currentTimeMillis())
+		                         /*.token(null)*/
+		                         /* Body */
+		                         .encoding("UTF-8")
+		                         .content(message)
+		                         .build()
+		                         /* JsonObject */
+		                         .toString();
+	}
+
+	/**
+	 * Determines if the running environment is development or production.
+	 *
+	 * @return {@code true} if the environment is development, {@code false} otherwise.
+	 */
 	public static boolean isDevEnv() {
 		return System.getenv("ENV").toLowerCase().startsWith("dev");
 	}
