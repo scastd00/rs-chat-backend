@@ -18,6 +18,9 @@ public class Routes {
 		public static final String OPENED_SESSIONS_OF_USER_URL = API_URL_PREFIX + "/sessions/{username}";
 		public static final String CHAT_METADATA_URL = API_URL_PREFIX + "/chat/metadata/{type}/{id}";
 		public static final String CHAT_CONTENT_URL = API_URL_PREFIX + "/chat/content/{type}/{id}";
+		public static final String DEGREES_URL = API_URL_PREFIX + "/degrees";
+		public static final String DEGREE_SAVE_URL = API_URL_PREFIX + "/degree/save";
+		public static final String DEGREE_BY_NAME_URL = API_URL_PREFIX + "/degree/{degreeName}";
 	}
 
 	public static class PostRoute {
@@ -36,10 +39,13 @@ public class Routes {
 		}
 
 		public static final String CHANGE_PASSWORD_URL = API_URL_PREFIX + "/changePassword/{username}";
+		public static final String EDIT_DEGREE_NAME_URL = API_URL_PREFIX + "/degree/editName";
 	}
 
 	public static class DeleteRoute {
 		private DeleteRoute() {
 		}
+
+		public static final String DELETE_DEGREE_URL = "/degree/delete/{degreeName}";
 	}
 }
