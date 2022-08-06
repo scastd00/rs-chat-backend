@@ -17,7 +17,6 @@ import rs.chat.net.http.HttpRequest;
 import rs.chat.net.http.HttpResponse;
 import rs.chat.net.http.HttpResponse.HttpResponseBody;
 import rs.chat.policies.Policies;
-import rs.chat.router.Routes;
 import rs.chat.service.SessionService;
 import rs.chat.service.UserService;
 import rs.chat.utils.Constants;
@@ -30,6 +29,10 @@ import java.util.Map;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
+import static rs.chat.router.Routes.PostRoute.LOGIN_URL;
+import static rs.chat.router.Routes.PostRoute.LOGOUT_URL;
+import static rs.chat.router.Routes.PostRoute.REGISTER_URL;
+import static rs.chat.router.Routes.PutRoute.CHANGE_PASSWORD_URL;
 import static rs.chat.utils.Constants.ERROR_JSON_KEY;
 import static rs.chat.utils.Constants.JWT_TOKEN_PREFIX;
 import static rs.chat.utils.Constants.JWT_VERIFIER;
@@ -43,7 +46,7 @@ public class AuthController {
 	private final UserService userService;
 	private final SessionService sessionService;
 
-	@PostMapping(Routes.LOGIN_URL)
+	@PostMapping(LOGIN_URL)
 	public void login(HttpRequest request, HttpResponse response) throws IOException {
 		String jsonTokens = request.get("USER:TOKENS").toString();
 		String username = request.get("USER:USERNAME").toString();
@@ -72,7 +75,7 @@ public class AuthController {
 		response.status(HttpStatus.OK).send(responseBody);
 	}
 
-	@PostMapping(Routes.REGISTER_URL)
+	@PostMapping(REGISTER_URL)
 	public void register(HttpRequest request, HttpResponse response) throws IOException {
 		JsonObject body = request.body();
 
@@ -119,7 +122,7 @@ public class AuthController {
 		response.status(OK).send(responseBody);
 	}
 
-	@PostMapping(Routes.LOGOUT_URL)
+	@PostMapping(LOGOUT_URL)
 	public void logout(HttpRequest request, HttpResponse response) throws IOException {
 		String authorizationHeader = request.getHeader(AUTHORIZATION);
 
@@ -150,7 +153,7 @@ public class AuthController {
 		response.sendStatus(OK);
 	}
 
-	@PutMapping(Routes.CHANGE_PASSWORD_URL)
+	@PutMapping(CHANGE_PASSWORD_URL)
 	public void changePassword(HttpRequest request,
 	                           HttpResponse response,
 	                           @PathVariable String username) throws IOException {

@@ -17,18 +17,19 @@ import rs.chat.config.security.filter.RSChatAuthenticationFilter;
 import rs.chat.config.security.filter.RSChatAuthorizationFilter;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
-import static rs.chat.router.Routes.CHANGE_PASSWORD_URL;
-import static rs.chat.router.Routes.CHAT_CONTENT_URL;
-import static rs.chat.router.Routes.CHAT_METADATA_URL;
-import static rs.chat.router.Routes.CHAT_SEND_TEXT_MESSAGE_URL;
-import static rs.chat.router.Routes.LOGIN_URL;
-import static rs.chat.router.Routes.OPENED_SESSIONS_URL;
+import static rs.chat.router.Routes.GetRoute.CHAT_CONTENT_URL;
+import static rs.chat.router.Routes.GetRoute.CHAT_METADATA_URL;
+import static rs.chat.router.Routes.GetRoute.OPENED_SESSIONS_OF_USER_URL;
+import static rs.chat.router.Routes.GetRoute.USERS_URL;
+import static rs.chat.router.Routes.GetRoute.USER_URL;
+import static rs.chat.router.Routes.PostRoute.CHAT_SEND_TEXT_MESSAGE_URL;
+import static rs.chat.router.Routes.PostRoute.LOGIN_URL;
+import static rs.chat.router.Routes.PostRoute.LOGOUT_URL;
+import static rs.chat.router.Routes.PostRoute.REGISTER_URL;
+import static rs.chat.router.Routes.PostRoute.USER_SAVE_URL;
+import static rs.chat.router.Routes.PutRoute.CHANGE_PASSWORD_URL;
 import static rs.chat.router.Routes.REFRESH_TOKEN_URL;
-import static rs.chat.router.Routes.REGISTER_URL;
 import static rs.chat.router.Routes.ROOT_URL;
-import static rs.chat.router.Routes.USERS_URL;
-import static rs.chat.router.Routes.USER_SAVE_URL;
-import static rs.chat.router.Routes.USER_URL;
 import static rs.chat.router.Routes.WS_CHAT_ENDPOINT;
 import static rs.chat.utils.Constants.LOW_TIER_ROLES;
 import static rs.chat.utils.Constants.MEDIUM_TIER_ROLES;
@@ -80,7 +81,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		RouterSecurityConfig lowTierRoutes = new RouterSecurityConfig(http, LOW_TIER_ROLES);
 
 		lowTierRoutes
-				.addGETRoutes(USER_URL, OPENED_SESSIONS_URL, CHAT_METADATA_URL, CHAT_CONTENT_URL)
+				.addGETRoutes(USER_URL, OPENED_SESSIONS_OF_USER_URL, CHAT_METADATA_URL, CHAT_CONTENT_URL)
 				.addPOSTRoutes(CHAT_SEND_TEXT_MESSAGE_URL)
 				.addPUTRoutes(CHANGE_PASSWORD_URL)
 				.addDELETERoutes()
@@ -116,6 +117,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		    .antMatchers(
 				    ROOT_URL,
 				    LOGIN_URL,
+				    LOGOUT_URL,
 				    REFRESH_TOKEN_URL,
 				    REGISTER_URL,
 				    WS_CHAT_ENDPOINT

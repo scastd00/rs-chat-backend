@@ -20,9 +20,9 @@ import java.util.Collections;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
-import static rs.chat.router.Routes.LOGIN_URL;
+import static rs.chat.router.Routes.PostRoute.LOGIN_URL;
+import static rs.chat.router.Routes.PostRoute.REGISTER_URL;
 import static rs.chat.router.Routes.REFRESH_TOKEN_URL;
-import static rs.chat.router.Routes.REGISTER_URL;
 import static rs.chat.utils.Constants.ERROR_JSON_KEY;
 import static rs.chat.utils.Constants.JWT_TOKEN_PREFIX;
 

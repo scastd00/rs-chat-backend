@@ -12,7 +12,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import rs.chat.domain.User;
 import rs.chat.net.http.HttpRequest;
 import rs.chat.net.http.HttpResponse;
-import rs.chat.router.Routes;
 import rs.chat.service.SessionService;
 import rs.chat.service.UserService;
 
@@ -21,6 +20,10 @@ import java.net.URI;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.OK;
+import static rs.chat.router.Routes.GetRoute.OPENED_SESSIONS_OF_USER_URL;
+import static rs.chat.router.Routes.GetRoute.USERS_URL;
+import static rs.chat.router.Routes.PostRoute.USER_SAVE_URL;
+import static rs.chat.router.Routes.REFRESH_TOKEN_URL;
 
 @Slf4j
 @RestController
@@ -29,21 +32,21 @@ public class UserController {
 	private final UserService userService;
 	private final SessionService sessionService;
 
-	@GetMapping(Routes.USERS_URL)
+	@GetMapping(USERS_URL)
 	public ResponseEntity<List<User>> getUsers() {
 		return ResponseEntity.ok(this.userService.getUsers());
 	}
 
-	@PostMapping(Routes.USER_SAVE_URL)
+	@PostMapping(USER_SAVE_URL)
 	public ResponseEntity<User> saveUser(@RequestBody User user) {
 		URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath()
-		                                                .path(Routes.USER_SAVE_URL)
+		                                                .path(USER_SAVE_URL)
 		                                                .toUriString());
 		return ResponseEntity.created(uri)
 		                     .body(this.userService.saveUser(user));
 	}
 
-	@GetMapping(Routes.REFRESH_TOKEN_URL)
+	@GetMapping(REFRESH_TOKEN_URL)
 	public void refreshToken(HttpRequest request, HttpResponse response) {
 //		String authorizationHeader = request.getHeader(AUTHORIZATION);
 //
@@ -77,7 +80,7 @@ public class UserController {
 //		}
 	}
 
-	@GetMapping(Routes.OPENED_SESSIONS_URL)
+	@GetMapping(OPENED_SESSIONS_OF_USER_URL)
 	public void openedSessions(HttpRequest request,
 	                           HttpResponse response,
 	                           @PathVariable String username) throws IOException {
