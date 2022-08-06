@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 import rs.chat.domain.Degree;
 import rs.chat.exceptions.BadRequestException;
+import rs.chat.exceptions.NotFoundException;
 import rs.chat.net.http.HttpRequest;
 import rs.chat.net.http.HttpResponse;
 import rs.chat.service.DegreeService;
@@ -32,7 +33,7 @@ public class DegreeController {
 	private final DegreeService degreeService;
 
 	@GetMapping(DEGREES_URL)
-	public void getDegrees(HttpResponse response) throws IOException {
+	public void getAllDegrees(HttpResponse response) throws IOException {
 		List<Degree> allDegrees = this.degreeService.getDegrees();
 		response.status(OK).send("degrees", allDegrees);
 	}
@@ -41,6 +42,11 @@ public class DegreeController {
 	public void getDegreeByName(HttpResponse response,
 	                            @PathVariable String degreeName) throws IOException {
 		Degree degree = this.degreeService.getByName(degreeName);
+
+		if (degree == null) {
+			throw new NotFoundException("degree '%s' not found".formatted(degreeName));
+		}
+
 		response.status(OK).send("degree", degree);
 	}
 
@@ -75,7 +81,13 @@ public class DegreeController {
 	}
 
 	@DeleteMapping(DELETE_DEGREE_URL)
-	public void deleteDegree(HttpRequest request, HttpResponse response, @PathVariable String degreeName) throws IOException {
+	public void deleteDegree(HttpResponse response,
+	                         @PathVariable String degreeName) throws IOException {
+		if (!this.degreeService.existsDegree(degreeName)) {
+			throw new NotFoundException("'%s' does not exist".formatted(degreeName));
+		}
+
 		this.degreeService.deleteDegreeByName(degreeName);
+		response.sendStatus(OK);
 	}
 }
