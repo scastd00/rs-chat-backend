@@ -21,6 +21,7 @@ import java.util.Map;
 public class HttpRequest extends HttpServletRequestWrapper {
 	private final byte[] cachedBody;
 	private final Map<String, Object> data = new HashMap<>();
+	private final JsonObject parsedBody;
 
 	/**
 	 * Constructs a request object wrapping the given request.
@@ -33,6 +34,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
 		super(request);
 		InputStream in = request.getInputStream();
 		this.cachedBody = StreamUtils.copyToByteArray(in);
+		this.parsedBody = Utils.parseJson(IOUtils.toString(this.getReader()));
 	}
 
 	@Override
@@ -46,8 +48,8 @@ public class HttpRequest extends HttpServletRequestWrapper {
 		return new BufferedReader(new InputStreamReader(byteArrayInputStream));
 	}
 
-	public JsonObject body() throws IOException {
-		return Utils.parseJson(IOUtils.toString(this.getReader()));
+	public JsonObject body() {
+		return this.parsedBody;
 	}
 
 	public Object get(String key) {
