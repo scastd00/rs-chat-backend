@@ -6,12 +6,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.IdClass;
 import javax.persistence.Table;
 
 @AllArgsConstructor
@@ -20,16 +20,26 @@ import javax.persistence.Table;
 @Setter
 @ToString
 @Entity
-@Table(name = "tea_subj", schema = "rs_chat")
-@IdClass(TeaSubjPK.class)
-public class TeaSubj {
+@Table(name = "chats", schema = "rs_chat")
+public class Chat {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "subject_id", nullable = false)
-	private Long subjectId;
+	@Column(name = "id", nullable = false)
+	private Long id;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "teacher_id", nullable = false)
-	private Long teacherId;
+	@Basic
+	@Column(name = "name", nullable = false, length = 100)
+	private String name;
+
+	@Basic
+	@Column(name = "type", nullable = false, length = 10)
+	private String type;
+
+	@Basic
+	@Column(name = "s3_folder", length = 300)
+	private String s3Folder;
+
+	@Basic
+	@Column(name = "metadata", nullable = false, length = -1)
+	private String metadata;
 }

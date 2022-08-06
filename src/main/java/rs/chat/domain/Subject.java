@@ -6,14 +6,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @AllArgsConstructor
@@ -29,23 +27,27 @@ public class Subject {
 	@Column(name = "id", nullable = false)
 	private Long id;
 
+	@Basic
 	@Column(name = "name", nullable = false, length = 30)
 	private String name;
 
+	@Basic
 	@Column(name = "subj_period", nullable = false, length = 2)
 	private String subjPeriod;
 
+	@Basic
 	@Column(name = "type", nullable = false, length = 2)
 	private String type;
 
+	@Basic
 	@Column(name = "credits", nullable = false)
-	private Integer credits;
+	private Byte credits;
 
+	@Basic
 	@Column(name = "grade", nullable = false)
-	private Integer grade;
+	private Byte grade;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "degree_id", nullable = false)
-	@ToString.Exclude
-	private Degree degree;
+	@Basic
+	@Column(name = "degree_id", nullable = false)
+	private Long degreeId;
 }

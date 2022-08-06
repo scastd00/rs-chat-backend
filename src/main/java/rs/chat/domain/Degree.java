@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -26,6 +27,7 @@ public class Degree {
 	@Column(name = "id", nullable = false)
 	private Long id;
 
+	@Basic
 	@Column(name = "name", nullable = false)
 	private String name;
 }

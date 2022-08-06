@@ -6,12 +6,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.persistence.EmbeddedId;
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.MapsId;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 
 @AllArgsConstructor
@@ -21,19 +21,15 @@ import javax.persistence.Table;
 @ToString
 @Entity
 @Table(name = "stu_subj", schema = "rs_chat")
+@IdClass(StuSubjPK.class)
 public class StuSubj {
-	@EmbeddedId
-	private StuSubjId id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "subject_id", nullable = false)
+	private Long subjectId;
 
-	@MapsId("subjectId")
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "subject_id", nullable = false)
-	@ToString.Exclude
-	private Subject subject;
-
-	@MapsId("studentId")
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "student_id", nullable = false)
-	@ToString.Exclude
-	private User student;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "student_id", nullable = false)
+	private Long studentId;
 }

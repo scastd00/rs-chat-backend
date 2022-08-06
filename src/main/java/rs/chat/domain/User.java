@@ -6,15 +6,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.time.Instant;
-import java.time.LocalDate;
+import java.sql.Date;
+import java.sql.Timestamp;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -29,29 +29,35 @@ public class User {
 	@Column(name = "id", nullable = false)
 	private Long id;
 
+	@Basic
 	@Column(name = "username", nullable = false, length = 15)
 	private String username;
 
+	@Basic
 	@Column(name = "password", nullable = false, length = 126)
 	private String password;
 
+	@Basic
 	@Column(name = "email", nullable = false, length = 70)
 	private String email;
 
+	@Basic
 	@Column(name = "full_name", nullable = false, length = 100)
 	private String fullName;
 
+	@Basic
 	@Column(name = "age")
-	private Integer age;
+	private Byte age;
 
-	@Convert(disableConversion = true)
+	@Basic
 	@Column(name = "birthdate")
-	private LocalDate birthdate;
+	private Date birthdate;
 
+	@Basic
 	@Column(name = "role", nullable = false, length = 13)
 	private String role;
 
-	@Convert(disableConversion = true)
+	@Basic
 	@Column(name = "block_until")
-	private Instant blockUntil;
+	private Timestamp blockUntil;
 }

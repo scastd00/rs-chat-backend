@@ -66,9 +66,9 @@ public class HttpResponse extends HttpServletResponseWrapper {
 		}
 	}
 
-	@Getter
 	@NoArgsConstructor
-	static class HttpResponseBody {
+	@Getter
+	public static class HttpResponseBody {
 		private final Map<String, Object> data = new HashMap<>();
 		public static final HttpResponseBody EMPTY = null;
 

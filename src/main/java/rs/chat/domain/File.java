@@ -6,17 +6,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import java.time.Instant;
+import java.sql.Timestamp;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -31,27 +28,31 @@ public class File {
 	@Column(name = "id", nullable = false)
 	private Long id;
 
+	@Basic
 	@Column(name = "name", nullable = false)
 	private String name;
 
-	@Convert(disableConversion = true)
+	@Basic
 	@Column(name = "date_uploaded", nullable = false)
-	private Instant dateUploaded;
+	private Timestamp dateUploaded;
 
+	@Basic
 	@Column(name = "size", nullable = false)
 	private Integer size;
 
+	@Basic
 	@Column(name = "path", length = 400)
 	private String path;
 
+	@Basic
 	@Column(name = "metadata", length = 700)
 	private String metadata;
 
+	@Basic
 	@Column(name = "type", nullable = false, length = 10)
 	private String type;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "user_id", nullable = false)
-	@ToString.Exclude
-	private User user;
+	@Basic
+	@Column(name = "user_id", nullable = false)
+	private Long userId;
 }

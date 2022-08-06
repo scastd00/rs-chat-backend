@@ -15,6 +15,7 @@ import rs.chat.domain.Session;
 import rs.chat.domain.User;
 import rs.chat.net.http.HttpRequest;
 import rs.chat.net.http.HttpResponse;
+import rs.chat.net.http.HttpResponse.HttpResponseBody;
 import rs.chat.policies.Policies;
 import rs.chat.router.Routes;
 import rs.chat.service.SessionService;
@@ -49,6 +50,7 @@ public class AuthController {
 
 		JsonObject tokens = parseJson(jsonTokens);
 
+		User user = this.userService.getUser(username);
 		Session savedSession = this.sessionService.saveSession(
 				new Session(
 						null,
@@ -56,12 +58,18 @@ public class AuthController {
 						Instant.now(), // Todo: pass a clock as parameter to test better
 						tokens.get("accessToken").getAsString(),
 						tokens.get("refreshToken").getAsString(),
-						this.userService.getUser(username)
+						user.getId()
 				)
 		);
 
-		savedSession.getUser().setPassword(null); // Password not visible in the response
-		response.status(HttpStatus.OK).send("session", savedSession);
+		user.setPassword(null); // Password not visible in the response
+		savedSession.setSrcIp(null);
+		savedSession.setUserId(null);
+
+		HttpResponseBody responseBody = new HttpResponseBody("session", savedSession);
+		responseBody.add("user", user);
+
+		response.status(HttpStatus.OK).send(responseBody);
 	}
 
 	@PostMapping(Routes.REGISTER_URL)
@@ -96,12 +104,19 @@ public class AuthController {
 						Instant.now(), // Todo: pass a clock as parameter to test better
 						tokens.get("accessToken"),
 						tokens.get("refreshToken"),
-						user
+						user.getId()
 				)
 		);
 
-		session.getUser().setPassword(null); // Password not visible in the response
-		response.status(OK).send("session", session);
+		// Clear the password
+		user.setPassword(null);
+		session.setSrcIp(null);
+		session.setUserId(null);
+
+		HttpResponseBody responseBody = new HttpResponseBody("session", session);
+		responseBody.add("user", user);
+
+		response.status(OK).send(responseBody);
 	}
 
 	@PostMapping(Routes.LOGOUT_URL)

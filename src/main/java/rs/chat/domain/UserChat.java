@@ -20,16 +20,16 @@ import javax.persistence.Table;
 @Setter
 @ToString
 @Entity
-@Table(name = "tea_subj", schema = "rs_chat")
-@IdClass(TeaSubjPK.class)
-public class TeaSubj {
+@Table(name = "user_chat", schema = "rs_chat")
+@IdClass(UserChatPK.class)
+public class UserChat {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "subject_id", nullable = false)
-	private Long subjectId;
+	@Column(name = "chat_id", nullable = false)
+	private Long chatId;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "teacher_id", nullable = false)
-	private Long teacherId;
+	@Column(name = "user_id", nullable = false)
+	private Long userId;
 }
