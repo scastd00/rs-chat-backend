@@ -47,15 +47,15 @@ public class User {
 
 	@Basic
 	@Column(name = "age")
-	private Byte age;
+	private Byte age; // set it in profile
 
 	@Basic
 	@Column(name = "birthdate")
-	private Date birthdate;
+	private Date birthdate; // set it in profile
 
 	@Basic
 	@Column(name = "role", nullable = false, length = 13)
-	private String role;
+	private String role; // set it in profile
 
 	@Basic
 	@Column(name = "block_until")

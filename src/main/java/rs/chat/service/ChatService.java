@@ -26,7 +26,7 @@ public class ChatService {
 	}
 
 	/**
-	 * Chats are created when a degree/course/subject is created.
+	 * Chats are created when a degree/course/subject/user is created.
 	 *
 	 * @param chat the new chat to save.
 	 *

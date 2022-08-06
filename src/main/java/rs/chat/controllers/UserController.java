@@ -1,12 +1,11 @@
 package rs.chat.controllers;
 
+import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import rs.chat.domain.User;
@@ -19,11 +18,13 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
+import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 import static rs.chat.router.Routes.GetRoute.OPENED_SESSIONS_OF_USER_URL;
 import static rs.chat.router.Routes.GetRoute.USERS_URL;
 import static rs.chat.router.Routes.PostRoute.USER_SAVE_URL;
 import static rs.chat.router.Routes.REFRESH_TOKEN_URL;
+import static rs.chat.utils.Constants.STUDENT_ROLE;
 
 @Slf4j
 @RestController
@@ -33,17 +34,33 @@ public class UserController {
 	private final SessionService sessionService;
 
 	@GetMapping(USERS_URL)
-	public ResponseEntity<List<User>> getUsers() {
-		return ResponseEntity.ok(this.userService.getUsers());
+	public void getUsers(HttpResponse response) throws IOException {
+		response.status(OK).send("data", this.userService.getUsers());
 	}
 
 	@PostMapping(USER_SAVE_URL)
-	public ResponseEntity<User> saveUser(@RequestBody User user) {
+	public void saveUser(HttpRequest request, HttpResponse response) throws IOException {
+		JsonObject user = (JsonObject) request.body().get("user");
+
+		User savedUser = this.userService.saveUser(
+				new User(
+						null, // ID
+						user.get("username").getAsString(),
+						user.get("password").getAsString(),
+						user.get("email").getAsString(),
+						user.get("fullName").getAsString(),
+						null, // Age
+						null, // Birthdate
+						STUDENT_ROLE,
+						null // Block until
+				)
+		);
+
 		URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath()
 		                                                .path(USER_SAVE_URL)
 		                                                .toUriString());
-		return ResponseEntity.created(uri)
-		                     .body(this.userService.saveUser(user));
+		response.setHeader("Location", uri.toString());
+		response.status(CREATED).send("data", savedUser);
 	}
 
 	@GetMapping(REFRESH_TOKEN_URL)
@@ -81,8 +98,7 @@ public class UserController {
 	}
 
 	@GetMapping(OPENED_SESSIONS_OF_USER_URL)
-	public void openedSessions(HttpRequest request,
-	                           HttpResponse response,
+	public void openedSessions(HttpResponse response,
 	                           @PathVariable String username) throws IOException {
 		List<String> sessionsOfUser = this.sessionService.getSessionsOfUser(username);
 
