@@ -46,7 +46,7 @@ public class AuthController {
 	@PostMapping(Routes.LOGIN_URL)
 	public void login(HttpRequest request, HttpResponse response) throws IOException {
 		String jsonTokens = request.get("USER:TOKENS").toString();
-		String username = (String) request.get("USER:USERNAME");
+		String username = request.get("USER:USERNAME").toString();
 
 		JsonObject tokens = parseJson(jsonTokens);
 

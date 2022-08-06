@@ -15,6 +15,7 @@ import rs.chat.net.ws.WSMessage;
 import rs.chat.net.ws.WebSocketChatMap;
 
 import java.io.IOException;
+import java.util.Base64;
 
 import static rs.chat.net.ws.WSMessage.ACTIVE_USERS_MESSAGE;
 import static rs.chat.net.ws.WSMessage.AUDIO_MESSAGE;
@@ -78,6 +79,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
 					wsClientID,
 					createServerMessage(username + " has joined the chat", USER_JOINED.type())
 			);
+
+			log.debug(username + " has joined the chat");
 		} else if (USER_LEFT.equals(receivedMessageType)) {
 			this.chatMap.removeClientFromChat(wsClientID);
 			this.chatMap.broadcastToSingleChat(
@@ -85,7 +88,10 @@ public class WebSocketHandler extends TextWebSocketHandler {
 					createServerMessage(username + " has disconnected from the chat", USER_LEFT.type())
 			);
 			// Closed from the frontend
-		} else if (TEXT_MESSAGE.equals(receivedMessageType)) {// Clear the sensitive data to send the message to other clients
+
+			log.debug(username + " has disconnected from the chat");
+		} else if (TEXT_MESSAGE.equals(receivedMessageType)) {
+			// Clear the sensitive data to send the message to other clients
 			String response = this.clearSensitiveDataChangeDateAndBuildResponse(wrappedMessage.getParsedPayload());
 			this.chatMap.broadcastToSingleChatAndExcludeClient(wsClientID, response);
 		} else if (IMAGE_MESSAGE.equals(receivedMessageType)) {
@@ -110,12 +116,32 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	 * This method receives binary messages and treats them as needed.
 	 * (Will be used for the media transferred through the websocket).
 	 *
-	 * @param session
-	 * @param message
+	 * @param session socket of the connected client.
+	 * @param message binary message received from the client.
 	 */
 	@Override
 	protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) {
-		super.handleBinaryMessage(session, message);
+		// Todo: send from client the next structure
+		/*
+		 * 1st byte: length of header data
+		 * Next bytes: header containing metadata of the file received.
+		 */
+		try {
+			session.sendMessage(new BinaryMessage(
+					Base64.getEncoder().encode(message.getPayload())
+			));
+		} catch (IOException e) {
+			try {
+				session.sendMessage(new TextMessage(
+						createServerMessage(
+								"ERROR: type property is not present in the content of the JSON",
+								ERROR_MESSAGE.type()
+						))
+				);
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
+		}
 	}
 
 	@Override

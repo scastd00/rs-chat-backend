@@ -19,7 +19,9 @@ public record WSClient(WebSocketSession session, WSClientID wsClientID) {
 
 	public void close() {
 		try {
-			this.session.close();
+			if (this.session.isOpen()) {
+				this.session.close();
+			}
 		} catch (IOException e) {
 			log.error("Could not close socket normally", e);
 		}
