@@ -108,4 +108,10 @@ public final class Utils {
 	public static boolean isDevEnv() {
 		return System.getenv("ENV").toLowerCase().startsWith("dev");
 	}
+
+	public static String jsonOf(String key, String value) {
+		JsonObject json = new JsonObject();
+		json.addProperty(key, value);
+		return json.toString();
+	}
 }

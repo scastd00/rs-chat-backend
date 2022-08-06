@@ -39,6 +39,9 @@ public class Chat {
 	@Column(name = "s3_folder", length = 300)
 	private String s3Folder;
 
+	/**
+	 * JSON content.
+	 */
 	@Basic
 	@Column(name = "metadata", nullable = false, length = -1)
 	private String metadata;
