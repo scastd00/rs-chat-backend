@@ -1,7 +1,6 @@
 package rs.chat.config.security;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,17 +16,13 @@ import rs.chat.config.security.filter.RSChatAuthenticationFilter;
 import rs.chat.config.security.filter.RSChatAuthorizationFilter;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
-import static rs.chat.router.Routes.GetRoute.CHAT_CONTENT_URL;
-import static rs.chat.router.Routes.GetRoute.CHAT_METADATA_URL;
-import static rs.chat.router.Routes.GetRoute.OPENED_SESSIONS_OF_USER_URL;
-import static rs.chat.router.Routes.GetRoute.USERS_URL;
-import static rs.chat.router.Routes.GetRoute.USER_URL;
-import static rs.chat.router.Routes.PostRoute.CHAT_SEND_TEXT_MESSAGE_URL;
+import static rs.chat.router.Routes.DeleteRoute;
+import static rs.chat.router.Routes.GetRoute;
+import static rs.chat.router.Routes.PostRoute;
 import static rs.chat.router.Routes.PostRoute.LOGIN_URL;
 import static rs.chat.router.Routes.PostRoute.LOGOUT_URL;
 import static rs.chat.router.Routes.PostRoute.REGISTER_URL;
-import static rs.chat.router.Routes.PostRoute.USER_SAVE_URL;
-import static rs.chat.router.Routes.PutRoute.CHANGE_PASSWORD_URL;
+import static rs.chat.router.Routes.PutRoute;
 import static rs.chat.router.Routes.REFRESH_TOKEN_URL;
 import static rs.chat.router.Routes.ROOT_URL;
 import static rs.chat.router.Routes.WS_CHAT_ENDPOINT;
@@ -66,49 +61,37 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	private void authorizeRequests(HttpSecurity http) throws Exception {
 		publicRoutes(http);
 
-		// Private routes
-		lowTierRoutes(http);
-		mediumTierRoutes(http);
-		topTierRoutes(http);
+		// Low tier
+		registerRoutesOfTier(http, LOW_TIER_ROLES,
+		                     GetRoute.INSTANCE.lowTierRoutes(), PostRoute.INSTANCE.lowTierRoutes(),
+		                     PutRoute.INSTANCE.lowTierRoutes(), DeleteRoute.INSTANCE.lowTierRoutes());
+		// Medium tier
+		registerRoutesOfTier(http, MEDIUM_TIER_ROLES,
+		                     GetRoute.INSTANCE.mediumTierRoutes(), PostRoute.INSTANCE.mediumTierRoutes(),
+		                     PutRoute.INSTANCE.mediumTierRoutes(), DeleteRoute.INSTANCE.mediumTierRoutes());
+		// Top tier
+		registerRoutesOfTier(http, TOP_TIER_ROLES,
+		                     GetRoute.INSTANCE.topTierRoutes(), PostRoute.INSTANCE.topTierRoutes(),
+		                     PutRoute.INSTANCE.topTierRoutes(), DeleteRoute.INSTANCE.topTierRoutes());
 
 		http.authorizeRequests()
 		    .anyRequest()
 		    .authenticated();
 	}
 
-	@SneakyThrows(Exception.class)
-	private void lowTierRoutes(HttpSecurity http) {
-		RouterSecurityConfig lowTierRoutes = new RouterSecurityConfig(http, LOW_TIER_ROLES);
+	private static void registerRoutesOfTier(HttpSecurity http,
+	                                         String[] allowedRoles,
+	                                         String[] getRoutes,
+	                                         String[] postRoutes,
+	                                         String[] putRoutes,
+	                                         String[] deleteRoutes) throws Exception {
+		RouterSecurityConfig routerSecurityConfig = new RouterSecurityConfig(http, allowedRoles);
 
-		lowTierRoutes
-				.addGETRoutes(USER_URL, OPENED_SESSIONS_OF_USER_URL, CHAT_METADATA_URL, CHAT_CONTENT_URL)
-				.addPOSTRoutes(CHAT_SEND_TEXT_MESSAGE_URL)
-				.addPUTRoutes(CHANGE_PASSWORD_URL)
-				.addDELETERoutes()
-				.registerRoutes();
-	}
-
-	@SneakyThrows(Exception.class)
-	private void mediumTierRoutes(HttpSecurity http) {
-		RouterSecurityConfig mediumTierRoutes = new RouterSecurityConfig(http, MEDIUM_TIER_ROLES);
-
-		mediumTierRoutes
-				.addGETRoutes()
-				.addPOSTRoutes()
-				.addPUTRoutes()
-				.addDELETERoutes()
-				.registerRoutes();
-	}
-
-	@SneakyThrows(Exception.class)
-	private void topTierRoutes(HttpSecurity http) {
-		RouterSecurityConfig topTierRoutes = new RouterSecurityConfig(http, TOP_TIER_ROLES);
-
-		topTierRoutes
-				.addGETRoutes(USERS_URL)
-				.addPOSTRoutes(USER_SAVE_URL)
-				.addPUTRoutes()
-				.addDELETERoutes()
+		routerSecurityConfig
+				.addGETRoutes(getRoutes)
+				.addPOSTRoutes(postRoutes)
+				.addPUTRoutes(putRoutes)
+				.addDELETERoutes(deleteRoutes)
 				.registerRoutes();
 	}
 

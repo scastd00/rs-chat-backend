@@ -49,7 +49,7 @@ CREATE TABLE files
 	name          varchar(255) NOT NULL,
 	date_uploaded datetime     NOT NULL,
 	size          int          NOT NULL,
-	path          varchar(400), -- fixme: maybe this column is not needed since the S3 folder is stored in Chat.
+	path          varchar(400),          -- fixme: maybe this column is not needed since the S3 folder is stored in Chat.
 	metadata      varchar(700),
 	type          varchar(10)  NOT NULL, -- Text (JSON) / Image / Audio / Video.
 	user_id       bigint       NOT NULL,
@@ -62,13 +62,13 @@ CREATE TABLE users
 (
 	id          bigint       NOT NULL AUTO_INCREMENT,
 	username    varchar(15)  NOT NULL,
-	password    varchar(126) NOT NULL,              -- Hashed password using Bcrypt and applied Base64 encoding.
+	password    varchar(126) NOT NULL, -- Hashed password using Bcrypt and applied Base64 encoding.
 	email       varchar(70)  NOT NULL,
 	full_name   varchar(100) NOT NULL,
 	age         tinyint      NULL,
 	birthdate   date         NULL,
 	role        varchar(13)  NOT NULL DEFAULT 'STUDENT',
-	block_until datetime     NULL, -- If null, user can login. If date is stored, user cannot login until it has expired.
+	block_until datetime     NULL,     -- If null, user can login. If date is stored, user cannot login until it has expired.
 
 	CONSTRAINT pk_user_id PRIMARY KEY (id),
 	CONSTRAINT u_username UNIQUE (username),
@@ -95,12 +95,12 @@ CREATE TABLE chats
 (
 	id        bigint       NOT NULL AUTO_INCREMENT,
 	name      varchar(100) NOT NULL,
-	type      varchar(10)  NOT NULL, -- User, Group, Subject.
+	type      varchar(10)  NOT NULL, -- User, Group, Subject, Degree.
 	s3_folder varchar(300) NULL,
 	metadata  mediumtext   NOT NULL, -- JSON string. Initial value could be the creation date.
 
 	CONSTRAINT pk_chat_id PRIMARY KEY (id),
-	CONSTRAINT ck_chat_type CHECK (type IN ('U', 'G', 'S'))
+	CONSTRAINT ck_chat_type CHECK (type IN ('USER', 'GROUP', 'SUBJECT', 'DEGREE'))
 ) ENGINE = InnoDB;
 
 CREATE TABLE user_chat

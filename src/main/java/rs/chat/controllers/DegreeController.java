@@ -23,7 +23,7 @@ import static org.springframework.http.HttpStatus.OK;
 import static rs.chat.router.Routes.DeleteRoute.DELETE_DEGREE_URL;
 import static rs.chat.router.Routes.GetRoute.DEGREES_URL;
 import static rs.chat.router.Routes.GetRoute.DEGREE_BY_NAME_URL;
-import static rs.chat.router.Routes.GetRoute.DEGREE_SAVE_URL;
+import static rs.chat.router.Routes.PostRoute.DEGREE_SAVE_URL;
 import static rs.chat.router.Routes.PutRoute.EDIT_DEGREE_NAME_URL;
 
 @Slf4j
@@ -51,7 +51,7 @@ public class DegreeController {
 	}
 
 	@PostMapping(DEGREE_SAVE_URL)
-	public void addDegree(HttpRequest request, HttpResponse response) throws IOException {
+	public void saveDegree(HttpRequest request, HttpResponse response) throws IOException {
 		String degreeName = request.body().get("name").getAsString();
 
 		if (this.degreeService.existsDegree(degreeName)) {
