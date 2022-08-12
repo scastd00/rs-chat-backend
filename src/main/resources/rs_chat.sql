@@ -50,8 +50,8 @@ CREATE TABLE files
 	date_uploaded datetime     NOT NULL,
 	size          int          NOT NULL,
 	path          varchar(400),          -- fixme: maybe this column is not needed since the S3 folder is stored in Chat.
-	metadata      varchar(700),
-	type          varchar(10)  NOT NULL, -- Text (JSON) / Image / Audio / Video.
+	metadata      mediumtext,
+	type          varchar(10)  NOT NULL, -- Text (CUSTOM_JSON) / Image / Audio / Video.
 	user_id       bigint       NOT NULL,
 
 	CONSTRAINT pk_file_id PRIMARY KEY (id),
@@ -95,12 +95,12 @@ CREATE TABLE chats
 (
 	id        bigint       NOT NULL AUTO_INCREMENT,
 	name      varchar(100) NOT NULL,
-	type      varchar(10)  NOT NULL, -- User, Group, Subject, Degree.
+	type      char(1)      NOT NULL, -- User (u), Group (g), Subject (s), Degree (d).
 	s3_folder varchar(300) NULL,
 	metadata  mediumtext   NOT NULL, -- JSON string. Initial value could be the creation date.
 
 	CONSTRAINT pk_chat_id PRIMARY KEY (id),
-	CONSTRAINT ck_chat_type CHECK (type IN ('USER', 'GROUP', 'SUBJECT', 'DEGREE'))
+	CONSTRAINT ck_chat_type CHECK (type IN ('u', 'g', 's', 'd'))
 ) ENGINE = InnoDB;
 
 CREATE TABLE user_chat

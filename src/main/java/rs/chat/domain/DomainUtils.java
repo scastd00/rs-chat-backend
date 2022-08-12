@@ -12,12 +12,12 @@ import static rs.chat.utils.Constants.SUBJECT_CHAT_S3_FOLDER_PREFIX;
 import static rs.chat.utils.Constants.USER_CHAT;
 import static rs.chat.utils.Constants.USER_CHAT_S3_FOLDER_PREFIX;
 
-public class DomainUtils {
+public final class DomainUtils {
 	private DomainUtils() {
 	}
 
 	@NotNull
-	private static Chat getChat(String name, String chatType, String chatPrefix) {
+	private static Chat createChat(String name, String chatType, String chatPrefix) {
 		return new Chat(
 				null,
 				name,
@@ -28,18 +28,18 @@ public class DomainUtils {
 	}
 
 	public static Chat individualChat(String name) {
-		return getChat(name, USER_CHAT, USER_CHAT_S3_FOLDER_PREFIX);
+		return createChat(name, USER_CHAT, USER_CHAT_S3_FOLDER_PREFIX);
 	}
 
 	public static Chat groupChat(String name) {
-		return getChat(name, GROUP_CHAT, GROUP_CHAT_S3_FOLDER_PREFIX);
+		return createChat(name, GROUP_CHAT, GROUP_CHAT_S3_FOLDER_PREFIX);
 	}
 
 	public static Chat subjectChat(String name) {
-		return getChat(name, SUBJECT_CHAT, SUBJECT_CHAT_S3_FOLDER_PREFIX);
+		return createChat(name, SUBJECT_CHAT, SUBJECT_CHAT_S3_FOLDER_PREFIX);
 	}
 
 	public static Chat degreeChat(String name) {
-		return getChat(name, DEGREE_CHAT, DEGREE_CHAT_S3_FOLDER_PREFIX);
+		return createChat(name, DEGREE_CHAT, DEGREE_CHAT_S3_FOLDER_PREFIX);
 	}
 }
