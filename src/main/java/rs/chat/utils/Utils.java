@@ -7,7 +7,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import rs.chat.net.ws.JsonMessageWrapper;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,6 +16,8 @@ import static rs.chat.utils.Constants.ALGORITHM;
 import static rs.chat.utils.Constants.GSON;
 import static rs.chat.utils.Constants.JWT_TOKEN_PREFIX;
 import static rs.chat.utils.Constants.JWT_VERIFIER;
+import static rs.chat.utils.Constants.REFRESH_TOKEN_EXPIRATION_DURATION;
+import static rs.chat.utils.Constants.TOKEN_EXPIRATION_DURATION;
 
 public final class Utils {
 	private Utils() {
@@ -39,14 +41,14 @@ public final class Utils {
 
 		String accessToken = JWT.create()
 		                        .withSubject(username)
-		                        .withExpiresAt(new Date(System.currentTimeMillis() + Constants.TOKEN_EXPIRATION_TIME))
+		                        .withExpiresAt(Instant.now().plus(TOKEN_EXPIRATION_DURATION)) // 4 hours
 		                        .withIssuer(requestURL) // URL of our application.
 		                        .withClaim("role", role) // Only one role is in DB.
 		                        .sign(ALGORITHM);
 
 		String refreshToken = JWT.create()
 		                         .withSubject(username)
-		                         .withExpiresAt(new Date(System.currentTimeMillis() + Constants.REFRESH_TOKEN_EXPIRATION_TIME))
+		                         .withExpiresAt(Instant.now().plus(REFRESH_TOKEN_EXPIRATION_DURATION))
 		                         .withIssuer(requestURL) // URL of our application.
 		                         .sign(ALGORITHM);
 

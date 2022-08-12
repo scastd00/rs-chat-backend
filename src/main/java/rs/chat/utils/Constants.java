@@ -19,8 +19,8 @@ public final class Constants {
 
 	public static final String LOCAL_FILES_PATH = "/tmp" + File.separator;
 	public static final String[] STRING_ARRAY = new String[0];
-	public static final int TOKEN_EXPIRATION_TIME = 1000 * 60 * 60 * 4; // 4 hours
-	public static final int REFRESH_TOKEN_EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 15; // 15 days
+	public static final Duration TOKEN_EXPIRATION_DURATION = Duration.ofHours(4);
+	public static final Duration REFRESH_TOKEN_EXPIRATION_DURATION = Duration.ofDays(15);
 	public static final Algorithm ALGORITHM = Algorithm.HMAC256(System.getenv("TOKEN_SECRET").getBytes());
 
 	public static final String STUDENT_ROLE = "STUDENT";
