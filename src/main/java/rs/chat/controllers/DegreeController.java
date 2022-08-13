@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import rs.chat.domain.Degree;
 import rs.chat.exceptions.BadRequestException;
 import rs.chat.exceptions.NotFoundException;
@@ -17,8 +18,10 @@ import rs.chat.net.http.HttpResponse;
 import rs.chat.service.DegreeService;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 
+import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 import static rs.chat.router.Routes.DeleteRoute.DELETE_DEGREE_URL;
 import static rs.chat.router.Routes.GetRoute.DEGREES_URL;
@@ -55,14 +58,18 @@ public class DegreeController {
 		String degreeName = request.body().get("name").getAsString();
 
 		if (this.degreeService.existsDegree(degreeName)) {
-			throw new BadRequestException(degreeName + " already exists");
+			throw new BadRequestException("Degree '" + degreeName + "' already exists");
 		}
 
 		Degree degree = this.degreeService.saveDegree(
 				new Degree(null, degreeName)
 		);
 
-		response.status(OK).send("degree", degree);
+		URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath()
+		                                                .path(DEGREE_SAVE_URL)
+		                                                .toUriString());
+		response.setHeader("Location", uri.toString());
+		response.status(CREATED).send("degree", degree);
 	}
 
 	@PutMapping(EDIT_DEGREE_NAME_URL)
