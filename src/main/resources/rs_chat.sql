@@ -111,6 +111,23 @@ CREATE TABLE user_chat
 	CONSTRAINT pk_user_chat PRIMARY KEY (chat_id, user_id)
 ) ENGINE InnoDB;
 
+CREATE TABLE user_group
+(
+	group_id bigint NOT NULL,
+	user_id  bigint NOT NULL,
+
+	CONSTRAINT pk_user_group PRIMARY KEY (group_id, user_id)
+) ENGINE InnoDB;
+
+CREATE TABLE `groups`
+(
+	id   bigint AUTO_INCREMENT,
+	name varchar(255) NOT NULL,
+
+	CONSTRAINT pk_group_id PRIMARY KEY (id),
+	CONSTRAINT u_name UNIQUE (name)
+) ENGINE InnoDB;
+
 -- Alter tables
 
 ALTER TABLE subjects
@@ -167,3 +184,14 @@ ALTER TABLE user_chat
 		ON UPDATE CASCADE
 		ON DELETE RESTRICT;
 
+ALTER TABLE user_group
+	ADD CONSTRAINT fk_group_id_user_group FOREIGN KEY (group_id)
+		REFERENCES `groups` (id)
+		ON UPDATE CASCADE
+		ON DELETE RESTRICT;
+
+ALTER TABLE user_group
+	ADD CONSTRAINT fk_user_id_user_group FOREIGN KEY (user_id)
+		REFERENCES users (id)
+		ON UPDATE CASCADE
+		ON DELETE RESTRICT;

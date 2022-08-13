@@ -179,4 +179,59 @@
 			</basic>
 		</attributes>
 	</entity>
+	<entity class="rs.chat.domain.Group">
+		<table name="groups" schema="rs_chat" catalog=""/>
+		<attributes>
+			<id name="id">
+				<column name="id" precision="-1"/>
+			</id>
+			<basic name="name">
+				<column name="name"/>
+			</basic>
+		</attributes>
+	</entity>
+	<entity class="rs.chat.domain.UserGroup">
+		<table name="user_group" schema="rs_chat" catalog=""/>
+		<id-class class="rs.chat.domain.UserGroupPK"/>
+		<attributes>
+			<id name="groupId">
+				<column name="group_id" precision="-1"/>
+			</id>
+			<id name="userId">
+				<column name="user_id" precision="-1"/>
+			</id>
+		</attributes>
+	</entity>
+	<entity class="rs.chat.domain.User">
+		<table name="users" schema="rs_chat" catalog=""/>
+		<attributes>
+			<id name="id">
+				<column name="id" precision="-1"/>
+			</id>
+			<basic name="username">
+				<column name="username" length="15"/>
+			</basic>
+			<basic name="password">
+				<column name="password" length="126"/>
+			</basic>
+			<basic name="email">
+				<column name="email" length="70"/>
+			</basic>
+			<basic name="fullName">
+				<column name="full_name" length="100"/>
+			</basic>
+			<basic name="age">
+				<column name="age" nullable="false" precision="-1"/>
+			</basic>
+			<basic name="birthdate">
+				<column name="birthdate" nullable="false" precision="-1"/>
+			</basic>
+			<basic name="role">
+				<column name="role" length="13"/>
+			</basic>
+			<basic name="blockUntil">
+				<column name="block_until" nullable="false" precision="-1"/>
+			</basic>
+		</attributes>
+	</entity>
 </entity-mappings>
