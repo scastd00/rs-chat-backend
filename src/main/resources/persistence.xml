@@ -106,8 +106,8 @@
 			<basic name="name">
 				<column name="name" length="30"/>
 			</basic>
-			<basic name="subjPeriod">
-				<column name="subj_period" length="2"/>
+			<basic name="period">
+				<column name="period" length="2"/>
 			</basic>
 			<basic name="type">
 				<column name="type" length="2"/>

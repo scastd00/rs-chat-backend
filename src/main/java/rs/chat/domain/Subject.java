@@ -32,8 +32,8 @@ public class Subject {
 	private String name;
 
 	@Basic
-	@Column(name = "subj_period", nullable = false, length = 2)
-	private String subjPeriod;
+	@Column(name = "period", nullable = false, length = 2)
+	private String period;
 
 	@Basic
 	@Column(name = "type", nullable = false, length = 2)
