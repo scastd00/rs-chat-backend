@@ -17,7 +17,7 @@ public record WSClient(WebSocketSession session, WSClientID wsClientID) {
 		}
 	}
 
-	public void close() {
+	public synchronized void close() {
 		try {
 			if (this.session.isOpen()) {
 				this.session.close();
