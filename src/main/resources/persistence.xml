@@ -186,7 +186,7 @@
 				<column name="id" precision="-1"/>
 			</id>
 			<basic name="name">
-				<column name="name"/>
+				<column name="name" length="70"/>
 			</basic>
 		</attributes>
 	</entity>

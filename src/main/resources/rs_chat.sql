@@ -122,10 +122,9 @@ CREATE TABLE user_group
 CREATE TABLE `groups`
 (
 	id   bigint AUTO_INCREMENT,
-	name varchar(255) NOT NULL,
+	name varchar(70) NOT NULL, -- Names can be repeated
 
-	CONSTRAINT pk_group_id PRIMARY KEY (id),
-	CONSTRAINT u_name UNIQUE (name)
+	CONSTRAINT pk_group_id PRIMARY KEY (id)
 ) ENGINE InnoDB;
 
 -- Alter tables

@@ -28,6 +28,6 @@ public class Group {
 	private Long id;
 
 	@Basic
-	@Column(name = "name", nullable = false)
+	@Column(name = "name", nullable = false, length = 70)
 	private String name;
 }
