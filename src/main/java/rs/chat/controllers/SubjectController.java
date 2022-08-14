@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import rs.chat.domain.Subject;
 import rs.chat.exceptions.BadRequestException;
 import rs.chat.net.http.HttpRequest;
@@ -15,10 +14,7 @@ import rs.chat.service.DegreeService;
 import rs.chat.service.SubjectService;
 
 import java.io.IOException;
-import java.net.URI;
 
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.OK;
 import static rs.chat.router.Routes.GetRoute.SUBJECTS_URL;
 import static rs.chat.router.Routes.PostRoute.SUBJECT_SAVE_URL;
 
@@ -31,7 +27,7 @@ public class SubjectController {
 
 	@GetMapping(SUBJECTS_URL)
 	public void getAllSubjects(HttpResponse response) throws IOException {
-		response.status(OK)
+		response.ok()
 		        .send("subjects", this.subjectService.getAll());
 	}
 
@@ -62,10 +58,6 @@ public class SubjectController {
 				)
 		);
 
-		URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath()
-		                                                .path(SUBJECT_SAVE_URL)
-		                                                .toUriString());
-		response.setHeader("Location", uri.toString());
-		response.status(CREATED).send("subject", savedSubject);
+		response.created(SUBJECT_SAVE_URL).send("subject", savedSubject);
 	}
 }

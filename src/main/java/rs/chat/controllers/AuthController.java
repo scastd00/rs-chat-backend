@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -72,7 +71,7 @@ public class AuthController {
 		HttpResponseBody responseBody = new HttpResponseBody("session", savedSession);
 		responseBody.add("user", user);
 
-		response.status(HttpStatus.OK).send(responseBody);
+		response.ok().send(responseBody);
 	}
 
 	@PostMapping(REGISTER_URL)
@@ -119,7 +118,7 @@ public class AuthController {
 		HttpResponseBody responseBody = new HttpResponseBody("session", session);
 		responseBody.add("user", user);
 
-		response.status(OK).send(responseBody);
+		response.ok().send(responseBody);
 	}
 
 	@PostMapping(LOGOUT_URL)

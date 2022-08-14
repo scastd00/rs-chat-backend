@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import rs.chat.domain.Degree;
 import rs.chat.exceptions.BadRequestException;
 import rs.chat.exceptions.NotFoundException;
@@ -18,10 +17,8 @@ import rs.chat.net.http.HttpResponse;
 import rs.chat.service.DegreeService;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.List;
 
-import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 import static rs.chat.router.Routes.DeleteRoute.DELETE_DEGREE_URL;
 import static rs.chat.router.Routes.GetRoute.DEGREES_URL;
@@ -38,7 +35,7 @@ public class DegreeController {
 	@GetMapping(DEGREES_URL)
 	public void getAllDegrees(HttpResponse response) throws IOException {
 		List<Degree> allDegrees = this.degreeService.getDegrees();
-		response.status(OK).send("degrees", allDegrees);
+		response.ok().send("degrees", allDegrees);
 	}
 
 	@GetMapping(DEGREE_BY_NAME_URL)
@@ -50,7 +47,7 @@ public class DegreeController {
 			throw new NotFoundException("degree '%s' not found".formatted(degreeName));
 		}
 
-		response.status(OK).send("degree", degree);
+		response.ok().send("degree", degree);
 	}
 
 	@PostMapping(DEGREE_SAVE_URL)
@@ -65,11 +62,7 @@ public class DegreeController {
 				new Degree(null, degreeName)
 		);
 
-		URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath()
-		                                                .path(DEGREE_SAVE_URL)
-		                                                .toUriString());
-		response.setHeader("Location", uri.toString());
-		response.status(CREATED).send("degree", degree);
+		response.created(DEGREE_SAVE_URL).send("degree", degree);
 	}
 
 	@PutMapping(EDIT_DEGREE_NAME_URL)
@@ -84,7 +77,7 @@ public class DegreeController {
 
 		Degree degree = this.degreeService.changeDegreeName(oldName, newName);
 
-		response.status(OK).send("degree", degree);
+		response.ok().send("degree", degree);
 	}
 
 	@DeleteMapping(DELETE_DEGREE_URL)

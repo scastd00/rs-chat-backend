@@ -7,11 +7,13 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import rs.chat.exceptions.InternalServerException;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 import java.io.IOException;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,6 +39,18 @@ public class HttpResponse extends HttpServletResponseWrapper {
 		this.status = status;
 		this.setStatus(status.value());
 		return this;
+	}
+
+	public HttpResponse ok() {
+		return this.status(HttpStatus.OK);
+	}
+
+	public HttpResponse created(String requestURL) {
+		URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath()
+		                                                .path(requestURL)
+		                                                .toUriString());
+		this.setHeader("Location", uri.toString());
+		return this.status(HttpStatus.CREATED);
 	}
 
 	public void sendStatus(HttpStatus status) throws IOException {

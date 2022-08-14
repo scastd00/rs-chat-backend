@@ -21,6 +21,7 @@ public class Routes {
 		public static final String DEGREES_URL = V_1 + "/degrees";
 		public static final String DEGREE_BY_NAME_URL = V_1 + "/degree/{degreeName}";
 		public static final String SUBJECTS_URL = V_1 + "/subjects";
+		public static final String GROUPS_URL = V_1 + "/groups";
 
 		public String[] lowTierRoutes() {
 			return new String[] {
@@ -36,7 +37,7 @@ public class Routes {
 
 		public String[] topTierRoutes() {
 			return new String[] {
-					USERS_URL, SUBJECTS_URL
+					USERS_URL, SUBJECTS_URL, GROUPS_URL
 			};
 		}
 	}
@@ -54,6 +55,7 @@ public class Routes {
 		public static final String USER_SAVE_URL = V_1 + "/user/save";
 		public static final String DEGREE_SAVE_URL = V_1 + "/degree/save";
 		public static final String SUBJECT_SAVE_URL = V_1 + "/subject/save";
+		public static final String GROUP_SAVE_URL = V_1 + "/group/save";
 
 		public String[] lowTierRoutes() {
 			return new String[] {
@@ -69,7 +71,7 @@ public class Routes {
 
 		public String[] topTierRoutes() {
 			return new String[] {
-					USER_SAVE_URL, DEGREE_SAVE_URL, SUBJECT_SAVE_URL
+					USER_SAVE_URL, DEGREE_SAVE_URL, SUBJECT_SAVE_URL, GROUP_SAVE_URL
 			};
 		}
 	}
