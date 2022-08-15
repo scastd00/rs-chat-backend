@@ -22,10 +22,12 @@ public class Routes {
 		public static final String DEGREE_BY_NAME_URL = V_1 + "/degree/{degreeName}";
 		public static final String SUBJECTS_URL = V_1 + "/subjects";
 		public static final String GROUPS_URL = V_1 + "/groups";
+		public static final String ALL_CHATS_OF_USER_URL = V_1 + "/chats/{username}";
 
 		public String[] lowTierRoutes() {
 			return new String[] {
-					OPENED_SESSIONS_OF_USER_URL, DEGREES_URL, DEGREE_BY_NAME_URL
+					OPENED_SESSIONS_OF_USER_URL, DEGREES_URL, DEGREE_BY_NAME_URL,
+					ALL_CHATS_OF_USER_URL
 			};
 		}
 
