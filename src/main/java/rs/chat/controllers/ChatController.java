@@ -1,7 +1,6 @@
 package rs.chat.controllers;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,7 +14,9 @@ import rs.chat.service.ChatService;
 import rs.chat.service.UserService;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static rs.chat.router.Routes.GetRoute.ALL_CHATS_OF_USER_URL;
 
@@ -37,24 +38,21 @@ public class ChatController {
 
 		Long userId = user.getId();
 		List<Chat> allChatsOfUser = this.chatService.getAllChatsOfUser(userId);
-		JsonObject allChats = new JsonObject();
+		Map<String, List<Map<String, Object>>> res = new HashMap<>();
 
 		allChatsOfUser.forEach(chat -> {
-			JsonObject chatItem = new JsonObject();
-			chatItem.addProperty("id", chat.getId());
-			chatItem.addProperty("name", chat.getName());
+			String chatType = chat.getType();
+			Map<String, Object> chatItem = new HashMap<>();
+			chatItem.put("id", chat.getId());
+			chatItem.put("name", chat.getName());
 
-			if (!allChats.has(chat.getType())) {
-				JsonArray typeArray = new JsonArray();
-				typeArray.add(chatItem);
-
-				allChats.add(chat.getType(), typeArray);
+			if (!res.containsKey(chatType)) {
+				res.put(chatType, Lists.newArrayList(chatItem));
 			} else {
-				JsonArray array = (JsonArray) allChats.get(chat.getType());
-				array.add(chatItem);
+				res.get(chatType).add(chatItem);
 			}
 		});
 
-		response.ok().send("chats", allChats.toString());
+		response.ok().send("chats", res);
 	}
 }
