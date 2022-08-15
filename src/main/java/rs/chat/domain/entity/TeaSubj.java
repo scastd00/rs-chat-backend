@@ -1,4 +1,4 @@
-package rs.chat.domain;
+package rs.chat.domain.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,16 +20,16 @@ import javax.persistence.Table;
 @Setter
 @ToString
 @Entity
-@Table(name = "user_chat", schema = "rs_chat")
-@IdClass(UserChatPK.class)
-public class UserChat {
+@Table(name = "tea_subj", schema = "rs_chat")
+@IdClass(TeaSubjPK.class)
+public class TeaSubj {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "chat_id", nullable = false)
-	private Long chatId;
+	@Column(name = "subject_id", nullable = false)
+	private Long subjectId;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "user_id", nullable = false)
-	private Long userId;
+	@Column(name = "teacher_id", nullable = false)
+	private Long teacherId;
 }

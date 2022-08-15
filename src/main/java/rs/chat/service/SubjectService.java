@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rs.chat.domain.DomainUtils;
-import rs.chat.domain.Subject;
+import rs.chat.domain.entity.Subject;
 import rs.chat.domain.repository.ChatRepository;
 import rs.chat.domain.repository.SubjectRepository;
 

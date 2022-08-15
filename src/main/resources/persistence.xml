@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <entity-mappings xmlns="https://jakarta.ee/xml/ns/persistence/orm"
                  version="3.0">
-	<entity class="rs.chat.domain.Chat">
+	<entity class="rs.chat.domain.entity.Chat">
 		<table name="chats" schema="rs_chat" catalog=""/>
 		<attributes>
 			<id name="id">
@@ -21,7 +21,7 @@
 			</basic>
 		</attributes>
 	</entity>
-	<entity class="rs.chat.domain.Degree">
+	<entity class="rs.chat.domain.entity.Degree">
 		<table name="degrees" schema="rs_chat" catalog=""/>
 		<attributes>
 			<id name="id">
@@ -32,7 +32,7 @@
 			</basic>
 		</attributes>
 	</entity>
-	<entity class="rs.chat.domain.File">
+	<entity class="rs.chat.domain.entity.File">
 		<table name="files" schema="rs_chat" catalog=""/>
 		<attributes>
 			<id name="id">
@@ -61,7 +61,7 @@
 			</basic>
 		</attributes>
 	</entity>
-	<entity class="rs.chat.domain.Session">
+	<entity class="rs.chat.domain.entity.Session">
 		<table name="sessions" schema="rs_chat" catalog=""/>
 		<attributes>
 			<id name="id">
@@ -84,9 +84,9 @@
 			</basic>
 		</attributes>
 	</entity>
-	<entity class="rs.chat.domain.StuSubj">
+	<entity class="rs.chat.domain.entity.StuSubj">
 		<table name="stu_subj" schema="rs_chat" catalog=""/>
-		<id-class class="rs.chat.domain.StuSubjPK"/>
+		<id-class class="rs.chat.domain.entity.StuSubjPK"/>
 		<attributes>
 			<id name="subjectId">
 				<column name="subject_id" precision="-1"/>
@@ -96,7 +96,7 @@
 			</id>
 		</attributes>
 	</entity>
-	<entity class="rs.chat.domain.Subject">
+	<entity class="rs.chat.domain.entity.Subject">
 		<table name="subjects" schema="rs_chat" catalog=""/>
 		<attributes>
 			<id name="id">
@@ -122,9 +122,9 @@
 			</basic>
 		</attributes>
 	</entity>
-	<entity class="rs.chat.domain.TeaSubj">
+	<entity class="rs.chat.domain.entity.TeaSubj">
 		<table name="tea_subj" schema="rs_chat" catalog=""/>
-		<id-class class="rs.chat.domain.TeaSubjPK"/>
+		<id-class class="rs.chat.domain.entity.TeaSubjPK"/>
 		<attributes>
 			<id name="subjectId">
 				<column name="subject_id" precision="-1"/>
@@ -134,9 +134,9 @@
 			</id>
 		</attributes>
 	</entity>
-	<entity class="rs.chat.domain.UserChat">
+	<entity class="rs.chat.domain.entity.UserChat">
 		<table name="user_chat" schema="rs_chat" catalog=""/>
-		<id-class class="rs.chat.domain.UserChatPK"/>
+		<id-class class="rs.chat.domain.entity.UserChatPK"/>
 		<attributes>
 			<id name="chatId">
 				<column name="chat_id" precision="-1"/>
@@ -146,7 +146,7 @@
 			</id>
 		</attributes>
 	</entity>
-	<entity class="rs.chat.domain.User">
+	<entity class="rs.chat.domain.entity.User">
 		<table name="users" schema="rs_chat" catalog=""/>
 		<attributes>
 			<id name="id">
@@ -178,7 +178,7 @@
 			</basic>
 		</attributes>
 	</entity>
-	<entity class="rs.chat.domain.Group">
+	<entity class="rs.chat.domain.entity.Group">
 		<table name="groups" schema="rs_chat" catalog=""/>
 		<attributes>
 			<id name="id">
@@ -189,9 +189,9 @@
 			</basic>
 		</attributes>
 	</entity>
-	<entity class="rs.chat.domain.UserGroup">
+	<entity class="rs.chat.domain.entity.UserGroup">
 		<table name="user_group" schema="rs_chat" catalog=""/>
-		<id-class class="rs.chat.domain.UserGroupPK"/>
+		<id-class class="rs.chat.domain.entity.UserGroupPK"/>
 		<attributes>
 			<id name="groupId">
 				<column name="group_id" precision="-1"/>

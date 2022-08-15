@@ -2,7 +2,7 @@ package rs.chat.domain.repository;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
-import rs.chat.domain.Session;
+import rs.chat.domain.entity.Session;
 
 import java.util.List;
 import java.util.Optional;

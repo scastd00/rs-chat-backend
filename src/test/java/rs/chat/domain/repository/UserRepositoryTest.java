@@ -3,7 +3,7 @@ package rs.chat.domain.repository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import rs.chat.domain.User;
+import rs.chat.domain.entity.User;
 import rs.chat.utils.Constants;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;

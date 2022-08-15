@@ -1,4 +1,4 @@
-package rs.chat.domain;
+package rs.chat.domain.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

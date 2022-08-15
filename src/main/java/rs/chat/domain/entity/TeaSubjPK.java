@@ -1,4 +1,4 @@
-package rs.chat.domain;
+package rs.chat.domain.entity;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -12,27 +12,27 @@ import java.util.Objects;
 
 @Getter
 @Setter
-public class UserChatPK implements Serializable {
+public class TeaSubjPK implements Serializable {
 	@Id
-	@Column(name = "chat_id", nullable = false)
+	@Column(name = "subject_id", nullable = false)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long chatId;
+	private Long subjectId;
 
 	@Id
-	@Column(name = "user_id", nullable = false)
+	@Column(name = "teacher_id", nullable = false)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long userId;
+	private Long teacherId;
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(chatId, userId);
+		return Objects.hash(subjectId, teacherId);
 	}
 
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
-		UserChatPK that = (UserChatPK) o;
-		return Objects.equals(chatId, that.chatId) && Objects.equals(userId, that.userId);
+		TeaSubjPK teaSubjPK = (TeaSubjPK) o;
+		return Objects.equals(subjectId, teaSubjPK.subjectId) && Objects.equals(teacherId, teaSubjPK.teacherId);
 	}
 }

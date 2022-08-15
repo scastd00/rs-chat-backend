@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import rs.chat.domain.Session;
-import rs.chat.domain.User;
+import rs.chat.domain.entity.Session;
+import rs.chat.domain.entity.User;
 import rs.chat.domain.repository.SessionRepository;
 import rs.chat.domain.repository.UserRepository;
 

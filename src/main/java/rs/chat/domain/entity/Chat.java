@@ -1,4 +1,4 @@
-package rs.chat.domain;
+package rs.chat.domain.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,7 +13,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.time.Instant;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,29 +20,29 @@ import java.time.Instant;
 @Setter
 @ToString
 @Entity
-@Table(name = "sessions", schema = "rs_chat")
-public class Session {
+@Table(name = "chats", schema = "rs_chat")
+public class Chat {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", nullable = false)
 	private Long id;
 
 	@Basic
-	@Column(name = "src_ip", nullable = false, length = 32)
-	private String srcIp;
-
-	@Column(name = "date_started", nullable = false)
-	private Instant dateStarted;
+	@Column(name = "name", nullable = false, length = 100)
+	private String name;
 
 	@Basic
-	@Column(name = "access_token", nullable = false, length = 300)
-	private String accessToken;
+	@Column(name = "type", nullable = false, length = 10)
+	private String type;
 
 	@Basic
-	@Column(name = "refresh_token", nullable = false, length = 300)
-	private String refreshToken;
+	@Column(name = "s3_folder", length = 300)
+	private String s3Folder;
 
+	/**
+	 * JSON content.
+	 */
 	@Basic
-	@Column(name = "user_id", nullable = false)
-	private Long userId;
+	@Column(name = "metadata", nullable = false, length = -1)
+	private String metadata;
 }

@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import rs.chat.domain.User;
+import rs.chat.domain.entity.User;
 import rs.chat.domain.repository.UserRepository;
 
 import java.util.List;

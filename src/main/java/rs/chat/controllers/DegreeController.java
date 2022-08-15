@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
-import rs.chat.domain.Degree;
+import rs.chat.domain.entity.Degree;
 import rs.chat.exceptions.BadRequestException;
 import rs.chat.exceptions.NotFoundException;
 import rs.chat.net.http.HttpRequest;

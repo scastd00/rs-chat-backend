@@ -1,4 +1,4 @@
-package rs.chat.domain;
+package rs.chat.domain.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.sql.Timestamp;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,29 +21,38 @@ import javax.persistence.Table;
 @Setter
 @ToString
 @Entity
-@Table(name = "chats", schema = "rs_chat")
-public class Chat {
+@Table(name = "files", schema = "rs_chat")
+public class File {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", nullable = false)
 	private Long id;
 
 	@Basic
-	@Column(name = "name", nullable = false, length = 100)
+	@Column(name = "name", nullable = false)
 	private String name;
+
+	@Basic
+	@Column(name = "date_uploaded", nullable = false)
+	private Timestamp dateUploaded;
+
+	@Basic
+	@Column(name = "size", nullable = false)
+	private Integer size;
+
+	@Basic
+	@Column(name = "path", length = 400)
+	private String path;
+
+	@Basic
+	@Column(name = "metadata", length = 700)
+	private String metadata;
 
 	@Basic
 	@Column(name = "type", nullable = false, length = 10)
 	private String type;
 
 	@Basic
-	@Column(name = "s3_folder", length = 300)
-	private String s3Folder;
-
-	/**
-	 * JSON content.
-	 */
-	@Basic
-	@Column(name = "metadata", nullable = false, length = -1)
-	private String metadata;
+	@Column(name = "user_id", nullable = false)
+	private Long userId;
 }

@@ -1,4 +1,4 @@
-package rs.chat.domain;
+package rs.chat.domain.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,7 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.sql.Timestamp;
+import java.time.Instant;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,36 +21,27 @@ import java.sql.Timestamp;
 @Setter
 @ToString
 @Entity
-@Table(name = "files", schema = "rs_chat")
-public class File {
+@Table(name = "sessions", schema = "rs_chat")
+public class Session {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", nullable = false)
 	private Long id;
 
 	@Basic
-	@Column(name = "name", nullable = false)
-	private String name;
+	@Column(name = "src_ip", nullable = false, length = 32)
+	private String srcIp;
+
+	@Column(name = "date_started", nullable = false)
+	private Instant dateStarted;
 
 	@Basic
-	@Column(name = "date_uploaded", nullable = false)
-	private Timestamp dateUploaded;
+	@Column(name = "access_token", nullable = false, length = 300)
+	private String accessToken;
 
 	@Basic
-	@Column(name = "size", nullable = false)
-	private Integer size;
-
-	@Basic
-	@Column(name = "path", length = 400)
-	private String path;
-
-	@Basic
-	@Column(name = "metadata", length = 700)
-	private String metadata;
-
-	@Basic
-	@Column(name = "type", nullable = false, length = 10)
-	private String type;
+	@Column(name = "refresh_token", nullable = false, length = 300)
+	private String refreshToken;
 
 	@Basic
 	@Column(name = "user_id", nullable = false)

@@ -1,6 +1,7 @@
 package rs.chat.domain;
 
 import org.jetbrains.annotations.NotNull;
+import rs.chat.domain.entity.Chat;
 import rs.chat.utils.Utils;
 
 import static rs.chat.utils.Constants.DEGREE_CHAT;
