@@ -1,22 +1,17 @@
 package rs.chat.controllers;
 
-import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import rs.chat.domain.entity.Chat;
 import rs.chat.domain.entity.User;
 import rs.chat.net.http.HttpResponse;
 import rs.chat.service.ChatService;
 import rs.chat.service.UserService;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static rs.chat.router.Routes.GetRoute.ALL_CHATS_OF_USER_URL;
 
@@ -36,23 +31,9 @@ public class ChatController {
 			throw new UsernameNotFoundException("Username '%s' was not found".formatted(username));
 		}
 
-		Long userId = user.getId();
-		List<Chat> allChatsOfUser = this.chatService.getAllChatsOfUser(userId);
-		Map<String, List<Map<String, Object>>> res = new HashMap<>();
-
-		allChatsOfUser.forEach(chat -> {
-			String chatType = chat.getType();
-			Map<String, Object> chatItem = new HashMap<>();
-			chatItem.put("id", chat.getId());
-			chatItem.put("name", chat.getName());
-
-			if (!res.containsKey(chatType)) {
-				res.put(chatType, Lists.newArrayList(chatItem));
-			} else {
-				res.get(chatType).add(chatItem);
-			}
-		});
-
-		response.ok().send("chats", res);
+		response.ok().send(
+				"chats",
+				this.chatService.getAllChatsOfUserGroupedByType(user.getId())
+		);
 	}
 }

@@ -1,5 +1,6 @@
 package rs.chat.service;
 
+import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -10,7 +11,9 @@ import rs.chat.domain.repository.ChatRepository;
 import rs.chat.domain.repository.UserChatRepository;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -50,5 +53,25 @@ public class ChatService {
 		                       .forEach(chat -> chat.ifPresent(chatsOfUser::add));
 
 		return chatsOfUser;
+	}
+
+	public Map<String, List<Map<String, Object>>> getAllChatsOfUserGroupedByType(Long userId) {
+		List<Chat> allChatsOfUser = this.getAllChatsOfUser(userId);
+		Map<String, List<Map<String, Object>>> groups = new HashMap<>();
+
+		allChatsOfUser.forEach(chat -> {
+			String chatType = chat.getType();
+			Map<String, Object> chatItem = new HashMap<>();
+			chatItem.put("id", chat.getId());
+			chatItem.put("name", chat.getName());
+
+			if (!groups.containsKey(chatType)) {
+				groups.put(chatType, Lists.newArrayList(chatItem));
+			} else {
+				groups.get(chatType).add(chatItem);
+			}
+		});
+
+		return groups;
 	}
 }

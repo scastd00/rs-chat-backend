@@ -16,6 +16,7 @@ import rs.chat.net.http.HttpRequest;
 import rs.chat.net.http.HttpResponse;
 import rs.chat.net.http.HttpResponse.HttpResponseBody;
 import rs.chat.policies.Policies;
+import rs.chat.service.ChatService;
 import rs.chat.service.SessionService;
 import rs.chat.service.UserService;
 import rs.chat.utils.Constants;
@@ -23,6 +24,7 @@ import rs.chat.utils.Utils;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -44,6 +46,7 @@ import static rs.chat.utils.Utils.parseJson;
 public class AuthController {
 	private final UserService userService;
 	private final SessionService sessionService;
+	private final ChatService chatService;
 
 	@PostMapping(LOGIN_URL)
 	public void login(HttpRequest request, HttpResponse response) throws IOException {
@@ -52,6 +55,7 @@ public class AuthController {
 
 		JsonObject tokens = parseJson(jsonTokens);
 
+		// Get all data from db
 		User user = this.userService.getUser(username);
 		Session savedSession = this.sessionService.saveSession(
 				new Session(
@@ -64,12 +68,15 @@ public class AuthController {
 				)
 		);
 
+		Map<String, List<Map<String, Object>>> allChatsOfUserGroupedByType = this.chatService.getAllChatsOfUserGroupedByType(user.getId());
+
+		// Clear sensitive data
 		user.setPassword(null); // Password not visible in the response
 		savedSession.setSrcIp(null);
-		savedSession.setUserId(null);
 
 		HttpResponseBody responseBody = new HttpResponseBody("session", savedSession);
 		responseBody.add("user", user);
+		responseBody.add("chats", allChatsOfUserGroupedByType);
 
 		response.ok().send(responseBody);
 	}
