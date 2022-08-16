@@ -17,7 +17,7 @@
 				<column name="s3_folder" nullable="false" length="300"/>
 			</basic>
 			<basic name="metadata">
-				<column name="metadata"/>
+				<column name="metadata" precision="-1"/>
 			</basic>
 		</attributes>
 	</entity>

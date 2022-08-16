@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
+import rs.chat.domain.entity.Chat;
 import rs.chat.domain.entity.Session;
 import rs.chat.domain.entity.User;
 import rs.chat.net.http.HttpRequest;
@@ -117,13 +118,30 @@ public class AuthController {
 				)
 		);
 
+		Chat globalChat = this.chatService.getByName("global");
+		this.chatService.addUserToChat(user.getId(), globalChat.getId());
+
+		// Make the Map of available chat directly without calling db
+		Map<String, List<Map<String, Object>>> defaultChat =
+				Map.of(
+						globalChat.getType(),
+						List.of(
+								Map.of(
+										"id", globalChat.getId(),
+										"name", globalChat.getName()
+								)
+						)
+				);
+
 		// Clear the password
 		user.setPassword(null);
 		session.setSrcIp(null);
-		session.setUserId(null);
 
 		HttpResponseBody responseBody = new HttpResponseBody("session", session);
 		responseBody.add("user", user);
+		responseBody.add("chats", defaultChat);
+
+		// Todo: write chat like when sending all available to user
 
 		response.ok().send(responseBody);
 	}

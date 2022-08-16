@@ -40,16 +40,16 @@ public final class Constants {
 	public static final long IDLE_TIMEOUT_WEB_SOCKET = Duration.ofHours(2).getSeconds() * 1000;
 	public static final int WEB_SOCKET_BUFFER_SIZE = (int) DataSize.ofKilobytes(32).toBytes();
 
-	public static final String USER_CHAT = "u";
+	public static final String USER_CHAT = "user";
 	public static final String USER_CHAT_S3_FOLDER_PREFIX = USER_CHAT + "/";
 
-	public static final String GROUP_CHAT = "g";
+	public static final String GROUP_CHAT = "group";
 	public static final String GROUP_CHAT_S3_FOLDER_PREFIX = GROUP_CHAT + "/";
 
-	public static final String SUBJECT_CHAT = "s";
+	public static final String SUBJECT_CHAT = "subject";
 	public static final String SUBJECT_CHAT_S3_FOLDER_PREFIX = SUBJECT_CHAT + "/";
 
-	public static final String DEGREE_CHAT = "d";
+	public static final String DEGREE_CHAT = "degree";
 	public static final String DEGREE_CHAT_S3_FOLDER_PREFIX = DEGREE_CHAT + "/";
 
 }

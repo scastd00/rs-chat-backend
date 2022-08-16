@@ -5,9 +5,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import rs.chat.domain.converters.JsonToMapConverter;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -42,7 +44,7 @@ public class Chat {
 	/**
 	 * JSON content.
 	 */
-	@Basic
-	@Column(name = "metadata", nullable = false, length = -1)
+	@Column(name = "metadata", nullable = false)
+	@Convert(attributeName = "data", converter = JsonToMapConverter.class)
 	private String metadata;
 }

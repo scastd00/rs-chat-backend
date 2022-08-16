@@ -27,7 +27,7 @@ public class ChatService {
 		return this.chatRepository.findAll();
 	}
 
-	public String getChatMetadata(String chatName) {
+	public Object getChatMetadata(String chatName) {
 		Chat chat = this.chatRepository.findByName(chatName);
 		return chat != null ? chat.getMetadata() : null;
 	}
@@ -73,5 +73,13 @@ public class ChatService {
 		});
 
 		return groups;
+	}
+
+	public Chat getByName(String chatName) {
+		return this.chatRepository.findByName(chatName);
+	}
+
+	public UserChat addUserToChat(Long userId, Long chatId) {
+		return this.userChatRepository.save(new UserChat(chatId, userId));
 	}
 }

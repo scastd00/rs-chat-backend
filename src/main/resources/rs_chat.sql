@@ -95,12 +95,12 @@ CREATE TABLE `chats`
 (
 	`id`        bigint       NOT NULL AUTO_INCREMENT,
 	`name`      varchar(100) NOT NULL,
-	`type`      char(1)      NOT NULL, -- User (u), Group (g), Subject (s), Degree (d).
+	`type`      varchar(10)  NOT NULL, -- User, Group, Subject, Degree.
 	`s3_folder` varchar(300) NULL,
-	`metadata`  mediumtext   NOT NULL, -- JSON string. Initial value could be the creation date.
+	`metadata`  json         NOT NULL, -- JSON string. Initial value is the creation date.
 
 	CONSTRAINT `pk_chat_id` PRIMARY KEY (`id`),
-	CONSTRAINT `ck_chat_type` CHECK (`type` IN ('u', 'g', 's', 'd'))
+	CONSTRAINT `ck_chat_type` CHECK (`type` IN ('user', 'group', 'subject', 'degree'))
 ) ENGINE = InnoDB;
 
 CREATE TABLE `user_chat`
@@ -194,3 +194,17 @@ ALTER TABLE `user_group`
 		REFERENCES `users` (`id`)
 		ON UPDATE CASCADE
 		ON DELETE RESTRICT;
+
+CREATE TRIGGER `before_insert_chat`
+	BEFORE INSERT
+	ON `chats`
+	FOR EACH ROW
+BEGIN
+	SET @`metadata` := (
+					   SELECT CONCAT('{"created":', ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000), '}')
+					   );
+	SET `new`.`metadata` = @`metadata`;
+END;
+
+INSERT INTO `groups` (`name`) VALUE ('global');
+INSERT INTO `chats` (`name`, `type`, `s3_folder`) VALUE ('global', 'group', 'group/global');
