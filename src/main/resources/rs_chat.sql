@@ -195,16 +195,6 @@ ALTER TABLE `user_group`
 		ON UPDATE CASCADE
 		ON DELETE RESTRICT;
 
-CREATE TRIGGER `before_insert_chat`
-	BEFORE INSERT
-	ON `chats`
-	FOR EACH ROW
-BEGIN
-	SET @`metadata` := (
-					   SELECT CONCAT('{"created":', ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000), '}')
-					   );
-	SET `new`.`metadata` = @`metadata`;
-END;
-
 INSERT INTO `groups` (`name`) VALUE ('global');
-INSERT INTO `chats` (`name`, `type`, `s3_folder`) VALUE ('global', 'group', 'group/global');
+INSERT INTO `chats` (`name`, `type`, `s3_folder`, `metadata`) VALUE ('Global', 'group', 'group/Global',
+																	 CONCAT('{"createdAt":', ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000), '}'));

@@ -118,8 +118,8 @@ public class AuthController {
 				)
 		);
 
-		Chat globalChat = this.chatService.getByName("global");
-		this.chatService.addUserToChat(user.getId(), globalChat.getId());
+		Chat globalChat = this.chatService.getByName("Global");
+//		this.chatService.addUserToChat(user.getId(), globalChat.getId());
 
 		// Make the Map of available chat directly without calling db
 		Map<String, List<Map<String, Object>>> defaultChat =

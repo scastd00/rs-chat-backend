@@ -111,7 +111,7 @@ public final class Utils {
 		return System.getenv("ENV").toLowerCase().startsWith("dev");
 	}
 
-	public static String jsonOf(String key, String value) {
+	public static String jsonOfNumber(String key, Number value) {
 		JsonObject json = new JsonObject();
 		json.addProperty(key, value);
 		return json.toString();

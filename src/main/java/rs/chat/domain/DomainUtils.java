@@ -24,7 +24,7 @@ public final class DomainUtils {
 				name,
 				chatType,
 				chatPrefix + name,
-				Utils.jsonOf("created", Long.toString(System.currentTimeMillis()))
+				Utils.jsonOfNumber("createdAt", System.currentTimeMillis())
 		);
 	}
 
