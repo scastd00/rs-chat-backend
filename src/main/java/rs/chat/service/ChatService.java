@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rs.chat.domain.entity.Chat;
 import rs.chat.domain.entity.UserChat;
+import rs.chat.domain.entity.UserChatPK;
 import rs.chat.domain.repository.ChatRepository;
 import rs.chat.domain.repository.UserChatRepository;
 
@@ -46,10 +47,10 @@ public class ChatService {
 	public List<Chat> getAllChatsOfUser(Long userId) {
 		List<Chat> chatsOfUser = new ArrayList<>();
 
-		this.userChatRepository.findAllByUserId(userId)
+		this.userChatRepository.findAllByUserChatPK_UserId(userId)
 		                       .stream()
-		                       .map(UserChat::getChatId)
-		                       .map(this.chatRepository::findById)
+		                       .map(UserChat::getUserChatPK)
+		                       .map(userChatPK -> this.chatRepository.findById(userChatPK.getChatId()))
 		                       .forEach(chat -> chat.ifPresent(chatsOfUser::add));
 
 		return chatsOfUser;
@@ -79,7 +80,7 @@ public class ChatService {
 		return this.chatRepository.findByName(chatName);
 	}
 
-	public UserChat addUserToChat(Long userId, Long chatId) {
-		return this.userChatRepository.save(new UserChat(chatId, userId));
+	public void addUserToChat(Long userId, Long chatId) {
+		this.userChatRepository.save(new UserChat(new UserChatPK(chatId, userId)));
 	}
 }

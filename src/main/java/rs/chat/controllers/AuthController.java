@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 import rs.chat.domain.entity.Chat;
+import rs.chat.domain.entity.Group;
 import rs.chat.domain.entity.Session;
 import rs.chat.domain.entity.User;
 import rs.chat.net.http.HttpRequest;
@@ -18,7 +19,9 @@ import rs.chat.net.http.HttpResponse;
 import rs.chat.net.http.HttpResponse.HttpResponseBody;
 import rs.chat.policies.Policies;
 import rs.chat.service.ChatService;
+import rs.chat.service.GroupService;
 import rs.chat.service.SessionService;
+import rs.chat.service.UserGroupService;
 import rs.chat.service.UserService;
 import rs.chat.utils.Constants;
 import rs.chat.utils.Utils;
@@ -48,6 +51,8 @@ public class AuthController {
 	private final UserService userService;
 	private final SessionService sessionService;
 	private final ChatService chatService;
+	private final GroupService groupService;
+	private final UserGroupService userGroupService;
 
 	@PostMapping(LOGIN_URL)
 	public void login(HttpRequest request, HttpResponse response) throws IOException {
@@ -90,7 +95,7 @@ public class AuthController {
 		Policies.checkRegister(body);
 
 		// Register the user and the session.
-		User user = this.userService.saveUser(new User(
+		User savedUser = this.userService.saveUser(new User(
 				null,
 				body.get("username").getAsString(),
 				body.get("password").getAsString(),
@@ -103,9 +108,9 @@ public class AuthController {
 		));
 
 		// Generate tokens
-		Map<String, String> tokens = Utils.generateTokens(user.getUsername(),
+		Map<String, String> tokens = Utils.generateTokens(savedUser.getUsername(),
 		                                                  request.getRequestURL().toString(),
-		                                                  user.getRole());
+		                                                  savedUser.getRole());
 
 		Session session = this.sessionService.saveSession(
 				new Session(
@@ -114,14 +119,18 @@ public class AuthController {
 						Instant.now(), // Todo: pass a clock as parameter to test better
 						tokens.get("accessToken"),
 						tokens.get("refreshToken"),
-						user.getId()
+						savedUser.getId()
 				)
 		);
 
 		Chat globalChat = this.chatService.getByName("Global");
-//		this.chatService.addUserToChat(user.getId(), globalChat.getId());
+		Group globalGroup = this.groupService.getGroupByName("Global");
+		Long userId = savedUser.getId();
 
-		// Make the Map of available chat directly without calling db
+		this.userGroupService.addUserToGroup(userId, globalGroup.getId());
+		this.chatService.addUserToChat(userId, globalChat.getId());
+
+		// Make the Map of the only available chat without calling database
 		Map<String, List<Map<String, Object>>> defaultChat =
 				Map.of(
 						globalChat.getType(),
@@ -134,14 +143,12 @@ public class AuthController {
 				);
 
 		// Clear the password
-		user.setPassword(null);
+		savedUser.setPassword(null);
 		session.setSrcIp(null);
 
 		HttpResponseBody responseBody = new HttpResponseBody("session", session);
-		responseBody.add("user", user);
+		responseBody.add("user", savedUser);
 		responseBody.add("chats", defaultChat);
-
-		// Todo: write chat like when sending all available to user
 
 		response.ok().send(responseBody);
 	}

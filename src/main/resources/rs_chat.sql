@@ -195,6 +195,6 @@ ALTER TABLE `user_group`
 		ON UPDATE CASCADE
 		ON DELETE RESTRICT;
 
-INSERT INTO `groups` (`name`) VALUE ('global');
+INSERT INTO `groups` (`name`) VALUE ('Global');
 INSERT INTO `chats` (`name`, `type`, `s3_folder`, `metadata`) VALUE ('Global', 'group', 'group/Global',
 																	 CONCAT('{"createdAt":', ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000), '}'));

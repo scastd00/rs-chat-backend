@@ -23,6 +23,10 @@ public class GroupService {
 		return this.groupRepository.findAll();
 	}
 
+	public Group getGroupByName(String name) {
+		return this.groupRepository.findByName(name);
+	}
+
 	public Group saveGroup(Group group) {
 		Group savedGroup = this.groupRepository.save(group);
 
