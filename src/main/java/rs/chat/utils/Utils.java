@@ -73,10 +73,8 @@ public final class Utils {
 		                         /* Headers */
 		                         .username("Server")
 		                         .chatId(chatId)
-		                         /*.sessionId(-1)*/
 		                         .type(type)
 		                         .date(System.currentTimeMillis())
-		                         /*.token(null)*/
 		                         /* Body */
 		                         .encoding("UTF-8")
 		                         .content(message)
@@ -90,10 +88,8 @@ public final class Utils {
 		                         /* Headers */
 		                         .username("Server")
 		                         .chatId("NONE")
-		                         /*.sessionId(-1)*/
 		                         .type(ERROR_MESSAGE.type())
 		                         .date(System.currentTimeMillis())
-		                         /*.token(null)*/
 		                         /* Body */
 		                         .encoding("UTF-8")
 		                         .content(message)
