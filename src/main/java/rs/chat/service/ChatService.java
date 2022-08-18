@@ -10,6 +10,7 @@ import rs.chat.domain.entity.UserChat;
 import rs.chat.domain.entity.UserChatPK;
 import rs.chat.domain.repository.ChatRepository;
 import rs.chat.domain.repository.UserChatRepository;
+import rs.chat.exceptions.BadRequestException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,9 +29,10 @@ public class ChatService {
 		return this.chatRepository.findAll();
 	}
 
-	public Object getChatMetadata(String chatName) {
-		Chat chat = this.chatRepository.findByName(chatName);
-		return chat != null ? chat.getMetadata() : null;
+	public Chat getChatById(Long id) {
+		return this.chatRepository.findById(id).orElseThrow(() -> {
+			throw new BadRequestException("Chat with id=%d does not exist".formatted(id));
+		});
 	}
 
 	/**

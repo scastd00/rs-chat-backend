@@ -2,6 +2,7 @@ package rs.chat.net.http;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -81,7 +82,7 @@ public class HttpResponse extends HttpServletResponseWrapper {
 	}
 
 	@NoArgsConstructor
-	@Getter
+	@Getter(AccessLevel.PROTECTED)
 	public static class HttpResponseBody {
 		private final Map<String, Object> data = new HashMap<>();
 		public static final HttpResponseBody EMPTY = null;

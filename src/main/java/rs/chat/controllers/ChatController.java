@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import rs.chat.domain.entity.Chat;
 import rs.chat.domain.entity.User;
 import rs.chat.net.http.HttpResponse;
 import rs.chat.service.ChatService;
@@ -13,7 +14,9 @@ import rs.chat.service.UserService;
 
 import java.io.IOException;
 
+import static rs.chat.net.http.HttpResponse.HttpResponseBody;
 import static rs.chat.router.Routes.GetRoute.ALL_CHATS_OF_USER_URL;
+import static rs.chat.router.Routes.GetRoute.CHAT_INFO_URL;
 
 @Slf4j
 @RestController
@@ -35,5 +38,15 @@ public class ChatController {
 				"chats",
 				this.chatService.getAllChatsOfUserGroupedByType(user.getId())
 		);
+	}
+
+	@GetMapping(CHAT_INFO_URL)
+	public void getChatInformation(HttpResponse response, @PathVariable String id) throws IOException {
+		Chat chat = this.chatService.getChatById(Long.parseLong(id));
+
+		HttpResponseBody body = new HttpResponseBody("name", chat.getName());
+		body.add("metadata", chat.getMetadata());
+
+		response.ok().send(body);
 	}
 }
