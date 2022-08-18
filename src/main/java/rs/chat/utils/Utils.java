@@ -68,11 +68,11 @@ public final class Utils {
 		return JWT_VERIFIER.verify(fullToken.substring(JWT_TOKEN_PREFIX.length()));
 	}
 
-	public static String createServerMessage(String message, String type) {
+	public static String createServerMessage(String message, String type, String chatId) {
 		return JsonMessageWrapper.builder()
 		                         /* Headers */
 		                         .username("Server")
-		                         .chatId("ALL")
+		                         .chatId(chatId)
 		                         /*.sessionId(-1)*/
 		                         .type(type)
 		                         .date(System.currentTimeMillis())

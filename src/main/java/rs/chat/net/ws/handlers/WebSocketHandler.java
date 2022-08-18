@@ -77,16 +77,16 @@ public class WebSocketHandler extends TextWebSocketHandler {
 			this.chatMap.addClientToChat(new WSClient(session, wsClientID));
 			this.chatMap.broadcastToSingleChatAndExcludeClient(
 					wsClientID,
-					createServerMessage(username + " has joined the chat", USER_JOINED.type())
+					createServerMessage(username + " has joined the chat", USER_JOINED.type(), chatId)
 			);
 
 			log.debug(username + " has joined the chat");
 		} else if (USER_LEFT.equals(receivedMessageType)) {
-			this.chatMap.removeClientFromChat(wsClientID);
 			this.chatMap.broadcastToSingleChat(
 					chatId,
-					createServerMessage(username + " has disconnected from the chat", USER_LEFT.type())
+					createServerMessage(username + " has disconnected from the chat", USER_LEFT.type(), chatId)
 			);
+			this.chatMap.removeClientFromChat(wsClientID);
 			// Closed from the frontend
 
 			log.debug(username + " has disconnected from the chat");
@@ -106,7 +106,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
 			session.sendMessage(new TextMessage(
 					createServerMessage(
 							"ERROR: type property is not present in the content of the JSON",
-							ERROR_MESSAGE.type()
+							ERROR_MESSAGE.type(),
+							chatId
 					))
 			);
 		}
@@ -135,7 +136,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
 				session.sendMessage(new TextMessage(
 						createServerMessage(
 								"ERROR: type property is not present in the content of the JSON",
-								ERROR_MESSAGE.type()
+								ERROR_MESSAGE.type(),
+								"TODO" // Todo: get the chat id
 						))
 				);
 			} catch (IOException ex) {
@@ -147,7 +149,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	@Override
 	public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
 		session.sendMessage(
-				new TextMessage(createServerMessage(exception.getMessage(), ERROR_MESSAGE.type()))
+				new TextMessage(createServerErrorMessage(exception.getMessage()))
 		);
 	}
 
