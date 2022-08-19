@@ -18,17 +18,17 @@ import java.util.Objects;
 @Setter
 @Embeddable
 public class UserGroupPK implements Serializable {
-	@Column(name = "group_id", nullable = false)
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long groupId;
-
 	@Column(name = "user_id", nullable = false)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long userId;
 
+	@Column(name = "group_id", nullable = false)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long groupId;
+
 	@Override
 	public int hashCode() {
-		return Objects.hash(groupId, userId);
+		return Objects.hash(userId, groupId);
 	}
 
 	@Override
@@ -36,6 +36,6 @@ public class UserGroupPK implements Serializable {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		UserGroupPK that = (UserGroupPK) o;
-		return Objects.equals(groupId, that.groupId) && Objects.equals(userId, that.userId);
+		return Objects.equals(userId, that.userId) && Objects.equals(groupId, that.groupId);
 	}
 }

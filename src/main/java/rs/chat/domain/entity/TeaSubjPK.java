@@ -18,17 +18,17 @@ import java.util.Objects;
 @Setter
 @Embeddable
 public class TeaSubjPK implements Serializable {
-	@Column(name = "subject_id", nullable = false)
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long subjectId;
-
 	@Column(name = "teacher_id", nullable = false)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long teacherId;
 
+	@Column(name = "subject_id", nullable = false)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long subjectId;
+
 	@Override
 	public int hashCode() {
-		return Objects.hash(subjectId, teacherId);
+		return Objects.hash(teacherId, subjectId);
 	}
 
 	@Override
@@ -36,6 +36,6 @@ public class TeaSubjPK implements Serializable {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		TeaSubjPK teaSubjPK = (TeaSubjPK) o;
-		return Objects.equals(subjectId, teaSubjPK.subjectId) && Objects.equals(teacherId, teaSubjPK.teacherId);
+		return Objects.equals(teacherId, teaSubjPK.teacherId) && Objects.equals(subjectId, teaSubjPK.subjectId);
 	}
 }

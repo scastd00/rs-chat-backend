@@ -83,6 +83,6 @@ public class ChatService {
 	}
 
 	public void addUserToChat(Long userId, Long chatId) {
-		this.userChatRepository.save(new UserChat(new UserChatPK(chatId, userId)));
+		this.userChatRepository.save(new UserChat(new UserChatPK(userId, chatId)));
 	}
 }

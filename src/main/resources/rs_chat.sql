@@ -29,18 +29,18 @@ CREATE TABLE `degrees`
 
 CREATE TABLE `stu_subj`
 (
-	`subject_id` bigint NOT NULL,
 	`student_id` bigint NOT NULL,
+	`subject_id` bigint NOT NULL,
 
-	CONSTRAINT `pk_stu_subj` PRIMARY KEY (`subject_id`, `student_id`)
+	CONSTRAINT `pk_stu_subj` PRIMARY KEY (`student_id`, `subject_id`)
 ) ENGINE InnoDB;
 
 CREATE TABLE `tea_subj`
 (
-	`subject_id` bigint NOT NULL,
 	`teacher_id` bigint NOT NULL,
+	`subject_id` bigint NOT NULL,
 
-	CONSTRAINT `pk_tea_subj` PRIMARY KEY (`subject_id`, `teacher_id`)
+	CONSTRAINT `pk_tea_subj` PRIMARY KEY (`teacher_id`, `subject_id`)
 ) ENGINE InnoDB;
 
 CREATE TABLE `files`
@@ -105,18 +105,18 @@ CREATE TABLE `chats`
 
 CREATE TABLE `user_chat`
 (
-	`chat_id` bigint NOT NULL,
 	`user_id` bigint NOT NULL,
+	`chat_id` bigint NOT NULL,
 
-	CONSTRAINT `pk_user_chat` PRIMARY KEY (`chat_id`, `user_id`)
+	CONSTRAINT `pk_user_chat` PRIMARY KEY (`user_id`, `chat_id`)
 ) ENGINE InnoDB;
 
 CREATE TABLE `user_group`
 (
-	`group_id` bigint NOT NULL,
 	`user_id`  bigint NOT NULL,
+	`group_id` bigint NOT NULL,
 
-	CONSTRAINT `pk_user_group` PRIMARY KEY (`group_id`, `user_id`)
+	CONSTRAINT `pk_user_group` PRIMARY KEY (`user_id`, `group_id`)
 ) ENGINE InnoDB;
 
 CREATE TABLE `groups`

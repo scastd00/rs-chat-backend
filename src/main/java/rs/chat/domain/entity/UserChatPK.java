@@ -18,17 +18,17 @@ import java.util.Objects;
 @Setter
 @Embeddable
 public class UserChatPK implements Serializable {
-	@Column(name = "chat_id", nullable = false)
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long chatId;
-
 	@Column(name = "user_id", nullable = false)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long userId;
 
+	@Column(name = "chat_id", nullable = false)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long chatId;
+
 	@Override
 	public int hashCode() {
-		return Objects.hash(chatId, userId);
+		return Objects.hash(userId, chatId);
 	}
 
 	@Override
@@ -36,6 +36,6 @@ public class UserChatPK implements Serializable {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		UserChatPK that = (UserChatPK) o;
-		return Objects.equals(chatId, that.chatId) && Objects.equals(userId, that.userId);
+		return Objects.equals(userId, that.userId) && Objects.equals(chatId, that.chatId);
 	}
 }

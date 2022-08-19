@@ -86,14 +86,8 @@
 	</entity>
 	<entity class="rs.chat.domain.entity.StuSubj">
 		<table name="stu_subj" schema="rs_chat" catalog=""/>
-		<id-class class="rs.chat.domain.entity.StuSubjPK"/>
 		<attributes>
-			<id name="subjectId">
-				<column name="subject_id" precision="-1"/>
-			</id>
-			<id name="studentId">
-				<column name="student_id" precision="-1"/>
-			</id>
+			<embedded-id name="stuSubjPK"/>
 		</attributes>
 	</entity>
 	<entity class="rs.chat.domain.entity.Subject">
@@ -124,26 +118,14 @@
 	</entity>
 	<entity class="rs.chat.domain.entity.TeaSubj">
 		<table name="tea_subj" schema="rs_chat" catalog=""/>
-		<id-class class="rs.chat.domain.entity.TeaSubjPK"/>
 		<attributes>
-			<id name="subjectId">
-				<column name="subject_id" precision="-1"/>
-			</id>
-			<id name="teacherId">
-				<column name="teacher_id" precision="-1"/>
-			</id>
+			<embedded-id name="teaSubjPK"/>
 		</attributes>
 	</entity>
 	<entity class="rs.chat.domain.entity.UserChat">
 		<table name="user_chat" schema="rs_chat" catalog=""/>
-		<id-class class="rs.chat.domain.entity.UserChatPK"/>
 		<attributes>
-			<id name="chatId">
-				<column name="chat_id" precision="-1"/>
-			</id>
-			<id name="userId">
-				<column name="user_id" precision="-1"/>
-			</id>
+			<embedded-id name="userChatPK"/>
 		</attributes>
 	</entity>
 	<entity class="rs.chat.domain.entity.User">
@@ -191,14 +173,8 @@
 	</entity>
 	<entity class="rs.chat.domain.entity.UserGroup">
 		<table name="user_group" schema="rs_chat" catalog=""/>
-		<id-class class="rs.chat.domain.entity.UserGroupPK"/>
 		<attributes>
-			<id name="groupId">
-				<column name="group_id" precision="-1"/>
-			</id>
-			<id name="userId">
-				<column name="user_id" precision="-1"/>
-			</id>
+			<embedded-id name="userGroupPK"/>
 		</attributes>
 	</entity>
 </entity-mappings>
