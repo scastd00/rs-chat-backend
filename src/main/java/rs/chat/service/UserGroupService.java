@@ -21,7 +21,7 @@ public class UserGroupService {
 	private final UserGroupRepository userGroupRepository;
 
 	public void addUserToGroup(@NotNull User user, @NotNull Long groupId) {
-		UserGroup relation = new UserGroup(new UserGroupPK(user.getId(), groupId));
+		UserGroup relation = new UserGroup(new UserGroupPK(groupId, user.getId()));
 		this.userGroupRepository.save(relation);
 	}
 
