@@ -26,6 +26,7 @@ import static rs.chat.net.ws.WSMessage.USER_JOINED;
 import static rs.chat.net.ws.WSMessage.USER_LEFT;
 import static rs.chat.net.ws.WSMessage.VIDEO_MESSAGE;
 import static rs.chat.utils.Utils.checkAuthorizationToken;
+import static rs.chat.utils.Utils.createActiveUsersMessage;
 import static rs.chat.utils.Utils.createServerErrorMessage;
 import static rs.chat.utils.Utils.createServerMessage;
 
@@ -101,7 +102,11 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		} else if (VIDEO_MESSAGE.equals(receivedMessageType)) {
 			log.info("");
 		} else if (ACTIVE_USERS_MESSAGE.equals(receivedMessageType)) {
-			log.info("");
+			log.info(username + " requested active users");
+
+			session.sendMessage(
+					new TextMessage(createActiveUsersMessage(this.chatMap.getUsernamesOfChat(chatId)))
+			);
 		} else {
 			session.sendMessage(new TextMessage(
 					createServerMessage(

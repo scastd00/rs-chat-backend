@@ -3,12 +3,15 @@ package rs.chat.utils;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import rs.chat.net.ws.JsonMessageWrapper;
+import rs.chat.net.ws.WSMessage;
 
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static rs.chat.net.ws.WSMessage.ERROR_MESSAGE;
@@ -66,6 +69,13 @@ public final class Utils {
 		}
 
 		return JWT_VERIFIER.verify(fullToken.substring(JWT_TOKEN_PREFIX.length()));
+	}
+
+	public static String createActiveUsersMessage(List<String> usernames) {
+		JsonArray usersArray = new JsonArray();
+		usernames.forEach(usersArray::add);
+		// Todo: get the chatId to send the message to (in this case is a user).
+		return createServerMessage(usersArray.toString(), WSMessage.ACTIVE_USERS_MESSAGE.type(), "TODO");
 	}
 
 	public static String createServerMessage(String message, String type, String chatId) {
