@@ -23,6 +23,7 @@ public record WSMessage(String type, String filePrefix, String extension) {
 	public static final WSMessage VIDEO_MESSAGE = new WSMessage("VIDEO_MESSAGE", "videos/", ".rsVid");
 
 	public static final WSMessage ACTIVE_USERS_MESSAGE = new WSMessage("ACTIVE_USERS", null, null);
+	public static final WSMessage GET_HISTORY_MESSAGE = new WSMessage("GET_HISTORY", null, null);
 	public static final WSMessage SERVER_INFO_MESSAGE = new WSMessage("SERVER_INFO", null, null);
 	public static final WSMessage ERROR_MESSAGE = new WSMessage("ERROR_MESSAGE", null, null);
 

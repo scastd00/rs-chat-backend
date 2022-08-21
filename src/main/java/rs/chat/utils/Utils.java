@@ -7,13 +7,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import rs.chat.net.ws.JsonMessageWrapper;
-import rs.chat.net.ws.WSMessage;
 
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static rs.chat.net.ws.WSMessage.ACTIVE_USERS_MESSAGE;
 import static rs.chat.net.ws.WSMessage.ERROR_MESSAGE;
 import static rs.chat.utils.Constants.ALGORITHM;
 import static rs.chat.utils.Constants.GSON;
@@ -75,7 +75,7 @@ public final class Utils {
 		JsonArray usersArray = new JsonArray();
 		usernames.forEach(usersArray::add);
 		// Todo: get the chatId to send the message to (in this case is a user).
-		return createServerMessage(usersArray.toString(), WSMessage.ACTIVE_USERS_MESSAGE.type(), "TODO");
+		return createServerMessage(usersArray.toString(), ACTIVE_USERS_MESSAGE.type(), "TODO");
 	}
 
 	public static String createServerMessage(String message, String type, String chatId) {

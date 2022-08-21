@@ -1,18 +1,15 @@
-package rs.chat.net.ws.handlers;
+package rs.chat.net.ws;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.google.gson.JsonObject;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-import rs.chat.net.ws.JsonMessageWrapper;
-import rs.chat.net.ws.WSClient;
-import rs.chat.net.ws.WSClientID;
-import rs.chat.net.ws.WSMessage;
-import rs.chat.net.ws.WebSocketChatMap;
 
 import java.io.IOException;
 import java.util.Base64;
@@ -20,6 +17,7 @@ import java.util.Base64;
 import static rs.chat.net.ws.WSMessage.ACTIVE_USERS_MESSAGE;
 import static rs.chat.net.ws.WSMessage.AUDIO_MESSAGE;
 import static rs.chat.net.ws.WSMessage.ERROR_MESSAGE;
+import static rs.chat.net.ws.WSMessage.GET_HISTORY_MESSAGE;
 import static rs.chat.net.ws.WSMessage.IMAGE_MESSAGE;
 import static rs.chat.net.ws.WSMessage.TEXT_MESSAGE;
 import static rs.chat.net.ws.WSMessage.USER_JOINED;
@@ -31,8 +29,10 @@ import static rs.chat.utils.Utils.createServerErrorMessage;
 import static rs.chat.utils.Utils.createServerMessage;
 
 @Slf4j
+@Component
+@RequiredArgsConstructor
 public class WebSocketHandler extends TextWebSocketHandler {
-	private final WebSocketChatMap chatMap = new WebSocketChatMap();
+	private final WebSocketChatMap chatMap;
 
 	/**
 	 * Handles text messages (JSON string).
@@ -107,6 +107,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
 			session.sendMessage(
 					new TextMessage(createActiveUsersMessage(this.chatMap.getUsernamesOfChat(chatId)))
 			);
+		} else if (GET_HISTORY_MESSAGE.equals(receivedMessageType)) {
+			log.info(username + " requested history");
 		} else {
 			session.sendMessage(new TextMessage(
 					createServerMessage(
