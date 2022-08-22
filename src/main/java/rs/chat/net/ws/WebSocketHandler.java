@@ -2,14 +2,13 @@ package rs.chat.net.ws;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.google.gson.JsonObject;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.stereotype.Component;
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+import rs.chat.net.ws.strategies.MessageStrategy;
 
 import java.io.IOException;
 import java.util.Base64;
@@ -29,10 +28,8 @@ import static rs.chat.utils.Utils.createServerErrorMessage;
 import static rs.chat.utils.Utils.createServerMessage;
 
 @Slf4j
-@Component
-@RequiredArgsConstructor
 public class WebSocketHandler extends TextWebSocketHandler {
-	private final WebSocketChatMap chatMap;
+	private final WebSocketChatMap chatMap = new WebSocketChatMap();
 
 	/**
 	 * Handles text messages (JSON string).
@@ -61,6 +58,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		//  but cannot receive them
 		WSClientID wsClientID = new WSClientID(username, chatId, sessionId);
 		WSMessage receivedMessageType = new WSMessage(type, null, null);
+		MessageStrategy strategy;
 
 		if (USER_JOINED.equals(receivedMessageType)) {
 			try {
