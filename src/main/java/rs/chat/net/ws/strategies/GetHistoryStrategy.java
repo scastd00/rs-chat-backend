@@ -5,10 +5,13 @@ import rs.chat.exceptions.WebSocketException;
 import rs.chat.net.ws.JsonMessageWrapper;
 import rs.chat.net.ws.WebSocketChatMap;
 
+import java.util.Map;
+
 @Slf4j
 public class GetHistoryStrategy implements MessageStrategy {
 	@Override
-	public void handle(JsonMessageWrapper wrappedMessage, WebSocketChatMap webSocketChatMap) throws WebSocketException {
+	public void handle(JsonMessageWrapper wrappedMessage, WebSocketChatMap webSocketChatMap,
+	                   Map<String, Object> otherData) throws WebSocketException {
 
 	}
 }

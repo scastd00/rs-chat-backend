@@ -1,17 +1,26 @@
 package rs.chat.net.ws;
 
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+import rs.chat.net.ws.strategies.ActiveUsersStrategy;
+import rs.chat.net.ws.strategies.AudioMessageStrategy;
+import rs.chat.net.ws.strategies.ErrorMessageStrategy;
+import rs.chat.net.ws.strategies.GetHistoryStrategy;
+import rs.chat.net.ws.strategies.ImageMessageStrategy;
 import rs.chat.net.ws.strategies.MessageStrategy;
+import rs.chat.net.ws.strategies.TextMessageStrategy;
+import rs.chat.net.ws.strategies.UserJoinedStrategy;
+import rs.chat.net.ws.strategies.UserLeftStrategy;
+import rs.chat.net.ws.strategies.VideoMessageStrategy;
 
 import java.io.IOException;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
 import static rs.chat.net.ws.WSMessage.ACTIVE_USERS_MESSAGE;
 import static rs.chat.net.ws.WSMessage.AUDIO_MESSAGE;
@@ -22,8 +31,6 @@ import static rs.chat.net.ws.WSMessage.TEXT_MESSAGE;
 import static rs.chat.net.ws.WSMessage.USER_JOINED;
 import static rs.chat.net.ws.WSMessage.USER_LEFT;
 import static rs.chat.net.ws.WSMessage.VIDEO_MESSAGE;
-import static rs.chat.utils.Utils.checkAuthorizationToken;
-import static rs.chat.utils.Utils.createActiveUsersMessage;
 import static rs.chat.utils.Utils.createServerErrorMessage;
 import static rs.chat.utils.Utils.createServerMessage;
 
@@ -43,79 +50,43 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	protected void handleTextMessage(@NotNull WebSocketSession session,
 	                                 @NotNull TextMessage message) throws IOException {
 		JsonMessageWrapper wrappedMessage = new JsonMessageWrapper(message.getPayload());
-
-		String username = wrappedMessage.username();
-		String chatId = wrappedMessage.chatId();
-		long sessionId = wrappedMessage.sessionId();
-		String type = wrappedMessage.type();
 //		long date = wrappedMessage.date();
-		String token = wrappedMessage.token();
+//		String token = wrappedMessage.token();
 
 //		String encoding = wrappedMessage.encoding();
 //		String content = wrappedMessage.content();
 
 		// FIXME: A user that did not send the USER_JOINED message could send messages
 		//  but cannot receive them
-		WSClientID wsClientID = new WSClientID(username, chatId, sessionId);
-		WSMessage receivedMessageType = new WSMessage(type, null, null);
+		WSClientID wsClientID = new WSClientID(wrappedMessage.username(), wrappedMessage.chatId(), wrappedMessage.sessionId());
+		WSMessage receivedMessageType = new WSMessage(wrappedMessage.type(), null, null);
+
 		MessageStrategy strategy;
+		Map<String, Object> otherData = new HashMap<>();
+		otherData.put("session", session);
+		otherData.put("wsClientID", wsClientID);
 
 		if (USER_JOINED.equals(receivedMessageType)) {
-			try {
-				checkAuthorizationToken(token);
-			} catch (JWTVerificationException e) {
-				log.error("Error in token: {}", e.getMessage());
-
-				session.sendMessage(new TextMessage(
-						createServerErrorMessage("Token is malformed or expired, please log in again")
-				));
-
-				return;
-			}
-
-			this.chatMap.addClientToChat(new WSClient(session, wsClientID));
-			this.chatMap.broadcastToSingleChatAndExcludeClient(
-					wsClientID,
-					createServerMessage(username + " has joined the chat", USER_JOINED.type(), chatId)
-			);
-
-			log.debug(username + " has joined the chat");
+			strategy = new UserJoinedStrategy();
 		} else if (USER_LEFT.equals(receivedMessageType)) {
-			this.chatMap.broadcastToSingleChat(
-					chatId,
-					createServerMessage(username + " has disconnected from the chat", USER_LEFT.type(), chatId)
-			);
-			this.chatMap.removeClientFromChat(wsClientID);
-			// Closed from the frontend
-
-			log.debug(username + " has disconnected from the chat");
+			strategy = new UserLeftStrategy();
 		} else if (TEXT_MESSAGE.equals(receivedMessageType)) {
-			// Clear the sensitive data to send the message to other clients
-			String response = this.clearSensitiveDataChangeDateAndBuildResponse(wrappedMessage.getParsedPayload());
-			this.chatMap.broadcastToSingleChatAndExcludeClient(wsClientID, response);
+			strategy = new TextMessageStrategy();
 		} else if (IMAGE_MESSAGE.equals(receivedMessageType)) {
-			log.info("");
+			strategy = new ImageMessageStrategy();
 		} else if (AUDIO_MESSAGE.equals(receivedMessageType)) {
-			log.info("");
+			strategy = new AudioMessageStrategy();
 		} else if (VIDEO_MESSAGE.equals(receivedMessageType)) {
-			log.info("");
+			strategy = new VideoMessageStrategy();
 		} else if (ACTIVE_USERS_MESSAGE.equals(receivedMessageType)) {
-			log.info(username + " requested active users");
-
-			session.sendMessage(
-					new TextMessage(createActiveUsersMessage(this.chatMap.getUsernamesOfChat(chatId)))
-			);
+			strategy = new ActiveUsersStrategy();
 		} else if (GET_HISTORY_MESSAGE.equals(receivedMessageType)) {
-			log.info(username + " requested history");
+			strategy = new GetHistoryStrategy();
 		} else {
-			session.sendMessage(new TextMessage(
-					createServerMessage(
-							"ERROR: type property is not present in the content of the JSON",
-							ERROR_MESSAGE.type(),
-							chatId
-					))
-			);
+			strategy = new ErrorMessageStrategy();
 		}
+
+		strategy.handle(wrappedMessage, this.chatMap, otherData);
 	}
 
 	/**
@@ -156,23 +127,5 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		session.sendMessage(
 				new TextMessage(createServerErrorMessage(exception.getMessage()))
 		);
-	}
-
-	/**
-	 * Removes the fields of the message received to be able to send it to
-	 * other clients without sensitive information. In addition, it updates
-	 * the {@code date} field. NOTE: Only headers are modified.
-	 *
-	 * @param message received message to remove fields.
-	 *
-	 * @return the {@link String} message without the sensitive information
-	 * and the date of the server.
-	 */
-	private String clearSensitiveDataChangeDateAndBuildResponse(JsonObject message) {
-		JsonObject headers = (JsonObject) message.get("headers");
-		headers.remove("sessionId");
-		headers.remove("token");
-		headers.addProperty("date", System.currentTimeMillis()); // Modify property
-		return message.toString();
 	}
 }

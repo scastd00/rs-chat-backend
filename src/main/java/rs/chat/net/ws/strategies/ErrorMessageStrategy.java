@@ -11,20 +11,22 @@ import rs.chat.net.ws.WebSocketChatMap;
 import java.io.IOException;
 import java.util.Map;
 
-import static rs.chat.utils.Utils.createActiveUsersMessage;
+import static rs.chat.net.ws.WSMessage.ERROR_MESSAGE;
+import static rs.chat.utils.Utils.createServerMessage;
 
 @Slf4j
-public class ActiveUsersStrategy implements MessageStrategy {
+public class ErrorMessageStrategy implements MessageStrategy {
 	@Override
 	public void handle(JsonMessageWrapper wrappedMessage, WebSocketChatMap webSocketChatMap,
 	                   Map<String, Object> otherData) throws WebSocketException, IOException {
 		WebSocketSession session = (WebSocketSession) otherData.get("session");
-		WSClientID wsClientID = (WSClientID) otherData.get("wsClientID");
 
-		session.sendMessage(
-				new TextMessage(createActiveUsersMessage(
-						webSocketChatMap.getUsernamesOfChat(wsClientID.chatId()))
-				)
+		session.sendMessage(new TextMessage(
+				createServerMessage(
+						"ERROR: type property is not present in the content of the JSON",
+						ERROR_MESSAGE.type(),
+						((WSClientID) otherData.get("wsClientID")).chatId()
+				))
 		);
 	}
 }
