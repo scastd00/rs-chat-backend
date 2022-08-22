@@ -72,9 +72,9 @@ public class S3 {
 		}
 	}
 
-	public void uploadFile(String fileNameWithoutExtension, WSMessage messageType) {
-		File file = messageType.buildFileInDisk(fileNameWithoutExtension);
-		String s3Key = messageType.s3Key(fileNameWithoutExtension);
+	public void uploadFile(String chatId, WSMessage messageType) {
+		File file = messageType.buildFileInDisk(chatId);
+		String s3Key = messageType.s3Key(chatId);
 
 		this.s3Client.putObject(
 				PutObjectRequest.builder()
@@ -92,9 +92,9 @@ public class S3 {
 	}
 
 	@SneakyThrows(AwsServiceException.class)
-	public File downloadFile(String fileNameWithoutExtension, WSMessage messageType) {
-		File file = messageType.buildFileInDisk(fileNameWithoutExtension);
-		String s3Key = messageType.s3Key(fileNameWithoutExtension);
+	public File downloadFile(String chatId, WSMessage messageType) {
+		File file = messageType.buildFileInDisk(chatId);
+		String s3Key = messageType.s3Key(chatId);
 
 		if (this.existsKeyInBucket(s3Key)) {
 			this.s3Client.getObject(
@@ -107,6 +107,21 @@ public class S3 {
 		}
 
 		return file;
+	}
+
+	public String getContentsOfFile(String chatId, WSMessage messageType) {
+		String s3Key = messageType.s3Key(chatId);
+
+		if (this.existsKeyInBucket(s3Key)) {
+			return this.s3Client.getObjectAsBytes(
+					GetObjectRequest.builder()
+					                .bucket(S3_BUCKET_NAME)
+					                .key(s3Key)
+					                .build()
+			).asUtf8String();
+		}
+
+		return null;
 	}
 
 	private boolean existsKeyInBucket(String s3Key) {

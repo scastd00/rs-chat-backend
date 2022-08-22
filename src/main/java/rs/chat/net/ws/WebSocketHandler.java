@@ -49,21 +49,21 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	@Override
 	protected void handleTextMessage(@NotNull WebSocketSession session,
 	                                 @NotNull TextMessage message) {
-		JsonMessageWrapper wrappedMessage = new JsonMessageWrapper(message.getPayload());
-
 		// FIXME: A user that did not send the USER_JOINED message could send messages
-		//  but cannot receive them
-		WSClientID wsClientID = new WSClientID(
-				wrappedMessage.username(),
-				wrappedMessage.chatId(),
-				wrappedMessage.sessionId()
-		);
+		//  but cannot receive them.
+
+		JsonMessageWrapper wrappedMessage = new JsonMessageWrapper(message.getPayload());
 		WSMessage receivedMessageType = new WSMessage(wrappedMessage.type(), null, null);
 
 		MessageStrategy strategy;
 		Map<String, Object> otherData = new HashMap<>();
 		otherData.put("session", session);
-		otherData.put("wsClientID", wsClientID);
+		otherData.put("wsMessage", receivedMessageType);
+		otherData.put("wsClientID", new WSClientID(
+				wrappedMessage.username(),
+				wrappedMessage.chatId(),
+				wrappedMessage.sessionId()
+		));
 
 		if (USER_JOINED.equals(receivedMessageType)) {
 			strategy = new UserJoinedStrategy();
