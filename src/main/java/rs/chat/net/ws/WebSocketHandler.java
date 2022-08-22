@@ -48,17 +48,16 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	 */
 	@Override
 	protected void handleTextMessage(@NotNull WebSocketSession session,
-	                                 @NotNull TextMessage message) throws IOException {
+	                                 @NotNull TextMessage message) {
 		JsonMessageWrapper wrappedMessage = new JsonMessageWrapper(message.getPayload());
-//		long date = wrappedMessage.date();
-//		String token = wrappedMessage.token();
-
-//		String encoding = wrappedMessage.encoding();
-//		String content = wrappedMessage.content();
 
 		// FIXME: A user that did not send the USER_JOINED message could send messages
 		//  but cannot receive them
-		WSClientID wsClientID = new WSClientID(wrappedMessage.username(), wrappedMessage.chatId(), wrappedMessage.sessionId());
+		WSClientID wsClientID = new WSClientID(
+				wrappedMessage.username(),
+				wrappedMessage.chatId(),
+				wrappedMessage.sessionId()
+		);
 		WSMessage receivedMessageType = new WSMessage(wrappedMessage.type(), null, null);
 
 		MessageStrategy strategy;
@@ -86,7 +85,12 @@ public class WebSocketHandler extends TextWebSocketHandler {
 			strategy = new ErrorMessageStrategy();
 		}
 
-		strategy.handle(wrappedMessage, this.chatMap, otherData);
+		try {
+			strategy.checkTokenValidity(wrappedMessage.token());
+			strategy.handle(wrappedMessage, this.chatMap, otherData);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**
