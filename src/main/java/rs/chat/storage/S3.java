@@ -6,6 +6,7 @@ import rs.chat.net.ws.WSMessage;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.awscore.exception.AwsServiceException;
 import software.amazon.awssdk.core.exception.SdkClientException;
+import software.amazon.awssdk.core.exception.SdkException;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.core.sync.ResponseTransformer;
 import software.amazon.awssdk.http.SdkHttpResponse;
@@ -47,10 +48,6 @@ public class S3 {
 		return INSTANCE;
 	}
 
-	public S3Client getS3Client() {
-		return this.s3Client;
-	}
-
 	private AwsBasicCredentials obtainCredentials() {
 		return AwsBasicCredentials.create(
 				System.getenv("AWS_ACCESS_KEY_ID"),
@@ -69,6 +66,9 @@ public class S3 {
 
 		if (response.isSuccessful()) {
 			log.debug("Successful HeadBucketResponse. Status code: {}", response.statusCode());
+		} else {
+			log.error("HeadBucketResponse failed. Status code: {}", response.statusCode());
+			throw SdkException.create("HeadBucketResponse failed. Status code: " + response.statusCode(), null);
 		}
 	}
 
@@ -85,6 +85,7 @@ public class S3 {
 		);
 
 		try {
+			// Delete the file from the local disk after it has been uploaded to S3.
 			Files.delete(file.toPath());
 		} catch (IOException e) {
 			throw new RuntimeException(e);
