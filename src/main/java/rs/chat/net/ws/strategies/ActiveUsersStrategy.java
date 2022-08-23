@@ -9,6 +9,8 @@ import rs.chat.net.ws.WSClientID;
 import rs.chat.net.ws.WebSocketChatMap;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import static rs.chat.utils.Utils.createActiveUsersMessage;
@@ -21,10 +23,16 @@ public class ActiveUsersStrategy implements MessageStrategy {
 		WebSocketSession session = (WebSocketSession) otherData.get("session");
 		WSClientID wsClientID = (WSClientID) otherData.get("wsClientID");
 
+		String[] usernamesOfChat = webSocketChatMap.getUsernamesOfChat(wsClientID.chatId());
+
+		List<String> sortedUsers =
+				Arrays.stream(usernamesOfChat)
+				      .sorted(String::compareToIgnoreCase)
+				      .filter(username -> !username.equals(wsClientID.username()))
+				      .toList();
+
 		session.sendMessage(
-				new TextMessage(createActiveUsersMessage(
-						webSocketChatMap.getUsernamesOfChat(wsClientID.chatId()))
-				)
+				new TextMessage(createActiveUsersMessage(sortedUsers))
 		);
 	}
 }

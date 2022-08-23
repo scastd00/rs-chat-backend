@@ -52,4 +52,5 @@ public final class Constants {
 	public static final String DEGREE_CHAT = "degree";
 	public static final String DEGREE_CHAT_S3_FOLDER_PREFIX = DEGREE_CHAT + "/";
 
+	public static final int MAX_CHAT_HISTORY_PER_REQUEST = 65;
 }

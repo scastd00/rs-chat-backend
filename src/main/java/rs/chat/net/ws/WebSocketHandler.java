@@ -89,7 +89,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 			strategy.checkTokenValidity(wrappedMessage.token());
 			strategy.handle(wrappedMessage, this.chatMap, otherData);
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			log.error(e.getMessage(), e);
 		}
 	}
 

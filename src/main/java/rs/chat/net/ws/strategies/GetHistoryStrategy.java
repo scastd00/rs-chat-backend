@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import static rs.chat.net.ws.WSMessage.GET_HISTORY_MESSAGE;
-import static rs.chat.utils.Utils.createServerErrorMessage;
+import static rs.chat.utils.Constants.MAX_CHAT_HISTORY_PER_REQUEST;
 import static rs.chat.utils.Utils.createServerMessage;
 
 @Slf4j
@@ -31,17 +31,16 @@ public class GetHistoryStrategy implements MessageStrategy {
 		);
 
 		if (history == null) {
-			log.error("Could not get history for chat {}", wrappedMessage.chatId());
-
-			throw new WebSocketException(createServerErrorMessage(
-					"Could not get history for chat " + wrappedMessage.chatId()
-			));
+			log.warn("Could not get history for chat {}. Chat did not exist", wrappedMessage.chatId());
+			return;
 		}
 
 		JsonArray jsonArray = new JsonArray();
 		List<String> reversedHistory = Arrays.asList(history.split("\n"));
 		Collections.reverse(reversedHistory); // Reverse the history to get the latest messages first.
-		reversedHistory.forEach(jsonArray::add);
+		reversedHistory.stream()
+		               .limit(MAX_CHAT_HISTORY_PER_REQUEST)
+		               .forEach(jsonArray::add);
 
 		WebSocketSession session = (WebSocketSession) otherData.get("session");
 		session.sendMessage(new TextMessage(

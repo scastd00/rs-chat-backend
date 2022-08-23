@@ -154,10 +154,10 @@ public class WebSocketChatMap {
 		          .forEach(chat -> chat.getClients().forEach(client -> client.send(message)));
 	}
 
-	public List<String> getUsernamesOfChat(String chatId) {
+	public String[] getUsernamesOfChat(String chatId) {
 		return this.getClientsOf(chatId)
 		           .stream()
 		           .map(wsClient -> wsClient.wsClientID().username())
-		           .toList();
+		           .toArray(String[]::new);
 	}
 }
