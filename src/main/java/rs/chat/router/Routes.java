@@ -6,6 +6,7 @@ public class Routes {
 
 	private static final String V_1 = "/api/v1";
 	public static final String ROOT_URL = "/";
+	public static final String ALL_ROUTES = "/**";
 
 	public static final String REFRESH_TOKEN_URL = V_1 + "/token/refresh";
 	public static final String WS_CHAT_ENDPOINT = "/ws/rschat";

@@ -1,6 +1,7 @@
 package rs.chat.config.security.filter;
 
 import com.google.gson.JsonObject;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,15 +22,18 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 
+/**
+ * Manager that authenticates the incoming requests.
+ */
 @Slf4j
 @WebFilter(filterName = "AuthenticationFilter")
+@RequiredArgsConstructor
 public class RSChatAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 	private final AuthenticationManager authenticationManager;
 
-	public RSChatAuthenticationFilter(AuthenticationManager authenticationManager) {
-		this.authenticationManager = authenticationManager;
-	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 		try {
@@ -49,18 +53,23 @@ public class RSChatAuthenticationFilter extends UsernamePasswordAuthenticationFi
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void successfulAuthentication(HttpServletRequest request,
 	                                        HttpServletResponse response,
 	                                        FilterChain chain,
 	                                        Authentication authentication) throws IOException, ServletException {
 		User user = (User) authentication.getPrincipal();
-		Map<String, String> tokens = Utils.generateTokens(user.getUsername(),
-		                                                  request.getRequestURL().toString(),
-		                                                  user.getAuthorities()
-		                                                      .iterator()
-		                                                      .next()
-		                                                      .getAuthority());
+		Map<String, String> tokens = Utils.generateTokens(
+				user.getUsername(),
+				request.getRequestURL().toString(),
+				user.getAuthorities()
+				    .iterator()
+				    .next()
+				    .getAuthority()
+		);
 
 		HttpRequest req = new HttpRequest(request);
 		req.set("USER:TOKENS", Constants.GSON.toJson(tokens));

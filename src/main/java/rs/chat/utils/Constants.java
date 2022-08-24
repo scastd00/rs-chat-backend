@@ -14,6 +14,9 @@ public final class Constants {
 	private Constants() {
 	}
 
+	public static final String LOCALHOST_ORIGIN = "http://localhost:3000";
+	public static final String HEROKU_ORIGIN = "https://rschat-ws.herokuapp.com/";
+
 	public static final Gson GSON = new Gson();
 	public static final String ERROR_JSON_KEY = "error";
 
