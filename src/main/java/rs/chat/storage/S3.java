@@ -110,21 +110,6 @@ public class S3 {
 		return file;
 	}
 
-	public String getContentsOfFile(String chatId, WSMessage messageType) {
-		String s3Key = messageType.s3Key(chatId);
-
-		if (this.existsKeyInBucket(s3Key)) {
-			return this.s3Client.getObjectAsBytes(
-					GetObjectRequest.builder()
-					                .bucket(S3_BUCKET_NAME)
-					                .key(s3Key)
-					                .build()
-			).asUtf8String();
-		}
-
-		return null;
-	}
-
 	private boolean existsKeyInBucket(String s3Key) {
 		HeadObjectResponse response;
 

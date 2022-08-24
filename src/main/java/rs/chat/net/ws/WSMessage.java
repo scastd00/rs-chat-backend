@@ -29,7 +29,7 @@ public record WSMessage(String type, String filePrefix, String extension) {
 	public static final WSMessage ERROR_MESSAGE = new WSMessage("ERROR_MESSAGE", null, null);
 
 	public File buildFileInDisk(String fileNameWithoutExtension) {
-		File file = new File(LOCAL_FILES_PATH + this.s3Key(fileNameWithoutExtension));
+		File file = this.historyFile(fileNameWithoutExtension);
 
 		if (file.getParentFile() != null) {
 			file.getParentFile().mkdirs(); // Create parent folder
@@ -40,6 +40,10 @@ public record WSMessage(String type, String filePrefix, String extension) {
 
 	public String s3Key(String key) {
 		return this.filePrefix + key + this.extension;
+	}
+
+	public File historyFile(String fileNameWithoutExtension) {
+		return new File(LOCAL_FILES_PATH + this.s3Key(fileNameWithoutExtension));
 	}
 
 	@Override

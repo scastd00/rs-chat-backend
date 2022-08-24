@@ -122,4 +122,8 @@ public final class Utils {
 		json.addProperty(key, value);
 		return json.toString();
 	}
+
+	public static JsonObject jsonObjectFromString(String jsonString) {
+		return GSON.fromJson(jsonString, JsonObject.class);
+	}
 }
