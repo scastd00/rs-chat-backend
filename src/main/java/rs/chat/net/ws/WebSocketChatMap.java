@@ -1,16 +1,25 @@
 package rs.chat.net.ws;
 
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.concurrent.TimeUnit.MINUTES;
+
 /**
  * Class that manages the chats to which the clients are connected.
  */
 @NoArgsConstructor
+@Slf4j
+@Configuration
+@EnableScheduling
 public class WebSocketChatMap {
 	/**
 	 * Map to store each chat. The mapping key is the chatId.
@@ -159,5 +168,11 @@ public class WebSocketChatMap {
 		           .stream()
 		           .map(wsClient -> wsClient.wsClientID().username())
 		           .toArray(String[]::new);
+	}
+
+	@Scheduled(fixedRate = 10, initialDelay = 10, timeUnit = MINUTES)
+	private void saveAllToS3() {
+		log.debug("Saving all chats to S3");
+		this.chats.values().forEach(Chat::saveToS3);
 	}
 }

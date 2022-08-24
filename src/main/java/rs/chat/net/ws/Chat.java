@@ -58,9 +58,11 @@ public class Chat {
 	 */
 	public void finish() {
 		this.writer.close();
+		this.saveToS3();
+	}
 
+	public void saveToS3() {
 		S3.getInstance().uploadFile(this.chatId, TEXT_MESSAGE);
-
-		log.debug("Uploaded file");
+		log.debug("Uploaded file of chat with id = {}", this.chatId);
 	}
 }
