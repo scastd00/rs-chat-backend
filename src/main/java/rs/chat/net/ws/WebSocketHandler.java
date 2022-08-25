@@ -34,6 +34,9 @@ import static rs.chat.net.ws.WSMessage.VIDEO_MESSAGE;
 import static rs.chat.utils.Utils.createServerErrorMessage;
 import static rs.chat.utils.Utils.createServerMessage;
 
+/**
+ * WebSocket handler for the application.
+ */
 @Slf4j
 public class WebSocketHandler extends TextWebSocketHandler {
 	private final WebSocketChatMap chatMap = new WebSocketChatMap();
@@ -41,10 +44,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	/**
 	 * Handles text messages (JSON string).
 	 *
-	 * @param session remote session of the client in the server.
+	 * @param session remote WebSocket session of the client in the server.
 	 * @param message message received from the client.
-	 *
-	 * @throws IOException if an I/O error occurs.
 	 */
 	@Override
 	protected void handleTextMessage(@NotNull WebSocketSession session,
@@ -55,7 +56,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		JsonMessageWrapper wrappedMessage = new JsonMessageWrapper(message.getPayload());
 		WSMessage receivedMessageType = new WSMessage(wrappedMessage.type(), null, null);
 
-		MessageStrategy strategy;
 		Map<String, Object> otherData = new HashMap<>();
 		otherData.put("session", session);
 		otherData.put("wsMessage", receivedMessageType);
@@ -65,25 +65,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
 				wrappedMessage.sessionId()
 		));
 
-		if (USER_JOINED.equals(receivedMessageType)) {
-			strategy = new UserJoinedStrategy();
-		} else if (USER_LEFT.equals(receivedMessageType)) {
-			strategy = new UserLeftStrategy();
-		} else if (TEXT_MESSAGE.equals(receivedMessageType)) {
-			strategy = new TextMessageStrategy();
-		} else if (IMAGE_MESSAGE.equals(receivedMessageType)) {
-			strategy = new ImageMessageStrategy();
-		} else if (AUDIO_MESSAGE.equals(receivedMessageType)) {
-			strategy = new AudioMessageStrategy();
-		} else if (VIDEO_MESSAGE.equals(receivedMessageType)) {
-			strategy = new VideoMessageStrategy();
-		} else if (ACTIVE_USERS_MESSAGE.equals(receivedMessageType)) {
-			strategy = new ActiveUsersStrategy();
-		} else if (GET_HISTORY_MESSAGE.equals(receivedMessageType)) {
-			strategy = new GetHistoryStrategy();
-		} else {
-			strategy = new ErrorMessageStrategy();
-		}
+		// Strategy pattern for handling messages.
+		MessageStrategy strategy = this.decideStrategy(receivedMessageType);
 
 		try {
 			strategy.checkTokenValidity(wrappedMessage.token());
@@ -94,10 +77,40 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	}
 
 	/**
-	 * This method receives binary messages and treats them as needed.
-	 * (Will be used for the media transferred through the websocket).
+	 * Makes a decision on which strategy to use for handling the message.
 	 *
-	 * @param session socket of the connected client.
+	 * @param receivedMessageType message type received from the client.
+	 *
+	 * @return strategy to use for handling the message.
+	 */
+	@NotNull
+	private MessageStrategy decideStrategy(WSMessage receivedMessageType) {
+		if (USER_JOINED.equals(receivedMessageType)) {
+			return new UserJoinedStrategy();
+		} else if (USER_LEFT.equals(receivedMessageType)) {
+			return new UserLeftStrategy();
+		} else if (TEXT_MESSAGE.equals(receivedMessageType)) {
+			return new TextMessageStrategy();
+		} else if (IMAGE_MESSAGE.equals(receivedMessageType)) {
+			return new ImageMessageStrategy();
+		} else if (AUDIO_MESSAGE.equals(receivedMessageType)) {
+			return new AudioMessageStrategy();
+		} else if (VIDEO_MESSAGE.equals(receivedMessageType)) {
+			return new VideoMessageStrategy();
+		} else if (ACTIVE_USERS_MESSAGE.equals(receivedMessageType)) {
+			return new ActiveUsersStrategy();
+		} else if (GET_HISTORY_MESSAGE.equals(receivedMessageType)) {
+			return new GetHistoryStrategy();
+		} else {
+			return new ErrorMessageStrategy();
+		}
+	}
+
+	/**
+	 * This method receives binary messages and treats them as needed.
+	 * (Might be used for the media transferred through the websocket).
+	 *
+	 * @param session socket session of the connected client.
 	 * @param message binary message received from the client.
 	 */
 	@Override
@@ -126,6 +139,9 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
 		session.sendMessage(

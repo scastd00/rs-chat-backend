@@ -9,8 +9,8 @@ import static rs.chat.utils.Constants.LOCAL_FILES_PATH;
  * Record that specifies properties of the messages.
  * There are some default messages that the application uses.
  *
- * @param type       {@link String} that specifies the message type (SCREAMING_SNAKE_CASE).
- * @param filePrefix path prefix of the files where the messages are stored.
+ * @param type       {@link String} that specifies the message type (defined in SCREAMING_SNAKE_CASE).
+ * @param filePrefix path prefix of the files where the messages are stored in disk and S3.
  * @param extension  extension of the file created for a specific type of message.
  */
 public record WSMessage(String type, String filePrefix, String extension) {
@@ -28,20 +28,41 @@ public record WSMessage(String type, String filePrefix, String extension) {
 	public static final WSMessage SERVER_INFO_MESSAGE = new WSMessage("SERVER_INFO", null, null);
 	public static final WSMessage ERROR_MESSAGE = new WSMessage("ERROR_MESSAGE", null, null);
 
+	/**
+	 * Returns the file that is used to store the message in disk.
+	 *
+	 * @param fileNameWithoutExtension name of the file without extension.
+	 *
+	 * @return {@link File} that is used to store the message in disk.
+	 */
 	public File buildFileInDisk(String fileNameWithoutExtension) {
 		File file = this.historyFile(fileNameWithoutExtension);
 
 		if (file.getParentFile() != null) {
-			file.getParentFile().mkdirs(); // Create parent folder
+			file.getParentFile().mkdirs(); // Create parent folder if it doesn't exist.
 		}
 
 		return file;
 	}
 
+	/**
+	 * Returns the key that is used to store the file in S3 bucket.
+	 *
+	 * @param key name of the file without extension.
+	 *
+	 * @return key used to store the file in S3 bucket.
+	 */
 	public String s3Key(String key) {
 		return this.filePrefix + key + this.extension;
 	}
 
+	/**
+	 * Returns the file that is stored in disk to read from or write to the messages.
+	 *
+	 * @param fileNameWithoutExtension name of the file without extension.
+	 *
+	 * @return {@link File} that is stored in disk to read from or write to the messages.
+	 */
 	public File historyFile(String fileNameWithoutExtension) {
 		return new File(LOCAL_FILES_PATH + this.s3Key(fileNameWithoutExtension));
 	}

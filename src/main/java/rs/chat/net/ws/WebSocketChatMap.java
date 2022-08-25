@@ -27,7 +27,7 @@ public class WebSocketChatMap {
 	private final Map<String, Chat> chats = new HashMap<>();
 
 	/**
-	 * Creates a new chat ({@link Chat}) for the specified key.
+	 * Creates a new {@link Chat} for the specified key.
 	 *
 	 * @param chatId key of the chat to create.
 	 */
@@ -48,8 +48,8 @@ public class WebSocketChatMap {
 
 	/**
 	 * Returns the clients of the chat identified by the chatId or an empty list if
-	 * it does not exist. <b>Use with caution, if the returned list is
-	 * an empty one, no elements will be stored in the real chat.</b>
+	 * it does not exist. <b>Use with caution, if the returned list is an empty one
+	 * (the chat does not exist), no elements will be stored in the real chat.</b>
 	 *
 	 * @param chatId id of the chat to get.
 	 *
@@ -60,7 +60,13 @@ public class WebSocketChatMap {
 		return this.chatExists(chatId) ? this.chats.get(chatId).getClients() : List.of();
 	}
 
-	private void saveMessage(String chatId, String message) {
+	/**
+	 * Writes the message to the corresponding chat file if it exists.
+	 *
+	 * @param chatId  id of the chat and the file to write to.
+	 * @param message message to write.
+	 */
+	private synchronized void saveMessage(String chatId, String message) {
 		if (this.chatExists(chatId)) {
 			this.chats.get(chatId).saveMessageToChatFile(message);
 		}
@@ -83,8 +89,8 @@ public class WebSocketChatMap {
 	}
 
 	/**
-	 * Adds a client to the specified chat (stored in the {@code wsClientID} attribute
-	 * of {@link WSClient}).
+	 * Adds a client to the specified chat (id of the chat is stored in the
+	 * {@code wsClientID} attribute of {@link WSClient}).
 	 *
 	 * @param client new client to add to the chat.
 	 */
@@ -99,10 +105,10 @@ public class WebSocketChatMap {
 	}
 
 	/**
-	 * Removes the client from the specified chat (stored in the {@code wsClientID} attribute
-	 * of {@link WSClient}). If the resulting chat is empty, the mapping is
-	 * removed (so {@link #chatExists(String)} and {@link Map#get(Object)} will
-	 * return {@code false}).
+	 * Removes the client from the specified chat (id of the chat is stored in the
+	 * {@code wsClientID} attribute of {@link WSClient}). If the resulting chat is
+	 * empty, the mapping is removed (so {@link #chatExists(String)} and
+	 * {@link Map#get(Object)} will return {@code false}) and the chat is finished {@link Chat#finish()}.
 	 * <p>
 	 * Precondition: the client is connected to the chat (so {@link #getClientsOf(String)} will
 	 * return a non-empty list).
@@ -113,11 +119,12 @@ public class WebSocketChatMap {
 		String chatId = clientID.chatId();
 
 		// Remove the user from the chat.
-		this.getClientsOf(chatId)
-		    .removeIf(client -> client.wsClientID().equals(clientID));
+		List<WSClient> clientsOfChat = this.getClientsOf(chatId);
+		clientsOfChat.removeIf(client -> client.wsClientID().equals(clientID));
 
-		// Delete the chat and its entry in the map if there are no more clients connected to it.
-		if (this.getClientsOf(chatId).isEmpty()) {
+		// Delete the chat and its entry in the map if there are no more
+		// clients connected to it.
+		if (clientsOfChat.isEmpty()) {
 			this.chats.get(chatId).finish();
 			this.chats.remove(chatId);
 		}
@@ -163,13 +170,23 @@ public class WebSocketChatMap {
 		          .forEach(chat -> chat.getClients().forEach(client -> client.send(message)));
 	}
 
-	public String[] getUsernamesOfChat(String chatId) {
+	/**
+	 * Retrieves all the usernames of the clients connected to the given chat.
+	 *
+	 * @param chatId id of the chat to get the usernames of.
+	 *
+	 * @return a list of usernames.
+	 */
+	public List<String> getUsernamesOfChat(String chatId) {
 		return this.getClientsOf(chatId)
 		           .stream()
 		           .map(wsClient -> wsClient.wsClientID().username())
-		           .toArray(String[]::new);
+		           .toList();
 	}
 
+	/**
+	 * Saves all chat files to S3 bucket every 10 minutes (to avoid data loss).
+	 */
 	@Scheduled(fixedRate = 10, initialDelay = 10, timeUnit = MINUTES)
 	private void saveAllToS3() {
 		log.debug("Saving all chats to S3");

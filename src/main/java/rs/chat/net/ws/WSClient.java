@@ -7,8 +7,19 @@ import org.springframework.web.socket.WebSocketSession;
 import java.io.IOException;
 import java.util.Objects;
 
+/**
+ * Record to keep track of a client's connection.
+ *
+ * @param session    {@link WebSocketSession} of the client.
+ * @param wsClientID {@link WSClientID} of the client.
+ */
 @Slf4j
 public record WSClient(WebSocketSession session, WSClientID wsClientID) {
+	/**
+	 * Send a message to the client.
+	 *
+	 * @param message message to send.
+	 */
 	public synchronized void send(String message) {
 		try {
 			this.session.sendMessage(new TextMessage(message));
@@ -17,6 +28,9 @@ public record WSClient(WebSocketSession session, WSClientID wsClientID) {
 		}
 	}
 
+	/**
+	 * Close the client's connection.
+	 */
 	public synchronized void close() {
 		try {
 			if (this.session.isOpen()) {

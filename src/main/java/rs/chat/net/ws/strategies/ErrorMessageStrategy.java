@@ -6,6 +6,7 @@ import org.springframework.web.socket.WebSocketSession;
 import rs.chat.exceptions.WebSocketException;
 import rs.chat.net.ws.JsonMessageWrapper;
 import rs.chat.net.ws.WSClientID;
+import rs.chat.net.ws.WSMessage;
 import rs.chat.net.ws.WebSocketChatMap;
 
 import java.io.IOException;
@@ -14,6 +15,9 @@ import java.util.Map;
 import static rs.chat.net.ws.WSMessage.ERROR_MESSAGE;
 import static rs.chat.utils.Utils.createServerMessage;
 
+/**
+ * Strategy for handling {@link WSMessage#ERROR_MESSAGE} messages.
+ */
 @Slf4j
 public class ErrorMessageStrategy implements MessageStrategy {
 	@Override

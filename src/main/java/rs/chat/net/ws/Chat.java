@@ -15,8 +15,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import static rs.chat.net.ws.WSMessage.TEXT_MESSAGE;
 
 /**
- * Chat that stores the clients and have a Writer associated to a file
- * to store all the messages received.
+ * Class that stores the clients in a {@link CopyOnWriteArrayList<WSClient>} and have
+ * a {@link PrintWriter} associated to a file to store all the messages received.
  */
 @Getter
 @Slf4j
@@ -52,7 +52,7 @@ public class Chat {
 	}
 
 	/**
-	 * Closes the writer and uploads the file with all the messages stored.
+	 * Closes the writer and uploads the file to S3 bucket with all the messages stored.
 	 * <p>
 	 * This method is called when the last client of the chat has left.
 	 */
@@ -61,6 +61,9 @@ public class Chat {
 		this.saveToS3();
 	}
 
+	/**
+	 * Uploads the file to S3 bucket with all the messages stored.
+	 */
 	public void saveToS3() {
 		S3.getInstance().uploadFile(this.chatId, TEXT_MESSAGE);
 		log.debug("Uploaded file of chat with id = {}", this.chatId);

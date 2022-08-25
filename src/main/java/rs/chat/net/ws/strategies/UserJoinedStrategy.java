@@ -6,6 +6,7 @@ import rs.chat.exceptions.WebSocketException;
 import rs.chat.net.ws.JsonMessageWrapper;
 import rs.chat.net.ws.WSClient;
 import rs.chat.net.ws.WSClientID;
+import rs.chat.net.ws.WSMessage;
 import rs.chat.net.ws.WebSocketChatMap;
 
 import java.io.IOException;
@@ -14,6 +15,9 @@ import java.util.Map;
 import static rs.chat.net.ws.WSMessage.USER_JOINED;
 import static rs.chat.utils.Utils.createServerMessage;
 
+/**
+ * Strategy for handling {@link WSMessage#USER_JOINED} messages.
+ */
 @Slf4j
 public class UserJoinedStrategy implements MessageStrategy {
 	@Override
