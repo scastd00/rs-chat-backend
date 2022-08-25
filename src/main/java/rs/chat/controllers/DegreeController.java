@@ -26,18 +26,36 @@ import static rs.chat.router.Routes.GetRoute.DEGREE_BY_NAME_URL;
 import static rs.chat.router.Routes.PostRoute.DEGREE_SAVE_URL;
 import static rs.chat.router.Routes.PutRoute.EDIT_DEGREE_NAME_URL;
 
+/**
+ * Controller that manages all degree-related requests.
+ */
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 public class DegreeController {
 	private final DegreeService degreeService;
 
+	/**
+	 * Returns all degrees stored in db.
+	 *
+	 * @param response response containing all degrees.
+	 *
+	 * @throws IOException if an error occurs.
+	 */
 	@GetMapping(DEGREES_URL)
 	public void getAllDegrees(HttpResponse response) throws IOException {
 		List<Degree> allDegrees = this.degreeService.getDegrees();
 		response.ok().send("degrees", allDegrees);
 	}
 
+	/**
+	 * Returns degree with given name.
+	 *
+	 * @param response   response containing the degree with given name.
+	 * @param degreeName name of the degree to be returned.
+	 *
+	 * @throws IOException if an error occurs.
+	 */
 	@GetMapping(DEGREE_BY_NAME_URL)
 	public void getDegreeByName(HttpResponse response,
 	                            @PathVariable String degreeName) throws IOException {
@@ -50,6 +68,14 @@ public class DegreeController {
 		response.ok().send("degree", degree);
 	}
 
+	/**
+	 * Saves given degree to db.
+	 *
+	 * @param request  request containing degree to be saved.
+	 * @param response response containing saved degree.
+	 *
+	 * @throws IOException if an error occurs.
+	 */
 	@PostMapping(DEGREE_SAVE_URL)
 	public void saveDegree(HttpRequest request, HttpResponse response) throws IOException {
 		String degreeName = request.body().get("name").getAsString();
@@ -65,6 +91,14 @@ public class DegreeController {
 		response.created(DEGREE_SAVE_URL).send("degree", degree);
 	}
 
+	/**
+	 * Updates name of the given degree in db.
+	 *
+	 * @param request  request containing degree to be updated.
+	 * @param response response containing updated degree.
+	 *
+	 * @throws IOException if an error occurs.
+	 */
 	@PutMapping(EDIT_DEGREE_NAME_URL)
 	public void changeDegreeName(HttpRequest request, HttpResponse response) throws IOException {
 		JsonObject body = request.body();
@@ -80,6 +114,15 @@ public class DegreeController {
 		response.ok().send("degree", degree);
 	}
 
+	/**
+	 * Deletes given degree from db.
+	 *
+	 * @param response   response (does not contain the deleted degree, only status code
+	 *                   is returned to user).
+	 * @param degreeName name of the degree to be deleted.
+	 *
+	 * @throws IOException if an error occurs.
+	 */
 	@DeleteMapping(DELETE_DEGREE_URL)
 	public void deleteDegree(HttpResponse response,
 	                         @PathVariable String degreeName) throws IOException {

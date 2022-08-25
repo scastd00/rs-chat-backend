@@ -44,6 +44,9 @@ import static rs.chat.utils.Constants.JWT_VERIFIER;
 import static rs.chat.utils.Constants.STUDENT_ROLE;
 import static rs.chat.utils.Utils.parseJson;
 
+/**
+ * Controller that manages all credential-related requests.
+ */
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -54,6 +57,15 @@ public class AuthController {
 	private final GroupService groupService;
 	private final UserGroupService userGroupService;
 
+	/**
+	 * Performs the login of the user.
+	 *
+	 * @param request  the request containing the credentials of the user.
+	 * @param response the response with the user, the session (with access and refresh tokens)
+	 *                 and the chats that the user can access.
+	 *
+	 * @throws IOException if an error occurs.
+	 */
 	@PostMapping(LOGIN_URL)
 	public void login(HttpRequest request, HttpResponse response) throws IOException {
 		String jsonTokens = request.get("USER:TOKENS").toString();
@@ -87,6 +99,16 @@ public class AuthController {
 		response.ok().send(responseBody);
 	}
 
+	/**
+	 * Registers a new user to the application.
+	 *
+	 * @param request  the request containing the credentials of the user.
+	 * @param response the response with the user, the session (with access and refresh tokens)
+	 *                 and the chats that the user can access by registering to the application
+	 *                 (global group chat by default).
+	 *
+	 * @throws IOException if an error occurs.
+	 */
 	@PostMapping(REGISTER_URL)
 	public void register(HttpRequest request, HttpResponse response) throws IOException {
 		JsonObject body = request.body();
@@ -153,11 +175,20 @@ public class AuthController {
 		response.ok().send(responseBody);
 	}
 
+	/**
+	 * Performs the logout of the user.
+	 *
+	 * @param request  the request containing the token to be deleted.
+	 * @param response OK response if the token is deleted.
+	 *
+	 * @throws IOException if an error occurs.
+	 */
 	@PostMapping(LOGOUT_URL)
 	public void logout(HttpRequest request, HttpResponse response) throws IOException {
 		String authorizationHeader = request.getHeader(AUTHORIZATION);
 
-		if (authorizationHeader == null) { // If request does not contain authorization header send error.
+		if (authorizationHeader == null) {
+			// If request does not contain authorization header send error.
 			response.status(BAD_REQUEST)
 			        .send(ERROR_JSON_KEY, "You must provide the authorization token");
 			return;
@@ -184,6 +215,15 @@ public class AuthController {
 		response.sendStatus(OK);
 	}
 
+	/**
+	 * Changes the password of the user.
+	 *
+	 * @param request  the request with the old and new passwords.
+	 * @param response the response (only status code is sent).
+	 * @param username the username of the user that wants to change the password.
+	 *
+	 * @throws IOException if an error occurs.
+	 */
 	@PutMapping(CHANGE_PASSWORD_URL)
 	public void changePassword(HttpRequest request,
 	                           HttpResponse response,

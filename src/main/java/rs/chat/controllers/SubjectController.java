@@ -18,6 +18,9 @@ import java.io.IOException;
 import static rs.chat.router.Routes.GetRoute.SUBJECTS_URL;
 import static rs.chat.router.Routes.PostRoute.SUBJECT_SAVE_URL;
 
+/**
+ * Controller that manages all subject-related requests.
+ */
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -25,12 +28,26 @@ public class SubjectController {
 	private final SubjectService subjectService;
 	private final DegreeService degreeService;
 
+	/**
+	 * Returns all subjects stored in db.
+	 *
+	 * @param response response containing all subjects as a List (Array in JSON).
+	 *
+	 * @throws IOException if an error occurs.
+	 */
 	@GetMapping(SUBJECTS_URL)
 	public void getAllSubjects(HttpResponse response) throws IOException {
-		response.ok()
-		        .send("subjects", this.subjectService.getAll());
+		response.ok().send("subjects", this.subjectService.getAll());
 	}
 
+	/**
+	 * Saves a new subject to db.
+	 *
+	 * @param request  request containing parameters of the new subject.
+	 * @param response response containing saved subject.
+	 *
+	 * @throws IOException if an error occurs.
+	 */
 	@PostMapping(SUBJECT_SAVE_URL)
 	public void saveSubject(HttpRequest request, HttpResponse response) throws IOException {
 		JsonObject body = request.body();

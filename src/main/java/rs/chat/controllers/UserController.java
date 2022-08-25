@@ -22,6 +22,9 @@ import static rs.chat.router.Routes.PostRoute.USER_SAVE_URL;
 import static rs.chat.router.Routes.REFRESH_TOKEN_URL;
 import static rs.chat.utils.Constants.STUDENT_ROLE;
 
+/**
+ * Controller that manages all user-related requests.
+ */
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -29,11 +32,26 @@ public class UserController {
 	private final UserService userService;
 	private final SessionService sessionService;
 
+	/**
+	 * Returns all users.
+	 *
+	 * @param response response containing all users.
+	 *
+	 * @throws IOException if an error occurs.
+	 */
 	@GetMapping(USERS_URL)
 	public void getUsers(HttpResponse response) throws IOException {
 		response.ok().send("data", this.userService.getUsers());
 	}
 
+	/**
+	 * Saves a new user.
+	 *
+	 * @param request  request containing the user to be saved.
+	 * @param response response containing the saved user.
+	 *
+	 * @throws IOException if an error occurs.
+	 */
 	@PostMapping(USER_SAVE_URL)
 	public void saveUser(HttpRequest request, HttpResponse response) throws IOException {
 		JsonObject user = (JsonObject) request.body().get("user");
@@ -89,6 +107,14 @@ public class UserController {
 //		}
 	}
 
+	/**
+	 * Returns all opened sessions of user with given username.
+	 *
+	 * @param response response containing all opened sessions of user with given username.
+	 * @param username username of user.
+	 *
+	 * @throws IOException if an error occurs.
+	 */
 	@GetMapping(OPENED_SESSIONS_OF_USER_URL)
 	public void openedSessions(HttpResponse response,
 	                           @PathVariable String username) throws IOException {

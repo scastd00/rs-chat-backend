@@ -18,6 +18,9 @@ import static rs.chat.net.http.HttpResponse.HttpResponseBody;
 import static rs.chat.router.Routes.GetRoute.ALL_CHATS_OF_USER_URL;
 import static rs.chat.router.Routes.GetRoute.CHAT_INFO_URL;
 
+/**
+ * Controller that manages all chat-related requests.
+ */
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -25,6 +28,14 @@ public class ChatController {
 	private final UserService userService;
 	private final ChatService chatService;
 
+	/**
+	 * Returns all chats of a user organized by chat type.
+	 *
+	 * @param response response object with the chats to which the user can connect.
+	 * @param username username of the user whose chats are to be returned.
+	 *
+	 * @throws IOException if an error occurs while sending the response back to the client.
+	 */
 	@GetMapping(ALL_CHATS_OF_USER_URL)
 	public void getAllChatsOfUserDividedByType(HttpResponse response,
 	                                           @PathVariable String username) throws IOException {
@@ -40,6 +51,15 @@ public class ChatController {
 		);
 	}
 
+	/**
+	 * Returns information about a chat.
+	 *
+	 * @param response response object that contains the name and metadata information
+	 *                 of the chat.
+	 * @param id       id of the chat to be returned information about.
+	 *
+	 * @throws IOException if an error occurs while sending the response back to the client.
+	 */
 	@GetMapping(CHAT_INFO_URL)
 	public void getChatInformation(HttpResponse response, @PathVariable String id) throws IOException {
 		Chat chat = this.chatService.getChatById(Long.parseLong(id));
