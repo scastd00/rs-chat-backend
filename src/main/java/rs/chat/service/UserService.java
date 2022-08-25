@@ -23,6 +23,15 @@ public class UserService implements UserDetailsService {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
 
+	/**
+	 * Gets the user by username to be used by Spring Security.
+	 *
+	 * @param username the username identifying the user whose data is required.
+	 *
+	 * @return the user details.
+	 *
+	 * @throws UsernameNotFoundException if the user is not found.
+	 */
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		User user = this.userRepository.findByUsername(username);
@@ -39,17 +48,20 @@ public class UserService implements UserDetailsService {
 		);
 	}
 
+	/**
+	 * @return the list of all users in the database.
+	 */
 	public List<User> getUsers() {
 		return this.userRepository.findAll();
 	}
 
 	/**
-	 * Saves a user to the database. The password must be the
-	 * one received from the frontend (raw).
+	 * Saves a user to the database. The password must be the one received
+	 * from the frontend (raw) to be encrypted correctly.
 	 *
-	 * @param user
+	 * @param user the user to be saved.
 	 *
-	 * @return
+	 * @return the saved user.
 	 */
 	public User saveUser(User user) {
 		log.info("Saving user: {}", user.getUsername());
@@ -58,14 +70,32 @@ public class UserService implements UserDetailsService {
 		return this.userRepository.save(user);
 	}
 
+	/**
+	 * Deletes a user from the database.
+	 *
+	 * @param id the id of the user to be deleted.
+	 */
 	public void deleteUser(Long id) {
 		this.userRepository.deleteById(id);
 	}
 
+	/**
+	 * Gets the user by username.
+	 *
+	 * @param username the username of the user to be retrieved.
+	 *
+	 * @return the user.
+	 */
 	public User getUser(String username) {
 		return this.userRepository.findByUsername(username);
 	}
 
+	/**
+	 * Establishes the role of the user.
+	 *
+	 * @param username the username of the user to be updated.
+	 * @param role     the new role of the user.
+	 */
 	public void setRoleToUser(String username, String role) {
 		User user = this.userRepository.findByUsername(username);
 		user.setRole(role);

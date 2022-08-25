@@ -25,10 +25,22 @@ public class ChatService {
 	private final ChatRepository chatRepository;
 	private final UserChatRepository userChatRepository;
 
+	/**
+	 * @return list of all chats stored in database.
+	 */
 	public List<Chat> getAllChats() {
 		return this.chatRepository.findAll();
 	}
 
+	/**
+	 * Finds a chat by id and returns it.
+	 *
+	 * @param id id of the chat to be found.
+	 *
+	 * @return found chat.
+	 *
+	 * @throws BadRequestException if chat with given id does not exist.
+	 */
 	public Chat getChatById(Long id) {
 		return this.chatRepository.findById(id).orElseThrow(() -> {
 			throw new BadRequestException("Chat with id=%d does not exist".formatted(id));
@@ -46,6 +58,13 @@ public class ChatService {
 		return this.chatRepository.save(chat);
 	}
 
+	/**
+	 * Retrieves all the chats to which the user can access.
+	 *
+	 * @param userId id of the user.
+	 *
+	 * @return list of chats to which the user can access.
+	 */
 	public List<Chat> getAllChatsOfUser(Long userId) {
 		List<Chat> chatsOfUser = new ArrayList<>();
 
@@ -58,6 +77,13 @@ public class ChatService {
 		return chatsOfUser;
 	}
 
+	/**
+	 * Retrieves all the chats to which the user can access grouped by type.
+	 *
+	 * @param userId id of the user.
+	 *
+	 * @return map of chats to which the user can access grouped by type.
+	 */
 	public Map<String, List<Map<String, Object>>> getAllChatsOfUserGroupedByType(Long userId) {
 		List<Chat> allChatsOfUser = this.getAllChatsOfUser(userId);
 		Map<String, List<Map<String, Object>>> groups = new HashMap<>();
@@ -78,10 +104,23 @@ public class ChatService {
 		return groups;
 	}
 
+	/**
+	 * Retrieves a chat given its name.
+	 *
+	 * @param chatName name of the chat.
+	 *
+	 * @return found chat.
+	 */
 	public Chat getByName(String chatName) {
 		return this.chatRepository.findByName(chatName);
 	}
 
+	/**
+	 * Adds a user to a chat.
+	 *
+	 * @param userId id of the user.
+	 * @param chatId id of the chat.
+	 */
 	public void addUserToChat(Long userId, Long chatId) {
 		this.userChatRepository.save(new UserChat(new UserChatPK(userId, chatId)));
 	}

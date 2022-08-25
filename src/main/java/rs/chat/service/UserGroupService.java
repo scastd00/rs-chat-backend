@@ -20,18 +20,25 @@ public class UserGroupService {
 	private final UserRepository userRepository;
 	private final UserGroupRepository userGroupRepository;
 
+	/**
+	 * Adds user to group.
+	 *
+	 * @param user    user to add to group.
+	 * @param groupId group id to add user to.
+	 */
 	public void addUserToGroup(@NotNull User user, @NotNull Long groupId) {
-		UserGroup relation = new UserGroup(new UserGroupPK(user.getId(), groupId));
-		this.userGroupRepository.save(relation);
+		UserGroup userGroup = new UserGroup(new UserGroupPK(user.getId(), groupId));
+		this.userGroupRepository.save(userGroup);
 	}
 
 	/**
-	 * Adds a user to a group. This method is used when a user redeems an invitation link.
+	 * Adds a user to a group. This method is used when a user redeems an invitation link
+	 * or it is added to global group on register.
 	 * Invitation link URI format:
 	 * https:.../groupId (and user will send the userId stored in Redux)
 	 *
-	 * @param userId
-	 * @param groupId
+	 * @param userId  user id to add to group.
+	 * @param groupId group id to add user to.
 	 */
 	public void addUserToGroup(Long userId, Long groupId) {
 		User userById = this.userRepository.findById(userId).orElseThrow(() -> {

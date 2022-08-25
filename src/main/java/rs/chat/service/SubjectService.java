@@ -19,18 +19,44 @@ public class SubjectService {
 	private final SubjectRepository subjectRepository;
 	private final ChatRepository chatRepository;
 
+	/**
+	 * Finds all subjects.
+	 *
+	 * @return list of subjects or empty list if no subjects found in database.
+	 */
 	public List<Subject> getAll() {
 		return this.subjectRepository.findAll();
 	}
 
+	/**
+	 * Finds subject by name.
+	 *
+	 * @param subjectName name of subject to find.
+	 *
+	 * @return found subject or null if no subject found.
+	 */
 	public Subject getByName(String subjectName) {
 		return this.subjectRepository.findByName(subjectName);
 	}
 
+	/**
+	 * Checks if a subject with given name exists.
+	 *
+	 * @param subjectName name of subject to check.
+	 *
+	 * @return true if subject exists, false otherwise.
+	 */
 	public boolean exists(String subjectName) {
 		return this.getByName(subjectName) != null;
 	}
 
+	/**
+	 * Saves a new subject to database.
+	 *
+	 * @param subject subject to save.
+	 *
+	 * @return saved subject.
+	 */
 	public Subject save(Subject subject) {
 		Subject savedSubject = this.subjectRepository.save(subject);
 
