@@ -5,7 +5,6 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
 import rs.chat.net.ws.JsonMessageWrapper;
 
 import java.time.Instant;
@@ -22,6 +21,9 @@ import static rs.chat.utils.Constants.JWT_VERIFIER;
 import static rs.chat.utils.Constants.REFRESH_TOKEN_EXPIRATION_DURATION;
 import static rs.chat.utils.Constants.TOKEN_EXPIRATION_DURATION;
 
+/**
+ * Utility class for common operations.
+ */
 public final class Utils {
 	private Utils() {
 	}
@@ -29,16 +31,28 @@ public final class Utils {
 	/**
 	 * Parses a JSON string into a {@link JsonObject}.
 	 *
-	 * @param jsonString
+	 * @param jsonString the JSON string to parse into a {@link JsonObject}.
 	 *
-	 * @return
+	 * @return the {@link JsonObject} parsed from the JSON string.
 	 */
 	public static JsonObject parseJson(String jsonString) {
-		// @formatter:off
-		return GSON.fromJson(jsonString, new TypeToken<JsonObject>() {}.getType());
-		// @formatter:on
+		return GSON.fromJson(jsonString, JsonObject.class);
 	}
 
+	/**
+	 * Creates the tokens that are used to authenticate the user.
+	 * 2 tokens are created:
+	 * <ul>
+	 *     <li>Access token: this token is used to authenticate the user.</li>
+	 *     <li>Refresh token: this token is used to refresh the access token.</li>
+	 * </ul>
+	 *
+	 * @param username   the username of the user.
+	 * @param requestURL the URL of the request.
+	 * @param role       the role of the user.
+	 *
+	 * @return the tokens that are used to authenticate the user.
+	 */
 	public static Map<String, String> generateTokens(String username, String requestURL, String role) {
 		Map<String, String> tokens = new HashMap<>();
 
@@ -61,6 +75,15 @@ public final class Utils {
 		return tokens;
 	}
 
+	/**
+	 * Verifies the access token.
+	 *
+	 * @param fullToken the full token to verify.
+	 *
+	 * @return the decoded JWT token.
+	 *
+	 * @throws JWTVerificationException if the token is invalid.
+	 */
 	public static DecodedJWT checkAuthorizationToken(String fullToken) throws JWTVerificationException {
 		if (!fullToken.startsWith(JWT_TOKEN_PREFIX)) {
 			throw new JWTVerificationException(
@@ -71,6 +94,14 @@ public final class Utils {
 		return JWT_VERIFIER.verify(fullToken.substring(JWT_TOKEN_PREFIX.length()));
 	}
 
+	/**
+	 * Creates a {@link String} message containing the active users given a
+	 * {@link List<String>} of usernames.
+	 *
+	 * @param usernames the {@link List<String>} of usernames.
+	 *
+	 * @return the {@link String} message containing the active users.
+	 */
 	public static String createActiveUsersMessage(List<String> usernames) {
 		JsonArray usersArray = new JsonArray();
 		usernames.forEach(usersArray::add);
@@ -78,6 +109,15 @@ public final class Utils {
 		return createServerMessage(usersArray.toString(), ACTIVE_USERS_MESSAGE.type(), "TODO");
 	}
 
+	/**
+	 * Creates a {@link String} message containing a server message.
+	 *
+	 * @param message the message to send.
+	 * @param type    the type of the message.
+	 * @param chatId  the chatId to send the message to.
+	 *
+	 * @return the {@link String} message containing the server message.
+	 */
 	public static String createServerMessage(String message, String type, String chatId) {
 		return JsonMessageWrapper.builder()
 		                         /* Headers */
@@ -93,6 +133,13 @@ public final class Utils {
 		                         .toString();
 	}
 
+	/**
+	 * Creates a {@link String} message containing an error message.
+	 *
+	 * @param message the error message to send.
+	 *
+	 * @return the {@link String} message containing the error message.
+	 */
 	public static String createServerErrorMessage(String message) {
 		return JsonMessageWrapper.builder()
 		                         /* Headers */
@@ -109,21 +156,25 @@ public final class Utils {
 	}
 
 	/**
-	 * Determines if the running environment is development or production.
+	 * Determines if the running environment is DEVELOPMENT or PRODUCTION.
 	 *
-	 * @return {@code true} if the environment is development, {@code false} otherwise.
+	 * @return {@code true} if the environment is DEVELOPMENT, {@code false} otherwise.
 	 */
 	public static boolean isDevEnv() {
 		return System.getenv("ENV").toLowerCase().startsWith("dev");
 	}
 
+	/**
+	 * Adds a {@link Number} to a {@link JsonObject} and returns the {@link String} representation.
+	 *
+	 * @param key   the key of the {@link Number} to add.
+	 * @param value the value of the {@link Number} to add.
+	 *
+	 * @return the {@link String} representation of the {@link JsonObject}.
+	 */
 	public static String jsonOfNumber(String key, Number value) {
 		JsonObject json = new JsonObject();
 		json.addProperty(key, value);
 		return json.toString();
-	}
-
-	public static JsonObject jsonObjectFromString(String jsonString) {
-		return GSON.fromJson(jsonString, JsonObject.class);
 	}
 }

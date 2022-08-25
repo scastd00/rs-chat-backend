@@ -44,7 +44,7 @@ public class GetHistoryStrategy implements MessageStrategy {
 		Collections.reverse(reversedHistory); // Reverse the history to get the latest messages first.
 		reversedHistory.stream()
 		               .limit(MAX_CHAT_HISTORY_PER_REQUEST)
-		               .map(Utils::jsonObjectFromString)
+		               .map(Utils::parseJson)
 		               .filter(jsonObject -> this.filterUserActivityMessages(jsonObject, username))
 		               .forEach(jsonArray::add);
 
