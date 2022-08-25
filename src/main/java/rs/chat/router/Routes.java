@@ -11,6 +11,9 @@ public class Routes {
 	public static final String REFRESH_TOKEN_URL = V_1 + "/token/refresh";
 	public static final String WS_CHAT_ENDPOINT = "/ws/rschat";
 
+	/**
+	 * GET routes for the application.
+	 */
 	public static class GetRoute {
 		public static final GetRoute INSTANCE = new GetRoute();
 
@@ -26,6 +29,11 @@ public class Routes {
 		public static final String ALL_CHATS_OF_USER_URL = V_1 + "/chats/{username}";
 		public static final String CHAT_INFO_URL = V_1 + "/chats/info/{id}";
 
+		/**
+		 * Generate an array containing all GET routes allowed to low tier users.
+		 *
+		 * @return an array containing all GET routes allowed to low tier users.
+		 */
 		public String[] lowTierRoutes() {
 			return new String[] {
 					OPENED_SESSIONS_OF_USER_URL, DEGREES_URL, DEGREE_BY_NAME_URL,
@@ -33,12 +41,22 @@ public class Routes {
 			};
 		}
 
+		/**
+		 * Generate an array containing all GET routes allowed to medium tier users.
+		 *
+		 * @return an array containing all GET routes allowed to medium tier users.
+		 */
 		public String[] mediumTierRoutes() {
 			return new String[] {
 
 			};
 		}
 
+		/**
+		 * Generate an array containing all GET routes allowed to top tier users.
+		 *
+		 * @return an array containing all GET routes allowed to top tier users.
+		 */
 		public String[] topTierRoutes() {
 			return new String[] {
 					USERS_URL, SUBJECTS_URL, GROUPS_URL
@@ -46,6 +64,9 @@ public class Routes {
 		}
 	}
 
+	/**
+	 * POST routes for the application.
+	 */
 	public static class PostRoute {
 		public static final PostRoute INSTANCE = new PostRoute();
 
@@ -61,18 +82,33 @@ public class Routes {
 		public static final String SUBJECT_SAVE_URL = V_1 + "/subject/save";
 		public static final String GROUP_SAVE_URL = V_1 + "/group/save";
 
+		/**
+		 * Generate an array containing all POST routes allowed to low tier users.
+		 *
+		 * @return an array containing all POST routes allowed to low tier users.
+		 */
 		public String[] lowTierRoutes() {
 			return new String[] {
 
 			};
 		}
 
+		/**
+		 * Generate an array containing all POST routes allowed to medium tier users.
+		 *
+		 * @return an array containing all POST routes allowed to medium tier users.
+		 */
 		public String[] mediumTierRoutes() {
 			return new String[] {
 
 			};
 		}
 
+		/**
+		 * Generate an array containing all POST routes allowed to top tier users.
+		 *
+		 * @return an array containing all POST routes allowed to top tier users.
+		 */
 		public String[] topTierRoutes() {
 			return new String[] {
 					USER_SAVE_URL, DEGREE_SAVE_URL, SUBJECT_SAVE_URL, GROUP_SAVE_URL
@@ -80,6 +116,9 @@ public class Routes {
 		}
 	}
 
+	/**
+	 * PUT routes for the application.
+	 */
 	public static class PutRoute {
 		public static final PutRoute INSTANCE = new PutRoute();
 
@@ -89,18 +128,33 @@ public class Routes {
 		public static final String CHANGE_PASSWORD_URL = V_1 + "/changePassword/{username}";
 		public static final String EDIT_DEGREE_NAME_URL = V_1 + "/degree/editName";
 
+		/**
+		 * Generate an array containing all PUT routes allowed to low tier users.
+		 *
+		 * @return an array containing all PUT routes allowed to low tier users.
+		 */
 		public String[] lowTierRoutes() {
 			return new String[] {
 					CHANGE_PASSWORD_URL
 			};
 		}
 
+		/**
+		 * Generate an array containing all PUT routes allowed to medium tier users.
+		 *
+		 * @return an array containing all PUT routes allowed to medium tier users.
+		 */
 		public String[] mediumTierRoutes() {
 			return new String[] {
 
 			};
 		}
 
+		/**
+		 * Generate an array containing all PUT routes allowed to top tier users.
+		 *
+		 * @return an array containing all PUT routes allowed to top tier users.
+		 */
 		public String[] topTierRoutes() {
 			return new String[] {
 					EDIT_DEGREE_NAME_URL
@@ -108,6 +162,9 @@ public class Routes {
 		}
 	}
 
+	/**
+	 * DELETE routes for the application.
+	 */
 	public static class DeleteRoute {
 		public static final DeleteRoute INSTANCE = new DeleteRoute();
 
@@ -116,18 +173,33 @@ public class Routes {
 
 		public static final String DELETE_DEGREE_URL = "/degree/delete/{degreeName}";
 
+		/**
+		 * Generate an array containing all DELETE routes allowed to low tier users.
+		 *
+		 * @return an array containing all DELETE routes allowed to low tier users.
+		 */
 		public String[] lowTierRoutes() {
 			return new String[] {
 
 			};
 		}
 
+		/**
+		 * Generate an array containing all DELETE routes allowed to medium tier users.
+		 *
+		 * @return an array containing all DELETE routes allowed to medium tier users.
+		 */
 		public String[] mediumTierRoutes() {
 			return new String[] {
 
 			};
 		}
 
+		/**
+		 * Generate an array containing all DELETE routes allowed to top tier users.
+		 *
+		 * @return an array containing all DELETE routes allowed to top tier users.
+		 */
 		public String[] topTierRoutes() {
 			return new String[] {
 					DELETE_DEGREE_URL
