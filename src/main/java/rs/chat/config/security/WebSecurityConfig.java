@@ -55,10 +55,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	/**
-	 * {@inheritDoc}
-	 * <p>
 	 * Enables CORS and disables CSRF for the whole application, configures
 	 * all the routes that are allowed for the user and adds the needed filters.
+	 * <p>
+	 * {@inheritDoc}
 	 */
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
