@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import rs.chat.net.http.HttpRequest;
 import rs.chat.net.http.HttpResponse;
+import rs.chat.net.http.HttpResponse.HttpResponseBody;
 import rs.chat.storage.S3;
 
 import java.io.IOException;
@@ -34,14 +35,18 @@ public class FileController {
 		String data = body.get("data")
 		                  .getAsString()
 		                  .split(",")[1];
+		String fileName = body.get("name").getAsString();
 
 		URI uri = S3.getInstance().uploadImage(
-				URLEncoder.encode(body.get("name").getAsString(), UTF_8),
+				URLEncoder.encode(fileName, UTF_8),
 				Base64.getDecoder().decode(data),
 				Map.of("type", body.get("type").getAsString())
 		);
 
-		response.status(OK).send("uri", uri);
+		HttpResponseBody responseBody = new HttpResponseBody("uri", uri);
+		responseBody.add("name", fileName);
+
+		response.status(OK).send(responseBody);
 		log.info("File uploaded successfully");
 	}
 }

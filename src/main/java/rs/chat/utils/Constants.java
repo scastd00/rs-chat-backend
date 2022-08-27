@@ -38,7 +38,9 @@ public final class Constants {
 
 	public static final String S3_BUCKET_NAME = System.getenv("AWS_S3_BUCKET_NAME");
 	public static final URI LOCAL_S3_ENDPOINT_URI = URI.create("http://localhost:4566/");
-	public static final URI REMOTE_S3_ENDPOINT_URI = URI.create("https://rs-chat-bucket.s3.eu-west-3.amazonaws.com/");
+	public static final URI REMOTE_S3_ENDPOINT_URI = null;
+	public static final URI LOCAL_S3_ENDPOINT_URI_FOR_FILES = URI.create("https://rs-chat-local.s3.localhost.localstack.cloud:4566/");
+	public static final URI REMOTE_S3_ENDPOINT_URI_FOR_FILES = URI.create("https://rs-chat-bucket.s3.eu-west-3.amazonaws.com/");
 
 	public static final long IDLE_TIMEOUT_WEB_SOCKET = Duration.ofHours(2).getSeconds() * 1000;
 	public static final int WEB_SOCKET_BUFFER_SIZE = (int) DataSize.ofKilobytes(32).toBytes();

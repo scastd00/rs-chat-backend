@@ -185,7 +185,7 @@ public final class Utils {
 
 	private static URI getCurrentS3EndpointURI() {
 		return isDevEnv() ?
-		       Constants.LOCAL_S3_ENDPOINT_URI :
-		       Constants.REMOTE_S3_ENDPOINT_URI;
+		       Constants.LOCAL_S3_ENDPOINT_URI_FOR_FILES :
+		       Constants.REMOTE_S3_ENDPOINT_URI_FOR_FILES;
 	}
 }
