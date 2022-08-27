@@ -1,7 +1,9 @@
 package rs.chat.storage;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomStringUtils;
 import rs.chat.net.ws.WSMessage;
+import rs.chat.utils.Utils;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.core.exception.SdkException;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -19,7 +21,10 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
+import java.time.LocalDate;
+import java.util.Map;
 
 import static rs.chat.utils.Constants.LOCAL_S3_ENDPOINT_URI;
 import static rs.chat.utils.Constants.REMOTE_S3_ENDPOINT_URI;
@@ -140,6 +145,30 @@ public class S3 {
 	}
 
 	/**
+	 * Uploads an image file (as byte[]) to S3 bucket and returns the URL of the image.
+	 *
+	 * @param fileName   the name of the image file to upload to S3 bucket.
+	 * @param imageBytes bytes of the file.
+	 * @param metadata   metadata of the file.
+	 *
+	 * @return the URI of the image in S3 bucket.
+	 */
+	public URI uploadImage(String fileName, byte[] imageBytes, Map<String, String> metadata) {
+		String s3Key = this.imageS3Key(fileName);
+
+		this.s3Client.putObject(
+				PutObjectRequest.builder()
+				                .bucket(S3_BUCKET_NAME)
+				                .key(s3Key)
+				                .metadata(metadata)
+				                .build(),
+				RequestBody.fromBytes(imageBytes)
+		);
+
+		return Utils.uploadedFileURI(s3Key);
+	}
+
+	/**
 	 * Checks if the key exists in the S3 bucket.
 	 *
 	 * @param s3Key the key to check.
@@ -161,5 +190,26 @@ public class S3 {
 		}
 
 		return response.sdkHttpResponse().isSuccessful();
+	}
+
+	/**
+	 * Creates the key for an image to store in S3 bucket.
+	 * Syntax is the following:
+	 * images/{year}/{month}/{day}/{{@link RandomStringUtils#randomAlphanumeric(int) prefix}}_{fileName}
+	 *
+	 * @param fileName name of the file to upload to S3 bucket.
+	 *
+	 * @return the key for the image to store in S3 bucket.
+	 */
+	private String imageS3Key(String fileName) {
+		LocalDate date = LocalDate.now();
+
+		return "images/%s/%s/%s/%s_%s".formatted(
+				date.getYear(),
+				date.getMonthValue(),
+				date.getDayOfMonth(),
+				RandomStringUtils.randomAlphanumeric(15),
+				fileName
+		);
 	}
 }

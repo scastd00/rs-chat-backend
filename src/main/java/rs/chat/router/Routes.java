@@ -82,6 +82,8 @@ public class Routes {
 		public static final String SUBJECT_SAVE_URL = V_1 + "/subject/save";
 		public static final String GROUP_SAVE_URL = V_1 + "/group/save";
 
+		public static final String UPLOAD_URL = V_1 + "/upload";
+
 		/**
 		 * Generate an array containing all POST routes allowed to low tier users.
 		 *
@@ -89,7 +91,7 @@ public class Routes {
 		 */
 		public String[] lowTierRoutes() {
 			return new String[] {
-
+					UPLOAD_URL
 			};
 		}
 

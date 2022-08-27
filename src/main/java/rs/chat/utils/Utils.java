@@ -7,6 +7,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import rs.chat.net.ws.JsonMessageWrapper;
 
+import java.net.URI;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
@@ -176,5 +177,15 @@ public final class Utils {
 		JsonObject json = new JsonObject();
 		json.addProperty(key, value);
 		return json.toString();
+	}
+
+	public static URI uploadedFileURI(String s3Key) {
+		return getCurrentS3EndpointURI().resolve(s3Key);
+	}
+
+	private static URI getCurrentS3EndpointURI() {
+		return isDevEnv() ?
+		       Constants.LOCAL_S3_ENDPOINT_URI :
+		       Constants.REMOTE_S3_ENDPOINT_URI;
 	}
 }
