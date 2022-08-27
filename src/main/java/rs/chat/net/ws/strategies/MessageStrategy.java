@@ -1,6 +1,7 @@
 package rs.chat.net.ws.strategies;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.google.gson.JsonObject;
 import rs.chat.exceptions.TokenValidationException;
 import rs.chat.exceptions.WebSocketException;
 import rs.chat.net.ws.JsonMessageWrapper;
@@ -50,5 +51,23 @@ public interface MessageStrategy {
 		} catch (JWTVerificationException e) {
 			throw new TokenValidationException(e.getMessage());
 		}
+	}
+
+	/**
+	 * Removes the fields of the message received to be able to send it to
+	 * other clients without sensitive information. In addition, it updates
+	 * the {@code date} field. NOTE: Only headers are modified.
+	 *
+	 * @param message received message to remove sensitive fields.
+	 *
+	 * @return the {@link String} message without the sensitive information
+	 * and the actual date of the server.
+	 */
+	default String clearSensitiveDataChangeDateAndBuildResponse(JsonObject message) {
+		JsonObject headers = (JsonObject) message.get("headers");
+		headers.remove("sessionId");
+		headers.remove("token");
+		headers.addProperty("date", System.currentTimeMillis()); // Modify property
+		return message.toString();
 	}
 }

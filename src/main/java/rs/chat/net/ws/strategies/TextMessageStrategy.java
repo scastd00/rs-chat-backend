@@ -1,6 +1,5 @@
 package rs.chat.net.ws.strategies;
 
-import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import rs.chat.exceptions.WebSocketException;
 import rs.chat.net.ws.JsonMessageWrapper;
@@ -23,23 +22,5 @@ public class TextMessageStrategy implements MessageStrategy {
 		// Clear the sensitive data to send the message to other clients
 		String response = this.clearSensitiveDataChangeDateAndBuildResponse(wrappedMessage.getParsedPayload());
 		webSocketChatMap.broadcastToSingleChatAndExcludeClient(wsClientID, response);
-	}
-
-	/**
-	 * Removes the fields of the message received to be able to send it to
-	 * other clients without sensitive information. In addition, it updates
-	 * the {@code date} field. NOTE: Only headers are modified.
-	 *
-	 * @param message received message to remove sensitive fields.
-	 *
-	 * @return the {@link String} message without the sensitive information
-	 * and the actual date of the server.
-	 */
-	private String clearSensitiveDataChangeDateAndBuildResponse(JsonObject message) {
-		JsonObject headers = (JsonObject) message.get("headers");
-		headers.remove("sessionId");
-		headers.remove("token");
-		headers.addProperty("date", System.currentTimeMillis()); // Modify property
-		return message.toString();
 	}
 }
