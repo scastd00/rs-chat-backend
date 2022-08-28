@@ -1,4 +1,4 @@
-package rs.chat.net.ws.strategies;
+package rs.chat.strategies.message;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.google.gson.JsonObject;

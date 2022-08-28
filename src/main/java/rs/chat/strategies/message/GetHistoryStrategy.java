@@ -1,4 +1,4 @@
-package rs.chat.net.ws.strategies;
+package rs.chat.strategies.message;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;

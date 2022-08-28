@@ -1,4 +1,4 @@
-package rs.chat.net.ws.strategies;
+package rs.chat.strategies.message;
 
 import lombok.extern.slf4j.Slf4j;
 import rs.chat.exceptions.WebSocketException;
@@ -10,10 +10,10 @@ import rs.chat.net.ws.WebSocketChatMap;
 import java.util.Map;
 
 /**
- * Strategy for handling {@link WSMessage#TEXT_MESSAGE} messages.
+ * Strategy for handling {@link WSMessage#IMAGE_MESSAGE} messages.
  */
 @Slf4j
-public class TextMessageStrategy implements MessageStrategy {
+public class ImageMessageStrategy implements MessageStrategy {
 	@Override
 	public void handle(JsonMessageWrapper wrappedMessage, WebSocketChatMap webSocketChatMap,
 	                   Map<String, Object> otherData) throws WebSocketException {
