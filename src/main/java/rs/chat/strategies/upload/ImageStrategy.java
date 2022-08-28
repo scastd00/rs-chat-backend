@@ -1,6 +1,5 @@
 package rs.chat.strategies.upload;
 
-import org.springframework.web.util.UriUtils;
 import rs.chat.net.http.HttpResponse;
 import rs.chat.net.http.HttpResponse.HttpResponseBody;
 import rs.chat.storage.S3;
@@ -13,7 +12,6 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.springframework.http.HttpStatus.OK;
 
 public class ImageStrategy implements FileUploadStrategy {
@@ -28,11 +26,7 @@ public class ImageStrategy implements FileUploadStrategy {
 		metadata.put("size", String.valueOf(binaryData.length));
 		metadata.put("maxWidth", this.getMaxWidth(image.getWidth(), image.getHeight()));
 
-		URI uri = S3.getInstance().uploadImage(
-				UriUtils.encode(name, UTF_8),
-				binaryData,
-				metadata
-		);
+		URI uri = S3.getInstance().uploadImage(name, binaryData, metadata);
 
 		HttpResponseBody responseBody = new HttpResponseBody("uri", uri);
 		responseBody.add("name", name);

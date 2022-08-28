@@ -31,7 +31,7 @@ public class FileController {
 		log.info("Uploading file...");
 
 		JsonObject body = request.body();
-		String fileName = body.get("name").getAsString();
+		String fileName = body.get("name").getAsString().replace(" ", "_");
 		String[] types = body.get("type").getAsString().split("/");
 		String encodedData = body.get("data")
 		                         .getAsString()

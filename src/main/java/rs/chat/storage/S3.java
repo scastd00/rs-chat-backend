@@ -154,7 +154,7 @@ public class S3 {
 	 * @return the URI of the image in S3 bucket.
 	 */
 	public URI uploadImage(String fileName, byte[] imageBytes, Map<String, String> metadata) {
-		String s3Key = this.imageS3Key(fileName);
+		String s3Key = this.imageS3Key("image", fileName);
 
 		this.s3Client.putObject(
 				PutObjectRequest.builder()
@@ -193,18 +193,27 @@ public class S3 {
 	}
 
 	/**
-	 * Creates the key for an image to store in S3 bucket.
+	 * Creates the key for a file to store in S3 bucket.
 	 * Syntax is the following:
-	 * images/{year}/{month}/{day}/{{@link RandomStringUtils#randomAlphanumeric(int) prefix}}_{fileName}
+	 * {type}/{year}/{month}/{day}/{{@link RandomStringUtils#randomAlphanumeric(int) prefix}}_{fileName}
+	 * <p>
+	 * {@code {type}} must be one of the following:
+	 * <ul>
+	 *     <li>text</li>
+	 *     <li>image</li>
+	 *     <li>video</li>
+	 *     <li>audio</li>
+	 * </ul>
 	 *
 	 * @param fileName name of the file to upload to S3 bucket.
 	 *
 	 * @return the key for the image to store in S3 bucket.
 	 */
-	private String imageS3Key(String fileName) {
+	private String imageS3Key(String type, String fileName) {
 		LocalDate date = LocalDate.now();
 
-		return "images/%s/%s/%s/%s_%s".formatted(
+		return "%s/%s/%s/%s/(%s)_%s".formatted(
+				type,
 				date.getYear(),
 				date.getMonthValue(),
 				date.getDayOfMonth(),
