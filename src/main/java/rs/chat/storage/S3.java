@@ -2,6 +2,7 @@ package rs.chat.storage;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.jetbrains.annotations.NotNull;
 import rs.chat.net.ws.WSMessage;
 import rs.chat.utils.Utils;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -154,7 +155,61 @@ public class S3 {
 	 * @return the URI of the image in S3 bucket.
 	 */
 	public URI uploadImage(String fileName, byte[] imageBytes, Map<String, String> metadata) {
-		String s3Key = this.imageS3Key("image", fileName);
+		return this.uploadFileAndGetUri("image", fileName, imageBytes, metadata);
+	}
+
+	/**
+	 * Uploads a video file (as byte[]) to S3 bucket and returns the URL of the video.
+	 *
+	 * @param fileName   the name of the video file to upload to S3 bucket.
+	 * @param videoBytes bytes of the file.
+	 * @param metadata   metadata of the file.
+	 *
+	 * @return the URI of the video in S3 bucket.
+	 */
+	public URI uploadVideo(String fileName, byte[] videoBytes, Map<String, String> metadata) {
+		return this.uploadFileAndGetUri("video", fileName, videoBytes, metadata);
+	}
+
+	/**
+	 * Uploads a text file (as byte[]) to S3 bucket and returns the URL of the file.
+	 *
+	 * @param fileName  the name of the file to upload to S3 bucket.
+	 * @param fileBytes bytes of the file.
+	 * @param metadata  metadata of the file.
+	 *
+	 * @return the URI of the text file in S3 bucket.
+	 */
+	public URI uploadTextFile(String fileName, byte[] fileBytes, Map<String, String> metadata) {
+		return this.uploadFileAndGetUri("text", fileName, fileBytes, metadata);
+	}
+
+	/**
+	 * Uploads an audio file (as byte[]) to S3 bucket and returns the URL of the audio.
+	 *
+	 * @param fileName   the name of the audio file to upload to S3 bucket.
+	 * @param audioBytes bytes of the file.
+	 * @param metadata   metadata of the file.
+	 *
+	 * @return the URI of the audio in S3 bucket.
+	 */
+	public URI uploadAudio(String fileName, byte[] audioBytes, Map<String, String> metadata) {
+		return this.uploadFileAndGetUri("audio", fileName, audioBytes, metadata);
+	}
+
+	/**
+	 * Uploads a file (as byte[]) to S3 bucket and returns the URL of the file.
+	 *
+	 * @param mediaType the media type of the file to upload to S3 bucket.
+	 * @param fileName  the name of the file to upload to S3 bucket.
+	 * @param dataBytes bytes of the file.
+	 * @param metadata  metadata of the file.
+	 *
+	 * @return the URI of the file in S3 bucket.
+	 */
+	@NotNull
+	private URI uploadFileAndGetUri(String mediaType, String fileName, byte[] dataBytes, Map<String, String> metadata) {
+		String s3Key = this.s3Key(mediaType, fileName);
 
 		this.s3Client.putObject(
 				PutObjectRequest.builder()
@@ -162,7 +217,7 @@ public class S3 {
 				                .key(s3Key)
 				                .metadata(metadata)
 				                .build(),
-				RequestBody.fromBytes(imageBytes)
+				RequestBody.fromBytes(dataBytes)
 		);
 
 		return Utils.uploadedFileURI(s3Key);
@@ -209,7 +264,7 @@ public class S3 {
 	 *
 	 * @return the key for the image to store in S3 bucket.
 	 */
-	private String imageS3Key(String type, String fileName) {
+	private String s3Key(String type, String fileName) {
 		LocalDate date = LocalDate.now();
 
 		return "%s/%s/%s/%s/(%s)_%s".formatted(
