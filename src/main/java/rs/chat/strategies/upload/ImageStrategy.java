@@ -44,8 +44,8 @@ public class ImageStrategy implements FileUploadStrategy {
 			return "md";
 		} else if (width <= 1200 || height <= 1200) {
 			return "lg";
-		} else {
-			return "xl";
 		}
+
+		return "xl";
 	}
 }
