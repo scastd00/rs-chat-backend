@@ -113,13 +113,13 @@ public final class Utils {
 	/**
 	 * Creates a {@link String} message containing a server message.
 	 *
-	 * @param message the message to send.
+	 * @param content the message to send.
 	 * @param type    the type of the message.
 	 * @param chatId  the chatId to send the message to.
 	 *
 	 * @return the {@link String} message containing the server message.
 	 */
-	public static String createServerMessage(String message, String type, String chatId) {
+	public static String createServerMessage(String content, String type, String chatId) {
 		return JsonMessageWrapper.builder()
 		                         /* Headers */
 		                         .username("Server")
@@ -128,7 +128,7 @@ public final class Utils {
 		                         .date(System.currentTimeMillis())
 		                         /* Body */
 		                         .encoding("UTF-8")
-		                         .content(message)
+		                         .content(content)
 		                         .build()
 		                         /* JsonObject */
 		                         .toString();

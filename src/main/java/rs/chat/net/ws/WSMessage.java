@@ -27,6 +27,8 @@ public record WSMessage(String type, String filePrefix, String extension) {
 	public static final WSMessage GET_HISTORY_MESSAGE = new WSMessage("GET_HISTORY", "chat/", ".rsJson");
 	public static final WSMessage SERVER_INFO_MESSAGE = new WSMessage("SERVER_INFO", null, null);
 	public static final WSMessage ERROR_MESSAGE = new WSMessage("ERROR_MESSAGE", null, null);
+	public static final WSMessage PING_MESSAGE = new WSMessage("PING", null, null);
+	public static final WSMessage PONG_MESSAGE = new WSMessage("PONG", null, null);
 
 	/**
 	 * Returns the file that is used to store the message in disk.

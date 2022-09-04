@@ -11,6 +11,7 @@ import rs.chat.strategies.message.ErrorMessageStrategy;
 import rs.chat.strategies.message.GetHistoryStrategy;
 import rs.chat.strategies.message.ImageMessageStrategy;
 import rs.chat.strategies.message.MessageStrategy;
+import rs.chat.strategies.message.PingStrategy;
 import rs.chat.strategies.message.TextMessageStrategy;
 import rs.chat.strategies.message.UserJoinedStrategy;
 import rs.chat.strategies.message.UserLeftStrategy;
@@ -24,6 +25,7 @@ import static rs.chat.net.ws.WSMessage.ACTIVE_USERS_MESSAGE;
 import static rs.chat.net.ws.WSMessage.AUDIO_MESSAGE;
 import static rs.chat.net.ws.WSMessage.GET_HISTORY_MESSAGE;
 import static rs.chat.net.ws.WSMessage.IMAGE_MESSAGE;
+import static rs.chat.net.ws.WSMessage.PING_MESSAGE;
 import static rs.chat.net.ws.WSMessage.TEXT_MESSAGE;
 import static rs.chat.net.ws.WSMessage.USER_JOINED;
 import static rs.chat.net.ws.WSMessage.USER_LEFT;
@@ -97,6 +99,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
 			return new ActiveUsersStrategy();
 		} else if (GET_HISTORY_MESSAGE.equals(receivedMessageType)) {
 			return new GetHistoryStrategy();
+		} else if (PING_MESSAGE.equals(receivedMessageType)) {
+			return new PingStrategy();
 		} else {
 			return new ErrorMessageStrategy();
 		}
