@@ -15,9 +15,9 @@ public final class Constants {
 
 	public static final String[] ACCEPTED_ORIGINS = {
 			"http://localhost:3000",
-			"http://rschat.vercel.app/",
-			"http://rschat-scastd00.vercel.app/",
-			"http://rschat-git-main-scastd00.vercel.app/"
+			"https://rschat.vercel.app/",
+			"https://rschat-scastd00.vercel.app/",
+			"https://rschat-git-main-scastd00.vercel.app/"
 	};
 
 	public static final Gson GSON = new Gson();
