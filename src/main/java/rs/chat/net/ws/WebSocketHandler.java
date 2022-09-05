@@ -101,9 +101,9 @@ public class WebSocketHandler extends TextWebSocketHandler {
 			return new GetHistoryStrategy();
 		} else if (PING_MESSAGE.equals(receivedMessageType)) {
 			return new PingStrategy();
-		} else {
-			return new ErrorMessageStrategy();
 		}
+
+		return new ErrorMessageStrategy();
 	}
 
 	/**

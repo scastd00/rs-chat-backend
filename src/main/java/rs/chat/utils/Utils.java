@@ -188,4 +188,16 @@ public final class Utils {
 		       Constants.LOCAL_S3_ENDPOINT_URI_FOR_FILES :
 		       Constants.REMOTE_S3_ENDPOINT_URI_FOR_FILES;
 	}
+
+	public static String bytesToUnit(int bytes) {
+		if (bytes < 1024) {
+			return bytes + " B";
+		} else if (bytes < 1024 * 1024) {
+			return String.format("%.2f", bytes / 1024d) + " KB";
+		} else if (bytes < 1024 * 1024 * 1024) {
+			return String.format("%.2f", bytes / (1024d * 1024)) + " MB";
+		} else {
+			return String.format("%.2f", bytes / (1024d * 1024 * 1024)) + " GB";
+		}
+	}
 }
