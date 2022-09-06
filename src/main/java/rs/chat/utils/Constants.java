@@ -14,10 +14,14 @@ public final class Constants {
 	}
 
 	public static final String[] ACCEPTED_ORIGINS = {
+			// Local development
 			"http://localhost:3000",
+			// Production deployments
 			"https://rschat.vercel.app/",
 			"https://rschat-scastd00.vercel.app/",
-			"https://rschat-git-main-scastd00.vercel.app/"
+			"https://rschat-git-main-scastd00.vercel.app/",
+			// Preview deployments
+			"https://rschat-git-dev-scastd00.vercel.app/",
 	};
 
 	public static final Gson GSON = new Gson();
