@@ -50,10 +50,7 @@ public class ChatController {
 			throw new UsernameNotFoundException("Username '%s' was not found".formatted(username));
 		}
 
-		response.ok().send(
-				"chats",
-				this.chatService.getAllChatsOfUserGroupedByType(user.getId())
-		);
+		response.ok().send("chats", this.chatService.getAllChatsOfUserGroupedByType(user.getId()));
 	}
 
 	/**
@@ -75,6 +72,15 @@ public class ChatController {
 		response.ok().send(body);
 	}
 
+	/**
+	 * Allows a user to join a chat with a code that is provided by the chat owner.
+	 *
+	 * @param request  request object that contains the username of the user that wants to join the chat.
+	 * @param response response object that contains the name of the chat to which the user has joined.
+	 * @param code     code of the chat to which the user wants to join.
+	 *
+	 * @throws IOException if an error occurs while sending the response back to the client.
+	 */
 	@PostMapping(JOIN_CHAT_URL)
 	public void joinChat(HttpRequest request, HttpResponse response, @PathVariable String code) throws IOException {
 		if (code.isBlank()) {
@@ -96,6 +102,6 @@ public class ChatController {
 		this.chatService.addUserToChat(userId, chat.getId());
 
 		response.status(HttpStatus.OK).send("name", chat.getName());
-		// Make the user to update its chats
+		// Update the user's chats list in frontend.
 	}
 }
