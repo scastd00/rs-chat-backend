@@ -26,7 +26,7 @@ public final class Policies {
 	 *
 	 * @param body the body of the request that contains the user.
 	 *
-	 * @throws MinimumRequirementsNotMetException if the user does not contain all the necessary fields or they
+	 * @throws MinimumRequirementsNotMetException if the user does not contain all the necessary fields, or they
 	 *                                            are incorrect.
 	 * @throws MaliciousCodeInjectionException    if the username or passwords contains malicious code.
 	 */
