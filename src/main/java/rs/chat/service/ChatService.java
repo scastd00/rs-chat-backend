@@ -124,4 +124,12 @@ public class ChatService {
 	public void addUserToChat(Long userId, Long chatId) {
 		this.userChatRepository.save(new UserChat(new UserChatPK(userId, chatId)));
 	}
+
+	public Chat getChatByCode(String code) {
+		return this.chatRepository.findByInvitationCode(code);
+	}
+
+	public boolean userIsAlreadyInChat(Long userId, Long chatId) {
+		return this.userChatRepository.existsByUserChatPK_UserIdAndUserChatPK_ChatId(userId, chatId);
+	}
 }

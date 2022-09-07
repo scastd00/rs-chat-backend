@@ -2,7 +2,7 @@
 <entity-mappings xmlns="https://jakarta.ee/xml/ns/persistence/orm"
                  version="3.0">
 	<entity class="rs.chat.domain.entity.Chat">
-		<table name="chats" schema="rs_chat" catalog=""/>
+		<table name="chats" schema="rs_chat"/>
 		<attributes>
 			<id name="id">
 				<column name="id" precision="-1"/>
@@ -19,10 +19,13 @@
 			<basic name="metadata">
 				<column name="metadata" precision="-1"/>
 			</basic>
+			<basic name="invitationCode">
+				<column name="invitation_code" nullable="false" length="15"/>
+			</basic>
 		</attributes>
 	</entity>
 	<entity class="rs.chat.domain.entity.Degree">
-		<table name="degrees" schema="rs_chat" catalog=""/>
+		<table name="degrees" schema="rs_chat"/>
 		<attributes>
 			<id name="id">
 				<column name="id" precision="-1"/>
@@ -33,7 +36,7 @@
 		</attributes>
 	</entity>
 	<entity class="rs.chat.domain.entity.File">
-		<table name="files" schema="rs_chat" catalog=""/>
+		<table name="files" schema="rs_chat"/>
 		<attributes>
 			<id name="id">
 				<column name="id" precision="-1"/>
@@ -62,7 +65,7 @@
 		</attributes>
 	</entity>
 	<entity class="rs.chat.domain.entity.Session">
-		<table name="sessions" schema="rs_chat" catalog=""/>
+		<table name="sessions" schema="rs_chat"/>
 		<attributes>
 			<id name="id">
 				<column name="id" precision="-1"/>
@@ -85,13 +88,13 @@
 		</attributes>
 	</entity>
 	<entity class="rs.chat.domain.entity.StuSubj">
-		<table name="stu_subj" schema="rs_chat" catalog=""/>
+		<table name="stu_subj" schema="rs_chat"/>
 		<attributes>
 			<embedded-id name="stuSubjPK"/>
 		</attributes>
 	</entity>
 	<entity class="rs.chat.domain.entity.Subject">
-		<table name="subjects" schema="rs_chat" catalog=""/>
+		<table name="subjects" schema="rs_chat"/>
 		<attributes>
 			<id name="id">
 				<column name="id" precision="-1"/>
@@ -117,19 +120,19 @@
 		</attributes>
 	</entity>
 	<entity class="rs.chat.domain.entity.TeaSubj">
-		<table name="tea_subj" schema="rs_chat" catalog=""/>
+		<table name="tea_subj" schema="rs_chat"/>
 		<attributes>
 			<embedded-id name="teaSubjPK"/>
 		</attributes>
 	</entity>
 	<entity class="rs.chat.domain.entity.UserChat">
-		<table name="user_chat" schema="rs_chat" catalog=""/>
+		<table name="user_chat" schema="rs_chat"/>
 		<attributes>
 			<embedded-id name="userChatPK"/>
 		</attributes>
 	</entity>
 	<entity class="rs.chat.domain.entity.User">
-		<table name="users" schema="rs_chat" catalog=""/>
+		<table name="users" schema="rs_chat"/>
 		<attributes>
 			<id name="id">
 				<column name="id" precision="-1"/>
@@ -161,7 +164,7 @@
 		</attributes>
 	</entity>
 	<entity class="rs.chat.domain.entity.Group">
-		<table name="groups" schema="rs_chat" catalog=""/>
+		<table name="groups" schema="rs_chat"/>
 		<attributes>
 			<id name="id">
 				<column name="id" precision="-1"/>
@@ -172,7 +175,7 @@
 		</attributes>
 	</entity>
 	<entity class="rs.chat.domain.entity.UserGroup">
-		<table name="user_group" schema="rs_chat" catalog=""/>
+		<table name="user_group" schema="rs_chat"/>
 		<attributes>
 			<embedded-id name="userGroupPK"/>
 		</attributes>
