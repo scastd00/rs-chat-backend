@@ -147,4 +147,13 @@ public class ChatService {
 	public boolean userIsAlreadyInChat(Long userId, Long chatId) {
 		return this.userChatRepository.existsByUserChatPK_UserIdAndUserChatPK_ChatId(userId, chatId);
 	}
+
+	public boolean userCanConnectToChat(Long userId, Long chatId) {
+		// Could be replaced by a query to database
+		return this.userChatRepository.findAllByUserChatPK_UserId(userId)
+		                              .stream()
+		                              .map(UserChat::getUserChatPK)
+		                              .map(UserChatPK::getChatId)
+		                              .anyMatch(aLong -> aLong.equals(chatId));
+	}
 }
