@@ -61,17 +61,19 @@ public class RSChatAuthenticationFilter extends UsernamePasswordAuthenticationFi
 	                                        HttpServletResponse response,
 	                                        FilterChain chain,
 	                                        Authentication authentication) throws IOException, ServletException {
+		HttpRequest req = new HttpRequest(request);
 		User user = (User) authentication.getPrincipal();
+
 		Map<String, String> tokens = Utils.generateTokens(
 				user.getUsername(),
 				request.getRequestURL().toString(),
 				user.getAuthorities()
 				    .iterator()
 				    .next()
-				    .getAuthority()
+				    .getAuthority(),
+				req.body().get("remember").getAsBoolean()
 		);
 
-		HttpRequest req = new HttpRequest(request);
 		req.set("USER:TOKENS", Constants.GSON.toJson(tokens));
 		req.set("USER:USERNAME", user.getUsername());
 

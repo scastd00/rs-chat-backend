@@ -131,9 +131,12 @@ public class AuthController {
 		));
 
 		// Generate tokens
-		Map<String, String> tokens = Utils.generateTokens(savedUser.getUsername(),
-		                                                  request.getRequestURL().toString(),
-		                                                  savedUser.getRole());
+		Map<String, String> tokens = Utils.generateTokens(
+				savedUser.getUsername(),
+				request.getRequestURL().toString(),
+				savedUser.getRole(),
+				false
+		);
 
 		Session session = this.sessionService.saveSession(
 				new Session(
@@ -191,8 +194,7 @@ public class AuthController {
 
 		if (authorizationHeader == null) {
 			// If request does not contain authorization header send error.
-			response.status(BAD_REQUEST)
-			        .send(ERROR_JSON_KEY, "You must provide the authorization token");
+			response.status(BAD_REQUEST).send(ERROR_JSON_KEY, "You must provide the authorization token");
 			return;
 		}
 
