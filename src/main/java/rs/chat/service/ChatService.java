@@ -124,4 +124,36 @@ public class ChatService {
 	public void addUserToChat(Long userId, Long chatId) {
 		this.userChatRepository.save(new UserChat(new UserChatPK(userId, chatId)));
 	}
+
+	/**
+	 * Retrieves a chat given its joining code.
+	 *
+	 * @param code joining code of the chat.
+	 *
+	 * @return found chat.
+	 */
+	public Chat getChatByCode(String code) {
+		return this.chatRepository.findByInvitationCode(code);
+	}
+
+	/**
+	 * Checks if a user is a member of a chat.
+	 *
+	 * @param userId id of the user.
+	 * @param chatId id of the chat.
+	 *
+	 * @return true if the user is a member of the chat, false otherwise.
+	 */
+	public boolean userIsAlreadyInChat(Long userId, Long chatId) {
+		return this.userChatRepository.existsByUserChatPK_UserIdAndUserChatPK_ChatId(userId, chatId);
+	}
+
+	public boolean userCanConnectToChat(Long userId, Long chatId) {
+		// Could be replaced by a query to database
+		return this.userChatRepository.findAllByUserChatPK_UserId(userId)
+		                              .stream()
+		                              .map(UserChat::getUserChatPK)
+		                              .map(UserChatPK::getChatId)
+		                              .anyMatch(aLong -> aLong.equals(chatId));
+	}
 }

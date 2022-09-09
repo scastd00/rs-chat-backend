@@ -1,5 +1,6 @@
 package rs.chat.domain;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
 import rs.chat.domain.entity.Chat;
 import rs.chat.utils.Utils;
@@ -33,7 +34,8 @@ public final class DomainUtils {
 				name,
 				chatType,
 				s3ChatPrefix + name,
-				Utils.jsonOfNumber("createdAt", System.currentTimeMillis())
+				Utils.jsonOfNumber("createdAt", System.currentTimeMillis()),
+				RandomStringUtils.randomAlphanumeric(15)
 		);
 	}
 

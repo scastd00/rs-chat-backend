@@ -93,14 +93,16 @@ CREATE TABLE `sessions`
 
 CREATE TABLE `chats`
 (
-	`id`        bigint       NOT NULL AUTO_INCREMENT,
-	`name`      varchar(100) NOT NULL,
-	`type`      varchar(10)  NOT NULL, -- User, Group, Subject, Degree.
-	`s3_folder` varchar(300) NULL,
-	`metadata`  json         NOT NULL, -- JSON string. Initial value is the creation date.
+	`id`              bigint       NOT NULL AUTO_INCREMENT,
+	`name`            varchar(100) NOT NULL,
+	`type`            varchar(10)  NOT NULL, -- User, Group, Subject, Degree.
+	`s3_folder`       varchar(300) NULL,
+	`metadata`        json         NOT NULL, -- JSON string. Initial value is the creation date.
+	`invitation_code` char(15)     NOT NULL, -- Random string of 15 characters.
 
 	CONSTRAINT `pk_chat_id` PRIMARY KEY (`id`),
-	CONSTRAINT `ck_chat_type` CHECK (`type` IN ('user', 'group', 'subject', 'degree'))
+	CONSTRAINT `ck_chat_type` CHECK (`type` IN ('user', 'group', 'subject', 'degree')),
+	CONSTRAINT `u_invitation_code` UNIQUE (`invitation_code`)
 ) ENGINE = InnoDB;
 
 CREATE TABLE `user_chat`
@@ -196,5 +198,6 @@ ALTER TABLE `user_group`
 		ON DELETE RESTRICT;
 
 INSERT INTO `groups` (`name`) VALUE ('Global');
-INSERT INTO `chats` (`name`, `type`, `s3_folder`, `metadata`) VALUE ('Global', 'group', 'group/Global',
-																	 CONCAT('{"createdAt":', ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000), '}'));
+INSERT INTO `chats` (`name`, `type`, `s3_folder`, `metadata`, `invitation_code`) VALUE ('Global', 'group', 'group/Global',
+																						CONCAT('{"createdAt":', ROUND(UNIX_TIMESTAMP(CURTIME(4)) * 1000), '}'),
+																						'EM98tZPY5g4hJJV');

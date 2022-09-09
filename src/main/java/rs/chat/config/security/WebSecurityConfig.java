@@ -50,8 +50,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	 */
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(this.userDetailsService)
-		    .passwordEncoder(this.passwordEncoder);
+		auth.userDetailsService(this.userDetailsService).passwordEncoder(this.passwordEncoder);
 	}
 
 	/**
@@ -179,8 +178,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	 * @throws Exception if an error occurs.
 	 */
 	private RSChatAuthenticationFilter getRSChatCustomAuthenticationFilter() throws Exception {
-		RSChatAuthenticationFilter authenticationFilter =
-				new RSChatAuthenticationFilter(this.authenticationManagerBean());
+		RSChatAuthenticationFilter authenticationFilter = new RSChatAuthenticationFilter(this.authenticationManagerBean());
 		authenticationFilter.setFilterProcessesUrl(LOGIN_URL);
 		return authenticationFilter;
 	}

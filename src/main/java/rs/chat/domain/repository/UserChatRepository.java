@@ -6,6 +6,9 @@ import rs.chat.domain.entity.UserChatPK;
 
 import java.util.List;
 
+@SuppressWarnings("java:S100")
 public interface UserChatRepository extends JpaRepository<UserChat, UserChatPK> {
 	List<UserChat> findAllByUserChatPK_UserId(Long userId);
+
+	boolean existsByUserChatPK_UserIdAndUserChatPK_ChatId(Long userId, Long chatId);
 }
