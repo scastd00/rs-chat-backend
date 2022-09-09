@@ -14,6 +14,7 @@ import rs.chat.domain.entity.Chat;
 import rs.chat.domain.entity.Group;
 import rs.chat.domain.entity.Session;
 import rs.chat.domain.entity.User;
+import rs.chat.mail.MailSender;
 import rs.chat.net.http.HttpRequest;
 import rs.chat.net.http.HttpResponse;
 import rs.chat.net.http.HttpResponse.HttpResponseBody;
@@ -173,6 +174,7 @@ public class AuthController {
 		responseBody.add("chats", defaultChat);
 
 		response.ok().send(responseBody);
+		MailSender.sendRegistrationEmail(savedUser.getEmail(), savedUser.getUsername());
 	}
 
 	/**
@@ -241,5 +243,7 @@ public class AuthController {
 		this.userService.saveUser(user);
 
 		response.sendStatus(OK);
+		// Todo: implement change password template
+//		MailSender.changePassword(user.getEmail(), user.getUsername(), /* token */);
 	}
 }
