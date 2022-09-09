@@ -66,7 +66,8 @@ public class UserController {
 						null, // Age
 						null, // Birthdate
 						STUDENT_ROLE,
-						null // Block until
+						null, // Block until
+						null // Password change
 				)
 		);
 
