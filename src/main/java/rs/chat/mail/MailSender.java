@@ -6,10 +6,13 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMailMessage;
 
 import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
+
+import static rs.chat.utils.Constants.APPLICATION_EMAIL;
 
 public class MailSender {
 	private static final JavaMailSender sender;
@@ -35,36 +38,35 @@ public class MailSender {
 	}
 
 	public static void sendRegistrationEmail(String to, String username) {
-		MimeMailMessage message = new MimeMailMessage(sender.createMimeMessage());
-
-		try {
-			message.setFrom("rschatws@outlook.com");
-			message.setTo(to);
-			message.setSubject("Welcome to RSChat!");
-			message.getMimeMessage().setText(
-					IOUtils.toString(new FileReader("src/main/resources/templates/email/welcome/rs-chat-welcome-email.html"))
-					       .replace("{{username}}", username),
-					StandardCharsets.UTF_8.name(),
-					"html"
-			);
-		} catch (MessagingException | IOException e) {
-			throw new RuntimeException(e);
-		}
-
-		sender.send(message.getMimeMessage());
+		MimeMessage message = getMimeMessage(to, "Welcome to RSChat!",
+		                                     "src/main/resources/templates/email/welcome/rs-chat-welcome-email.html",
+		                                     "{{username}}", username);
+		sender.send(message);
 	}
 
-	public static void changePassword(String to, String username, String token) {
+	public static void changePassword(String to, String code) {
+		MimeMessage message = getMimeMessage(to, "Reset your password",
+		                                     "src/main/resources/templates/email/resetPassword/rs-chat-change-password-email.html",
+		                                     "{{code}}", code);
+		sender.send(message);
+	}
+
+	public static void forgotPassword(String to, String code) {
+		MimeMessage message = getMimeMessage(to, "Reset your password",
+		                                     "src/main/resources/templates/email/resetPassword/rs-chat-forgot-password-email.html",
+		                                     "{{code}}", code);
+		sender.send(message);
+	}
+
+	private static MimeMessage getMimeMessage(String to, String subject, String fileName, String target, String value) {
 		MimeMailMessage message = new MimeMailMessage(sender.createMimeMessage());
 
 		try {
-			message.setFrom("rschatws@outlook.com");
+			message.setFrom(APPLICATION_EMAIL);
 			message.setTo(to);
-			message.setSubject("Reset your password");
+			message.setSubject(subject);
 			message.getMimeMessage().setText(
-					IOUtils.toString(new FileReader("src/main/resources/templates/email/resetPassword/rs-chat-reset-password-email.html"))
-					       .replace("{{username}}", username)
-					       .replace("{{token}}", token),
+					IOUtils.toString(new FileReader(fileName)).replace(target, value),
 					StandardCharsets.UTF_8.name(),
 					"html"
 			);
@@ -72,6 +74,6 @@ public class MailSender {
 			throw new RuntimeException(e);
 		}
 
-		sender.send(message.getMimeMessage());
+		return message.getMimeMessage();
 	}
 }

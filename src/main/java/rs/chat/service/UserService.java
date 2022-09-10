@@ -99,4 +99,12 @@ public class UserService implements UserDetailsService {
 		user.setRole(role);
 		this.userRepository.save(user);
 	}
+
+	public User getUserByEmail(String email) {
+		return this.userRepository.findByEmail(email);
+	}
+
+	public User getUserByCode(String code) {
+		return this.userRepository.findByPasswordCode(code);
+	}
 }

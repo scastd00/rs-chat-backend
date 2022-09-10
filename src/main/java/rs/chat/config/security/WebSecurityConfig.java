@@ -19,6 +19,8 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 import static rs.chat.router.Routes.DeleteRoute;
 import static rs.chat.router.Routes.GetRoute;
 import static rs.chat.router.Routes.PostRoute;
+import static rs.chat.router.Routes.PostRoute.CREATE_PASSWORD_URL;
+import static rs.chat.router.Routes.PostRoute.FORGOT_PASSWORD_URL;
 import static rs.chat.router.Routes.PostRoute.LOGIN_URL;
 import static rs.chat.router.Routes.PostRoute.LOGOUT_URL;
 import static rs.chat.router.Routes.PostRoute.REGISTER_URL;
@@ -140,7 +142,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				    LOGOUT_URL,
 				    REFRESH_TOKEN_URL,
 				    REGISTER_URL,
-				    WS_CHAT_ENDPOINT
+				    WS_CHAT_ENDPOINT,
+				    FORGOT_PASSWORD_URL,
+				    CREATE_PASSWORD_URL
 		    )
 		    .permitAll();
 	}

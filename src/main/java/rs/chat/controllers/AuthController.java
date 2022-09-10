@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,6 +36,8 @@ import java.util.Map;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
+import static rs.chat.router.Routes.PostRoute.CREATE_PASSWORD_URL;
+import static rs.chat.router.Routes.PostRoute.FORGOT_PASSWORD_URL;
 import static rs.chat.router.Routes.PostRoute.LOGIN_URL;
 import static rs.chat.router.Routes.PostRoute.LOGOUT_URL;
 import static rs.chat.router.Routes.PostRoute.REGISTER_URL;
@@ -233,6 +236,7 @@ public class AuthController {
 	public void changePassword(HttpRequest request,
 	                           HttpResponse response,
 	                           @PathVariable String username) throws IOException {
+		// Todo: replace this method with createPassword
 		JsonObject body = request.body();
 
 		// Check if both passwords are correct.
@@ -246,7 +250,71 @@ public class AuthController {
 		this.userService.saveUser(user);
 
 		response.sendStatus(OK);
-		// Todo: implement change password template
-//		MailSender.changePassword(user.getEmail(), user.getUsername(), /* token */);
+	}
+
+	/**
+	 * Sends an email to the user with the code to reset the password.
+	 * This method can be used when a user wants to change the password inside
+	 * the profile (first forget password, then create password).
+	 *
+	 * @param request  the request with the email of the user.
+	 * @param response the response (only status code is sent if successful).
+	 *
+	 * @throws IOException if an error occurs.
+	 */
+	@PostMapping(FORGOT_PASSWORD_URL)
+	public void forgotPassword(HttpRequest request, HttpResponse response) throws IOException {
+		JsonObject body = request.body();
+
+		// Check if the email is correct.
+		Policies.checkEmail(body);
+
+		String email = body.get("email").getAsString();
+		User user = this.userService.getUserByEmail(email);
+
+		if (user == null) {
+			response.status(BAD_REQUEST).send(ERROR_JSON_KEY, "The email is not registered");
+			return;
+		}
+
+		String code = RandomStringUtils.randomAlphanumeric(6);
+
+		user.setPasswordCode(code);
+		this.userService.saveUser(user);
+
+		response.sendStatus(OK);
+
+		MailSender.forgotPassword(email, code);
+	}
+
+	/**
+	 * Creates a new password for the user.
+	 *
+	 * @param request  the request with the new password.
+	 * @param response the response (only status code is sent if successful).
+	 *
+	 * @throws IOException if an error occurs.
+	 */
+	@PostMapping(CREATE_PASSWORD_URL)
+	public void createPassword(HttpRequest request, HttpResponse response) throws IOException {
+		JsonObject body = request.body();
+		String code = body.get("code").getAsString();
+
+		// Check if the code exists
+		User user = this.userService.getUserByCode(code);
+
+		if (user == null) {
+			response.status(BAD_REQUEST).send(ERROR_JSON_KEY, "The code is not valid");
+			return;
+		}
+
+		// Check if the passwords are correct.
+		Policies.checkPasswords(body);
+
+		user.setPassword(body.get("newPassword").getAsString());
+		user.setPasswordCode(null);
+		this.userService.saveUser(user);
+
+		response.sendStatus(OK);
 	}
 }
