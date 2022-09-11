@@ -44,16 +44,9 @@ public class MailSender {
 		sender.send(message);
 	}
 
-	public static void changePassword(String to, String code) {
+	public static void resetPassword(String to, String code) {
 		MimeMessage message = getMimeMessage(to, "Reset your password",
-		                                     "src/main/resources/templates/email/resetPassword/rs-chat-change-password-email.html",
-		                                     "{{code}}", code);
-		sender.send(message);
-	}
-
-	public static void forgotPassword(String to, String code) {
-		MimeMessage message = getMimeMessage(to, "Reset your password",
-		                                     "src/main/resources/templates/email/resetPassword/rs-chat-forgot-password-email.html",
+		                                     "src/main/resources/templates/email/resetPassword/rs-chat-reset-password-email.html",
 		                                     "{{code}}", code);
 		sender.send(message);
 	}

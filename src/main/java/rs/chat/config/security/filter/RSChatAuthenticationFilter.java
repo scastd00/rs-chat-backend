@@ -69,7 +69,7 @@ public class RSChatAuthenticationFilter extends UsernamePasswordAuthenticationFi
 				request.getRequestURL().toString(),
 				user.getAuthorities()
 				    .iterator()
-				    .next()
+				    .next() // We only have one role per user, so we take it.
 				    .getAuthority(),
 				req.body().get("remember").getAsBoolean()
 		);

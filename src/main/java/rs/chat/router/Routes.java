@@ -132,7 +132,6 @@ public class Routes {
 		private PutRoute() {
 		}
 
-		public static final String CHANGE_PASSWORD_URL = V_1 + "/changePassword/{username}";
 		public static final String EDIT_DEGREE_NAME_URL = V_1 + "/degree/editName";
 
 		/**
@@ -142,7 +141,7 @@ public class Routes {
 		 */
 		public String[] lowTierRoutes() {
 			return new String[] {
-					CHANGE_PASSWORD_URL
+
 			};
 		}
 
