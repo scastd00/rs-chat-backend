@@ -29,8 +29,10 @@ public final class Constants {
 
 	public static final String LOCAL_FILES_PATH = "/tmp" + File.separator;
 	public static final String[] STRING_ARRAY = new String[0];
-	public static final Duration TOKEN_EXPIRATION_DURATION = Duration.ofHours(4);
-	public static final Duration REFRESH_TOKEN_EXPIRATION_DURATION = Duration.ofDays(15);
+	public static final Duration TOKEN_EXPIRATION_DURATION_NORMAL = Duration.ofHours(4);
+	public static final Duration TOKEN_EXPIRATION_DURATION_EXTENDED = Duration.ofDays(7);
+	public static final Duration REFRESH_TOKEN_EXPIRATION_DURATION_NORMAL = Duration.ofDays(15);
+	public static final Duration REFRESH_TOKEN_EXPIRATION_DURATION_EXTENDED = Duration.ofDays(30);
 	public static final Algorithm ALGORITHM = Algorithm.HMAC256(System.getenv("TOKEN_SECRET").getBytes());
 
 	public static final String STUDENT_ROLE = "STUDENT";
@@ -62,4 +64,6 @@ public final class Constants {
 	public static final String DEGREE_CHAT_S3_FOLDER_PREFIX = DEGREE_CHAT + "/";
 
 	public static final int MAX_CHAT_HISTORY_PER_REQUEST = 65;
+
+	public static final String APPLICATION_EMAIL = "rschatws@outlook.com";
 }

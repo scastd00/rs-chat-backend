@@ -76,6 +76,8 @@ public class Routes {
 		public static final String LOGIN_URL = V_1 + "/login";
 		public static final String LOGOUT_URL = V_1 + "/logout";
 		public static final String REGISTER_URL = V_1 + "/register";
+		public static final String FORGOT_PASSWORD_URL = V_1 + "/forgotPassword";
+		public static final String CREATE_PASSWORD_URL = V_1 + "/createPassword";
 
 		public static final String USER_SAVE_URL = V_1 + "/user/save";
 		public static final String DEGREE_SAVE_URL = V_1 + "/degree/save";
@@ -130,7 +132,6 @@ public class Routes {
 		private PutRoute() {
 		}
 
-		public static final String CHANGE_PASSWORD_URL = V_1 + "/changePassword/{username}";
 		public static final String EDIT_DEGREE_NAME_URL = V_1 + "/degree/editName";
 
 		/**
@@ -140,7 +141,7 @@ public class Routes {
 		 */
 		public String[] lowTierRoutes() {
 			return new String[] {
-					CHANGE_PASSWORD_URL
+
 			};
 		}
 

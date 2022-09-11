@@ -161,6 +161,9 @@
 			<basic name="blockUntil">
 				<column name="block_until" nullable="false" precision="-1"/>
 			</basic>
+			<basic name="passwordCode">
+				<column name="password_code" nullable="false" length="6"/>
+			</basic>
 		</attributes>
 	</entity>
 	<entity class="rs.chat.domain.entity.Group">

@@ -128,4 +128,12 @@ public final class Policies {
 
 		checkPasswords(newPassword, confirmPassword);
 	}
+
+	public static void checkEmail(JsonObject body) {
+		String email = get(body, "email").getAsString().trim();
+
+		if (!email.matches("^[^@]+@[^@]+\\.[^@]{2,}$")) {
+			throw new MinimumRequirementsNotMetException("Email must have a valid structure. Eg: hello@domain.com");
+		}
+	}
 }

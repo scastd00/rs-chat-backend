@@ -26,6 +26,7 @@ class UserRepositoryTest {
 				(byte) 21,
 				null,
 				Constants.STUDENT_ROLE,
+				null,
 				null
 		);
 		underTest.save(user);

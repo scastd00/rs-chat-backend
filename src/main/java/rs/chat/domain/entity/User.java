@@ -60,4 +60,8 @@ public class User {
 	@Basic
 	@Column(name = "block_until")
 	private Timestamp blockUntil;
+
+	@Basic
+	@Column(name = "password_code", length = 6)
+	private String passwordCode; // Used when the user requests a password reset or changes it
 }

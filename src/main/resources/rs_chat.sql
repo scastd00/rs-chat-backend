@@ -60,15 +60,16 @@ CREATE TABLE `files`
 
 CREATE TABLE `users`
 (
-	`id`          bigint       NOT NULL AUTO_INCREMENT,
-	`username`    varchar(15)  NOT NULL,
-	`password`    varchar(126) NOT NULL, -- Hashed password using Bcrypt and applied Base64 encoding.
-	`email`       varchar(70)  NOT NULL,
-	`full_name`   varchar(100) NOT NULL,
-	`age`         tinyint      NULL,
-	`birthdate`   date         NULL,
-	`role`        varchar(13)  NOT NULL DEFAULT 'STUDENT',
-	`block_until` datetime     NULL,     -- If null, user can login. If date is stored, user cannot login until it has expired.
+	`id`            bigint       NOT NULL AUTO_INCREMENT,
+	`username`      varchar(15)  NOT NULL,
+	`password`      varchar(126) NOT NULL,              -- Hashed password using Bcrypt.
+	`email`         varchar(70)  NOT NULL,
+	`full_name`     varchar(100) NOT NULL,
+	`age`           tinyint      NULL,
+	`birthdate`     date         NULL,
+	`role`          varchar(13)  NOT NULL DEFAULT 'STUDENT',
+	`block_until`   datetime     NULL     DEFAULT NULL, -- If null, user can login. If date is stored, user cannot login until it has expired.
+	`password_code` varchar(6)   NULL     DEFAULT NULL, -- Code used to reset password.
 
 	CONSTRAINT `pk_user_id` PRIMARY KEY (`id`),
 	CONSTRAINT `u_username` UNIQUE (`username`),
