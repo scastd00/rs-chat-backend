@@ -67,6 +67,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		MessageStrategy strategy = this.decideStrategy(receivedMessageType);
 
 		try {
+			log.debug("Handling message: " + receivedMessageType.type() + " Class: " + strategy.getClass().getSimpleName());
 			strategy.checkTokenValidity(wrappedMessage.token());
 			strategy.handle(wrappedMessage, this.chatMap, otherData);
 		} catch (IOException e) {

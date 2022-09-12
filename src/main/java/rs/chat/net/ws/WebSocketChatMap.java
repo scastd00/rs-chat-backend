@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +57,7 @@ public class WebSocketChatMap {
 	 */
 	@NotNull
 	private synchronized List<WSClient> getClientsOf(String chatId) {
-		return this.chatExists(chatId) ? this.chats.get(chatId).getClients() : new ArrayList<>();
+		return this.chatExists(chatId) ? this.chats.get(chatId).getClients() : List.of();
 	}
 
 	/**
@@ -121,7 +120,7 @@ public class WebSocketChatMap {
 
 		// Remove the user from the chat.
 		List<WSClient> clientsOfChat = this.getClientsOf(chatId);
-		clientsOfChat.removeIf(client -> /*client == null || */client.wsClientID().equals(clientID));
+		clientsOfChat.removeIf(client -> client == null || client.wsClientID().equals(clientID));
 
 		// Delete the chat and its entry in the map if there are no more
 		// clients connected to it.
