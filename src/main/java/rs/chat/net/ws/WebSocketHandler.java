@@ -110,12 +110,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		return new ErrorMessageStrategy();
 	}
 
-	@Override
-	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-		log.info("Connection closed: " + session.getId() + " Status: " + status.getReason());
-		super.afterConnectionClosed(session, status);
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */
