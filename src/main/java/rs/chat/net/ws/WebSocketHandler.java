@@ -2,6 +2,7 @@ package rs.chat.net.ws;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -107,6 +108,12 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		}
 
 		return new ErrorMessageStrategy();
+	}
+
+	@Override
+	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+		log.info("Connection closed: " + session.getId() + " Status: " + status.getReason());
+		super.afterConnectionClosed(session, status);
 	}
 
 	/**
