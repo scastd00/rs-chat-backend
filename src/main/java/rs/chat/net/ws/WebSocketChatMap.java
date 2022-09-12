@@ -120,7 +120,7 @@ public class WebSocketChatMap {
 
 		// Remove the user from the chat.
 		List<WSClient> clientsOfChat = this.getClientsOf(chatId);
-		clientsOfChat.removeIf(client -> client == null || client.wsClientID().equals(clientID));
+		clientsOfChat.removeIf(client -> /*client == null || */client.wsClientID().equals(clientID));
 
 		// Delete the chat and its entry in the map if there are no more
 		// clients connected to it.
