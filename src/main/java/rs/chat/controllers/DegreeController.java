@@ -1,5 +1,6 @@
 package rs.chat.controllers;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,11 +10,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
+import rs.chat.domain.entity.Chat;
 import rs.chat.domain.entity.Degree;
 import rs.chat.exceptions.BadRequestException;
 import rs.chat.exceptions.NotFoundException;
 import rs.chat.net.http.HttpRequest;
 import rs.chat.net.http.HttpResponse;
+import rs.chat.service.ChatService;
 import rs.chat.service.DegreeService;
 
 import java.io.IOException;
@@ -34,6 +37,7 @@ import static rs.chat.router.Routes.PutRoute.EDIT_DEGREE_NAME_URL;
 @RequiredArgsConstructor
 public class DegreeController {
 	private final DegreeService degreeService;
+	private final ChatService chatService;
 
 	/**
 	 * Returns all degrees stored in db.
@@ -45,7 +49,19 @@ public class DegreeController {
 	@GetMapping(DEGREES_URL)
 	public void getAllDegrees(HttpResponse response) throws IOException {
 		List<Degree> allDegrees = this.degreeService.getDegrees();
-		response.ok().send("degrees", allDegrees);
+		JsonArray degreesWithInvitationCode = new JsonArray();
+
+		allDegrees.forEach(degree -> {
+			JsonObject degreeWithInvitationCode = new JsonObject();
+			Chat chat = this.chatService.getByName(degree.getName());
+
+			degreeWithInvitationCode.addProperty("id", degree.getId());
+			degreeWithInvitationCode.addProperty("name", degree.getName());
+			degreeWithInvitationCode.addProperty("invitationCode", chat.getInvitationCode());
+			degreesWithInvitationCode.add(degreeWithInvitationCode);
+		});
+
+		response.ok().send("degrees", degreesWithInvitationCode.toString());
 	}
 
 	/**
