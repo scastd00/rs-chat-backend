@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +58,7 @@ public class WebSocketChatMap {
 	 */
 	@NotNull
 	private synchronized List<WSClient> getClientsOf(String chatId) {
-		return this.chatExists(chatId) ? this.chats.get(chatId).getClients() : List.of();
+		return this.chatExists(chatId) ? this.chats.get(chatId).getClients() : new ArrayList<>();
 	}
 
 	/**
