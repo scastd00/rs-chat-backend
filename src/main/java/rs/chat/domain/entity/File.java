@@ -45,7 +45,7 @@ public class File {
 	private String path;
 
 	@Basic
-	@Column(name = "metadata", length = 700)
+	@Column(name = "metadata", nullable = false)
 	private String metadata;
 
 	@Basic

@@ -18,13 +18,12 @@ public record WSMessage(String type, String filePrefix, String extension) {
 	public static final WSMessage USER_LEFT = new WSMessage("USER_LEFT", null, null);
 
 	public static final WSMessage TEXT_MESSAGE = new WSMessage("TEXT_MESSAGE", "chat/", ".rsJson");
-	public static final WSMessage IMAGE_MESSAGE = new WSMessage("IMAGE_MESSAGE", "images/", ".rsImg");
-	public static final WSMessage AUDIO_MESSAGE = new WSMessage("AUDIO_MESSAGE", "audios/", ".rsAud");
-	public static final WSMessage VIDEO_MESSAGE = new WSMessage("VIDEO_MESSAGE", "videos/", ".rsVid");
+	public static final WSMessage IMAGE_MESSAGE = new WSMessage("IMAGE_MESSAGE", "images/", null);
+	public static final WSMessage AUDIO_MESSAGE = new WSMessage("AUDIO_MESSAGE", "audios/", null);
+	public static final WSMessage VIDEO_MESSAGE = new WSMessage("VIDEO_MESSAGE", "videos/", null);
 
 	public static final WSMessage ACTIVE_USERS_MESSAGE = new WSMessage("ACTIVE_USERS", null, null);
-	// Todo: change this to support media data response.
-	public static final WSMessage GET_HISTORY_MESSAGE = new WSMessage("GET_HISTORY", "chat/", ".rsJson");
+	public static final WSMessage GET_HISTORY_MESSAGE = new WSMessage("GET_HISTORY", "chat/", TEXT_MESSAGE.extension);
 	public static final WSMessage SERVER_INFO_MESSAGE = new WSMessage("SERVER_INFO", null, null);
 	public static final WSMessage ERROR_MESSAGE = new WSMessage("ERROR_MESSAGE", null, null);
 	public static final WSMessage PING_MESSAGE = new WSMessage("PING", null, null);
