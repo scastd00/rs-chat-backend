@@ -1,13 +1,17 @@
 package rs.chat.controllers;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import rs.chat.domain.entity.Chat;
 import rs.chat.domain.entity.Group;
 import rs.chat.net.http.HttpRequest;
 import rs.chat.net.http.HttpResponse;
+import rs.chat.service.ChatService;
 import rs.chat.service.GroupService;
 
 import java.io.IOException;
@@ -24,6 +28,7 @@ import static rs.chat.router.Routes.PostRoute.GROUP_SAVE_URL;
 @RequiredArgsConstructor
 public class GroupController {
 	private final GroupService groupService;
+	private final ChatService chatService;
 
 	/**
 	 * Returns all groups stored in db.
@@ -35,7 +40,19 @@ public class GroupController {
 	@GetMapping(GROUPS_URL)
 	public void getAllGroups(HttpResponse response) throws IOException {
 		List<Group> groups = this.groupService.getAll();
-		response.ok().send("groups", groups);
+		JsonArray groupsWithInvitationCode = new JsonArray();
+
+		groups.forEach(group -> {
+			JsonObject groupWithInvitationCode = new JsonObject();
+			Chat chat = this.chatService.getByName(group.getName());
+
+			groupWithInvitationCode.addProperty("id", group.getId());
+			groupWithInvitationCode.addProperty("name", group.getName());
+			groupWithInvitationCode.addProperty("invitationCode", chat.getInvitationCode());
+			groupsWithInvitationCode.add(groupWithInvitationCode);
+		});
+
+		response.ok().send("groups", groupsWithInvitationCode.toString());
 	}
 
 	/**

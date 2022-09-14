@@ -49,9 +49,9 @@ CREATE TABLE `files`
 	`name`          varchar(255) NOT NULL,
 	`date_uploaded` datetime     NOT NULL,
 	`size`          int          NOT NULL,
-	`path`          varchar(400),          -- fixme: maybe this column is not needed since the S3 folder is stored in Chat.
-	`metadata`      mediumtext,
-	`type`          varchar(10)  NOT NULL, -- Text (CUSTOM_JSON) / Image / Audio / Video.
+	`path`          varchar(400),
+	`metadata`      json         NOT NULL,
+	`type`          varchar(10)  NOT NULL, -- text / image / audio / video.
 	`user_id`       bigint       NOT NULL,
 
 	CONSTRAINT `pk_file_id` PRIMARY KEY (`id`),
