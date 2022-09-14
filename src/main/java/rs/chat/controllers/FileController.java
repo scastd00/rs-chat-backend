@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.unit.DataSize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import rs.chat.domain.entity.File;
@@ -36,8 +37,6 @@ public class FileController {
 
 	@PostMapping(UPLOAD_URL)
 	public void uploadFile(HttpRequest request, HttpResponse response) throws IOException {
-		log.info("Uploading file...");
-
 		JsonObject body = request.body();
 		Long userId = body.get("userId").getAsLong(); // Todo: receive it from the client
 		String fileName = body.get("name").getAsString().replace(" ", "_");
@@ -47,6 +46,14 @@ public class FileController {
 		                         .split(",")[1];
 
 		byte[] fileBytes = Base64.getDecoder().decode(encodedData);
+
+		if (fileBytes.length == 0) {
+			throw new BadRequestException("File is empty");
+		} else if (fileBytes.length > DataSize.ofMegabytes(100).toBytes()) {
+			throw new BadRequestException("File is too big");
+		}
+
+		log.info("Uploading file...");
 
 		FileUploadStrategy strategy = switch (types[0]) {
 			case "image" -> new ImageStrategy();
