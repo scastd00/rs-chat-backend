@@ -192,4 +192,14 @@ public class WebSocketChatMap {
 		log.debug("Saving all chats to S3");
 		this.chats.values().forEach(Chat::saveToS3);
 	}
+
+	/**
+	 * Deletes all the users that have had some error in the connection
+	 * and the instance is null for some reason.
+	 */
+	@Scheduled(fixedRate = 3, initialDelay = 3, timeUnit = MINUTES)
+	private void deleteNullUsers() {
+		log.debug("Deleting null users of all chats");
+		this.chats.values().forEach(Chat::deleteUnwantedUsers);
+	}
 }
