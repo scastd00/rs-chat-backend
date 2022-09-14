@@ -38,10 +38,13 @@ public class FileController {
 	@PostMapping(UPLOAD_URL)
 	public void uploadFile(HttpRequest request, HttpResponse response) throws IOException {
 		JsonObject body = request.body();
-		Long userId = body.get("userId").getAsLong(); // Todo: receive it from the client
-		String fileName = body.get("name").getAsString().replace(" ", "_");
-		String[] types = body.get("type").getAsString().split("/");
-		String encodedData = body.get("data")
+
+		Long userId = body.get("userId").getAsLong();
+		JsonObject file = body.get("file").getAsJsonObject();
+
+		String fileName = file.get("name").getAsString().replace(" ", "_");
+		String[] types = file.get("type").getAsString().split("/");
+		String encodedData = file.get("data")
 		                         .getAsString()
 		                         .split(",")[1];
 
