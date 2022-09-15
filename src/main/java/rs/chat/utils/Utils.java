@@ -138,7 +138,6 @@ public final class Utils {
 		                         .type(type)
 		                         .date(System.currentTimeMillis())
 		                         /* Body */
-		                         .encoding("UTF-8")
 		                         .content(content)
 		                         .build()
 		                         /* JsonObject */
@@ -160,7 +159,6 @@ public final class Utils {
 		                         .type(ERROR_MESSAGE.type())
 		                         .date(System.currentTimeMillis())
 		                         /* Body */
-		                         .encoding("UTF-8")
 		                         .content(message)
 		                         .build()
 		                         /* JsonObject */
