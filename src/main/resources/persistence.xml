@@ -5,22 +5,22 @@
 		<table name="chats" schema="rs_chat"/>
 		<attributes>
 			<id name="id">
-				<column name="id" precision="-1"/>
+				<column name="id"/>
 			</id>
 			<basic name="name">
-				<column name="name" length="100"/>
+				<column name="name"/>
 			</basic>
 			<basic name="type">
-				<column name="type" length="10"/>
+				<column name="type"/>
 			</basic>
 			<basic name="s3Folder">
-				<column name="s3_folder" nullable="false" length="300"/>
+				<column name="s3_folder"/>
 			</basic>
 			<basic name="metadata">
-				<column name="metadata" precision="-1"/>
+				<column name="metadata"/>
 			</basic>
 			<basic name="invitationCode">
-				<column name="invitation_code" nullable="false" length="15"/>
+				<column name="invitation_code"/>
 			</basic>
 		</attributes>
 	</entity>
@@ -28,10 +28,33 @@
 		<table name="degrees" schema="rs_chat"/>
 		<attributes>
 			<id name="id">
-				<column name="id" precision="-1"/>
+				<column name="id"/>
 			</id>
 			<basic name="name">
 				<column name="name"/>
+			</basic>
+		</attributes>
+	</entity>
+	<entity class="rs.chat.domain.entity.Emoji">
+		<table name="emojis" schema="rs_chat"/>
+		<attributes>
+			<id name="id">
+				<column name="id"/>
+			</id>
+			<basic name="name">
+				<column name="name"/>
+			</basic>
+			<basic name="icon">
+				<column name="icon"/>
+			</basic>
+			<basic name="unicode">
+				<column name="unicode"/>
+			</basic>
+			<basic name="category">
+				<column name="category"/>
+			</basic>
+			<basic name="subcategory">
+				<column name="subcategory"/>
 			</basic>
 		</attributes>
 	</entity>
@@ -39,28 +62,28 @@
 		<table name="files" schema="rs_chat"/>
 		<attributes>
 			<id name="id">
-				<column name="id" precision="-1"/>
+				<column name="id"/>
 			</id>
 			<basic name="name">
 				<column name="name"/>
 			</basic>
 			<basic name="dateUploaded">
-				<column name="date_uploaded" precision="-1"/>
+				<column name="date_uploaded"/>
 			</basic>
 			<basic name="size">
-				<column name="size" precision="-1"/>
+				<column name="size"/>
 			</basic>
 			<basic name="path">
-				<column name="path" nullable="false" length="400"/>
+				<column name="path"/>
 			</basic>
 			<basic name="metadata">
-				<column name="metadata" nullable="false" length="700"/>
+				<column name="metadata"/>
 			</basic>
 			<basic name="type">
-				<column name="type" length="10"/>
+				<column name="type"/>
 			</basic>
 			<basic name="userId">
-				<column name="user_id" precision="-1"/>
+				<column name="user_id"/>
 			</basic>
 		</attributes>
 	</entity>
@@ -68,22 +91,22 @@
 		<table name="sessions" schema="rs_chat"/>
 		<attributes>
 			<id name="id">
-				<column name="id" precision="-1"/>
+				<column name="id"/>
 			</id>
 			<basic name="srcIp">
-				<column name="src_ip" length="32"/>
+				<column name="src_ip"/>
 			</basic>
 			<basic name="dateStarted">
-				<column name="date_started" precision="-1"/>
+				<column name="date_started"/>
 			</basic>
 			<basic name="accessToken">
-				<column name="access_token" length="300"/>
+				<column name="access_token"/>
 			</basic>
 			<basic name="refreshToken">
-				<column name="refresh_token" length="300"/>
+				<column name="refresh_token"/>
 			</basic>
 			<basic name="userId">
-				<column name="user_id" precision="-1"/>
+				<column name="user_id"/>
 			</basic>
 		</attributes>
 	</entity>
@@ -97,25 +120,25 @@
 		<table name="subjects" schema="rs_chat"/>
 		<attributes>
 			<id name="id">
-				<column name="id" precision="-1"/>
+				<column name="id"/>
 			</id>
 			<basic name="name">
-				<column name="name" length="30"/>
+				<column name="name"/>
 			</basic>
 			<basic name="period">
-				<column name="period" length="2"/>
+				<column name="period"/>
 			</basic>
 			<basic name="type">
-				<column name="type" length="2"/>
+				<column name="type"/>
 			</basic>
 			<basic name="credits">
-				<column name="credits" precision="-1"/>
+				<column name="credits"/>
 			</basic>
 			<basic name="grade">
-				<column name="grade" precision="-1"/>
+				<column name="grade"/>
 			</basic>
 			<basic name="degreeId">
-				<column name="degree_id" precision="-1"/>
+				<column name="degree_id"/>
 			</basic>
 		</attributes>
 	</entity>
@@ -135,34 +158,34 @@
 		<table name="users" schema="rs_chat"/>
 		<attributes>
 			<id name="id">
-				<column name="id" precision="-1"/>
+				<column name="id"/>
 			</id>
 			<basic name="username">
-				<column name="username" length="15"/>
+				<column name="username"/>
 			</basic>
 			<basic name="password">
-				<column name="password" length="126"/>
+				<column name="password"/>
 			</basic>
 			<basic name="email">
-				<column name="email" length="70"/>
+				<column name="email"/>
 			</basic>
 			<basic name="fullName">
-				<column name="full_name" length="100"/>
+				<column name="full_name"/>
 			</basic>
 			<basic name="age">
-				<column name="age" nullable="false" precision="-1"/>
+				<column name="age"/>
 			</basic>
 			<basic name="birthdate">
-				<column name="birthdate" nullable="false" precision="-1"/>
+				<column name="birthdate"/>
 			</basic>
 			<basic name="role">
-				<column name="role" length="13"/>
+				<column name="role"/>
 			</basic>
 			<basic name="blockUntil">
-				<column name="block_until" nullable="false" precision="-1"/>
+				<column name="block_until"/>
 			</basic>
 			<basic name="passwordCode">
-				<column name="password_code" nullable="false" length="6"/>
+				<column name="password_code"/>
 			</basic>
 		</attributes>
 	</entity>

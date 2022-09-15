@@ -27,31 +27,24 @@ public class File {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", nullable = false)
 	private Long id;
-
 	@Basic
 	@Column(name = "name", nullable = false)
 	private String name;
-
 	@Basic
 	@Column(name = "date_uploaded", nullable = false)
 	private Timestamp dateUploaded;
-
 	@Basic
 	@Column(name = "size", nullable = false)
 	private Integer size;
-
 	@Basic
-	@Column(name = "path", length = 400)
+	@Column(name = "path", nullable = false, length = 400)
 	private String path;
-
 	@Basic
 	@Column(name = "metadata", nullable = false)
 	private String metadata;
-
 	@Basic
 	@Column(name = "type", nullable = false, length = 10)
 	private String type;
-
 	@Basic
 	@Column(name = "user_id", nullable = false)
 	private Long userId;

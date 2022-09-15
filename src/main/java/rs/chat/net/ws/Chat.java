@@ -68,4 +68,11 @@ public class Chat {
 		S3.getInstance().uploadFile(this.chatId, TEXT_MESSAGE);
 		log.debug("Uploaded file of chat with id = {}", this.chatId);
 	}
+
+	/**
+	 * Deletes the users that are null or their connection is nonexistent, or it is closed.
+	 */
+	public void deleteUnwantedUsers() {
+		this.clients.removeIf(client -> client == null || client.session() == null || !client.session().isOpen());
+	}
 }

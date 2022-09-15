@@ -26,7 +26,6 @@ public class Group {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", nullable = false)
 	private Long id;
-
 	@Basic
 	@Column(name = "name", nullable = false, length = 70)
 	private String name;

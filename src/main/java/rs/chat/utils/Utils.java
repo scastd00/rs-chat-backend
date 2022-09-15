@@ -117,8 +117,8 @@ public final class Utils {
 	public static String createActiveUsersMessage(List<String> usernames) {
 		JsonArray usersArray = new JsonArray();
 		usernames.forEach(usersArray::add);
-		// Todo: get the chatId to send the message to (in this case is a user).
-		return createServerMessage(usersArray.toString(), ACTIVE_USERS_MESSAGE.type(), "TODO");
+		return createServerMessage(usersArray.toString(), ACTIVE_USERS_MESSAGE.type(), "");
+		// In the client the chatId is ignored, so we minimize the size of the message with an empty string.
 	}
 
 	/**
@@ -138,7 +138,6 @@ public final class Utils {
 		                         .type(type)
 		                         .date(System.currentTimeMillis())
 		                         /* Body */
-		                         .encoding("UTF-8")
 		                         .content(content)
 		                         .build()
 		                         /* JsonObject */
@@ -160,7 +159,6 @@ public final class Utils {
 		                         .type(ERROR_MESSAGE.type())
 		                         .date(System.currentTimeMillis())
 		                         /* Body */
-		                         .encoding("UTF-8")
 		                         .content(message)
 		                         .build()
 		                         /* JsonObject */

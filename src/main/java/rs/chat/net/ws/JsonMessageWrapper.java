@@ -17,8 +17,7 @@ import rs.chat.utils.Utils;
  * 	   "token": "Bearer <accessToken>"
  *  },
  * 	"body": {
- * 	   "encoding": "regex(UTF-8|base64)",
- * 	   "content": "<encodedContentOfMessage>"
+ * 	   "content": "<contentOfMessage>"
  *  }
  * }
  * }</pre>
@@ -105,13 +104,6 @@ public class JsonMessageWrapper {
 	 */
 	public String token() {
 		return this.headers().get("token").getAsString();
-	}
-
-	/**
-	 * @return the encoding of the message.
-	 */
-	public String encoding() {
-		return this.body().get("encoding").getAsString();
 	}
 
 	/**
@@ -220,18 +212,6 @@ public class JsonMessageWrapper {
 		 */
 		public BuilderImpl token(String value) {
 			this.headers.addProperty("token", value);
-			return this;
-		}
-
-		/**
-		 * Sets the encoding of the message.
-		 *
-		 * @param value the encoding.
-		 *
-		 * @return the builder.
-		 */
-		public BuilderImpl encoding(String value) {
-			this.body.addProperty("encoding", value);
 			return this;
 		}
 

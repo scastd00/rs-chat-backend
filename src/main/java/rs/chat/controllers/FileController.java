@@ -3,7 +3,6 @@ package rs.chat.controllers;
 import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -81,8 +80,6 @@ public class FileController {
 		HttpResponseBody responseBody = new HttpResponseBody("uri", fileToSave.getPath());
 		responseBody.add("name", fileName);
 		responseBody.add("metadata", fileToSave.getMetadata());
-
-		// Todo: fix the names in frontend
 
 		response.status(OK).send(responseBody);
 		log.info("File uploaded successfully");

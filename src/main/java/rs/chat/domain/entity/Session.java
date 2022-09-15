@@ -27,22 +27,18 @@ public class Session {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", nullable = false)
 	private Long id;
-
 	@Basic
 	@Column(name = "src_ip", nullable = false, length = 32)
 	private String srcIp;
-
+	@Basic
 	@Column(name = "date_started", nullable = false)
 	private Instant dateStarted;
-
 	@Basic
 	@Column(name = "access_token", nullable = false, length = 300)
 	private String accessToken;
-
 	@Basic
 	@Column(name = "refresh_token", nullable = false, length = 300)
 	private String refreshToken;
-
 	@Basic
 	@Column(name = "user_id", nullable = false)
 	private Long userId;
