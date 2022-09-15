@@ -11,4 +11,6 @@ public interface EmojiRepository extends JpaRepository<Emoji, Long> {
 	List<Emoji> findByNameStartingWith(String s);
 
 	List<Emoji> findEmojisByCategory(String category);
+
+	boolean existsByName(String name);
 }

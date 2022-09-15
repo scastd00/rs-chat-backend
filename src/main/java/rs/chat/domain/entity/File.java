@@ -37,7 +37,7 @@ public class File {
 	@Column(name = "size", nullable = false)
 	private Integer size;
 	@Basic
-	@Column(name = "path", length = 400)
+	@Column(name = "path", nullable = false, length = 400)
 	private String path;
 	@Basic
 	@Column(name = "metadata", nullable = false)

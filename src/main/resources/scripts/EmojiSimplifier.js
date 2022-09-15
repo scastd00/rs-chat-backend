@@ -45,3 +45,24 @@ const maxUnicodeLength = reducedEmojis.reduce((max, emoji) => {
 fs.writeSync(reducedEmojisFile, JSON.stringify(reducedEmojis));
 
 console.log('Done!');
+
+//	private void saveAllEmojis() throws IOException {
+//		File file = new File("src/main/resources/scripts/SimplifiedEmojis.min.json");
+//		String s = IOUtils.toString(new FileReader(file));
+//		JsonArray emojis = new Gson().fromJson(s, JsonArray.class);
+//
+//		for (JsonElement emoji : emojis) {
+//			JsonObject object = emoji.getAsJsonObject();
+//			String name = object.get("name").getAsString();
+//			String icon = object.get("icon").getAsString();
+//			String unicode = object.get("unicode").getAsString();
+//			String category = object.get("category").getAsString();
+//			String subcategory = object.get("subcategory").getAsString();
+//
+//			if (!this.emojiService.exists(name)) {
+//				this.emojiService.save(
+//						new Emoji(null, name, icon, unicode, category, subcategory)
+//				);
+//			}
+//		}
+//	}

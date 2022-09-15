@@ -24,7 +24,7 @@ import javax.persistence.Table;
 public class Emoji {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
+	@Column(name = "id", nullable = false)
 	private Long id;
 	@Basic
 	@Column(name = "name")

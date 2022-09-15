@@ -49,7 +49,7 @@ CREATE TABLE `files`
 	`name`          varchar(255) NOT NULL,
 	`date_uploaded` datetime     NOT NULL,
 	`size`          int          NOT NULL,
-	`path`          varchar(400),
+	`path`          varchar(400) NOT NULL,
 	`metadata`      json         NOT NULL,
 	`type`          varchar(10)  NOT NULL, -- text / image / audio / video.
 	`user_id`       bigint       NOT NULL,

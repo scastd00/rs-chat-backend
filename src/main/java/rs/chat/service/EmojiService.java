@@ -17,4 +17,8 @@ public class EmojiService {
 	public Emoji save(Emoji emoji) {
 		return this.emojiRepository.save(emoji);
 	}
+
+	public boolean exists(String name) {
+		return this.emojiRepository.existsByName(name);
+	}
 }

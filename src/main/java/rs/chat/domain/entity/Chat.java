@@ -42,6 +42,6 @@ public class Chat {
 	@Column(name = "metadata", nullable = false)
 	private String metadata;
 	@Basic
-	@Column(name = "invitation_code", length = 15, nullable = false)
+	@Column(name = "invitation_code", nullable = false, length = 15)
 	private String invitationCode;
 }
