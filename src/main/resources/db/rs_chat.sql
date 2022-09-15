@@ -1,5 +1,5 @@
 DROP DATABASE IF EXISTS `rs_chat`;
-CREATE DATABASE IF NOT EXISTS `rs_chat` CHARACTER SET `utf8`;
+CREATE DATABASE IF NOT EXISTS `rs_chat` CHARACTER SET `UTF8MB4`;
 USE `rs_chat`;
 
 CREATE TABLE `subjects`
@@ -20,7 +20,7 @@ CREATE TABLE `subjects`
 
 CREATE TABLE `degrees`
 (
-	`id`   bigint AUTO_INCREMENT,
+	`id`   bigint       NOT NULL AUTO_INCREMENT,
 	`name` varchar(255) NOT NULL,
 
 	CONSTRAINT `pk_degree_id` PRIMARY KEY (`id`),
@@ -124,10 +124,24 @@ CREATE TABLE `user_group`
 
 CREATE TABLE `groups`
 (
-	`id`   bigint AUTO_INCREMENT,
+	`id`   bigint      NOT NULL AUTO_INCREMENT,
 	`name` varchar(70) NOT NULL, -- Names can be repeated
 
 	CONSTRAINT `pk_group_id` PRIMARY KEY (`id`)
+) ENGINE InnoDB;
+
+CREATE TABLE `emojis`
+(
+	`id`          bigint       NOT NULL AUTO_INCREMENT,
+	`name`        varchar(100) NOT NULL,
+	`emoji`       varchar(25)  NOT NULL,
+	`unicode`     varchar(80)  NOT NULL,
+	`category`    varchar(30)  NOT NULL,
+	`subcategory` varchar(40)  NOT NULL,
+
+	CONSTRAINT `pk_emoji_id` PRIMARY KEY (`id`),
+	CONSTRAINT `u_name` UNIQUE (`name`),
+	CONSTRAINT `u_unicode` UNIQUE (`unicode`)
 ) ENGINE InnoDB;
 
 -- Alter tables
