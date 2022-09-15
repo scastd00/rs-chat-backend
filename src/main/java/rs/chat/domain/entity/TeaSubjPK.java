@@ -21,7 +21,6 @@ public class TeaSubjPK implements Serializable {
 	@Column(name = "teacher_id", nullable = false)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long teacherId;
-
 	@Column(name = "subject_id", nullable = false)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long subjectId;

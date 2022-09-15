@@ -21,7 +21,6 @@ public class UserGroupPK implements Serializable {
 	@Column(name = "user_id", nullable = false)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long userId;
-
 	@Column(name = "group_id", nullable = false)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long groupId;

@@ -134,7 +134,7 @@ CREATE TABLE `emojis`
 (
 	`id`          bigint       NOT NULL AUTO_INCREMENT,
 	`name`        varchar(100) NOT NULL,
-	`emoji`       varchar(25)  NOT NULL,
+	`icon`        varchar(25)  NOT NULL,
 	`unicode`     varchar(80)  NOT NULL,
 	`category`    varchar(30)  NOT NULL,
 	`subcategory` varchar(40)  NOT NULL,

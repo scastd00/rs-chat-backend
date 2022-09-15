@@ -20,13 +20,25 @@ import javax.persistence.Table;
 @Setter
 @ToString
 @Entity
-@Table(name = "degrees", schema = "rs_chat")
-public class Degree {
+@Table(name = "emojis", schema = "rs_chat")
+public class Emoji {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id", nullable = false)
-	private Long id;
+	@Column(name = "id")
+	private long id;
 	@Basic
-	@Column(name = "name", nullable = false)
+	@Column(name = "name")
 	private String name;
+	@Basic
+	@Column(name = "icon")
+	private String icon;
+	@Basic
+	@Column(name = "unicode")
+	private String unicode;
+	@Basic
+	@Column(name = "category")
+	private String category;
+	@Basic
+	@Column(name = "subcategory")
+	private String subcategory;
 }

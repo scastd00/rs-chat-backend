@@ -21,7 +21,6 @@ public class UserChatPK implements Serializable {
 	@Column(name = "user_id", nullable = false)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long userId;
-
 	@Column(name = "chat_id", nullable = false)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long chatId;
