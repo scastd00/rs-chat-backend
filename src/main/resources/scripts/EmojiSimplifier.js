@@ -7,7 +7,7 @@ function takeNecessaryProperties(emoji) {
 	return {
 		id: emoji.id,
 		name: emoji.name,
-		emoji: emoji.emoji,
+		icon: emoji.emoji,
 		unicode: emoji.unicode,
 		category: emoji.category.name,
 		subcategory: emoji.sub_category.name,
@@ -29,11 +29,11 @@ emojis.forEach(emoji => {
 reducedEmojis.sort((a, b) => a.id - b.id);
 
 const maxUnicodeLength = reducedEmojis.reduce((max, emoji) => {
-    if (emoji.emoji.length > max) {
-	    console.log(emoji);
-        return emoji.emoji.length;
-    }
-    return max;
+	if (emoji.icon.length > max) {
+		console.log(emoji);
+		return emoji.icon.length;
+	}
+	return max;
 }, 0);
 
 // Max name length = 80
