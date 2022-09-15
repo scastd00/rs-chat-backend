@@ -25,7 +25,7 @@ public class Emoji {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
-	private long id;
+	private Long id;
 	@Basic
 	@Column(name = "name")
 	private String name;
