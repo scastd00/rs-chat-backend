@@ -14,7 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.sql.Date;
-import java.sql.Timestamp;
+import java.time.Instant;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -51,7 +51,7 @@ public class User {
 	private String role; // set it in profile
 	@Basic
 	@Column(name = "block_until")
-	private Timestamp blockUntil;
+	private Instant blockUntil;
 	@Basic
 	@Column(name = "password_code", length = 6)
 	private String passwordCode; // Used when the user requests a password reset or changes it

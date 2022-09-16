@@ -27,6 +27,7 @@ import rs.chat.utils.Constants;
 import rs.chat.utils.Utils;
 
 import java.io.IOException;
+import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +58,7 @@ public class AuthController {
 	private final ChatService chatService;
 	private final GroupService groupService;
 	private final UserGroupService userGroupService;
+	private final Clock clock;
 
 	/**
 	 * Performs the login of the user.
@@ -80,7 +82,7 @@ public class AuthController {
 				new Session(
 						null,
 						request.getRemoteAddr(),
-						Instant.now(), // Todo: pass a clock as parameter to test better
+						Instant.now(this.clock),
 						tokens.get("accessToken").getAsString(),
 						tokens.get("refreshToken").getAsString(),
 						user.getId()
@@ -143,7 +145,7 @@ public class AuthController {
 				new Session(
 						null,
 						request.getRemoteAddr(),
-						Instant.now(), // Todo: pass a clock as parameter to test better
+						Instant.now(this.clock),
 						tokens.get("accessToken"),
 						tokens.get("refreshToken"),
 						savedUser.getId()

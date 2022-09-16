@@ -19,7 +19,8 @@ import rs.chat.strategies.upload.TextStrategy;
 import rs.chat.strategies.upload.VideoStrategy;
 
 import java.io.IOException;
-import java.sql.Timestamp;
+import java.time.Clock;
+import java.time.Instant;
 import java.util.Base64;
 
 import static org.springframework.http.HttpStatus.OK;
@@ -33,6 +34,7 @@ import static rs.chat.router.Routes.PostRoute.UPLOAD_URL;
 @RequiredArgsConstructor
 public class FileController {
 	private final FileService fileService;
+	private final Clock clock;
 
 	@PostMapping(UPLOAD_URL)
 	public void uploadFile(HttpRequest request, HttpResponse response) throws IOException {
@@ -68,7 +70,7 @@ public class FileController {
 		File fileToSave = new File();
 		fileToSave.setId(null);
 		fileToSave.setName(fileName);
-		fileToSave.setDateUploaded(new Timestamp(System.currentTimeMillis()));
+		fileToSave.setDateUploaded(Instant.now(this.clock));
 		fileToSave.setSize(fileBytes.length);
 		fileToSave.setType(types[0]);
 		fileToSave.setUserId(userId);
