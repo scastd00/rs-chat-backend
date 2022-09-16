@@ -7,6 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 import rs.chat.domain.entity.Emoji;
 import rs.chat.domain.repository.EmojiRepository;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -20,5 +22,9 @@ public class EmojiService {
 
 	public boolean exists(String name) {
 		return this.emojiRepository.existsByName(name);
+	}
+
+	public List<Emoji> getRandomEmojis(int numberOfEmojis) {
+		return this.emojiRepository.selectRandomEmojis(numberOfEmojis);
 	}
 }
