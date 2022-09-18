@@ -1,5 +1,5 @@
 DROP DATABASE IF EXISTS `rs_chat`;
-CREATE DATABASE IF NOT EXISTS `rs_chat` CHARACTER SET `UTF8MB4`;
+CREATE DATABASE IF NOT EXISTS `rs_chat` DEFAULT CHARSET = `utf8mb4`;
 USE `rs_chat`;
 
 CREATE TABLE `subjects`
@@ -132,12 +132,12 @@ CREATE TABLE `groups`
 
 CREATE TABLE `emojis`
 (
-	`id`          bigint       NOT NULL AUTO_INCREMENT,
-	`name`        varchar(100) NOT NULL,
-	`icon`        varchar(25)  NOT NULL,
-	`unicode`     varchar(80)  NOT NULL,
-	`category`    varchar(30)  NOT NULL,
-	`subcategory` varchar(40)  NOT NULL,
+	`id`          bigint         NOT NULL AUTO_INCREMENT,
+	`name`        varchar(100)   NOT NULL,
+	`icon`        varbinary(100) NOT NULL,
+	`unicode`     varchar(80)    NOT NULL,
+	`category`    varchar(30)    NOT NULL,
+	`subcategory` varchar(40)    NOT NULL,
 
 	CONSTRAINT `pk_emoji_id` PRIMARY KEY (`id`),
 	CONSTRAINT `u_name` UNIQUE (`name`),
