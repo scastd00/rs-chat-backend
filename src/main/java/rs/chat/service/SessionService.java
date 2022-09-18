@@ -1,28 +1,29 @@
 package rs.chat.service;
 
-import com.auth0.jwt.exceptions.JWTVerificationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rs.chat.domain.entity.Session;
 import rs.chat.domain.entity.User;
 import rs.chat.domain.repository.SessionRepository;
 import rs.chat.domain.repository.UserRepository;
-import rs.chat.utils.Utils;
 
 import java.util.List;
-
-import static java.util.concurrent.TimeUnit.MINUTES;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
+@EnableScheduling
 public class SessionService {
 	private final SessionRepository sessionRepository;
 	private final UserRepository userRepository;
+
+	public List<Session> getAll() {
+		return this.sessionRepository.findAll();
+	}
 
 	/**
 	 * Saves a new session in the database.
@@ -44,6 +45,10 @@ public class SessionService {
 		log.info("Removing session: {}", token);
 		this.sessionRepository.findByAccessToken(token)
 		                      .ifPresent(this.sessionRepository::delete);
+	}
+
+	public void deleteAllById(List<Long> ids) {
+		this.sessionRepository.deleteAllById(ids);
 	}
 
 	/**
@@ -98,27 +103,5 @@ public class SessionService {
 			                      session.setRefreshToken(refreshToken);
 			                      this.sessionRepository.save(session);
 		                      });
-	}
-
-	@Scheduled(fixedRate = 15, initialDelay = 15, timeUnit = MINUTES)
-	private void deleteExpiredSessions() {
-		this.sessionRepository.deleteAllById(this.getExpiredSessions());
-	}
-
-	private List<Long> getExpiredSessions() {
-		List<Session> allSessions = this.sessionRepository.findAll();
-		return allSessions.stream()
-		                  .filter(this::expiredSession)
-		                  .map(Session::getId)
-		                  .toList();
-	}
-
-	private boolean expiredSession(Session session) {
-		try {
-			Utils.checkAuthorizationToken(session.getAccessToken());
-			return false;
-		} catch (JWTVerificationException e) {
-			return true;
-		}
 	}
 }
