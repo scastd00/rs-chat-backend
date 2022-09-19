@@ -27,4 +27,8 @@ public class EmojiService {
 	public List<Emoji> getRandomEmojis(int numberOfEmojis) {
 		return this.emojiRepository.selectRandomEmojis(numberOfEmojis);
 	}
+
+	public List<Emoji> getEmojisStartingWith(String string) {
+		return this.emojiRepository.findByNameStartingWith(string);
+	}
 }
