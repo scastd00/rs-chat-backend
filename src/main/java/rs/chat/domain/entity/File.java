@@ -13,7 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.sql.Timestamp;
+import java.time.Instant;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -32,7 +32,7 @@ public class File {
 	private String name;
 	@Basic
 	@Column(name = "date_uploaded", nullable = false)
-	private Timestamp dateUploaded;
+	private Instant dateUploaded;
 	@Basic
 	@Column(name = "size", nullable = false)
 	private Integer size;

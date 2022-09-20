@@ -2,6 +2,7 @@ package rs.chat.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rs.chat.domain.entity.Session;
@@ -15,9 +16,14 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
+@EnableScheduling
 public class SessionService {
 	private final SessionRepository sessionRepository;
 	private final UserRepository userRepository;
+
+	public List<Session> getAll() {
+		return this.sessionRepository.findAll();
+	}
 
 	/**
 	 * Saves a new session in the database.
@@ -39,6 +45,10 @@ public class SessionService {
 		log.info("Removing session: {}", token);
 		this.sessionRepository.findByAccessToken(token)
 		                      .ifPresent(this.sessionRepository::delete);
+	}
+
+	public void deleteAllById(List<Long> ids) {
+		this.sessionRepository.deleteAllById(ids);
 	}
 
 	/**

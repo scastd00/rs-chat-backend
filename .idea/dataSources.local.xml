@@ -15,7 +15,7 @@
         </introspection-scope>
       </schema-mapping>
     </data-source>
-    <data-source name="Localhost RS Chat" uuid="50c424a2-aa3a-421e-a3d7-f5841498c309">
+    <data-source name="RS Chat Localhost" uuid="a3d6d777-e675-4fdb-933a-3b6310872c7f">
       <database-info product="MySQL" version="8.0.30-0ubuntu0.22.04.1" jdbc-version="4.2" driver-name="MySQL Connector/J" driver-version="mysql-connector-java-8.0.25 (Revision: 08be9e9b4cba6aa115f9b27b215887af40b159e0)" dbms="MYSQL" exact-version="8.0.30" exact-driver-version="8.0">
         <extra-name-characters>#@</extra-name-characters>
         <identifier-quote-string>`</identifier-quote-string>

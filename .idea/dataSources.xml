@@ -8,7 +8,7 @@
       <jdbc-url>jdbc:mysql://rdsinstance.cilsmq4ursdg.eu-west-3.rds.amazonaws.com:3306/rs_chat</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="Localhost RS Chat" uuid="50c424a2-aa3a-421e-a3d7-f5841498c309">
+    <data-source source="LOCAL" name="RS Chat Localhost" uuid="a3d6d777-e675-4fdb-933a-3b6310872c7f">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
