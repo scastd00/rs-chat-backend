@@ -1,5 +1,6 @@
 package rs.chat.domain.repository;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -14,12 +15,18 @@ class UserRepositoryTest {
 	@Autowired
 	private UserRepository underTest;
 
+	@AfterEach
+	void tearDown() {
+		this.underTest.deleteAll();
+	}
+
 	@Test
 	void itShouldFindByUsername() {
 		// Given
+		String username = "david";
 		User user = new User(
 				1L,
-				"david",
+				username,
 				"12345",
 				"david@hello.com",
 				"David Gar Dom",
@@ -32,7 +39,6 @@ class UserRepositoryTest {
 		underTest.save(user);
 
 		// When
-		String username = "david";
 		User expected = underTest.findByUsername(username);
 
 		// Then
