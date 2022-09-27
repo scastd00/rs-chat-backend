@@ -25,10 +25,7 @@
       <user-name>rds_admin</user-name>
       <schema-mapping>
         <introspection-scope>
-          <node kind="schema">
-            <name qname="rs_chat" />
-            <name qname="rs_chat_test" />
-          </node>
+          <node kind="schema" qname="rs_chat" />
         </introspection-scope>
       </schema-mapping>
     </data-source>
