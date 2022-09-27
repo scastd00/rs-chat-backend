@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rs.chat.domain.entity.User;
 import rs.chat.domain.repository.UserRepository;
+import rs.chat.exceptions.BadRequestException;
 
 import java.util.List;
 
@@ -53,6 +54,10 @@ public class UserService implements UserDetailsService {
 		return this.userRepository.findAll();
 	}
 
+	public boolean existsByEmail(String email) {
+		return this.userRepository.existsByEmail(email);
+	}
+
 	/**
 	 * Saves a user to the database. The password must be the one received
 	 * from the frontend (raw) to be encrypted correctly.
@@ -62,6 +67,10 @@ public class UserService implements UserDetailsService {
 	 * @return the saved user.
 	 */
 	public User saveUser(User user) {
+		if (this.existsByEmail(user.getEmail())) {
+			throw new BadRequestException("Email %s taken".formatted(user.getEmail()));
+		}
+
 		log.info("Saving user: {}", user.getUsername());
 		String rawPassword = user.getPassword();
 		user.setPassword(this.passwordEncoder.encode(rawPassword));

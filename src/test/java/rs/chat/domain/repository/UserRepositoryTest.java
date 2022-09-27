@@ -36,10 +36,60 @@ class UserRepositoryTest {
 				null,
 				null
 		);
-		underTest.save(user);
+		this.underTest.save(user);
 
 		// When
-		User expected = underTest.findByUsername(username);
+		User expected = this.underTest.findByUsername(username);
+
+		// Then
+		assertThat(expected).isNotNull();
+	}
+
+	@Test
+	void itShouldFindByEmail() {
+		// Given
+		String email = "david@hello.com";
+		User user = new User(
+				1L,
+				"david",
+				"12345",
+				email,
+				"David Gar Dom",
+				(byte) 21,
+				null,
+				Constants.STUDENT_ROLE,
+				null,
+				null
+		);
+		this.underTest.save(user);
+
+		// When
+		User expected = this.underTest.findByEmail(email);
+
+		// Then
+		assertThat(expected).isNotNull();
+	}
+
+	@Test
+	void itShouldFindByPasswordCode() {
+		// Given
+		String passwordCode = "FNvb23";
+		User user = new User(
+				1L,
+				"david",
+				"12345",
+				"david@hello.com",
+				"David Gar Dom",
+				(byte) 21,
+				null,
+				Constants.STUDENT_ROLE,
+				null,
+				passwordCode
+		);
+		this.underTest.save(user);
+
+		// When
+		User expected = this.underTest.findByPasswordCode(passwordCode);
 
 		// Then
 		assertThat(expected).isNotNull();
