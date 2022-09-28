@@ -12,8 +12,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 class DegreeRepositoryTest {
 
 	@Autowired private DegreeRepository underTest;
-	private final String name = "Bachelor";
-	private final Degree degree = new Degree(1L, name);
+	private final Degree degree = new Degree(1L, "Bachelor");
 
 	@AfterEach
 	void tearDown() {
@@ -27,18 +26,18 @@ class DegreeRepositoryTest {
 		this.underTest.save(this.degree);
 
 		// then
-		Degree expected = this.underTest.findByName(this.name);
+		Degree expected = this.underTest.findByName(this.degree.getName());
 		assertThat(expected).isNotNull();
 	}
 
 	@Test
-	void degreeDoesNotExist() {
+	void itShouldExistByName() {
 		// given
 		// when
 		this.underTest.save(this.degree);
 
 		// then
-		Degree expected = this.underTest.findByName("Master");
-		assertThat(expected).isNull();
+		boolean expected = this.underTest.existsByName(this.degree.getName());
+		assertThat(expected).isTrue();
 	}
 }

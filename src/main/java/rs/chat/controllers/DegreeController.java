@@ -121,10 +121,6 @@ public class DegreeController {
 		String oldName = body.get("oldName").getAsString();
 		String newName = body.get("newName").getAsString();
 
-		if (oldName.equals(newName)) {
-			throw new BadRequestException("Names should not be equal");
-		}
-
 		Degree degree = this.degreeService.changeDegreeName(oldName, newName);
 
 		response.ok().send("degree", degree);

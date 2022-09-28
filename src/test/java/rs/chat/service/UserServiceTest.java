@@ -62,7 +62,7 @@ class UserServiceTest {
 	}
 
 	@Test
-	void canSaveStudent() {
+	void canSaveUser() {
 		// given
 		// when
 		this.underTest.saveUser(this.user);
