@@ -1,6 +1,7 @@
 package rs.chat.domain.repository;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -14,6 +15,30 @@ class UserRepositoryTest {
 
 	@Autowired
 	private UserRepository underTest;
+	private User user;
+	private String username;
+	private String email;
+	private String passwordCode;
+
+	@BeforeEach
+	void setUp() {
+		this.username = "david";
+		this.email = "david@hello.com";
+		this.passwordCode = "FNvb23";
+
+		this.user = new User(
+				1L,
+				username,
+				"12345",
+				email,
+				"David Gar Dom",
+				(byte) 21,
+				null,
+				Constants.STUDENT_ROLE,
+				null,
+				passwordCode
+		);
+	}
 
 	@AfterEach
 	void tearDown() {
@@ -23,23 +48,10 @@ class UserRepositoryTest {
 	@Test
 	void itShouldFindByUsername() {
 		// Given
-		String username = "david";
-		User user = new User(
-				1L,
-				username,
-				"12345",
-				"david@hello.com",
-				"David Gar Dom",
-				(byte) 21,
-				null,
-				Constants.STUDENT_ROLE,
-				null,
-				null
-		);
-		this.underTest.save(user);
+		this.underTest.save(this.user);
 
 		// When
-		User expected = this.underTest.findByUsername(username);
+		User expected = this.underTest.findByUsername(this.username);
 
 		// Then
 		assertThat(expected).isNotNull();
@@ -48,23 +60,10 @@ class UserRepositoryTest {
 	@Test
 	void itShouldFindByEmail() {
 		// Given
-		String email = "david@hello.com";
-		User user = new User(
-				1L,
-				"david",
-				"12345",
-				email,
-				"David Gar Dom",
-				(byte) 21,
-				null,
-				Constants.STUDENT_ROLE,
-				null,
-				null
-		);
-		this.underTest.save(user);
+		this.underTest.save(this.user);
 
 		// When
-		User expected = this.underTest.findByEmail(email);
+		User expected = this.underTest.findByEmail(this.email);
 
 		// Then
 		assertThat(expected).isNotNull();
@@ -73,23 +72,10 @@ class UserRepositoryTest {
 	@Test
 	void itShouldFindByPasswordCode() {
 		// Given
-		String passwordCode = "FNvb23";
-		User user = new User(
-				1L,
-				"david",
-				"12345",
-				"david@hello.com",
-				"David Gar Dom",
-				(byte) 21,
-				null,
-				Constants.STUDENT_ROLE,
-				null,
-				passwordCode
-		);
-		this.underTest.save(user);
+		this.underTest.save(this.user);
 
 		// When
-		User expected = this.underTest.findByPasswordCode(passwordCode);
+		User expected = this.underTest.findByPasswordCode(this.passwordCode);
 
 		// Then
 		assertThat(expected).isNotNull();
