@@ -2,7 +2,11 @@ name: Deploy to Heroku
 
 on:
   push:
-    branches: [ main ]
+    branches: [ "main" ]
+  workflow_run:
+    workflows: [ "Java Test CI" ]
+    types:
+      - completed
 
 jobs:
   deploy:
