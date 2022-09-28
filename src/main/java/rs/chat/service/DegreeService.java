@@ -9,10 +9,9 @@ import rs.chat.domain.DomainUtils;
 import rs.chat.domain.entity.Degree;
 import rs.chat.domain.repository.ChatRepository;
 import rs.chat.domain.repository.DegreeRepository;
+import rs.chat.exceptions.BadRequestException;
 
 import java.util.List;
-
-import static rs.chat.utils.Constants.DEGREE_CHAT_S3_FOLDER_PREFIX;
 
 @Service
 @RequiredArgsConstructor
@@ -50,6 +49,10 @@ public class DegreeService {
 	 * @return the saved {@link Degree}.
 	 */
 	public Degree saveDegree(Degree degree) {
+		if (this.existsDegree(degree.getName())) {
+			throw new BadRequestException("Degree already exists: " + degree.getName());
+		}
+
 		Degree savedDegree = this.degreeRepository.save(degree);
 
 		// When I know that the degree is saved, chat is created.
@@ -65,7 +68,7 @@ public class DegreeService {
 	 * @return {@code true} if a degree with the given name exists, {@code false} otherwise.
 	 */
 	public boolean existsDegree(String degreeName) {
-		return this.getByName(degreeName) != null;
+		return this.degreeRepository.existsByName(degreeName);
 	}
 
 	/**
@@ -78,6 +81,15 @@ public class DegreeService {
 	 */
 	public Degree changeDegreeName(String oldName, String newName) {
 		Degree degree = this.degreeRepository.findByName(oldName);
+
+		if (degree == null) {
+			throw new BadRequestException("Degree does not exist: " + oldName);
+		}
+
+		if (degree.getName().equals(newName)) {
+			return degree; // Do not modify
+		}
+
 		degree.setName(newName);
 		return this.degreeRepository.save(degree);
 	}
@@ -88,8 +100,7 @@ public class DegreeService {
 	 * @param degreeName the name of the degree to delete.
 	 */
 	public void deleteDegreeByName(String degreeName) {
-		Degree degree = this.degreeRepository.findByName(degreeName);
-		this.degreeRepository.delete(degree);
-		this.chatRepository.deleteByName(DEGREE_CHAT_S3_FOLDER_PREFIX + degreeName);
+		this.degreeRepository.deleteByName(degreeName);
+		this.chatRepository.deleteByName(degreeName);
 	}
 }

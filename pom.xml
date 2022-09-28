@@ -175,28 +175,6 @@
 			</plugin>
 
 			<plugin>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<!-- Ignore the IntelliJ warning -->
-				<version>2.19.1</version>
-				<configuration>
-					<forkCount>3</forkCount>
-					<reuseForks>true</reuseForks>
-					<argLine>-Xmx1024m</argLine> <!-- 1 GB for tests -->
-				</configuration>
-				<dependencies>
-					<dependency>
-						<groupId>org.junit.platform</groupId>
-						<artifactId>junit-platform-surefire-provider</artifactId>
-						<version>1.1.0</version>
-					</dependency>
-					<dependency>
-						<groupId>org.junit.jupiter</groupId>
-						<artifactId>junit-jupiter-engine</artifactId>
-						<version>5.1.0</version>
-					</dependency>
-				</dependencies>
-			</plugin>
-			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.1</version>
 				<configuration>

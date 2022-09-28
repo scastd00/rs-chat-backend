@@ -1,5 +1,7 @@
 package rs.chat.domain.repository;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -13,27 +15,67 @@ class UserRepositoryTest {
 
 	@Autowired
 	private UserRepository underTest;
+	private User user;
+	private String username;
+	private String email;
+	private String passwordCode;
 
-	@Test
-	void itShouldFindByUsername() {
-		// Given
-		User user = new User(
+	@BeforeEach
+	void setUp() {
+		this.username = "david";
+		this.email = "david@hello.com";
+		this.passwordCode = "FNvb23";
+
+		this.user = new User(
 				1L,
-				"david",
+				username,
 				"12345",
-				"david@hello.com",
+				email,
 				"David Gar Dom",
 				(byte) 21,
 				null,
 				Constants.STUDENT_ROLE,
 				null,
-				null
+				passwordCode
 		);
-		underTest.save(user);
+	}
+
+	@AfterEach
+	void tearDown() {
+		this.underTest.deleteAll();
+	}
+
+	@Test
+	void itShouldFindByUsername() {
+		// Given
+		this.underTest.save(this.user);
 
 		// When
-		String username = "david";
-		User expected = underTest.findByUsername(username);
+		User expected = this.underTest.findByUsername(this.username);
+
+		// Then
+		assertThat(expected).isNotNull();
+	}
+
+	@Test
+	void itShouldFindByEmail() {
+		// Given
+		this.underTest.save(this.user);
+
+		// When
+		User expected = this.underTest.findByEmail(this.email);
+
+		// Then
+		assertThat(expected).isNotNull();
+	}
+
+	@Test
+	void itShouldFindByPasswordCode() {
+		// Given
+		this.underTest.save(this.user);
+
+		// When
+		User expected = this.underTest.findByPasswordCode(this.passwordCode);
 
 		// Then
 		assertThat(expected).isNotNull();

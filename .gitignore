@@ -44,4 +44,4 @@ run.sh
 .idea/workspace.xml
 .idea/dataSources
 .idea/httpRequests
-.env
+.env*
