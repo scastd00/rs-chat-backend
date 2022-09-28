@@ -27,10 +27,23 @@ class UserServiceTest {
 	@Mock private UserRepository userRepository;
 	@Mock private PasswordEncoder passwordEncoder;
 	private UserService underTest;
+	private User user;
 
 	@BeforeEach
 	void setUp() {
 		this.underTest = new UserService(this.userRepository, this.passwordEncoder);
+		this.user = new User(
+				1L,
+				"david",
+				"12345",
+				"david@hello.com",
+				"David Gar Dom",
+				(byte) 21,
+				null,
+				Constants.STUDENT_ROLE,
+				null,
+				null
+		);
 	}
 
 	@Test
@@ -40,6 +53,7 @@ class UserServiceTest {
 
 	@Test
 	void getUsers() {
+		// given
 		// when
 		this.underTest.getUsers();
 
@@ -50,21 +64,8 @@ class UserServiceTest {
 	@Test
 	void canSaveStudent() {
 		// given
-		User user = new User(
-				1L,
-				"david",
-				"12345",
-				"david@hello.com",
-				"David Gar Dom",
-				(byte) 21,
-				null,
-				Constants.STUDENT_ROLE,
-				null,
-				null
-		);
-
 		// when
-		this.underTest.saveUser(user);
+		this.underTest.saveUser(this.user);
 
 		// then
 
@@ -72,38 +73,31 @@ class UserServiceTest {
 		ArgumentCaptor<User> userArgumentCaptor = ArgumentCaptor.forClass(User.class);
 		verify(this.userRepository).save(userArgumentCaptor.capture());
 		User capturedUser = userArgumentCaptor.getValue();
-		assertThat(capturedUser).isEqualTo(user);
+		assertThat(capturedUser).isEqualTo(this.user);
 	}
 
 	@Test
 	void willThrowWhenEmailIsTaken() {
 		// given
-		User user = new User(
-				1L,
-				"david",
-				"12345",
-				"david@hello.com",
-				"David Gar Dom",
-				(byte) 21,
-				null,
-				Constants.STUDENT_ROLE,
-				null,
-				null
-		);
-
 		given(this.userRepository.existsByEmail(user.getEmail())).willReturn(true);
 
 		// when
 		// then
 		assertThatThrownBy(() -> this.underTest.saveUser(user))
 				.isInstanceOf(BadRequestException.class)
-				.hasMessageContaining("Email %s taken".formatted(user.getEmail()));
+				.hasMessageContaining("Email %s taken".formatted(this.user.getEmail()));
 		verify(this.userRepository, never()).save(any());
 	}
 
 	@Test
 	@Disabled
 	void deleteUser() {
+		// given
+		// when
+		this.underTest.deleteUser(this.user.getId());
+
+		// then
+		verify(this.userRepository).deleteById(this.user.getId());
 	}
 
 	@Test
