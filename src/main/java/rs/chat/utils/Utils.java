@@ -5,6 +5,8 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import rs.chat.exceptions.TokenValidationException;
+import rs.chat.exceptions.WebSocketException;
 import rs.chat.net.ws.JsonMessageWrapper;
 
 import java.net.URI;
@@ -131,17 +133,17 @@ public final class Utils {
 	 * @return the {@link String} message containing the server message.
 	 */
 	public static String createServerMessage(String content, String type, String chatId) {
-		return JsonMessageWrapper.builder()
-		                         /* Headers */
-		                         .username("Server")
-		                         .chatId(chatId)
-		                         .type(type)
-		                         .date(System.currentTimeMillis())
-		                         /* Body */
-		                         .content(content)
-		                         .build()
-		                         /* JsonObject */
-		                         .toString();
+		return (JsonMessageWrapper.builder()
+		                          /* Headers */
+		                          .username("Server")
+		                          .chatId(chatId)
+		                          .type(type)
+		                          .date(System.currentTimeMillis())
+		                          /* Body */
+		                          .content(content)
+		                          .build())
+				/* JsonObject */
+				.toString();
 	}
 
 	/**
@@ -152,17 +154,17 @@ public final class Utils {
 	 * @return the {@link String} message containing the error message.
 	 */
 	public static String createServerErrorMessage(String message) {
-		return JsonMessageWrapper.builder()
-		                         /* Headers */
-		                         .username("Server")
-		                         .chatId("NONE")
-		                         .type(ERROR_MESSAGE.type())
-		                         .date(System.currentTimeMillis())
-		                         /* Body */
-		                         .content(message)
-		                         .build()
-		                         /* JsonObject */
-		                         .toString();
+		return (JsonMessageWrapper.builder()
+		                          /* Headers */
+		                          .username("Server")
+		                          .chatId("NONE")
+		                          .type(ERROR_MESSAGE.type())
+		                          .date(System.currentTimeMillis())
+		                          /* Body */
+		                          .content(message)
+		                          .build())
+				/* JsonObject */
+				.toString();
 	}
 
 	/**
@@ -207,6 +209,30 @@ public final class Utils {
 			return String.format("%.2f", bytes / (1024d * 1024)) + " MB";
 		} else {
 			return String.format("%.2f", bytes / (1024d * 1024 * 1024)) + " GB";
+		}
+	}
+
+	/**
+	 * Checks if the token is valid before handling the message.
+	 *
+	 * @param token token to check.
+	 *
+	 * @throws WebSocketException       if token is null or empty.
+	 * @throws TokenValidationException if token is invalid.
+	 */
+	public static void checkTokenValidity(String token) throws WebSocketException, TokenValidationException {
+		if (token == null) {
+			throw new WebSocketException("Token is null");
+		}
+
+		if (token.isEmpty()) {
+			throw new WebSocketException("Token is empty");
+		}
+
+		try {
+			checkAuthorizationToken(token);
+		} catch (JWTVerificationException e) {
+			throw new TokenValidationException(e.getMessage());
 		}
 	}
 }

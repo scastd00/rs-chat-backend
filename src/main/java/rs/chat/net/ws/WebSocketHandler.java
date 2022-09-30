@@ -2,7 +2,6 @@ package rs.chat.net.ws;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -17,6 +16,7 @@ import rs.chat.strategies.message.TextMessageStrategy;
 import rs.chat.strategies.message.UserJoinedStrategy;
 import rs.chat.strategies.message.UserLeftStrategy;
 import rs.chat.strategies.message.VideoMessageStrategy;
+import rs.chat.utils.Utils;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -71,7 +71,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
 		try {
 			log.debug("Handling message: " + receivedMessageType.type() + " Class: " + strategy.getClass().getSimpleName());
-			strategy.checkTokenValidity(wrappedMessage.token());
+			Utils.checkTokenValidity(wrappedMessage.token());
 			strategy.handle(wrappedMessage, this.chatMap, otherData);
 		} catch (IOException e) {
 			log.error(e.getMessage(), e);
