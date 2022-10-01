@@ -39,6 +39,24 @@ import static rs.chat.utils.Utils.createServerErrorMessage;
 @Slf4j
 public class WebSocketHandler extends TextWebSocketHandler {
 	private final WebSocketChatMap chatMap = new WebSocketChatMap();
+	private final Map<String, MessageStrategy> strategies = new HashMap<>();
+
+	/**
+	 * Creates the instance of the class and initializes the strategies.
+	 */
+	public WebSocketHandler() {
+		// Todo: this increases speed because instances are created once and then reused.
+		//  If we want to save memory, we can create a new instance every time.
+		this.strategies.put(USER_JOINED.type(), new UserJoinedStrategy());
+		this.strategies.put(USER_LEFT.type(), new UserLeftStrategy());
+		this.strategies.put(TEXT_MESSAGE.type(), new TextMessageStrategy());
+		this.strategies.put(IMAGE_MESSAGE.type(), new ImageMessageStrategy());
+		this.strategies.put(AUDIO_MESSAGE.type(), new AudioMessageStrategy());
+		this.strategies.put(VIDEO_MESSAGE.type(), new VideoMessageStrategy());
+		this.strategies.put(ACTIVE_USERS_MESSAGE.type(), new ActiveUsersStrategy());
+		this.strategies.put(GET_HISTORY_MESSAGE.type(), new GetHistoryStrategy());
+		this.strategies.put(PING_MESSAGE.type(), new PingStrategy());
+	}
 
 	/**
 	 * Handles text messages (JSON string).
@@ -87,27 +105,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	 */
 	@NotNull
 	private MessageStrategy decideStrategy(WSMessage receivedMessageType) {
-		if (USER_JOINED.equals(receivedMessageType)) {
-			return new UserJoinedStrategy();
-		} else if (USER_LEFT.equals(receivedMessageType)) {
-			return new UserLeftStrategy();
-		} else if (TEXT_MESSAGE.equals(receivedMessageType)) {
-			return new TextMessageStrategy();
-		} else if (IMAGE_MESSAGE.equals(receivedMessageType)) {
-			return new ImageMessageStrategy();
-		} else if (AUDIO_MESSAGE.equals(receivedMessageType)) {
-			return new AudioMessageStrategy();
-		} else if (VIDEO_MESSAGE.equals(receivedMessageType)) {
-			return new VideoMessageStrategy();
-		} else if (ACTIVE_USERS_MESSAGE.equals(receivedMessageType)) {
-			return new ActiveUsersStrategy();
-		} else if (GET_HISTORY_MESSAGE.equals(receivedMessageType)) {
-			return new GetHistoryStrategy();
-		} else if (PING_MESSAGE.equals(receivedMessageType)) {
-			return new PingStrategy();
-		}
-
-		return new ErrorMessageStrategy();
+		return this.strategies.getOrDefault(receivedMessageType.type(), new ErrorMessageStrategy());
 	}
 
 	/**
