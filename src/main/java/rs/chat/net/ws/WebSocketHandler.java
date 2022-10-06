@@ -24,6 +24,7 @@ import java.util.Map;
 
 import static rs.chat.net.ws.WSMessage.ACTIVE_USERS_MESSAGE;
 import static rs.chat.net.ws.WSMessage.AUDIO_MESSAGE;
+import static rs.chat.net.ws.WSMessage.ERROR_MESSAGE;
 import static rs.chat.net.ws.WSMessage.GET_HISTORY_MESSAGE;
 import static rs.chat.net.ws.WSMessage.IMAGE_MESSAGE;
 import static rs.chat.net.ws.WSMessage.PING_MESSAGE;
@@ -56,6 +57,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		this.strategies.put(ACTIVE_USERS_MESSAGE.type(), new ActiveUsersStrategy());
 		this.strategies.put(GET_HISTORY_MESSAGE.type(), new GetHistoryStrategy());
 		this.strategies.put(PING_MESSAGE.type(), new PingStrategy());
+		this.strategies.put(ERROR_MESSAGE.type(), new ErrorMessageStrategy());
 	}
 
 	/**
@@ -105,7 +107,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	 */
 	@NotNull
 	private MessageStrategy decideStrategy(WSMessage receivedMessageType) {
-		return this.strategies.getOrDefault(receivedMessageType.type(), new ErrorMessageStrategy());
+		return this.strategies.getOrDefault(receivedMessageType.type(), this.strategies.get(ERROR_MESSAGE.type()));
 	}
 
 	/**
