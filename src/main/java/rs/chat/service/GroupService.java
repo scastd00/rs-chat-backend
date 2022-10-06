@@ -8,6 +8,7 @@ import rs.chat.domain.DomainUtils;
 import rs.chat.domain.entity.Group;
 import rs.chat.domain.repository.ChatRepository;
 import rs.chat.domain.repository.GroupRepository;
+import rs.chat.exceptions.NotFoundException;
 
 import java.util.List;
 
@@ -36,7 +37,8 @@ public class GroupService {
 	 * @return the group with the given name.
 	 */
 	public Group getGroupByName(String name) {
-		return this.groupRepository.findByName(name);
+		return this.groupRepository.findByName(name)
+		                           .orElseThrow(() -> new NotFoundException("Group with name " + name + " not found."));
 	}
 
 	/**

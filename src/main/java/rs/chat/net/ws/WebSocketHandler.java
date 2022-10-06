@@ -72,8 +72,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		// FIXME: A user that did not send the USER_JOINED message could send messages
 		//  but cannot receive them.
 
-		log.debug("Received message: " + message.getPayload());
-
 		JsonMessageWrapper wrappedMessage = new JsonMessageWrapper(message.getPayload());
 		WSMessage receivedMessageType = new WSMessage(wrappedMessage.type(), null, null);
 
@@ -90,7 +88,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		MessageStrategy strategy = this.decideStrategy(receivedMessageType);
 
 		try {
-			log.debug("Handling message: " + receivedMessageType.type() + " Class: " + strategy.getClass().getSimpleName());
+			log.debug("Handling message: " + receivedMessageType.type());
 			Utils.checkTokenValidity(wrappedMessage.token());
 			strategy.handle(wrappedMessage, this.chatMap, otherData);
 		} catch (IOException e) {

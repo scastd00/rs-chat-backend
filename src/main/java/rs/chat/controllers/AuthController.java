@@ -89,7 +89,7 @@ public class AuthController {
 				)
 		);
 
-		Map<String, List<Map<String, Object>>> allChatsOfUserGroupedByType = this.chatService.getAllChatsOfUserGroupedByType(user.getId());
+		var allChatsOfUserGroupedByType = this.chatService.getAllChatsOfUserGroupedByType(user.getId());
 
 		// Clear sensitive data
 		user.setPassword(null); // Password not visible in the response

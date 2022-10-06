@@ -24,7 +24,7 @@ public class EmojiService {
 		return this.emojiRepository.existsByName(name);
 	}
 
-	public List<Emoji> getRandomEmojis(int numberOfEmojis) {
+	public List<Emoji> getRandomEmojis(long numberOfEmojis) {
 		return this.emojiRepository.selectRandomEmojis(numberOfEmojis);
 	}
 

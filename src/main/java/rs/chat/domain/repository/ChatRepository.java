@@ -3,10 +3,12 @@ package rs.chat.domain.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import rs.chat.domain.entity.Chat;
 
-public interface ChatRepository extends JpaRepository<Chat, Long> {
-	Chat findByName(String name);
+import java.util.Optional;
 
-	Chat findByInvitationCode(String invitationCode);
+public interface ChatRepository extends JpaRepository<Chat, Long> {
+	Optional<Chat> findByName(String name);
+
+	Optional<Chat> findByInvitationCode(String invitationCode);
 
 	void deleteByName(String name);
 }

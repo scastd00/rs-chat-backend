@@ -51,7 +51,7 @@ class UserRepositoryTest {
 		this.underTest.save(this.user);
 
 		// When
-		User expected = this.underTest.findByUsername(this.username);
+		User expected = this.underTest.findByUsername(this.username).get();
 
 		// Then
 		assertThat(expected).isNotNull();
@@ -63,7 +63,7 @@ class UserRepositoryTest {
 		this.underTest.save(this.user);
 
 		// When
-		User expected = this.underTest.findByEmail(this.email);
+		User expected = this.underTest.findByEmail(this.email).get();
 
 		// Then
 		assertThat(expected).isNotNull();
@@ -75,7 +75,7 @@ class UserRepositoryTest {
 		this.underTest.save(this.user);
 
 		// When
-		User expected = this.underTest.findByPasswordCode(this.passwordCode);
+		User expected = this.underTest.findByPasswordCode(this.passwordCode).get();
 
 		// Then
 		assertThat(expected).isNotNull();

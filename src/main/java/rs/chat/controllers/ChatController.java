@@ -90,10 +90,6 @@ public class ChatController {
 
 		Chat chat = this.chatService.getChatByCode(code);
 
-		if (chat == null) {
-			throw new BadRequestException("Invalid chat code: " + code);
-		}
-
 		Long userId = request.body().get("userId").getAsLong();
 
 		if (this.chatService.userIsAlreadyInChat(userId, chat.getId())) {
