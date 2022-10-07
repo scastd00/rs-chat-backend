@@ -3,6 +3,7 @@ package rs.chat.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rs.chat.domain.entity.Session;
@@ -57,7 +58,8 @@ public class SessionService {
 	 * @param username the username of the user whose sessions are to be deleted.
 	 */
 	public void deleteAllSessionsOfUser(String username) {
-		User user = this.userRepository.findByUsername(username);
+		User user = this.userRepository.findByUsername(username)
+		                               .orElseThrow(() -> new UsernameNotFoundException("User %s not found".formatted(username)));
 		this.sessionRepository.deleteAll(this.sessionRepository.findAllByUserId(user.getId()));
 	}
 
@@ -81,7 +83,9 @@ public class SessionService {
 	 * @return the found sessions.
 	 */
 	public List<String> getSessionsOfUser(String username) {
-		Long userId = this.userRepository.findByUsername(username).getId();
+		Long userId = this.userRepository.findByUsername(username)
+		                                 .orElseThrow(() -> new UsernameNotFoundException("User %s not found".formatted(username)))
+		                                 .getId();
 		return this.sessionRepository.findAllByUserId(userId)
 		                             .stream()
 		                             .map(Session::getSrcIp)
@@ -96,7 +100,8 @@ public class SessionService {
 	 * @param refreshToken the refresh token of the session to be updated.
 	 */
 	public void updateSession(String username, String accessToken, String refreshToken) {
-		User user = this.userRepository.findByUsername(username);
+		User user = this.userRepository.findByUsername(username)
+		                               .orElseThrow(() -> new UsernameNotFoundException("User %s not found".formatted(username)));
 		this.sessionRepository.findByUserId(user.getId())
 		                      .ifPresent(session -> {
 			                      session.setAccessToken(accessToken);

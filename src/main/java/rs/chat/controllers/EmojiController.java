@@ -27,8 +27,8 @@ public class EmojiController {
 	private final EmojiService emojiService;
 
 	@GetMapping(RANDOM_EMOJIS_URL)
-	public void getRandomEmojis(HttpResponse response) throws IOException {
-		response.status(HttpStatus.OK).send("emojis", this.emojiService.getRandomEmojis(6));
+	public void getRandomEmojis(HttpResponse response, @PathVariable Long count) throws IOException {
+		response.status(HttpStatus.OK).send("emojis", this.emojiService.getRandomEmojis(count));
 	}
 
 	@GetMapping(EMOJI_STARTING_WITH_STRING_URL)

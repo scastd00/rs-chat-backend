@@ -2,7 +2,6 @@ package rs.chat.net.ws;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -17,6 +16,7 @@ import rs.chat.strategies.message.TextMessageStrategy;
 import rs.chat.strategies.message.UserJoinedStrategy;
 import rs.chat.strategies.message.UserLeftStrategy;
 import rs.chat.strategies.message.VideoMessageStrategy;
+import rs.chat.utils.Utils;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -24,6 +24,7 @@ import java.util.Map;
 
 import static rs.chat.net.ws.WSMessage.ACTIVE_USERS_MESSAGE;
 import static rs.chat.net.ws.WSMessage.AUDIO_MESSAGE;
+import static rs.chat.net.ws.WSMessage.ERROR_MESSAGE;
 import static rs.chat.net.ws.WSMessage.GET_HISTORY_MESSAGE;
 import static rs.chat.net.ws.WSMessage.IMAGE_MESSAGE;
 import static rs.chat.net.ws.WSMessage.PING_MESSAGE;
@@ -39,6 +40,25 @@ import static rs.chat.utils.Utils.createServerErrorMessage;
 @Slf4j
 public class WebSocketHandler extends TextWebSocketHandler {
 	private final WebSocketChatMap chatMap = new WebSocketChatMap();
+	private final Map<String, MessageStrategy> strategies = new HashMap<>();
+
+	/**
+	 * Creates the instance of the class and initializes the strategies.
+	 */
+	public WebSocketHandler() {
+		// Todo: this increases speed because instances are created once and then reused.
+		//  If we want to save memory, we can create a new instance every time.
+		this.strategies.put(USER_JOINED.type(), new UserJoinedStrategy());
+		this.strategies.put(USER_LEFT.type(), new UserLeftStrategy());
+		this.strategies.put(TEXT_MESSAGE.type(), new TextMessageStrategy());
+		this.strategies.put(IMAGE_MESSAGE.type(), new ImageMessageStrategy());
+		this.strategies.put(AUDIO_MESSAGE.type(), new AudioMessageStrategy());
+		this.strategies.put(VIDEO_MESSAGE.type(), new VideoMessageStrategy());
+		this.strategies.put(ACTIVE_USERS_MESSAGE.type(), new ActiveUsersStrategy());
+		this.strategies.put(GET_HISTORY_MESSAGE.type(), new GetHistoryStrategy());
+		this.strategies.put(PING_MESSAGE.type(), new PingStrategy());
+		this.strategies.put(ERROR_MESSAGE.type(), new ErrorMessageStrategy());
+	}
 
 	/**
 	 * Handles text messages (JSON string).
@@ -51,8 +71,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	                                 @NotNull TextMessage message) {
 		// FIXME: A user that did not send the USER_JOINED message could send messages
 		//  but cannot receive them.
-
-		log.debug("Received message: " + message.getPayload());
 
 		JsonMessageWrapper wrappedMessage = new JsonMessageWrapper(message.getPayload());
 		WSMessage receivedMessageType = new WSMessage(wrappedMessage.type(), null, null);
@@ -70,8 +88,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		MessageStrategy strategy = this.decideStrategy(receivedMessageType);
 
 		try {
-			log.debug("Handling message: " + receivedMessageType.type() + " Class: " + strategy.getClass().getSimpleName());
-			strategy.checkTokenValidity(wrappedMessage.token());
+			log.debug("Handling message: " + receivedMessageType.type());
+			Utils.checkTokenValidity(wrappedMessage.token());
 			strategy.handle(wrappedMessage, this.chatMap, otherData);
 		} catch (IOException e) {
 			log.error(e.getMessage(), e);
@@ -87,27 +105,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	 */
 	@NotNull
 	private MessageStrategy decideStrategy(WSMessage receivedMessageType) {
-		if (USER_JOINED.equals(receivedMessageType)) {
-			return new UserJoinedStrategy();
-		} else if (USER_LEFT.equals(receivedMessageType)) {
-			return new UserLeftStrategy();
-		} else if (TEXT_MESSAGE.equals(receivedMessageType)) {
-			return new TextMessageStrategy();
-		} else if (IMAGE_MESSAGE.equals(receivedMessageType)) {
-			return new ImageMessageStrategy();
-		} else if (AUDIO_MESSAGE.equals(receivedMessageType)) {
-			return new AudioMessageStrategy();
-		} else if (VIDEO_MESSAGE.equals(receivedMessageType)) {
-			return new VideoMessageStrategy();
-		} else if (ACTIVE_USERS_MESSAGE.equals(receivedMessageType)) {
-			return new ActiveUsersStrategy();
-		} else if (GET_HISTORY_MESSAGE.equals(receivedMessageType)) {
-			return new GetHistoryStrategy();
-		} else if (PING_MESSAGE.equals(receivedMessageType)) {
-			return new PingStrategy();
-		}
-
-		return new ErrorMessageStrategy();
+		return this.strategies.getOrDefault(receivedMessageType.type(), this.strategies.get(ERROR_MESSAGE.type()));
 	}
 
 	/**

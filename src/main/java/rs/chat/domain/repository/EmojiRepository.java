@@ -17,5 +17,5 @@ public interface EmojiRepository extends JpaRepository<Emoji, Long> {
 	boolean existsByName(String name);
 
 	@Query(value = "SELECT * FROM emojis ORDER BY rand() LIMIT ?1", nativeQuery = true)
-	List<Emoji> selectRandomEmojis(int numberOfEmojis);
+	List<Emoji> selectRandomEmojis(long numberOfEmojis);
 }

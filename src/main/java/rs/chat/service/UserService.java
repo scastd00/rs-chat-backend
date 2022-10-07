@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import rs.chat.domain.entity.User;
 import rs.chat.domain.repository.UserRepository;
 import rs.chat.exceptions.BadRequestException;
+import rs.chat.exceptions.NotFoundException;
 
 import java.util.List;
 
@@ -35,12 +36,11 @@ public class UserService implements UserDetailsService {
 	 */
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		User user = this.userRepository.findByUsername(username);
-
-		if (user == null) {
-			log.error("User not found: {}", username);
-			throw new UsernameNotFoundException(username);
-		}
+		User user = this.userRepository.findByUsername(username)
+		                               .orElseThrow(() -> {
+			                               log.error("User not found: {}", username);
+			                               return new UsernameNotFoundException("User %s not found".formatted(username));
+		                               });
 
 		return new org.springframework.security.core.userdetails.User(
 				user.getUsername(), user.getPassword(), List.of(new SimpleGrantedAuthority(user.getRole()))
@@ -94,7 +94,8 @@ public class UserService implements UserDetailsService {
 	 * @return the user.
 	 */
 	public User getUser(String username) {
-		return this.userRepository.findByUsername(username);
+		return this.userRepository.findByUsername(username)
+		                          .orElseThrow(() -> new UsernameNotFoundException("Username %s not found".formatted(username)));
 	}
 
 	/**
@@ -104,16 +105,19 @@ public class UserService implements UserDetailsService {
 	 * @param role     the new role of the user.
 	 */
 	public void setRoleToUser(String username, String role) {
-		User user = this.userRepository.findByUsername(username);
+		User user = this.userRepository.findByUsername(username)
+		                               .orElseThrow(() -> new UsernameNotFoundException("Username %s not found".formatted(username)));
 		user.setRole(role);
 		this.userRepository.save(user);
 	}
 
 	public User getUserByEmail(String email) {
-		return this.userRepository.findByEmail(email);
+		return this.userRepository.findByEmail(email)
+		                          .orElseThrow(() -> new NotFoundException("Email %s not found".formatted(email)));
 	}
 
 	public User getUserByCode(String code) {
-		return this.userRepository.findByPasswordCode(code);
+		return this.userRepository.findByPasswordCode(code)
+		                          .orElseThrow(() -> new NotFoundException("Code %s not found".formatted(code)));
 	}
 }

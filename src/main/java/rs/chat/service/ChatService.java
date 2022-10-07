@@ -11,6 +11,7 @@ import rs.chat.domain.entity.UserChatPK;
 import rs.chat.domain.repository.ChatRepository;
 import rs.chat.domain.repository.UserChatRepository;
 import rs.chat.exceptions.BadRequestException;
+import rs.chat.exceptions.NotFoundException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -112,7 +113,8 @@ public class ChatService {
 	 * @return found chat.
 	 */
 	public Chat getByName(String chatName) {
-		return this.chatRepository.findByName(chatName);
+		return this.chatRepository.findByName(chatName)
+		                          .orElseThrow(() -> new NotFoundException("Chat with name=%s does not exist".formatted(chatName)));
 	}
 
 	/**
@@ -133,7 +135,8 @@ public class ChatService {
 	 * @return found chat.
 	 */
 	public Chat getChatByCode(String code) {
-		return this.chatRepository.findByInvitationCode(code);
+		return this.chatRepository.findByInvitationCode(code)
+		                          .orElseThrow(() -> new BadRequestException("Invalid chat code: " + code));
 	}
 
 	/**
