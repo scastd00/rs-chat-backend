@@ -56,7 +56,7 @@ public class UserController {
 	public void saveUser(HttpRequest request, HttpResponse response) throws IOException {
 		JsonObject user = (JsonObject) request.body().get("user");
 
-		User savedUser = this.userService.saveUser(
+		User savedUser = this.userService.createUser(
 				new User(
 						null, // ID
 						user.get("username").getAsString(),
