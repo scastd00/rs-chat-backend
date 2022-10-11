@@ -62,10 +62,10 @@ class UserServiceTest {
 	}
 
 	@Test
-	void canSaveUser() {
+	void canCreateUser() {
 		// given
 		// when
-		this.underTest.saveUser(this.user);
+		this.underTest.createUser(this.user);
 
 		// then
 
@@ -83,7 +83,7 @@ class UserServiceTest {
 
 		// when
 		// then
-		assertThatThrownBy(() -> this.underTest.saveUser(user))
+		assertThatThrownBy(() -> this.underTest.createUser(user))
 				.isInstanceOf(BadRequestException.class)
 				.hasMessageContaining("Email %s taken".formatted(this.user.getEmail()));
 		verify(this.userRepository, never()).save(any());

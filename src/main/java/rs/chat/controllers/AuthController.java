@@ -120,7 +120,7 @@ public class AuthController {
 		Policies.checkRegister(body);
 
 		// Register the user and the session.
-		User savedUser = this.userService.saveUser(new User(
+		User savedUser = this.userService.createUser(new User(
 				null,
 				body.get("username").getAsString().trim(),
 				body.get("password").getAsString().trim(),
@@ -250,7 +250,7 @@ public class AuthController {
 		String code = RandomStringUtils.randomAlphanumeric(6);
 
 		user.setPasswordCode(code);
-		this.userService.saveUser(user);
+		this.userService.updateUser(user);
 
 		response.sendStatus(OK);
 
@@ -282,8 +282,8 @@ public class AuthController {
 		Policies.checkPasswords(body);
 
 		user.setPassword(body.get("newPassword").getAsString());
-		user.setPasswordCode(null);
-		this.userService.saveUser(user);
+		user.setPasswordCode(null); // Remove the password code.
+		this.userService.changePassword(user);
 
 		response.sendStatus(OK);
 	}

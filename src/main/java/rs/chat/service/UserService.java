@@ -66,7 +66,7 @@ public class UserService implements UserDetailsService {
 	 *
 	 * @return the saved user.
 	 */
-	public User saveUser(User user) {
+	public User createUser(User user) {
 		if (this.existsByEmail(user.getEmail())) {
 			throw new BadRequestException("Email %s taken".formatted(user.getEmail()));
 		}
@@ -75,6 +75,28 @@ public class UserService implements UserDetailsService {
 		String rawPassword = user.getPassword();
 		user.setPassword(this.passwordEncoder.encode(rawPassword));
 		return this.userRepository.save(user);
+	}
+
+	/**
+	 * Updates a user in the database.
+	 *
+	 * @param user the user to be updated.
+	 */
+	public void updateUser(User user) {
+		log.info("Updating user: {}", user.getUsername());
+		this.userRepository.save(user);
+	}
+
+	/**
+	 * Changes the password of a user (by encrypting it).
+	 *
+	 * @param user the user whose password is to be changed.
+	 */
+	public void changePassword(User user) {
+		log.info("Changing password for user: {}", user.getUsername());
+		String rawPassword = user.getPassword();
+		user.setPassword(this.passwordEncoder.encode(rawPassword));
+		this.userRepository.save(user);
 	}
 
 	/**
