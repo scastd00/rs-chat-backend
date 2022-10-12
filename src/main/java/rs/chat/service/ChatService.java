@@ -151,6 +151,14 @@ public class ChatService {
 		return this.userChatRepository.existsByUserChatPK_UserIdAndUserChatPK_ChatId(userId, chatId);
 	}
 
+	/**
+	 * Determines if a user can access a chat.
+	 *
+	 * @param userId id of the user.
+	 * @param chatId id of the chat.
+	 *
+	 * @return {@code true} if the user can access the chat, {@code false} otherwise.
+	 */
 	public boolean userCanConnectToChat(Long userId, Long chatId) {
 		// Could be replaced by a query to database
 		return this.userChatRepository.findAllByUserChatPK_UserId(userId)
@@ -158,5 +166,18 @@ public class ChatService {
 		                              .map(UserChat::getUserChatPK)
 		                              .map(UserChatPK::getChatId)
 		                              .anyMatch(aLong -> aLong.equals(chatId));
+	}
+
+	/**
+	 * Retrieves the code of a chat given its name.
+	 *
+	 * @param chatName name of the chat.
+	 *
+	 * @return Returns the code of a chat given its name.
+	 */
+	public String getInvitationCodeByChatName(String chatName) {
+		return this.chatRepository.findByName(chatName)
+		                          .map(Chat::getInvitationCode)
+		                          .orElseThrow(() -> new NotFoundException("Chat with name=%s does not exist".formatted(chatName)));
 	}
 }
