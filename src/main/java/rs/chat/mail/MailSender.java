@@ -44,7 +44,7 @@ public class MailSender {
 		});
 
 		// Used to debug SMTP issues
-		SESSION.setDebug(false);
+		SESSION.setDebug(false); // Prevent printing lots of debug info to console
 	}
 
 	public static void sendRegistrationEmail(String to, String username) {

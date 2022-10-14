@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import rs.chat.domain.entity.User;
+import rs.chat.mail.MailSender;
 import rs.chat.net.http.HttpRequest;
 import rs.chat.net.http.HttpResponse;
 import rs.chat.service.SessionService;
@@ -72,6 +73,7 @@ public class UserController {
 		);
 
 		response.created(USER_SAVE_URL).send("data", savedUser);
+		MailSender.sendRegistrationEmail(savedUser.getEmail(), savedUser.getUsername());
 	}
 
 	@GetMapping(REFRESH_TOKEN_URL)

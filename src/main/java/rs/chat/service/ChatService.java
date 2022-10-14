@@ -6,10 +6,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rs.chat.domain.entity.Chat;
+import rs.chat.domain.entity.User;
 import rs.chat.domain.entity.UserChat;
 import rs.chat.domain.entity.UserChatPK;
 import rs.chat.domain.repository.ChatRepository;
 import rs.chat.domain.repository.UserChatRepository;
+import rs.chat.domain.repository.UserRepository;
 import rs.chat.exceptions.BadRequestException;
 import rs.chat.exceptions.NotFoundException;
 
@@ -17,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +28,7 @@ import java.util.Map;
 public class ChatService {
 	private final ChatRepository chatRepository;
 	private final UserChatRepository userChatRepository;
+	private final UserRepository userRepository;
 
 	/**
 	 * @return list of all chats stored in database.
@@ -147,7 +151,7 @@ public class ChatService {
 	 *
 	 * @return true if the user is a member of the chat, false otherwise.
 	 */
-	public boolean userIsAlreadyInChat(Long userId, Long chatId) {
+	public boolean userAlreadyBelongsToChat(Long userId, Long chatId) {
 		return this.userChatRepository.existsByUserChatPK_UserIdAndUserChatPK_ChatId(userId, chatId);
 	}
 
@@ -179,5 +183,17 @@ public class ChatService {
 		return this.chatRepository.findByName(chatName)
 		                          .map(Chat::getInvitationCode)
 		                          .orElseThrow(() -> new NotFoundException("Chat with name=%s does not exist".formatted(chatName)));
+	}
+
+	public List<String> getAllUsersOfChat(Long chatId) {
+		return this.userChatRepository.findAllByUserChatPK_ChatId(chatId)
+		                              .stream()
+		                              .map(UserChat::getUserChatPK)
+		                              .map(UserChatPK::getUserId)
+		                              .map(this.userRepository::findById)
+		                              .filter(Optional::isPresent)
+		                              .map(Optional::get)
+		                              .map(User::getUsername)
+		                              .toList();
 	}
 }

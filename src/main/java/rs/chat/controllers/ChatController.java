@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import static rs.chat.net.http.HttpResponse.HttpResponseBody;
 import static rs.chat.router.Routes.GetRoute.ALL_CHATS_OF_USER_URL;
+import static rs.chat.router.Routes.GetRoute.ALL_USERS_OF_CHAT_URL;
 import static rs.chat.router.Routes.GetRoute.CHAT_INFO_URL;
 import static rs.chat.router.Routes.PostRoute.CAN_USER_CONNECT_TO_CHAT_URL;
 import static rs.chat.router.Routes.PostRoute.JOIN_CHAT_URL;
@@ -64,13 +65,26 @@ public class ChatController {
 	 * @throws IOException if an error occurs while sending the response back to the client.
 	 */
 	@GetMapping(CHAT_INFO_URL)
-	public void getChatInformation(HttpResponse response, @PathVariable String id) throws IOException {
-		Chat chat = this.chatService.getChatById(Long.parseLong(id));
+	public void getChatInformation(HttpResponse response, @PathVariable Long id) throws IOException {
+		Chat chat = this.chatService.getChatById(id);
 
 		HttpResponseBody body = new HttpResponseBody("name", chat.getName());
 		body.add("metadata", chat.getMetadata());
 
 		response.ok().send(body);
+	}
+
+	/**
+	 * Returns all users of a chat.
+	 *
+	 * @param response response object that contains the users of the chat.
+	 * @param chatId   id of the chat whose users are to be returned.
+	 *
+	 * @throws IOException if an error occurs while sending the response back to the client.
+	 */
+	@GetMapping(ALL_USERS_OF_CHAT_URL)
+	public void getAllUsersOfChat(HttpResponse response, @PathVariable Long chatId) throws IOException {
+		response.ok().send("users", this.chatService.getAllUsersOfChat(chatId));
 	}
 
 	/**
@@ -92,7 +106,7 @@ public class ChatController {
 
 		Long userId = request.body().get("userId").getAsLong();
 
-		if (this.chatService.userIsAlreadyInChat(userId, chat.getId())) {
+		if (this.chatService.userAlreadyBelongsToChat(userId, chat.getId())) {
 			throw new BadRequestException("You are already in chat %s".formatted(chat.getName()));
 		}
 
