@@ -1,12 +1,33 @@
 #!/bin/bash
 
 #######################################
+# Kills the process with the given port
+# Arguments:
+#   port number of the process to kill
+#######################################
+function kill_process_at_port() {
+    local port=$1
+    local pid=$(lsof -i:"$port" | grep LISTEN | awk '{print $2}')
+    if [ -n "$pid" ]; then
+        kill -TERM $pid
+    fi
+}
+
+#######################################
+# Builds the application
+# Arguments:
+#  None
+#######################################
+function build() {
+  mvn clean package -DskipTests
+}
+
+#######################################
 # Executes the jar of the application
 # Arguments:
 #  None
 #######################################
-run_application_jar() {
-  mvn clean package -DskipTests
+function run_application_jar() {
   java -jar target/rs-chat-backend-0.0.1.jar &> /dev/null &
 }
 
@@ -17,7 +38,7 @@ run_application_jar() {
 # Arguments:
 #   1 - The file to be exported
 #######################################
-export_env() {
+function export_env() {
   # Read the corresponding env file and export the variables
   while read -r line; do
     export $line &> /dev/null
@@ -31,7 +52,7 @@ export_env() {
 # Arguments:
 #  None
 #######################################
-create_s3_bucket() {
+function create_s3_bucket() {
   # Check that localstack is running
   if ! curl -s http://localhost:4566/health | grep -q "available"; then
     echo "Localstack is not running"
@@ -56,26 +77,34 @@ function main() {
   echo '  2) Deploy to production environment'
   echo '  3) Deploy to all environments'
 
+  local command
   read -rp 'Enter the command number: ' command
 
   case $command in
     1)
+      build
       export_env dev
       create_s3_bucket
+      kill_process_at_port "$PORT"
       run_application_jar
       ;;
     2)
+      build
       export_env prod
       create_s3_bucket
+      kill_process_at_port "$PORT"
       run_application_jar
       ;;
     3)
+      build
       export_env dev
       create_s3_bucket
+      kill_process_at_port "$PORT"
       run_application_jar
 
       export_env prod
       create_s3_bucket
+      kill_process_at_port "$PORT"
       run_application_jar
       ;;
     *)
