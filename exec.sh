@@ -6,11 +6,12 @@
 #   port number of the process to kill
 #######################################
 function kill_process_at_port() {
-    local port=$1
-    local pid=$(lsof -i:"$port" | grep LISTEN | awk '{print $2}')
-    if [ -n "$pid" ]; then
-        kill -TERM $pid
-    fi
+  local port=$1
+  local pid
+  pid=$(lsof -i:"$port" | grep LISTEN | awk '{print $2}')
+  if [ -n "$pid" ]; then
+    kill -TERM "$pid"
+  fi
 }
 
 #######################################
@@ -25,10 +26,10 @@ function build() {
 #######################################
 # Executes the jar of the application
 # Arguments:
-#  None
+#  Folder where the jar is located
 #######################################
 function run_application_jar() {
-  java -jar target/rs-chat-backend-0.0.1.jar &> /dev/null &
+  cd "$1" && java -jar target/rs-chat-backend-0.0.1.jar &> /dev/null &
 }
 
 #######################################
@@ -64,6 +65,21 @@ function create_s3_bucket() {
 }
 
 #######################################
+# Runs the specified environment of the application
+# Globals:
+#   PORT
+# Arguments:
+#   The folder of the env to run
+#######################################
+function run_env() {
+  echo "Running $1 environment"
+  cd "$1" && git pull && build && export_env "$1" && cd ..
+  create_s3_bucket
+  kill_process_at_port "$PORT"
+  run_application_jar "$1"
+}
+
+#######################################
 # Main function
 # Globals:
 #   command
@@ -82,36 +98,19 @@ function main() {
 
   case $command in
     1)
-      build
-      export_env dev
-      create_s3_bucket
-      kill_process_at_port "$PORT"
-      run_application_jar
+      run_env dev &> /dev/null &
       ;;
     2)
-      build
-      export_env prod
-      create_s3_bucket
-      kill_process_at_port "$PORT"
-      run_application_jar
+      run_env prod &> /dev/null &
       ;;
     3)
-      build
-      export_env dev
-      create_s3_bucket
-      kill_process_at_port "$PORT"
-      run_application_jar
-
-      export_env prod
-      create_s3_bucket
-      kill_process_at_port "$PORT"
-      run_application_jar
+      run_env dev &> /dev/null &
+      run_env prod &> /dev/null &
       ;;
     *)
       echo 'Invalid command'
       ;;
   esac
-
 }
 
 main "$@"
