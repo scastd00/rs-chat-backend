@@ -4,10 +4,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
-import rs.chat.domain.entity.Chat;
 import rs.chat.domain.entity.Subject;
 import rs.chat.exceptions.BadRequestException;
 import rs.chat.net.http.HttpRequest;
@@ -46,12 +46,7 @@ public class SubjectController {
 		JsonArray subjectsWithInvitationCode = new JsonArray();
 
 		allSubjects.forEach(subject -> {
-			JsonObject subjectWithInvitationCode = new JsonObject();
-			Chat chat = this.chatService.getByName(subject.getName());
-
-			subjectWithInvitationCode.addProperty("id", subject.getId());
-			subjectWithInvitationCode.addProperty("name", subject.getName());
-			subjectWithInvitationCode.addProperty("invitationCode", chat.getInvitationCode());
+			JsonObject subjectWithInvitationCode = getSubjectWithInvitationCode(subject);
 			subjectsWithInvitationCode.add(subjectWithInvitationCode);
 		});
 
@@ -94,5 +89,16 @@ public class SubjectController {
 		);
 
 		response.created(SUBJECT_SAVE_URL).send("subject", savedSubject);
+	}
+
+	@NotNull
+	private JsonObject getSubjectWithInvitationCode(Subject subject) {
+		JsonObject subjectWithInvitationCode = new JsonObject();
+
+		subjectWithInvitationCode.addProperty("id", subject.getId());
+		subjectWithInvitationCode.addProperty("name", subject.getName());
+		subjectWithInvitationCode.addProperty("invitationCode", this.chatService.getInvitationCodeByChatName(subject.getName()));
+
+		return subjectWithInvitationCode;
 	}
 }

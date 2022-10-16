@@ -4,13 +4,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
-import rs.chat.domain.entity.Chat;
 import rs.chat.domain.entity.Degree;
 import rs.chat.exceptions.BadRequestException;
 import rs.chat.exceptions.NotFoundException;
@@ -52,12 +52,7 @@ public class DegreeController {
 		JsonArray degreesWithInvitationCode = new JsonArray();
 
 		allDegrees.forEach(degree -> {
-			JsonObject degreeWithInvitationCode = new JsonObject();
-			Chat chat = this.chatService.getByName(degree.getName());
-
-			degreeWithInvitationCode.addProperty("id", degree.getId());
-			degreeWithInvitationCode.addProperty("name", degree.getName());
-			degreeWithInvitationCode.addProperty("invitationCode", chat.getInvitationCode());
+			JsonObject degreeWithInvitationCode = getDegreeWithInvitationCode(degree);
 			degreesWithInvitationCode.add(degreeWithInvitationCode);
 		});
 
@@ -144,5 +139,16 @@ public class DegreeController {
 
 		this.degreeService.deleteDegreeByName(degreeName);
 		response.sendStatus(OK);
+	}
+
+	@NotNull
+	private JsonObject getDegreeWithInvitationCode(Degree degree) {
+		JsonObject degreeWithInvitationCode = new JsonObject();
+
+		degreeWithInvitationCode.addProperty("id", degree.getId());
+		degreeWithInvitationCode.addProperty("name", degree.getName());
+		degreeWithInvitationCode.addProperty("invitationCode", this.chatService.getInvitationCodeByChatName(degree.getName()));
+
+		return degreeWithInvitationCode;
 	}
 }

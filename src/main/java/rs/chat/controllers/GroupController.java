@@ -4,10 +4,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
-import rs.chat.domain.entity.Chat;
 import rs.chat.domain.entity.Group;
 import rs.chat.net.http.HttpRequest;
 import rs.chat.net.http.HttpResponse;
@@ -42,15 +42,7 @@ public class GroupController {
 		List<Group> groups = this.groupService.getAll();
 		JsonArray groupsWithInvitationCode = new JsonArray();
 
-		groups.forEach(group -> {
-			JsonObject groupWithInvitationCode = new JsonObject();
-			Chat chat = this.chatService.getByName(group.getName());
-
-			groupWithInvitationCode.addProperty("id", group.getId());
-			groupWithInvitationCode.addProperty("name", group.getName());
-			groupWithInvitationCode.addProperty("invitationCode", chat.getInvitationCode());
-			groupsWithInvitationCode.add(groupWithInvitationCode);
-		});
+		groups.forEach(group -> groupsWithInvitationCode.add(this.getGroupWithInvitationCode(group)));
 
 		response.ok().send("groups", groupsWithInvitationCode.toString());
 	}
@@ -66,9 +58,19 @@ public class GroupController {
 	@PostMapping(GROUP_SAVE_URL)
 	public void saveGroup(HttpRequest request, HttpResponse response) throws IOException {
 		String groupName = request.body().get("name").getAsString();
-
 		Group savedGroup = this.groupService.saveGroup(new Group(null, groupName));
 
-		response.created(GROUP_SAVE_URL).send("data", savedGroup);
+		response.created(GROUP_SAVE_URL).send("data", this.getGroupWithInvitationCode(savedGroup).toString());
+	}
+
+	@NotNull
+	private JsonObject getGroupWithInvitationCode(Group group) {
+		JsonObject groupWithInvitationCode = new JsonObject();
+
+		groupWithInvitationCode.addProperty("id", group.getId());
+		groupWithInvitationCode.addProperty("name", group.getName());
+		groupWithInvitationCode.addProperty("invitationCode", this.chatService.getInvitationCodeByChatName(group.getName()));
+
+		return groupWithInvitationCode;
 	}
 }
