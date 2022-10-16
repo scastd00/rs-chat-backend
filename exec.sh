@@ -2,7 +2,7 @@
 
 run_application_jar() {
 	mvn clean package -DskipTests
-	java -jar target/rs-chat-backend-0.0.1.jar &>/dev/null &
+	java -jar target/rs-chat-backend-0.0.1.jar &> /dev/null &
 }
 
 export_env() {
