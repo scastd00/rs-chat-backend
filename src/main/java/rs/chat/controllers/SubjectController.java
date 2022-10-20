@@ -45,10 +45,9 @@ public class SubjectController {
 		List<Subject> allSubjects = this.subjectService.getAll();
 		JsonArray subjectsWithInvitationCode = new JsonArray();
 
-		allSubjects.forEach(subject -> {
-			JsonObject subjectWithInvitationCode = getSubjectWithInvitationCode(subject);
-			subjectsWithInvitationCode.add(subjectWithInvitationCode);
-		});
+		allSubjects.stream()
+		           .map(this::getSubjectWithInvitationCode)
+		           .forEach(subjectsWithInvitationCode::add);
 
 		response.ok().send("subjects", subjectsWithInvitationCode.toString());
 	}
@@ -76,6 +75,8 @@ public class SubjectController {
 			throw new BadRequestException("Subject '%s' already exists.".formatted(name));
 		}
 
+		// Todo: the problem comes when multiple degrees have the same subject. How do we treat the primary key?
+
 		Subject savedSubject = this.subjectService.save(
 				new Subject(
 						null,
@@ -88,7 +89,7 @@ public class SubjectController {
 				)
 		);
 
-		response.created(SUBJECT_SAVE_URL).send("subject", savedSubject);
+		response.created(SUBJECT_SAVE_URL).send("subject", this.getSubjectWithInvitationCode(savedSubject).toString());
 	}
 
 	@NotNull

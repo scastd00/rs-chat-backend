@@ -42,7 +42,9 @@ public class GroupController {
 		List<Group> groups = this.groupService.getAll();
 		JsonArray groupsWithInvitationCode = new JsonArray();
 
-		groups.forEach(group -> groupsWithInvitationCode.add(this.getGroupWithInvitationCode(group)));
+		groups.stream()
+		      .map(this::getGroupWithInvitationCode)
+		      .forEach(groupsWithInvitationCode::add);
 
 		response.ok().send("groups", groupsWithInvitationCode.toString());
 	}
@@ -60,7 +62,7 @@ public class GroupController {
 		String groupName = request.body().get("name").getAsString();
 		Group savedGroup = this.groupService.saveGroup(new Group(null, groupName));
 
-		response.created(GROUP_SAVE_URL).send("data", this.getGroupWithInvitationCode(savedGroup).toString());
+		response.created(GROUP_SAVE_URL).send("group", this.getGroupWithInvitationCode(savedGroup).toString());
 	}
 
 	@NotNull

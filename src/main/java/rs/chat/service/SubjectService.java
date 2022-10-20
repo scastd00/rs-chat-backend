@@ -49,7 +49,7 @@ public class SubjectService {
 	 * @return true if subject exists, false otherwise.
 	 */
 	public boolean exists(String subjectName) {
-		return this.getByName(subjectName) != null;
+		return this.subjectRepository.findByName(subjectName).isPresent();
 	}
 
 	/**

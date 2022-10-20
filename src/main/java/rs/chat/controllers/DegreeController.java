@@ -51,10 +51,9 @@ public class DegreeController {
 		List<Degree> allDegrees = this.degreeService.getDegrees();
 		JsonArray degreesWithInvitationCode = new JsonArray();
 
-		allDegrees.forEach(degree -> {
-			JsonObject degreeWithInvitationCode = getDegreeWithInvitationCode(degree);
-			degreesWithInvitationCode.add(degreeWithInvitationCode);
-		});
+		allDegrees.stream()
+		          .map(this::getDegreeWithInvitationCode)
+		          .forEach(degreesWithInvitationCode::add);
 
 		response.ok().send("degrees", degreesWithInvitationCode.toString());
 	}
@@ -99,7 +98,7 @@ public class DegreeController {
 				new Degree(null, degreeName)
 		);
 
-		response.created(DEGREE_SAVE_URL).send("degree", degree);
+		response.created(DEGREE_SAVE_URL).send("degree", this.getDegreeWithInvitationCode(degree).toString());
 	}
 
 	/**

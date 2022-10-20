@@ -31,15 +31,19 @@ public final class Policies {
 	 * @throws MaliciousCodeInjectionException    if the username or passwords contains malicious code.
 	 */
 	public static void checkRegister(JsonObject body) {
+		String email = get(body, "email").getAsString().trim();
 		String username = get(body, "username").getAsString().trim();
 		String fullName = get(body, "fullName").getAsString().trim();
 		String password = get(body, "password").getAsString().trim();
-		String email = get(body, "email").getAsString().trim();
 		String confirmPassword = get(body, "confirmPassword").getAsString().trim();
 		boolean agreeTerms = get(body, "agreeTerms").getAsBoolean();
 
 		if (!agreeTerms) {
 			throw new MinimumRequirementsNotMetException("You must accept the terms and conditions before using the app.");
+		}
+
+		if (!email.matches("^[^@]+@[^@]+\\.[^@]{2,}$")) {
+			throw new MinimumRequirementsNotMetException("Email must have a valid structure. Eg: hello@domain.com");
 		}
 
 		if (username.length() < 5 || username.length() > 15) {
@@ -52,10 +56,6 @@ public final class Policies {
 
 		if (containsSQLKeywords(fullName)) {
 			throw new MaliciousCodeInjectionException("Full name", excludedCharacters);
-		}
-
-		if (!email.matches("^[^@]+@[^@]+\\.[^@]{2,}$")) {
-			throw new MinimumRequirementsNotMetException("Email must have a valid structure. Eg: hello@domain.com");
 		}
 
 		if (containsSQLKeywords(password)) {
