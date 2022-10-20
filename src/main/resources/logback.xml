@@ -1,5 +1,6 @@
-<configuration debug="true">
-	<property name="HOME_LOG" value="logs/app.log"/>
+<configuration debug="true" scan="true" scanPeriod="15 minutes">
+	<property name="LOG_ROOT" value="logs"/>
+	<property name="LOG_FILE_NAME" value="rs_chat"/>
 
 	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
 		<withJansi>true</withJansi>
@@ -10,16 +11,26 @@
 		</encoder>
 	</appender>
 
-	<appender name="FILE" class="ch.qos.logback.core.FileAppender">
-		<file>${HOME_LOG}</file>
+	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_ROOT}/${LOG_FILE_NAME}.log</file>
 		<append>true</append>
 		<immediateFlush>true</immediateFlush>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_ROOT}/${LOG_FILE_NAME}-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+			<!-- each archived file's size will be max 30MB -->
+			<maxFileSize>30MB</maxFileSize>
+			<!-- 90 days (3 months) to keep -->
+			<maxHistory>90</maxHistory>
+			<!-- total size of all archive files, if total size > 100GB, it will delete old archived file -->
+			<totalSizeCap>5GB</totalSizeCap>
+		</rollingPolicy>
 		<encoder>
 			<pattern>%d %p %c{1.} [%t] %m%n</pattern>
 		</encoder>
 	</appender>
 
-	<logger name="rs.chat" level="debug" additivity="false">
+	<!-- The log level of info hides TRACE and DEBUG logs (INFO, WARN, ERROR traces are enabled) -->
+	<logger name="rs.chat" level="info" additivity="false">
 		<appender-ref ref="CONSOLE"/>
 		<appender-ref ref="FILE"/>
 	</logger>
