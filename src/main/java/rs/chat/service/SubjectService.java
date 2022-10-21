@@ -66,4 +66,12 @@ public class SubjectService {
 		this.chatRepository.save(DomainUtils.subjectChat(subject.getName()));
 		return savedSubject;
 	}
+
+	public void deleteById(Long id) {
+		if (!this.subjectRepository.existsById(id)) {
+			throw new NotFoundException("Subject with id '%d' does not exist.".formatted(id));
+		}
+
+//		this.subjectRepository.deleteById(id);
+	}
 }

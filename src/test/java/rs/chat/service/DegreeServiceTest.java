@@ -10,6 +10,7 @@ import rs.chat.domain.entity.Degree;
 import rs.chat.domain.repository.ChatRepository;
 import rs.chat.domain.repository.DegreeRepository;
 import rs.chat.exceptions.BadRequestException;
+import rs.chat.exceptions.NotFoundException;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -126,11 +127,25 @@ class DegreeServiceTest {
 	@Test
 	void testDeleteDegreeByName() {
 		// given
+		given(this.degreeRepository.existsByName(this.degree.getName())).willReturn(true);
+
 		// when
 		this.underTest.deleteDegreeByName(this.degree.getName());
 
 		// then
 		verify(this.degreeRepository).deleteByName(this.degree.getName());
 		verify(this.chatRepository).deleteByName(this.degree.getName());
+	}
+
+	@Test
+	void testDeleteDegreeByNameNoDegree() {
+		// given
+		given(this.degreeRepository.existsByName(this.degree.getName())).willReturn(false);
+
+		// when
+		// then
+		assertThatThrownBy(() -> this.underTest.deleteDegreeByName(this.degree.getName()))
+				.isInstanceOf(NotFoundException.class)
+				.hasMessageContaining("'%s' does not exist".formatted(this.degree.getName()));
 	}
 }

@@ -181,7 +181,9 @@ public class Routes {
 		private DeleteRoute() {
 		}
 
-		public static final String DELETE_DEGREE_URL = "/degree/delete/{degreeName}";
+		public static final String DELETE_DEGREE_URL = V_1 + "/degree/delete/{id}";
+		public static final String DELETE_SUBJECT_URL = V_1 + "/subject/delete/{id}";
+		public static final String DELETE_GROUP_URL = V_1 + "/group/delete/{id}";
 
 		/**
 		 * Generate an array containing all DELETE routes allowed to low tier users.
@@ -212,7 +214,7 @@ public class Routes {
 		 */
 		public String[] topTierRoutes() {
 			return new String[] {
-					DELETE_DEGREE_URL
+					DELETE_DEGREE_URL, DELETE_SUBJECT_URL, DELETE_GROUP_URL
 			};
 		}
 	}

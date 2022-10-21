@@ -67,8 +67,7 @@ public class DegreeController {
 	 * @throws IOException if an error occurs.
 	 */
 	@GetMapping(DEGREE_BY_NAME_URL)
-	public void getDegreeByName(HttpResponse response,
-	                            @PathVariable String degreeName) throws IOException {
+	public void getDegreeByName(HttpResponse response, @PathVariable String degreeName) throws IOException {
 		Degree degree = this.degreeService.getByName(degreeName);
 
 		if (degree == null) {
@@ -123,23 +122,25 @@ public class DegreeController {
 	/**
 	 * Deletes given degree from db.
 	 *
-	 * @param response   response (does not contain the deleted degree, only status code
-	 *                   is returned to user).
-	 * @param degreeName name of the degree to be deleted.
+	 * @param response response (does not contain the deleted degree, only status code
+	 *                 is returned to user).
+	 * @param id       id of the degree to be deleted.
 	 *
 	 * @throws IOException if an error occurs.
 	 */
 	@DeleteMapping(DELETE_DEGREE_URL)
-	public void deleteDegree(HttpResponse response,
-	                         @PathVariable String degreeName) throws IOException {
-		if (!this.degreeService.existsDegree(degreeName)) {
-			throw new NotFoundException("'%s' does not exist".formatted(degreeName));
-		}
-
-		this.degreeService.deleteDegreeByName(degreeName);
+	public void deleteDegree(HttpResponse response, @PathVariable Long id) throws IOException {
+		this.degreeService.deleteById(id);
 		response.sendStatus(OK);
 	}
 
+	/**
+	 * Returns a JsonObject containing degree's name, id and invitation code.
+	 *
+	 * @param degree group to be converted.
+	 *
+	 * @return JsonObject containing degree's name, id and invitation code.
+	 */
 	@NotNull
 	private JsonObject getDegreeWithInvitationCode(Degree degree) {
 		JsonObject degreeWithInvitationCode = new JsonObject();

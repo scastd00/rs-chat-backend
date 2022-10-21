@@ -55,4 +55,12 @@ public class GroupService {
 		this.chatRepository.save(DomainUtils.groupChat(group.getName()));
 		return savedGroup;
 	}
+
+	public void deleteById(Long id) {
+		if (!this.groupRepository.existsById(id)) {
+			throw new NotFoundException("Group with id '%d' does not exist.".formatted(id));
+		}
+
+//		this.groupRepository.deleteById(id);
+	}
 }

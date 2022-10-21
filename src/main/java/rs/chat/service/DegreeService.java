@@ -10,6 +10,7 @@ import rs.chat.domain.entity.Degree;
 import rs.chat.domain.repository.ChatRepository;
 import rs.chat.domain.repository.DegreeRepository;
 import rs.chat.exceptions.BadRequestException;
+import rs.chat.exceptions.NotFoundException;
 
 import java.util.List;
 
@@ -100,7 +101,20 @@ public class DegreeService {
 	 * @param degreeName the name of the degree to delete.
 	 */
 	public void deleteDegreeByName(String degreeName) {
-		this.degreeRepository.deleteByName(degreeName);
-		this.chatRepository.deleteByName(degreeName);
+		if (!this.existsDegree(degreeName)) {
+			throw new NotFoundException("'%s' does not exist".formatted(degreeName));
+		}
+
+//		this.degreeRepository.deleteByName(degreeName);
+		// Todo: delete relationships from other tables
+//		this.chatRepository.deleteByName(degreeName);
+	}
+
+	public void deleteById(Long id) {
+		if (!this.degreeRepository.existsById(id)) {
+			throw new NotFoundException("Degree with id '%d' does not exist.".formatted(id));
+		}
+
+//		this.degreeRepository.deleteById(id);
 	}
 }
