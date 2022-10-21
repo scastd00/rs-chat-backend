@@ -4,7 +4,6 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,7 +22,6 @@ import rs.chat.service.GroupService;
 import rs.chat.service.SessionService;
 import rs.chat.service.UserGroupService;
 import rs.chat.service.UserService;
-import rs.chat.utils.Constants;
 import rs.chat.utils.Utils;
 
 import java.io.IOException;
@@ -198,23 +196,21 @@ public class AuthController {
 		if (authorizationHeader == null) {
 			// If request does not contain authorization header send error.
 			response.status(BAD_REQUEST).send(ERROR_JSON_KEY, "You must provide the authorization token");
+			log.warn("Request does not contain authorization header");
 			return;
 		}
 
 		String token = authorizationHeader.substring(JWT_TOKEN_PREFIX.length());
-		DecodedJWT decodedJWT = JWT_VERIFIER.verify(token);
+		DecodedJWT decodedJWT = JWT_VERIFIER.verify(token); //! WARNING: the token could be expired
 		String username = decodedJWT.getSubject();
 
-		log.info("User {} has been logged out", username);
-
-		String body = IOUtils.toString(request.getReader());
-		JsonObject jsonBody = Constants.GSON.fromJson(body, JsonObject.class);
-
-		this.sessionService.deleteSession(token); // Always delete the session.
-
-		// And then check if we must delete all the other sessions.
-		if (jsonBody.has("deleteAllSessions")) {
+		// Check if we must delete all the user sessions or only one.
+		if (request.body().get("fromAllSessions").getAsBoolean()) {
+			log.info("Deleting all the sessions of the user {}", username);
 			this.sessionService.deleteAllSessionsOfUser(username);
+		} else {
+			log.info("User {} has been logged out from the session", username);
+			this.sessionService.deleteSession(token);
 		}
 
 		// Logout from Spring.
