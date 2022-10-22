@@ -7,7 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 import rs.chat.domain.DomainUtils;
 import rs.chat.domain.entity.Subject;
 import rs.chat.domain.repository.ChatRepository;
+import rs.chat.domain.repository.StudentSubjectRepository;
 import rs.chat.domain.repository.SubjectRepository;
+import rs.chat.domain.repository.TeacherSubjectRepository;
 import rs.chat.domain.repository.UserChatRepository;
 import rs.chat.exceptions.NotFoundException;
 import rs.chat.storage.S3;
@@ -24,6 +26,8 @@ public class SubjectService {
 	private final SubjectRepository subjectRepository;
 	private final ChatRepository chatRepository;
 	private final UserChatRepository userChatRepository;
+	private final StudentSubjectRepository studentSubjectRepository;
+	private final TeacherSubjectRepository teacherSubjectRepository;
 
 	/**
 	 * Finds all subjects.
@@ -79,7 +83,8 @@ public class SubjectService {
 
 		this.userChatRepository.deleteAllByUserChatPK_ChatId(id);
 		this.chatRepository.deleteById(id);
-		// Todo: Delete all associated users (teachers and students) to this subject here
+		this.studentSubjectRepository.deleteAllByStuSubjPK_SubjectId(id);
+		this.teacherSubjectRepository.deleteAllByTeaSubjPK_SubjectId(id);
 		this.subjectRepository.deleteById(id);
 		S3.getInstance().deleteHistoryFile(SUBJECT_CHAT + "-" + id);
 	}
