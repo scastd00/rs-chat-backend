@@ -6,8 +6,11 @@ import rs.chat.domain.entity.UserGroupPK;
 
 import java.util.List;
 
+@SuppressWarnings("java:S100")
 public interface UserGroupRepository extends JpaRepository<UserGroup, UserGroupPK> {
 	List<UserGroup> findAllByUserGroupPK_GroupId(Long groupId);
 
 	List<UserGroup> findAllByUserGroupPK_UserId(Long userId);
+
+	void deleteAllByUserGroupPK_GroupId(Long groupId);
 }

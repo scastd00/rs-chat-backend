@@ -10,6 +10,7 @@ import rs.chat.domain.entity.Group;
 import rs.chat.domain.repository.ChatRepository;
 import rs.chat.domain.repository.GroupRepository;
 import rs.chat.domain.repository.UserChatRepository;
+import rs.chat.domain.repository.UserGroupRepository;
 import rs.chat.exceptions.NotFoundException;
 import rs.chat.storage.S3;
 
@@ -25,6 +26,7 @@ public class GroupService {
 	private final GroupRepository groupRepository;
 	private final ChatRepository chatRepository;
 	private final UserChatRepository userChatRepository;
+	private final UserGroupRepository userGroupRepository;
 
 	/**
 	 * Retrieves all the groups.
@@ -77,8 +79,8 @@ public class GroupService {
 
 		this.userChatRepository.deleteAllByUserChatPK_ChatId(chat.getId());
 		this.chatRepository.deleteById(chat.getId());
+		this.userGroupRepository.deleteAllByUserGroupPK_GroupId(groupId);
 		this.groupRepository.deleteById(groupId);
-		// Todo: check why user is not added to user_group table when adding invitation code
 		S3.getInstance().deleteHistoryFile(GROUP_CHAT + "-" + id);
 	}
 }
