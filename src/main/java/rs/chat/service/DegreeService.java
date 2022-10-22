@@ -62,7 +62,7 @@ public class DegreeService {
 		Degree savedDegree = this.degreeRepository.save(degree);
 
 		// When I know that the degree is saved, chat is created.
-		this.chatRepository.save(DomainUtils.degreeChat(degree.getName()));
+		this.chatRepository.save(DomainUtils.degreeChat(degree.getName(), savedDegree.getId()));
 		return savedDegree;
 	}
 
@@ -105,6 +105,7 @@ public class DegreeService {
 			throw new NotFoundException("Degree with id '%d' does not exist.".formatted(id));
 		}
 
+		// Key removal is degree-id
 		this.userChatRepository.deleteAllByUserChatPK_ChatId(id);
 		this.chatRepository.deleteById(id);
 		// Todo: Delete all subjects and associated chats and users (teachers and students) here

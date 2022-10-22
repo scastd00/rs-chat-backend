@@ -72,7 +72,7 @@ public class SubjectService {
 		Subject savedSubject = this.subjectRepository.save(subject);
 
 		// When I know that the subject is saved, chat is created.
-		this.chatRepository.save(DomainUtils.subjectChat(subject.getName()));
+		this.chatRepository.save(DomainUtils.subjectChat(subject.getName(), savedSubject.getId()));
 		return savedSubject;
 	}
 
@@ -81,6 +81,7 @@ public class SubjectService {
 			throw new NotFoundException("Subject with id '%d' does not exist.".formatted(id));
 		}
 
+		// Key removal is subject-id
 		this.userChatRepository.deleteAllByUserChatPK_ChatId(id);
 		this.chatRepository.deleteById(id);
 		this.studentSubjectRepository.deleteAllByStuSubjPK_SubjectId(id);

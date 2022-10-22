@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rs.chat.domain.DomainUtils;
+import rs.chat.domain.entity.Chat;
 import rs.chat.domain.entity.Group;
 import rs.chat.domain.repository.ChatRepository;
 import rs.chat.domain.repository.GroupRepository;
@@ -46,6 +47,11 @@ public class GroupService {
 		                           .orElseThrow(() -> new NotFoundException("Group with name " + name + " not found."));
 	}
 
+	public Group getById(Long id) {
+		return this.groupRepository.findById(id)
+		                           .orElseThrow(() -> new NotFoundException("Group with id '%s' does not exist.".formatted(id)));
+	}
+
 	/**
 	 * Saves a new group to database.
 	 *
@@ -57,18 +63,22 @@ public class GroupService {
 		Group savedGroup = this.groupRepository.save(group);
 
 		// When I know that the group is saved, chat is created.
-		this.chatRepository.save(DomainUtils.groupChat(group.getName()));
+		this.chatRepository.save(DomainUtils.groupChat(group.getName(), savedGroup.getId()));
 		return savedGroup;
 	}
 
 	public void deleteById(Long id) {
-		if (!this.groupRepository.existsById(id)) {
-			throw new NotFoundException("Group with id '%d' does not exist.".formatted(id));
-		}
+		Group group = this.getById(id);
+		Long groupId = group.getId();
+		Chat chat = this.chatRepository.findByKey("%s-%s".formatted(GROUP_CHAT, groupId))
+		                               .orElseThrow(
+				                               () -> new NotFoundException("Chat for group %s (%s) not found.".formatted(groupId, group.getName()))
+		                               );
 
-		this.userChatRepository.deleteAllByUserChatPK_ChatId(id);
-		this.chatRepository.deleteById(id);
-		this.groupRepository.deleteById(id);
+		this.userChatRepository.deleteAllByUserChatPK_ChatId(chat.getId());
+		this.chatRepository.deleteById(chat.getId());
+		this.groupRepository.deleteById(groupId);
+		// Todo: check why user is not added to user_group table when adding invitation code
 		S3.getInstance().deleteHistoryFile(GROUP_CHAT + "-" + id);
 	}
 }
