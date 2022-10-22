@@ -9,10 +9,14 @@ import rs.chat.domain.DomainUtils;
 import rs.chat.domain.entity.Degree;
 import rs.chat.domain.repository.ChatRepository;
 import rs.chat.domain.repository.DegreeRepository;
+import rs.chat.domain.repository.UserChatRepository;
 import rs.chat.exceptions.BadRequestException;
 import rs.chat.exceptions.NotFoundException;
+import rs.chat.storage.S3;
 
 import java.util.List;
+
+import static rs.chat.utils.Constants.DEGREE_CHAT;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +25,7 @@ import java.util.List;
 public class DegreeService {
 	private final DegreeRepository degreeRepository;
 	private final ChatRepository chatRepository;
+	private final UserChatRepository userChatRepository;
 
 	/**
 	 * Finds all degrees.
@@ -95,26 +100,15 @@ public class DegreeService {
 		return this.degreeRepository.save(degree);
 	}
 
-	/**
-	 * Deletes a degree given its name.
-	 *
-	 * @param degreeName the name of the degree to delete.
-	 */
-	public void deleteDegreeByName(String degreeName) {
-		if (!this.existsDegree(degreeName)) {
-			throw new NotFoundException("'%s' does not exist".formatted(degreeName));
-		}
-
-//		this.degreeRepository.deleteByName(degreeName);
-		// Todo: delete relationships from other tables
-//		this.chatRepository.deleteByName(degreeName);
-	}
-
 	public void deleteById(Long id) {
 		if (!this.degreeRepository.existsById(id)) {
 			throw new NotFoundException("Degree with id '%d' does not exist.".formatted(id));
 		}
 
-//		this.degreeRepository.deleteById(id);
+		this.userChatRepository.deleteAllByUserChatPK_ChatId(id);
+		this.chatRepository.deleteById(id);
+		// Todo: Delete all subjects and associated chats and users (teachers and students) here
+		this.degreeRepository.deleteById(id);
+		S3.getInstance().deleteHistoryFile(DEGREE_CHAT + "-" + id);
 	}
 }

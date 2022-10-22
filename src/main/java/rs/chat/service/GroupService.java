@@ -8,9 +8,13 @@ import rs.chat.domain.DomainUtils;
 import rs.chat.domain.entity.Group;
 import rs.chat.domain.repository.ChatRepository;
 import rs.chat.domain.repository.GroupRepository;
+import rs.chat.domain.repository.UserChatRepository;
 import rs.chat.exceptions.NotFoundException;
+import rs.chat.storage.S3;
 
 import java.util.List;
+
+import static rs.chat.utils.Constants.GROUP_CHAT;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +23,7 @@ import java.util.List;
 public class GroupService {
 	private final GroupRepository groupRepository;
 	private final ChatRepository chatRepository;
+	private final UserChatRepository userChatRepository;
 
 	/**
 	 * Retrieves all the groups.
@@ -61,6 +66,9 @@ public class GroupService {
 			throw new NotFoundException("Group with id '%d' does not exist.".formatted(id));
 		}
 
-//		this.groupRepository.deleteById(id);
+		this.userChatRepository.deleteAllByUserChatPK_ChatId(id);
+		this.chatRepository.deleteById(id);
+		this.groupRepository.deleteById(id);
+		S3.getInstance().deleteHistoryFile(GROUP_CHAT + "-" + id);
 	}
 }

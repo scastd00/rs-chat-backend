@@ -2,7 +2,6 @@ package rs.chat.storage;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
-import rs.chat.net.ws.WSMessage;
 import rs.chat.utils.Utils;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.core.exception.SdkException;
@@ -11,6 +10,7 @@ import software.amazon.awssdk.core.sync.ResponseTransformer;
 import software.amazon.awssdk.http.SdkHttpResponse;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadBucketRequest;
 import software.amazon.awssdk.services.s3.model.HeadBucketResponse;
@@ -26,6 +26,7 @@ import java.nio.file.Files;
 import java.time.LocalDate;
 import java.util.Map;
 
+import static rs.chat.net.ws.WSMessage.TEXT_MESSAGE;
 import static rs.chat.utils.Constants.LOCAL_S3_ENDPOINT_URI;
 import static rs.chat.utils.Constants.REMOTE_S3_ENDPOINT_URI;
 import static rs.chat.utils.Constants.S3_BUCKET_NAME;
@@ -92,14 +93,13 @@ public class S3 {
 	}
 
 	/**
-	 * Uploads a chat file to S3 bucket.
+	 * Uploads a chat history file to S3 bucket.
 	 *
-	 * @param chatId      the chat id of the chat file to upload to S3 bucket.
-	 * @param messageType the message type of the chat file to upload to S3 bucket.
+	 * @param chatId the chat id of the chat history file to upload to S3 bucket.
 	 */
-	public void uploadFile(String chatId, WSMessage messageType) {
-		File file = messageType.buildFileInDisk(chatId);
-		String s3Key = messageType.s3Key(chatId);
+	public void uploadHistoryFile(String chatId) {
+		File file = TEXT_MESSAGE.buildFileInDisk(chatId);
+		String s3Key = TEXT_MESSAGE.s3Key(chatId);
 
 		this.s3Client.putObject(
 				PutObjectRequest.builder()
@@ -115,21 +115,20 @@ public class S3 {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+
+		log.debug("Uploaded file {} to S3 bucket with key {} and deleted from disk", file.getName(), s3Key);
 	}
 
 	/**
-	 * Downloads a chat file from S3 bucket.
+	 * Downloads a chat history file from S3 bucket.
 	 *
-	 * @param chatId      the chat id of the chat file to download from S3 bucket.
-	 * @param messageType the message type of the chat file to download from S3 bucket.
+	 * @param chatId the chat id of the chat history file to download from S3 bucket.
 	 *
-	 * @return the downloaded chat file.
-	 *
-	 * @throws SdkException if there is an error with the S3 client.
+	 * @return the downloaded chat history file.
 	 */
-	public File downloadFile(String chatId, WSMessage messageType) {
-		File file = messageType.buildFileInDisk(chatId);
-		String s3Key = messageType.s3Key(chatId);
+	public File downloadHistoryFile(String chatId) {
+		File file = TEXT_MESSAGE.buildFileInDisk(chatId);
+		String s3Key = TEXT_MESSAGE.s3Key(chatId);
 
 		if (this.existsKeyInBucket(s3Key)) {
 			this.s3Client.getObject(
@@ -139,9 +138,33 @@ public class S3 {
 					                .build(),
 					ResponseTransformer.toFile(file)
 			);
+
+			log.debug("Downloaded file {} from S3 bucket with key {} and saved to disk", file.getName(), s3Key);
 		}
 
 		return file;
+	}
+
+	/**
+	 * Deletes a chat history file from S3 bucket.
+	 *
+	 * @param chatId the chat id of the chat history file to delete from S3 bucket.
+	 */
+	public void deleteHistoryFile(String chatId) {
+		// Todo (IMPORTANT): The chat must be empty before deleting the history file.
+		//  If there are users inside, not known the side effects of deleting the history file.
+		String s3Key = TEXT_MESSAGE.s3Key(chatId);
+
+		if (this.existsKeyInBucket(s3Key)) {
+			this.s3Client.deleteObject(
+					DeleteObjectRequest.builder()
+					                   .bucket(S3_BUCKET_NAME)
+					                   .key(s3Key)
+					                   .build()
+			);
+
+			log.debug("Deleted file from S3 bucket with key {}", s3Key);
+		}
 	}
 
 	/**

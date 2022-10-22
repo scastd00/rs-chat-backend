@@ -13,4 +13,6 @@ public interface UserChatRepository extends JpaRepository<UserChat, UserChatPK> 
 	boolean existsByUserChatPK_UserIdAndUserChatPK_ChatId(Long userId, Long chatId);
 
 	List<UserChat> findAllByUserChatPK_ChatId(Long chatId);
+
+	void deleteAllByUserChatPK_ChatId(Long chatId);
 }
