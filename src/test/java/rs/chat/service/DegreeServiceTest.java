@@ -56,6 +56,8 @@ class DegreeServiceTest {
 	@Test
 	void testSaveDegreeOk() {
 		// given
+		given(this.degreeRepository.save(this.degree)).willReturn(this.degree);
+
 		// when
 		this.underTest.saveDegree(this.degree);
 
