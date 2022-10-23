@@ -31,4 +31,8 @@ public class EmojiService {
 	public List<Emoji> getEmojisStartingWith(String string) {
 		return this.emojiRepository.findByNameStartingWith(string);
 	}
+
+	public List<Emoji> getEmojisByCategory(String category) {
+		return this.emojiRepository.findEmojisByCategory(category);
+	}
 }

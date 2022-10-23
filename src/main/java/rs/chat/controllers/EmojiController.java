@@ -14,6 +14,7 @@ import rs.chat.service.EmojiService;
 import java.io.IOException;
 import java.util.List;
 
+import static rs.chat.router.Routes.GetRoute.EMOJI_BY_CATEGORY_URL;
 import static rs.chat.router.Routes.GetRoute.EMOJI_STARTING_WITH_STRING_URL;
 import static rs.chat.router.Routes.GetRoute.RANDOM_EMOJIS_URL;
 
@@ -39,6 +40,17 @@ public class EmojiController {
 		}
 
 		List<Emoji> emojis = this.emojiService.getEmojisStartingWith(string);
+
+		if (emojis.isEmpty()) {
+			throw new NotFoundException("No emojis found");
+		}
+
+		response.status(HttpStatus.OK).send("emojis", emojis);
+	}
+
+	@GetMapping(EMOJI_BY_CATEGORY_URL)
+	public void getEmojisByCategory(HttpResponse response, @PathVariable String category) throws IOException {
+		List<Emoji> emojis = this.emojiService.getEmojisByCategory(category.replace("%20", " "));
 
 		if (emojis.isEmpty()) {
 			throw new NotFoundException("No emojis found");

@@ -31,6 +31,7 @@ public class Routes {
 		public static final String ALL_USERS_OF_CHAT_URL = V_1 + "/chat/users/{chatId}";
 		public static final String RANDOM_EMOJIS_URL = V_1 + "/emojis/random/{count}";
 		public static final String EMOJI_STARTING_WITH_STRING_URL = V_1 + "/emojis/{string}";
+		public static final String EMOJI_BY_CATEGORY_URL = V_1 + "/emojis/category/{category}";
 
 		/**
 		 * Generate an array containing all GET routes allowed to low tier users.
@@ -41,7 +42,7 @@ public class Routes {
 			return new String[] {
 					OPENED_SESSIONS_OF_USER_URL, DEGREES_URL, DEGREE_BY_NAME_URL,
 					ALL_CHATS_OF_USER_URL, CHAT_INFO_URL, ALL_USERS_OF_CHAT_URL, RANDOM_EMOJIS_URL,
-					EMOJI_STARTING_WITH_STRING_URL
+					EMOJI_STARTING_WITH_STRING_URL, EMOJI_BY_CATEGORY_URL
 			};
 		}
 
