@@ -19,6 +19,7 @@ import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -36,7 +37,7 @@ import static rs.chat.utils.Utils.isDevEnv;
  * Class that provides utility methods to work with S3.
  */
 @Slf4j
-public class S3 {
+public final class S3 implements Closeable {
 	private static final S3 INSTANCE = new S3();
 	private final S3Client s3Client;
 
@@ -51,6 +52,14 @@ public class S3 {
 		                        .credentialsProvider(this::obtainCredentials)
 		                        .region(Region.EU_WEST_3)
 		                        .build();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void close() {
+		this.s3Client.close();
 	}
 
 	/**
