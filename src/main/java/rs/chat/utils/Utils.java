@@ -90,22 +90,16 @@ public final class Utils {
 	}
 
 	/**
-	 * Verifies the access token.
+	 * Verifies an authorization token.
 	 *
-	 * @param fullToken the full token (with the "Bearer " prefix) to verify.
+	 * @param fullToken the token to verify.
 	 *
 	 * @return the decoded JWT token.
 	 *
 	 * @throws JWTVerificationException if the token is invalid.
 	 */
 	public static DecodedJWT checkAuthorizationToken(String fullToken) throws JWTVerificationException {
-		if (!fullToken.startsWith(JWT_TOKEN_PREFIX)) {
-			throw new JWTVerificationException(
-					"Token does not start with the string '%s'".formatted(JWT_TOKEN_PREFIX)
-			);
-		}
-
-		return JWT_VERIFIER.verify(fullToken.substring(JWT_TOKEN_PREFIX.length()));
+		return JWT_VERIFIER.verify(fullToken.replace(JWT_TOKEN_PREFIX, ""));
 	}
 
 	/**
