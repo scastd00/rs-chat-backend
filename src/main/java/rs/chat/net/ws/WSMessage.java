@@ -21,6 +21,8 @@ public record WSMessage(String type, String filePrefix, String extension) {
 	public static final WSMessage IMAGE_MESSAGE = new WSMessage("IMAGE_MESSAGE", "images/", null);
 	public static final WSMessage AUDIO_MESSAGE = new WSMessage("AUDIO_MESSAGE", "audios/", null);
 	public static final WSMessage VIDEO_MESSAGE = new WSMessage("VIDEO_MESSAGE", "videos/", null);
+	public static final WSMessage PDF_MESSAGE = new WSMessage("PDF_MESSAGE", "pdfs/", null);
+	public static final WSMessage TEXT_DOC_MESSAGE = new WSMessage("TEXT_DOC_MESSAGE", "texts/", null);
 
 	public static final WSMessage ACTIVE_USERS_MESSAGE = new WSMessage("ACTIVE_USERS", null, null);
 	public static final WSMessage GET_HISTORY_MESSAGE = new WSMessage("GET_HISTORY", "chat/", TEXT_MESSAGE.extension);

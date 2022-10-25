@@ -51,11 +51,11 @@ CREATE TABLE `files`
 	`size`          int          NOT NULL,
 	`path`          varchar(400) NOT NULL,
 	`metadata`      json         NOT NULL,
-	`type`          varchar(10)  NOT NULL, -- text / image / audio / video.
+	`type`          varchar(20)  NOT NULL, -- text / image / audio / video / application
 	`user_id`       bigint       NOT NULL,
 
 	CONSTRAINT `pk_file_id` PRIMARY KEY (`id`),
-	CONSTRAINT `ck_file_type` CHECK (`type` IN ('TEXT', 'IMAGE', 'AUDIO', 'VIDEO'))
+	CONSTRAINT `ck_file_type` CHECK (`type` IN ('TEXT', 'IMAGE', 'AUDIO', 'VIDEO', 'APPLICATION'))
 ) ENGINE InnoDB;
 
 CREATE TABLE `users`

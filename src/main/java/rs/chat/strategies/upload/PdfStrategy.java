@@ -12,13 +12,13 @@ import java.util.Map;
 import static rs.chat.utils.Constants.GSON;
 import static rs.chat.utils.Utils.bytesToUnit;
 
-public class TextStrategy implements FileUploadStrategy {
+public class PdfStrategy implements FileUploadStrategy {
 	@Override
 	public void handle(byte[] binaryData, String specificType, File file) throws IOException {
 		Map<String, String> metadata = new HashMap<>();
 		metadata.put("specificType", specificType);
 		metadata.put("size", bytesToUnit(binaryData.length));
-		metadata.put("messageType", WSMessage.TEXT_DOC_MESSAGE.type());
+		metadata.put("messageType", WSMessage.PDF_MESSAGE.type());
 
 		URI uri = S3.getInstance().uploadFile(file.getType(), file.getName(), binaryData, metadata);
 
