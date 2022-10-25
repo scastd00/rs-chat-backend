@@ -14,5 +14,10 @@ public class RSChatApplication {
 		S3.getInstance().checkS3BucketConnectivity();
 
 		log.info("RSChatApplication started successfully at port {}", System.getenv("PORT"));
+
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+			log.info("Shutting down RSChatApplication");
+			S3.getInstance().close();
+		}, "RSChatApplicationShutdownHookThread"));
 	}
 }

@@ -8,9 +8,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import rs.chat.domain.entity.User;
-import rs.chat.mail.MailSender;
 import rs.chat.net.http.HttpRequest;
 import rs.chat.net.http.HttpResponse;
+import rs.chat.net.smtp.MailSender;
+import rs.chat.policies.Policies;
 import rs.chat.service.SessionService;
 import rs.chat.service.UserService;
 
@@ -21,7 +22,6 @@ import static rs.chat.router.Routes.GetRoute.OPENED_SESSIONS_OF_USER_URL;
 import static rs.chat.router.Routes.GetRoute.USERS_URL;
 import static rs.chat.router.Routes.PostRoute.USER_SAVE_URL;
 import static rs.chat.router.Routes.REFRESH_TOKEN_URL;
-import static rs.chat.utils.Constants.STUDENT_ROLE;
 
 /**
  * Controller that manages all user-related requests.
@@ -57,6 +57,8 @@ public class UserController {
 	public void saveUser(HttpRequest request, HttpResponse response) throws IOException {
 		JsonObject user = (JsonObject) request.body().get("user");
 
+		Policies.checkRegister(user);
+
 		User savedUser = this.userService.createUser(
 				new User(
 						null, // ID
@@ -66,7 +68,7 @@ public class UserController {
 						user.get("fullName").getAsString(),
 						null, // Age
 						null, // Birthdate
-						STUDENT_ROLE,
+						user.get("role").getAsString(),
 						null, // Block until
 						null // Password change
 				)

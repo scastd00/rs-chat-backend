@@ -44,4 +44,7 @@ public class Chat {
 	@Basic
 	@Column(name = "invitation_code", nullable = false, length = 15)
 	private String invitationCode;
+	@Basic
+	@Column(name = "key", nullable = false, length = 30)
+	private String key;
 }

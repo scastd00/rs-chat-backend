@@ -35,6 +35,9 @@ public class GetHistoryStrategy implements MessageStrategy {
 	@Override
 	public void handle(JsonMessageWrapper wrappedMessage, WebSocketChatMap webSocketChatMap,
 	                   Map<String, Object> otherData) throws WebSocketException, IOException {
+		// Todo: receive a number of the "page" to get the history from.
+		//  Received 1: get the last 65 messages.
+		//  Received 2: get the 65 messages prior to the last 65 messages, and so on.
 		/*
 		 * Updated messages are retrieved from the file stored in disk instead of
 		 * requesting them to the S3 bucket. The file is always present here because it is
@@ -44,18 +47,18 @@ public class GetHistoryStrategy implements MessageStrategy {
 		String history = IOUtils.toString(new FileReader(historyFile));
 		String username = ((WSClientID) otherData.get("wsClientID")).username();
 
-		JsonArray jsonArray = new JsonArray();
+		JsonArray lastMessages = new JsonArray();
 		List<String> reversedHistory = Arrays.asList(history.split("\n"));
 		Collections.reverse(reversedHistory); // Reverse the history to get the latest messages first.
 		reversedHistory.stream()
-		               .limit(MAX_CHAT_HISTORY_PER_REQUEST)
+		               .limit(MAX_CHAT_HISTORY_PER_REQUEST) // First, limit the number of messages to send, to improve performance.
 		               .map(Utils::parseJson)
 		               .filter(jsonObject -> this.filterUserActivityMessages(jsonObject, username))
-		               .forEach(jsonArray::add);
+		               .forEach(lastMessages::add);
 
 		WebSocketSession session = (WebSocketSession) otherData.get("session");
 		session.sendMessage(new TextMessage(
-				createServerMessage(jsonArray.toString(), GET_HISTORY_MESSAGE.type(), wrappedMessage.chatId())
+				createServerMessage(lastMessages.toString(), GET_HISTORY_MESSAGE.type(), wrappedMessage.chatId())
 		));
 	}
 

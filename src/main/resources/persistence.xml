@@ -22,6 +22,9 @@
 			<basic name="invitationCode">
 				<column name="invitation_code"/>
 			</basic>
+			<basic name="key">
+				<column name="key"/>
+			</basic>
 		</attributes>
 	</entity>
 	<entity class="rs.chat.domain.entity.Degree">

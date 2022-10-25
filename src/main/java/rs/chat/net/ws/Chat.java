@@ -12,8 +12,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import static rs.chat.net.ws.WSMessage.TEXT_MESSAGE;
-
 /**
  * Class that stores the clients in a {@link CopyOnWriteArrayList<WSClient>} and have
  * a {@link PrintWriter} associated to a file to store all the messages received.
@@ -35,7 +33,7 @@ public class Chat {
 		this.chatId = chatId;
 		this.clients = new CopyOnWriteArrayList<>();
 
-		File downloadFile = S3.getInstance().downloadFile(chatId, TEXT_MESSAGE);
+		File downloadFile = S3.getInstance().downloadHistoryFile(chatId);
 
 		FileWriter fileWriter = new FileWriter(downloadFile, true);
 		BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
@@ -65,7 +63,7 @@ public class Chat {
 	 * Uploads the file to S3 bucket with all the messages stored.
 	 */
 	public void saveToS3() {
-		S3.getInstance().uploadFile(this.chatId, TEXT_MESSAGE);
+		S3.getInstance().uploadHistoryFile(this.chatId);
 		log.debug("Uploaded file of chat with id = {}", this.chatId);
 	}
 

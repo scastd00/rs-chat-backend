@@ -2,7 +2,6 @@ package rs.chat.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rs.chat.domain.entity.User;
@@ -10,7 +9,7 @@ import rs.chat.domain.entity.UserGroup;
 import rs.chat.domain.entity.UserGroupPK;
 import rs.chat.domain.repository.UserGroupRepository;
 import rs.chat.domain.repository.UserRepository;
-import rs.chat.exceptions.BadRequestException;
+import rs.chat.exceptions.NotFoundException;
 
 @Service
 @RequiredArgsConstructor
@@ -26,13 +25,13 @@ public class UserGroupService {
 	 * @param user    user to add to group.
 	 * @param groupId group id to add user to.
 	 */
-	public void addUserToGroup(@NotNull User user, @NotNull Long groupId) {
+	public void addUserToGroup(User user, Long groupId) {
 		UserGroup userGroup = new UserGroup(new UserGroupPK(user.getId(), groupId));
 		this.userGroupRepository.save(userGroup);
 	}
 
 	/**
-	 * Adds a user to a group. This method is used when a user redeems an invitation link
+	 * Adds a user to a group. This method is used when a user redeems an invitation link,
 	 * or it is added to global group on register.
 	 * Invitation link URI format:
 	 * https:.../groupId (and user will send the userId stored in Redux)
@@ -42,7 +41,7 @@ public class UserGroupService {
 	 */
 	public void addUserToGroup(Long userId, Long groupId) {
 		User userById = this.userRepository.findById(userId).orElseThrow(() -> {
-			throw new BadRequestException("User not found");
+			throw new NotFoundException("User not found");
 		});
 
 		this.addUserToGroup(userById, groupId);

@@ -1,7 +1,6 @@
 package rs.chat.strategies.upload;
 
 import rs.chat.domain.entity.File;
-import rs.chat.net.http.HttpResponse.HttpResponseBody;
 import rs.chat.net.ws.WSMessage;
 import rs.chat.storage.S3;
 

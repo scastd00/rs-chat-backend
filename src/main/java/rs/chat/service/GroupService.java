@@ -5,12 +5,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rs.chat.domain.DomainUtils;
+import rs.chat.domain.entity.Chat;
 import rs.chat.domain.entity.Group;
 import rs.chat.domain.repository.ChatRepository;
 import rs.chat.domain.repository.GroupRepository;
+import rs.chat.domain.repository.UserChatRepository;
+import rs.chat.domain.repository.UserGroupRepository;
 import rs.chat.exceptions.NotFoundException;
+import rs.chat.storage.S3;
 
 import java.util.List;
+
+import static rs.chat.utils.Constants.GROUP_CHAT;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +25,8 @@ import java.util.List;
 public class GroupService {
 	private final GroupRepository groupRepository;
 	private final ChatRepository chatRepository;
+	private final UserChatRepository userChatRepository;
+	private final UserGroupRepository userGroupRepository;
 
 	/**
 	 * Retrieves all the groups.
@@ -41,6 +49,11 @@ public class GroupService {
 		                           .orElseThrow(() -> new NotFoundException("Group with name " + name + " not found."));
 	}
 
+	public Group getById(Long id) {
+		return this.groupRepository.findById(id)
+		                           .orElseThrow(() -> new NotFoundException("Group with id '%s' does not exist.".formatted(id)));
+	}
+
 	/**
 	 * Saves a new group to database.
 	 *
@@ -52,7 +65,22 @@ public class GroupService {
 		Group savedGroup = this.groupRepository.save(group);
 
 		// When I know that the group is saved, chat is created.
-		this.chatRepository.save(DomainUtils.groupChat(group.getName()));
+		this.chatRepository.save(DomainUtils.groupChat(group.getName(), savedGroup.getId()));
 		return savedGroup;
+	}
+
+	public void deleteById(Long id) {
+		Group group = this.getById(id);
+		Long groupId = group.getId();
+		Chat chat = this.chatRepository.findByKey("%s-%s".formatted(GROUP_CHAT, groupId))
+		                               .orElseThrow(
+				                               () -> new NotFoundException("Chat for group %s (%s) not found.".formatted(groupId, group.getName()))
+		                               );
+
+		this.userChatRepository.deleteAllByUserChatPK_ChatId(chat.getId());
+		this.chatRepository.deleteById(chat.getId());
+		this.userGroupRepository.deleteAllByUserGroupPK_GroupId(groupId);
+		this.groupRepository.deleteById(groupId);
+		S3.getInstance().deleteHistoryFile(GROUP_CHAT + "-" + id);
 	}
 }

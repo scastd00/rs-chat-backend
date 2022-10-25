@@ -92,7 +92,7 @@ public final class Utils {
 	/**
 	 * Verifies the access token.
 	 *
-	 * @param fullToken the full token to verify.
+	 * @param fullToken the full token (with the "Bearer " prefix) to verify.
 	 *
 	 * @return the decoded JWT token.
 	 *

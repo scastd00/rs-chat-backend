@@ -14,6 +14,7 @@ import rs.chat.exceptions.BadRequestException;
 import rs.chat.net.http.HttpRequest;
 import rs.chat.net.http.HttpResponse;
 import rs.chat.service.ChatService;
+import rs.chat.service.UserGroupService;
 import rs.chat.service.UserService;
 
 import java.io.IOException;
@@ -24,6 +25,7 @@ import static rs.chat.router.Routes.GetRoute.ALL_USERS_OF_CHAT_URL;
 import static rs.chat.router.Routes.GetRoute.CHAT_INFO_URL;
 import static rs.chat.router.Routes.PostRoute.CAN_USER_CONNECT_TO_CHAT_URL;
 import static rs.chat.router.Routes.PostRoute.JOIN_CHAT_URL;
+import static rs.chat.utils.Constants.GROUP_CHAT;
 
 /**
  * Controller that manages all chat-related requests.
@@ -34,6 +36,7 @@ import static rs.chat.router.Routes.PostRoute.JOIN_CHAT_URL;
 public class ChatController {
 	private final UserService userService;
 	private final ChatService chatService;
+	private final UserGroupService userGroupService;
 
 	/**
 	 * Returns all chats of a user organized by chat type.
@@ -103,7 +106,6 @@ public class ChatController {
 		}
 
 		Chat chat = this.chatService.getChatByCode(code);
-
 		Long userId = request.body().get("userId").getAsLong();
 
 		if (this.chatService.userAlreadyBelongsToChat(userId, chat.getId())) {
@@ -111,6 +113,12 @@ public class ChatController {
 		}
 
 		this.chatService.addUserToChat(userId, chat.getId());
+
+		// If the users join a group chat, add them to the group as well.
+		// Users can only join degree and subject chats if they are added by teachers or admins.
+		if (GROUP_CHAT.equals(chat.getType())) {
+			this.userGroupService.addUserToGroup(userId, Long.parseLong(chat.getKey().split("-")[1]));
+		}
 
 		response.status(HttpStatus.OK).send("name", chat.getName());
 		// Update the user's chats list in frontend.

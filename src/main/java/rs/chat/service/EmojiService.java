@@ -8,6 +8,8 @@ import rs.chat.domain.entity.Emoji;
 import rs.chat.domain.repository.EmojiRepository;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,5 +32,15 @@ public class EmojiService {
 
 	public List<Emoji> getEmojisStartingWith(String string) {
 		return this.emojiRepository.findByNameStartingWith(string);
+	}
+
+	public List<Emoji> getEmojisByCategory(String category) {
+		return this.emojiRepository.findEmojisByCategory(category);
+	}
+
+	public Map<String, List<Emoji>> getEmojisGroupedByCategory() {
+		List<Emoji> emojis = this.emojiRepository.findAll();
+
+		return emojis.stream().collect(Collectors.groupingBy(Emoji::getCategory));
 	}
 }

@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="RS Chat" uuid="df4b5217-39de-4f5c-afab-5d5b630a681f">
-      <driver-ref>mysql.8</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://rdsinstance.cilsmq4ursdg.eu-west-3.rds.amazonaws.com:3306/rs_chat</jdbc-url>
-      <working-dir>$ProjectFileDir$</working-dir>
-    </data-source>
     <data-source source="LOCAL" name="RS Chat Localhost" uuid="a3d6d777-e675-4fdb-933a-3b6310872c7f">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
@@ -16,6 +9,13 @@
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
     <data-source source="LOCAL" name="Remote RS Chat" uuid="109e47d6-5b9a-4506-8383-f39ead7055fb">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://127.0.0.1:3306</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
+    <data-source source="LOCAL" name="Home RS Chat" uuid="9b6420d8-f095-44a3-989b-aa246148ca87">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>

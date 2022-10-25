@@ -75,7 +75,7 @@ public class JsonMessageWrapper {
 	 * @return the chat id of the message sender.
 	 */
 	public String chatId() {
-		return this.headers().get("chatId").getAsString();
+		return this.headers().get("chatId").getAsString(); // Fixme: Maybe get as Long and change related problems??
 	}
 
 	/**

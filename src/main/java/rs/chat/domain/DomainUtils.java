@@ -24,62 +24,70 @@ public final class DomainUtils {
 	 * @param name         the name of the chat.
 	 * @param chatType     the type of the chat.
 	 * @param s3ChatPrefix the prefix of the chat folder in S3.
+	 * @param entityId     the id of the created entity.
 	 *
 	 * @return the new {@link Chat} object.
 	 */
 	@NotNull
-	private static Chat createChat(String name, String chatType, String s3ChatPrefix) {
+	private static Chat createChat(String name, String chatType, String s3ChatPrefix, Long entityId) {
 		return new Chat(
 				null,
 				name,
 				chatType,
 				s3ChatPrefix + name,
 				Utils.jsonOfNumber("createdAt", System.currentTimeMillis()),
-				RandomStringUtils.randomAlphanumeric(15)
+				RandomStringUtils.randomAlphanumeric(15),
+				"%s-%s".formatted(chatType, entityId.toString())
 		);
 	}
 
 	/**
 	 * Returns a new {@link Chat} of <b>individual</b> type.
 	 *
-	 * @param name the name of the chat.
+	 * @param name     the name of the chat.
+	 * @param entityId the id of the created entity.
 	 *
 	 * @return the new {@link Chat} of <b>individual</b> type.
 	 */
-	public static Chat individualChat(String name) {
-		return createChat(name, USER_CHAT, USER_CHAT_S3_FOLDER_PREFIX);
+	public static Chat individualChat(String name, Long entityId) {
+		//! Caution with entityId: it can follow the structure: "user-userId1_userId2"
+		//! When going to remove this type of chat, the order of the ids is not important, because it is like a set.
+		return createChat(name, USER_CHAT, USER_CHAT_S3_FOLDER_PREFIX, entityId);
 	}
 
 	/**
 	 * Returns a new {@link Chat} of <b>group</b> type.
 	 *
-	 * @param name the name of the chat.
+	 * @param name     the name of the chat.
+	 * @param entityId the id of the created entity.
 	 *
 	 * @return the new {@link Chat} of <b>group</b> type.
 	 */
-	public static Chat groupChat(String name) {
-		return createChat(name, GROUP_CHAT, GROUP_CHAT_S3_FOLDER_PREFIX);
+	public static Chat groupChat(String name, Long entityId) {
+		return createChat(name, GROUP_CHAT, GROUP_CHAT_S3_FOLDER_PREFIX, entityId);
 	}
 
 	/**
 	 * Returns a new {@link Chat} of <b>subject</b> type.
 	 *
-	 * @param name the name of the chat.
+	 * @param name     the name of the chat.
+	 * @param entityId the id of the created entity.
 	 *
 	 * @return the new {@link Chat} of <b>subject</b> type.
 	 */
-	public static Chat subjectChat(String name) {
-		return createChat(name, SUBJECT_CHAT, SUBJECT_CHAT_S3_FOLDER_PREFIX);
+	public static Chat subjectChat(String name, Long entityId) {
+		return createChat(name, SUBJECT_CHAT, SUBJECT_CHAT_S3_FOLDER_PREFIX, entityId);
 	}
 
 	/**
 	 * Returns a new {@link Chat} of <b>degree</b> type.
 	 *
-	 * @param name the name of the chat.
+	 * @param name     the name of the chat.
+	 * @param entityId the id of the created entity.
 	 *
 	 * @return the new {@link Chat} of <b>degree</b> type.
 	 */
-	public static Chat degreeChat(String name) {
-		return createChat(name, DEGREE_CHAT, DEGREE_CHAT_S3_FOLDER_PREFIX);
+	public static Chat degreeChat(String name, Long entityId) {
+		return createChat(name, DEGREE_CHAT, DEGREE_CHAT_S3_FOLDER_PREFIX, entityId);
 	}
 }

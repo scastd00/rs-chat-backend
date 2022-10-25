@@ -7,10 +7,16 @@ import org.springframework.transaction.annotation.Transactional;
 import rs.chat.domain.DomainUtils;
 import rs.chat.domain.entity.Subject;
 import rs.chat.domain.repository.ChatRepository;
+import rs.chat.domain.repository.StudentSubjectRepository;
 import rs.chat.domain.repository.SubjectRepository;
+import rs.chat.domain.repository.TeacherSubjectRepository;
+import rs.chat.domain.repository.UserChatRepository;
 import rs.chat.exceptions.NotFoundException;
+import rs.chat.storage.S3;
 
 import java.util.List;
+
+import static rs.chat.utils.Constants.SUBJECT_CHAT;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +25,9 @@ import java.util.List;
 public class SubjectService {
 	private final SubjectRepository subjectRepository;
 	private final ChatRepository chatRepository;
+	private final UserChatRepository userChatRepository;
+	private final StudentSubjectRepository studentSubjectRepository;
+	private final TeacherSubjectRepository teacherSubjectRepository;
 
 	/**
 	 * Finds all subjects.
@@ -49,7 +58,7 @@ public class SubjectService {
 	 * @return true if subject exists, false otherwise.
 	 */
 	public boolean exists(String subjectName) {
-		return this.getByName(subjectName) != null;
+		return this.subjectRepository.findByName(subjectName).isPresent();
 	}
 
 	/**
@@ -63,7 +72,21 @@ public class SubjectService {
 		Subject savedSubject = this.subjectRepository.save(subject);
 
 		// When I know that the subject is saved, chat is created.
-		this.chatRepository.save(DomainUtils.subjectChat(subject.getName()));
+		this.chatRepository.save(DomainUtils.subjectChat(subject.getName(), savedSubject.getId()));
 		return savedSubject;
+	}
+
+	public void deleteById(Long id) {
+		if (!this.subjectRepository.existsById(id)) {
+			throw new NotFoundException("Subject with id '%d' does not exist.".formatted(id));
+		}
+
+		// Key removal is subject-id
+		this.userChatRepository.deleteAllByUserChatPK_ChatId(id);
+		this.chatRepository.deleteById(id);
+		this.studentSubjectRepository.deleteAllByStuSubjPK_SubjectId(id);
+		this.teacherSubjectRepository.deleteAllByTeaSubjPK_SubjectId(id);
+		this.subjectRepository.deleteById(id);
+		S3.getInstance().deleteHistoryFile(SUBJECT_CHAT + "-" + id);
 	}
 }
