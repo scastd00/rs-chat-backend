@@ -94,6 +94,7 @@ public class Routes {
 
 		public static final String JOIN_CHAT_URL = V_1 + "/chat/join/{code}";
 		public static final String CAN_USER_CONNECT_TO_CHAT_URL = V_1 + "/chat/connect/{chatId}";
+		public static final String LEAVE_CHAT_URL = V_1 + "/chat/leave/{chatId}";
 
 		/**
 		 * Generate an array containing all POST routes allowed to low tier users.
@@ -102,7 +103,7 @@ public class Routes {
 		 */
 		public String[] lowTierRoutes() {
 			return new String[] {
-					UPLOAD_URL, JOIN_CHAT_URL, CAN_USER_CONNECT_TO_CHAT_URL
+					UPLOAD_URL, JOIN_CHAT_URL, CAN_USER_CONNECT_TO_CHAT_URL, LEAVE_CHAT_URL
 			};
 		}
 

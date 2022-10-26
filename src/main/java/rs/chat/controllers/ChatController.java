@@ -2,7 +2,6 @@ package rs.chat.controllers;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,12 +18,14 @@ import rs.chat.service.UserService;
 
 import java.io.IOException;
 
+import static org.springframework.http.HttpStatus.OK;
 import static rs.chat.net.http.HttpResponse.HttpResponseBody;
 import static rs.chat.router.Routes.GetRoute.ALL_CHATS_OF_USER_URL;
 import static rs.chat.router.Routes.GetRoute.ALL_USERS_OF_CHAT_URL;
 import static rs.chat.router.Routes.GetRoute.CHAT_INFO_URL;
 import static rs.chat.router.Routes.PostRoute.CAN_USER_CONNECT_TO_CHAT_URL;
 import static rs.chat.router.Routes.PostRoute.JOIN_CHAT_URL;
+import static rs.chat.router.Routes.PostRoute.LEAVE_CHAT_URL;
 import static rs.chat.utils.Constants.GROUP_CHAT;
 
 /**
@@ -120,7 +121,7 @@ public class ChatController {
 			this.userGroupService.addUserToGroup(userId, Long.parseLong(chat.getKey().split("-")[1]));
 		}
 
-		response.status(HttpStatus.OK).send("name", chat.getName());
+		response.status(OK).send("name", chat.getName());
 		// Update the user's chats list in frontend.
 	}
 
@@ -129,5 +130,14 @@ public class ChatController {
 		Long userId = request.body().get("userId").getAsLong();
 
 		response.ok().send("canConnect", this.chatService.userCanConnectToChat(userId, chatId));
+	}
+
+	@PostMapping(LEAVE_CHAT_URL)
+	public void leaveChat(HttpRequest request, HttpResponse response, @PathVariable Long chatId) throws IOException {
+		Long userId = request.body().get("userId").getAsLong();
+
+		this.chatService.removeUserFromChat(userId, chatId);
+
+		response.sendStatus(OK);
 	}
 }
