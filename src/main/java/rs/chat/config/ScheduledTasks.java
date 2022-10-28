@@ -1,14 +1,14 @@
 package rs.chat.config;
 
-import com.auth0.jwt.exceptions.JWTVerificationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import rs.chat.domain.entity.Session;
 import rs.chat.service.SessionService;
-import rs.chat.utils.Utils;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.util.List;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
@@ -18,6 +18,7 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 @RequiredArgsConstructor
 public class ScheduledTasks {
 	private final SessionService sessionService;
+	private final Clock clock;
 
 	/**
 	 * Deletes all expired sessions from the database every 15 minutes.
@@ -50,11 +51,6 @@ public class ScheduledTasks {
 	 * @return {@code true} if the session is expired, {@code false} otherwise.
 	 */
 	private boolean expiredSession(Session session) {
-		try {
-			Utils.checkAuthorizationToken(session.getAccessToken());
-			return false;
-		} catch (JWTVerificationException e) {
-			return true;
-		}
+		return session.getEndDate().isBefore(Instant.now(this.clock));
 	}
 }

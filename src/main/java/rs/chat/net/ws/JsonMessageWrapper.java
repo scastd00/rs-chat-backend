@@ -14,7 +14,7 @@ import rs.chat.utils.Utils;
  * 	   "sessionId": "<sessionId>",
  * 	   "type": "<typeConstant>",
  * 	   "date": "<currentDate>",
- * 	   "token": "Bearer <accessToken>"
+ * 	   "token": "Bearer <token>"
  *  },
  * 	"body": {
  * 	   "content": "<contentOfMessage>"
@@ -100,7 +100,7 @@ public class JsonMessageWrapper {
 	}
 
 	/**
-	 * @return the access token of the message.
+	 * @return the token of the message.
 	 */
 	public String token() {
 		return this.headers().get("token").getAsString();
@@ -204,9 +204,9 @@ public class JsonMessageWrapper {
 		}
 
 		/**
-		 * Sets the access token of the message.
+		 * Sets the token of the message.
 		 *
-		 * @param value the access token.
+		 * @param value the token.
 		 *
 		 * @return the builder.
 		 */

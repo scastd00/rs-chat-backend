@@ -22,10 +22,12 @@ import rs.chat.service.GroupService;
 import rs.chat.service.SessionService;
 import rs.chat.service.UserGroupService;
 import rs.chat.service.UserService;
+import rs.chat.utils.Constants;
 import rs.chat.utils.Utils;
 
 import java.io.IOException;
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +44,6 @@ import static rs.chat.utils.Constants.ERROR_JSON_KEY;
 import static rs.chat.utils.Constants.JWT_TOKEN_PREFIX;
 import static rs.chat.utils.Constants.JWT_VERIFIER;
 import static rs.chat.utils.Constants.STUDENT_ROLE;
-import static rs.chat.utils.Utils.parseJson;
 
 /**
  * Controller that manages all credential-related requests.
@@ -62,17 +63,17 @@ public class AuthController {
 	 * Performs the login of the user.
 	 *
 	 * @param request  the request containing the credentials of the user.
-	 * @param response the response with the user, the session (with access and refresh tokens)
+	 * @param response the response with the user, the session (with JWT token)
 	 *                 and the chats that the user can access.
 	 *
 	 * @throws IOException if an error occurs.
 	 */
 	@PostMapping(LOGIN_URL)
 	public void login(HttpRequest request, HttpResponse response) throws IOException {
-		String jsonTokens = request.get("USER:TOKENS").toString();
+		String token = request.get("USER:TOKEN").toString();
 		String username = request.get("USER:USERNAME").toString();
 
-		JsonObject tokens = parseJson(jsonTokens);
+		boolean isExtendedToken = request.body().get("remember").getAsBoolean();
 
 		// Get all data from db
 		User user = this.userService.getUser(username);
@@ -81,8 +82,8 @@ public class AuthController {
 						null,
 						request.getRemoteAddr(),
 						Instant.now(this.clock),
-						tokens.get("accessToken").getAsString(),
-						tokens.get("refreshToken").getAsString(),
+						Instant.now(this.clock).plus(isExtendedToken ? Constants.TOKEN_EXPIRATION_DURATION_NORMAL : Duration.ZERO),
+						token,
 						user.getId()
 				)
 		);
@@ -104,7 +105,7 @@ public class AuthController {
 	 * Registers a new user to the application.
 	 *
 	 * @param request  the request containing the credentials of the user.
-	 * @param response the response with the user, the session (with access and refresh tokens)
+	 * @param response the response with the user, the session (with JWT token)
 	 *                 and the chats that the user can access by registering to the application
 	 *                 (global group chat by default).
 	 *
@@ -132,7 +133,7 @@ public class AuthController {
 		));
 
 		// Generate tokens
-		Map<String, String> tokens = Utils.generateTokens(
+		String token = Utils.generateJWTToken(
 				savedUser.getUsername(),
 				request.getRequestURL().toString(),
 				savedUser.getRole(),
@@ -144,8 +145,8 @@ public class AuthController {
 						null,
 						request.getRemoteAddr(),
 						Instant.now(this.clock),
-						tokens.get("accessToken"),
-						tokens.get("refreshToken"),
+						Instant.now(this.clock).plus(Constants.TOKEN_EXPIRATION_DURATION_NORMAL),
+						token,
 						savedUser.getId()
 				)
 		);

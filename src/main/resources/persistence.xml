@@ -99,14 +99,14 @@
 			<basic name="srcIp">
 				<column name="src_ip"/>
 			</basic>
-			<basic name="dateStarted">
-				<column name="date_started"/>
+			<basic name="startDate">
+				<column name="start_date"/>
 			</basic>
-			<basic name="accessToken">
-				<column name="access_token"/>
+			<basic name="endDate">
+				<column name="end_date"/>
 			</basic>
-			<basic name="refreshToken">
-				<column name="refresh_token"/>
+			<basic name="token">
+				<column name="token"/>
 			</basic>
 			<basic name="userId">
 				<column name="user_id"/>

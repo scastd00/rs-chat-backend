@@ -11,9 +11,7 @@ import rs.chat.net.ws.JsonMessageWrapper;
 
 import java.net.URI;
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static rs.chat.net.ws.WSMessage.ACTIVE_USERS_MESSAGE;
 import static rs.chat.net.ws.WSMessage.ERROR_MESSAGE;
@@ -21,8 +19,6 @@ import static rs.chat.utils.Constants.ALGORITHM;
 import static rs.chat.utils.Constants.GSON;
 import static rs.chat.utils.Constants.JWT_TOKEN_PREFIX;
 import static rs.chat.utils.Constants.JWT_VERIFIER;
-import static rs.chat.utils.Constants.REFRESH_TOKEN_EXPIRATION_DURATION_EXTENDED;
-import static rs.chat.utils.Constants.REFRESH_TOKEN_EXPIRATION_DURATION_NORMAL;
 import static rs.chat.utils.Constants.TOKEN_EXPIRATION_DURATION_EXTENDED;
 import static rs.chat.utils.Constants.TOKEN_EXPIRATION_DURATION_NORMAL;
 
@@ -45,61 +41,39 @@ public final class Utils {
 	}
 
 	/**
-	 * Creates the tokens that are used to authenticate the user.
-	 * 2 tokens are created:
-	 * <ul>
-	 *     <li>Access token: this token is used to authenticate the user.</li>
-	 *     <li>Refresh token: this token is used to refresh the access token.</li>
-	 * </ul>
+	 * Creates the token that is used to authenticate the user.
 	 *
 	 * @param username             the username of the user.
 	 * @param requestURL           the URL of the request.
 	 * @param role                 the role of the user.
-	 * @param extendExpirationTime
+	 * @param extendExpirationTime if the expiration time of the token should be extended.
 	 *
 	 * @return the tokens that are used to authenticate the user.
 	 */
-	public static Map<String, String> generateTokens(String username, String requestURL, String role, boolean extendExpirationTime) {
-		Map<String, String> tokens = new HashMap<>();
-
-		String accessToken = JWT.create()
-		                        .withSubject(username)
-		                        .withExpiresAt(Instant.now().plus(
-				                        extendExpirationTime ?
-				                        TOKEN_EXPIRATION_DURATION_EXTENDED :
-				                        TOKEN_EXPIRATION_DURATION_NORMAL
-		                        ))
-		                        .withIssuer(requestURL) // URL of our application.
-		                        .withClaim("role", role) // Only one role is in DB.
-		                        .sign(ALGORITHM);
-
-		String refreshToken = JWT.create()
-		                         .withSubject(username)
-		                         .withExpiresAt(Instant.now().plus(
-				                         extendExpirationTime ?
-				                         REFRESH_TOKEN_EXPIRATION_DURATION_EXTENDED :
-				                         REFRESH_TOKEN_EXPIRATION_DURATION_NORMAL
-		                         ))
-		                         .withIssuer(requestURL) // URL of our application.
-		                         .sign(ALGORITHM);
-
-		tokens.put("accessToken", accessToken);
-		tokens.put("refreshToken", refreshToken);
-
-		return tokens;
+	public static String generateJWTToken(String username, String requestURL, String role, boolean extendExpirationTime) {
+		return JWT.create()
+		          .withSubject(username)
+		          .withExpiresAt(Instant.now().plus(
+				          extendExpirationTime ?
+				          TOKEN_EXPIRATION_DURATION_EXTENDED :
+				          TOKEN_EXPIRATION_DURATION_NORMAL
+		          ))
+		          .withIssuer(requestURL) // URL of our application.
+		          .withClaim("role", role) // Only one role is in DB.
+		          .sign(ALGORITHM);
 	}
 
 	/**
 	 * Verifies an authorization token.
 	 *
-	 * @param fullToken the token to verify.
+	 * @param token the token to verify.
 	 *
 	 * @return the decoded JWT token.
 	 *
 	 * @throws JWTVerificationException if the token is invalid.
 	 */
-	public static DecodedJWT checkAuthorizationToken(String fullToken) throws JWTVerificationException {
-		return JWT_VERIFIER.verify(fullToken.replace(JWT_TOKEN_PREFIX, ""));
+	public static DecodedJWT checkAuthorizationToken(String token) throws JWTVerificationException {
+		return JWT_VERIFIER.verify(token.replace(JWT_TOKEN_PREFIX, ""));
 	}
 
 	/**
@@ -189,9 +163,9 @@ public final class Utils {
 	}
 
 	private static URI getCurrentS3EndpointURI() {
-		return isDevEnv() ?
-		       Constants.LOCAL_S3_ENDPOINT_URI_FOR_FILES :
-		       Constants.REMOTE_S3_ENDPOINT_URI_FOR_FILES;
+		return isDevEnv()
+		       ? Constants.LOCAL_S3_ENDPOINT_URI_FOR_FILES
+		       : Constants.REMOTE_S3_ENDPOINT_URI_FOR_FILES;
 	}
 
 	public static String bytesToUnit(int bytes) {

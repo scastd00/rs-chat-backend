@@ -82,12 +82,12 @@ CREATE TABLE `users`
 
 CREATE TABLE `sessions`
 (
-	`id`            bigint       NOT NULL AUTO_INCREMENT,
-	`src_ip`        varchar(32)  NOT NULL, -- In case we support IPv6.
-	`date_started`  datetime     NOT NULL,
-	`access_token`  varchar(300) NOT NULL,
-	`refresh_token` varchar(300) NOT NULL,
-	`user_id`       bigint       NOT NULL,
+	`id`         bigint       NOT NULL AUTO_INCREMENT,
+	`src_ip`     varchar(32)  NOT NULL, -- In case we support IPv6.
+	`start_date` datetime     NOT NULL,
+	`end_date`   datetime     NOT NULL,
+	`token`      varchar(300) NOT NULL,
+	`user_id`    bigint       NOT NULL,
 
 	CONSTRAINT `pk_session_id` PRIMARY KEY (`id`)
 ) ENGINE = InnoDB;

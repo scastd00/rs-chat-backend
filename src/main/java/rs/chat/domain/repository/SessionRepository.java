@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface SessionRepository extends JpaRepository<Session, Long> {
-	@NotNull Optional<Session> findByAccessToken(String token);
+	@NotNull Optional<Session> findByToken(String token);
 
 	@NotNull Optional<Session> findByUserId(Long userId);
 

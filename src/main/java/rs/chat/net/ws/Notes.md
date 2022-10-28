@@ -10,7 +10,7 @@ The following example shows how the messages are exchanged between the client an
     "sessionId": "<sessionId>",
     "type": "<typeConstant>",
     "date": "<currentDate>",
-    "token": "Bearer <accessToken>"
+    "token": "Bearer <token>"
   },
   "body": {
     "content": "<contentOfMessage>"
