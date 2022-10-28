@@ -8,12 +8,13 @@ import com.google.gson.Gson;
 import java.io.File;
 import java.net.URI;
 import java.time.Duration;
+import java.util.List;
 
 public final class Constants {
 	private Constants() {
 	}
 
-	public static final String[] ACCEPTED_ORIGINS = {
+	public static final List<String> ACCEPTED_ORIGINS = List.of(
 			// Local development
 			"http://localhost:3000",
 			// Production deployments
@@ -21,8 +22,8 @@ public final class Constants {
 			"https://rschat-scastd00.vercel.app/",
 			"https://rschat-git-main-scastd00.vercel.app/",
 			// Preview deployments
-			"https://rschat-git-dev-scastd00.vercel.app/",
-	};
+			"https://rschat-git-dev-scastd00.vercel.app/"
+	);
 
 	public static final Gson GSON = new Gson();
 	public static final String ERROR_JSON_KEY = "error";
@@ -36,9 +37,9 @@ public final class Constants {
 	public static final String STUDENT_ROLE = "STUDENT";
 	public static final String TEACHER_ROLE = "TEACHER";
 	public static final String ADMIN_ROLE = "ADMINISTRATOR";
-	public static final String[] LOW_TIER_ROLES = { STUDENT_ROLE, TEACHER_ROLE, ADMIN_ROLE };
-	public static final String[] MEDIUM_TIER_ROLES = { TEACHER_ROLE, ADMIN_ROLE };
-	public static final String[] TOP_TIER_ROLES = { ADMIN_ROLE };
+	public static final List<String> LOW_TIER_ROLES = List.of(STUDENT_ROLE, TEACHER_ROLE, ADMIN_ROLE);
+	public static final List<String> MEDIUM_TIER_ROLES = List.of(TEACHER_ROLE, ADMIN_ROLE);
+	public static final List<String> TOP_TIER_ROLES = List.of(ADMIN_ROLE);
 
 	public static final JWTVerifier JWT_VERIFIER = JWT.require(ALGORITHM).build();
 	public static final String JWT_TOKEN_PREFIX = "Bearer ";

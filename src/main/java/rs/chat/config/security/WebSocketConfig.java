@@ -8,6 +8,7 @@ import rs.chat.net.ws.WebSocketHandler;
 
 import static rs.chat.router.Routes.WS_CHAT_ENDPOINT;
 import static rs.chat.utils.Constants.ACCEPTED_ORIGINS;
+import static rs.chat.utils.Constants.STRING_ARRAY;
 
 /**
  * Adds the handler that is used to handle web socket requests.
@@ -21,6 +22,6 @@ public class WebSocketConfig implements WebSocketConfigurer {
 	@Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
 		registry.addHandler(new WebSocketHandler(), WS_CHAT_ENDPOINT)
-		        .setAllowedOrigins(ACCEPTED_ORIGINS);
+		        .setAllowedOrigins(ACCEPTED_ORIGINS.toArray(STRING_ARRAY));
 	}
 }
