@@ -117,7 +117,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	 */
 	@NotNull
 	private MessageStrategy decideStrategy(WSMessage receivedMessageType) {
-		return this.strategies.getOrDefault(receivedMessageType.type(), this.strategies.get(ERROR_MESSAGE.type()));
+		return strategies.getOrDefault(receivedMessageType.type(), strategies.get(ERROR_MESSAGE.type()));
 	}
 
 	/**
