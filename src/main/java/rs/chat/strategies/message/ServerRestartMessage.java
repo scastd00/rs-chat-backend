@@ -1,5 +1,7 @@
 package rs.chat.strategies.message;
 
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 import rs.chat.exceptions.WebSocketException;
 import rs.chat.net.ws.JsonMessageWrapper;
 import rs.chat.net.ws.WSMessage;
@@ -21,6 +23,21 @@ public class ServerRestartMessage implements MessageStrategy {
 		ShutdownServerTask shutdownTask = DefaultTasks.SHUTDOWN;
 		shutdownTask.setWebSocketChatMap(webSocketChatMap);
 
-		Utils.executeTask(shutdownTask);
+		Utils.executeTask(shutdownTask, exception -> {
+			try {
+				WebSocketSession session = (WebSocketSession) otherData.get("session");
+				session.sendMessage(new TextMessage(
+						Utils.createServerMessage(
+								"An error occurred while shutting down the server.%n%s".formatted(exception.getStatus().getMessage()),
+								WSMessage.SERVER_INFO_MESSAGE.type(),
+								""
+						)
+				));
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+
+			return null;
+		});
 	}
 }

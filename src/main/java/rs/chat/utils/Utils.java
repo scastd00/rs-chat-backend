@@ -9,6 +9,7 @@ import rs.chat.exceptions.TokenValidationException;
 import rs.chat.exceptions.WebSocketException;
 import rs.chat.net.ws.JsonMessageWrapper;
 import rs.chat.tasks.Task;
+import rs.chat.tasks.TaskExecutionException;
 
 import java.net.URI;
 import java.time.Instant;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.function.Function;
 
 import static rs.chat.net.ws.WSMessage.ACTIVE_USERS_MESSAGE;
 import static rs.chat.net.ws.WSMessage.ERROR_MESSAGE;
@@ -39,14 +41,20 @@ public final class Utils {
 			return t;
 		};
 
-		EXECUTOR_SERVICE = Executors.newScheduledThreadPool(2, threadFactory);
+		EXECUTOR_SERVICE = Executors.newCachedThreadPool(threadFactory);
 	}
 
 	private Utils() {
 	}
 
-	public static void executeTask(Task task) {
-		EXECUTOR_SERVICE.submit(task);
+	public static void executeTask(Task task, Function<TaskExecutionException, Void> exceptionHandler) {
+		EXECUTOR_SERVICE.execute(() -> {
+			try {
+				task.run();
+			} catch (TaskExecutionException e) {
+				exceptionHandler.apply(e);
+			}
+		});
 	}
 
 	/**

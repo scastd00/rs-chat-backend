@@ -11,6 +11,9 @@ import java.util.concurrent.TimeUnit;
 import static rs.chat.net.ws.WSMessage.SERVER_INFO_MESSAGE;
 import static rs.chat.utils.Utils.createServerMessage;
 
+/**
+ * Task for shutting down the server.
+ */
 @Slf4j
 @Getter
 @RequiredArgsConstructor
@@ -22,10 +25,25 @@ public class ShutdownServerTask implements Task {
 	private WebSocketChatMap webSocketChatMap;
 
 	@Override
-	public void run() {
+	public void run() throws TaskExecutionException {
+		if (this.webSocketChatMap == null) {
+			log.error("WebSocketChatMap is null, cannot send shutdown message.");
+			throw new TaskExecutionException(
+					TaskStatus.builder()
+					          .status(TaskStatus.FATAL)
+					          .message("WebSocketChatMap is null, cannot send shutdown message.")
+					          .build()
+			);
+		}
+
 		if (this.running) {
-			log.info("Server is already shutting down.");
-			return;
+			log.warn("Server is already shutting down.");
+			throw new TaskExecutionException(
+					TaskStatus.builder()
+					          .status(TaskStatus.WARNING)
+					          .message("Server is already shutting down.")
+					          .build()
+			);
 		}
 
 		this.running = true;
@@ -33,14 +51,26 @@ public class ShutdownServerTask implements Task {
 
 		try {
 			this.webSocketChatMap.totalBroadcast(
-					createServerMessage("Server is shutting down.", SERVER_INFO_MESSAGE.type(), "")
+					createServerMessage(
+							"Server is shutting down in %d %s.".formatted(this.delay, this.timeUnit.name().toLowerCase()),
+							SERVER_INFO_MESSAGE.type(),
+							""
+					)
 			);
-			this.webSocketChatMap.close();
 
 			Thread.sleep(this.timeUnit.toMillis(this.delay));
+
+			this.webSocketChatMap.close();
 			System.exit(0);
 		} catch (Exception e) {
 			log.error("Error while shutting down server.", e);
+
+			throw new TaskExecutionException(
+					TaskStatus.builder()
+					          .status(TaskStatus.FATAL)
+					          .message("Error while shutting down server.")
+					          .build()
+			);
 		}
 	}
 }
