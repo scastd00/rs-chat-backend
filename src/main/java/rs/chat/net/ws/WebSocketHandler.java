@@ -27,19 +27,19 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static rs.chat.net.ws.WSMessage.ACTIVE_USERS_MESSAGE;
-import static rs.chat.net.ws.WSMessage.AUDIO_MESSAGE;
-import static rs.chat.net.ws.WSMessage.ERROR_MESSAGE;
-import static rs.chat.net.ws.WSMessage.GET_HISTORY_MESSAGE;
-import static rs.chat.net.ws.WSMessage.IMAGE_MESSAGE;
-import static rs.chat.net.ws.WSMessage.PDF_MESSAGE;
-import static rs.chat.net.ws.WSMessage.PING_MESSAGE;
-import static rs.chat.net.ws.WSMessage.RESTART_MESSAGE;
-import static rs.chat.net.ws.WSMessage.TEXT_DOC_MESSAGE;
-import static rs.chat.net.ws.WSMessage.TEXT_MESSAGE;
-import static rs.chat.net.ws.WSMessage.USER_JOINED;
-import static rs.chat.net.ws.WSMessage.USER_LEFT;
-import static rs.chat.net.ws.WSMessage.VIDEO_MESSAGE;
+import static rs.chat.net.ws.Message.ACTIVE_USERS_MESSAGE;
+import static rs.chat.net.ws.Message.AUDIO_MESSAGE;
+import static rs.chat.net.ws.Message.ERROR_MESSAGE;
+import static rs.chat.net.ws.Message.GET_HISTORY_MESSAGE;
+import static rs.chat.net.ws.Message.IMAGE_MESSAGE;
+import static rs.chat.net.ws.Message.PDF_MESSAGE;
+import static rs.chat.net.ws.Message.PING_MESSAGE;
+import static rs.chat.net.ws.Message.RESTART_MESSAGE;
+import static rs.chat.net.ws.Message.TEXT_DOC_MESSAGE;
+import static rs.chat.net.ws.Message.TEXT_MESSAGE;
+import static rs.chat.net.ws.Message.USER_JOINED;
+import static rs.chat.net.ws.Message.USER_LEFT;
+import static rs.chat.net.ws.Message.VIDEO_MESSAGE;
 import static rs.chat.utils.Utils.createServerErrorMessage;
 
 /**
@@ -85,12 +85,12 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		//  but cannot receive them.
 
 		JsonMessageWrapper wrappedMessage = new JsonMessageWrapper(message.getPayload());
-		WSMessage receivedMessageType = new WSMessage(wrappedMessage.type(), null, null);
+		Message receivedMessageType = new Message(wrappedMessage.type(), null, null);
 
 		Map<String, Object> otherData = new HashMap<>();
 		otherData.put("session", session);
-		otherData.put("wsMessage", receivedMessageType);
-		otherData.put("wsClientID", new WSClientID(
+		otherData.put("message", receivedMessageType);
+		otherData.put("clientID", new ClientID(
 				wrappedMessage.username(),
 				wrappedMessage.chatId(),
 				wrappedMessage.sessionId()
@@ -116,7 +116,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	 * @return strategy to use for handling the message.
 	 */
 	@NotNull
-	private MessageStrategy decideStrategy(WSMessage receivedMessageType) {
+	private MessageStrategy decideStrategy(Message receivedMessageType) {
 		return strategies.getOrDefault(receivedMessageType.type(), strategies.get(ERROR_MESSAGE.type()));
 	}
 

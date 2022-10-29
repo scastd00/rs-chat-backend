@@ -1,7 +1,7 @@
 package rs.chat.strategies.upload;
 
 import rs.chat.domain.entity.File;
-import rs.chat.net.ws.WSMessage;
+import rs.chat.net.ws.Message;
 import rs.chat.storage.S3;
 
 import javax.imageio.ImageIO;
@@ -26,7 +26,7 @@ public class ImageStrategy implements FileUploadStrategy {
 		metadata.put("height", String.valueOf(image.getHeight()));
 		metadata.put("size", bytesToUnit(binaryData.length));
 		metadata.put("maxWidth", this.getMaxWidth(image.getWidth(), image.getHeight()));
-		metadata.put("messageType", WSMessage.IMAGE_MESSAGE.type());
+		metadata.put("messageType", Message.IMAGE_MESSAGE.type());
 
 		URI uri = S3.getInstance().uploadFile(file.getType(), file.getName(), binaryData, metadata);
 

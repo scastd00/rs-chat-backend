@@ -4,17 +4,17 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import rs.chat.exceptions.WebSocketException;
 import rs.chat.net.ws.JsonMessageWrapper;
-import rs.chat.net.ws.WSMessage;
+import rs.chat.net.ws.Message;
 import rs.chat.net.ws.WebSocketChatMap;
 
 import java.io.IOException;
 import java.util.Map;
 
-import static rs.chat.net.ws.WSMessage.PONG_MESSAGE;
+import static rs.chat.net.ws.Message.PONG_MESSAGE;
 import static rs.chat.utils.Utils.createServerMessage;
 
 /**
- * Strategy for handling {@link WSMessage#PING_MESSAGE} messages.
+ * Strategy for handling {@link Message#PING_MESSAGE} messages.
  */
 public class PingStrategy implements MessageStrategy {
 	@Override

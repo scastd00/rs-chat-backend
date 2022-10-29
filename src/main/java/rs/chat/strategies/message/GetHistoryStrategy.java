@@ -7,9 +7,9 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import rs.chat.exceptions.WebSocketException;
+import rs.chat.net.ws.ClientID;
 import rs.chat.net.ws.JsonMessageWrapper;
-import rs.chat.net.ws.WSClientID;
-import rs.chat.net.ws.WSMessage;
+import rs.chat.net.ws.Message;
 import rs.chat.net.ws.WebSocketChatMap;
 import rs.chat.utils.Utils;
 
@@ -21,14 +21,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static rs.chat.net.ws.WSMessage.GET_HISTORY_MESSAGE;
-import static rs.chat.net.ws.WSMessage.USER_JOINED;
-import static rs.chat.net.ws.WSMessage.USER_LEFT;
+import static rs.chat.net.ws.Message.GET_HISTORY_MESSAGE;
+import static rs.chat.net.ws.Message.USER_JOINED;
+import static rs.chat.net.ws.Message.USER_LEFT;
 import static rs.chat.utils.Constants.MAX_CHAT_HISTORY_PER_REQUEST;
 import static rs.chat.utils.Utils.createServerMessage;
 
 /**
- * Strategy for handling {@link WSMessage#GET_HISTORY_MESSAGE} messages.
+ * Strategy for handling {@link Message#GET_HISTORY_MESSAGE} messages.
  */
 @Slf4j
 public class GetHistoryStrategy implements MessageStrategy {
@@ -45,7 +45,7 @@ public class GetHistoryStrategy implements MessageStrategy {
 		 */
 		File historyFile = GET_HISTORY_MESSAGE.historyFile(wrappedMessage.chatId());
 		String history = IOUtils.toString(new FileReader(historyFile));
-		String username = ((WSClientID) otherData.get("wsClientID")).username();
+		String username = ((ClientID) otherData.get("clientID")).username();
 
 		JsonArray lastMessages = new JsonArray();
 		List<String> reversedHistory = Arrays.asList(history.split("\n"));

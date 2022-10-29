@@ -8,7 +8,7 @@ import rs.chat.net.ws.WebSocketChatMap;
 
 import java.util.concurrent.TimeUnit;
 
-import static rs.chat.net.ws.WSMessage.SERVER_INFO_MESSAGE;
+import static rs.chat.net.ws.Message.SERVER_INFO_MESSAGE;
 import static rs.chat.utils.Utils.createServerMessage;
 
 /**

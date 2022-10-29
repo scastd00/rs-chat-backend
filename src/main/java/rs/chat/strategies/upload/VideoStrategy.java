@@ -5,7 +5,7 @@ import org.mp4parser.IsoFile;
 import org.mp4parser.boxes.iso14496.part12.MovieHeaderBox;
 import org.mp4parser.tools.ByteBufferByteChannel;
 import rs.chat.domain.entity.File;
-import rs.chat.net.ws.WSMessage;
+import rs.chat.net.ws.Message;
 import rs.chat.storage.S3;
 
 import java.io.IOException;
@@ -35,7 +35,7 @@ public class VideoStrategy implements FileUploadStrategy {
 
 		metadata.put("specificType", specificType);
 		metadata.put("size", bytesToUnit(binaryData.length));
-		metadata.put("messageType", WSMessage.VIDEO_MESSAGE.type());
+		metadata.put("messageType", Message.VIDEO_MESSAGE.type());
 
 		URI uri = S3.getInstance().uploadFile(file.getType(), file.getName(), binaryData, metadata);
 

@@ -1,7 +1,7 @@
 package rs.chat.strategies.upload;
 
 import rs.chat.domain.entity.File;
-import rs.chat.net.ws.WSMessage;
+import rs.chat.net.ws.Message;
 import rs.chat.storage.S3;
 
 import java.io.IOException;
@@ -18,7 +18,7 @@ public class AudioStrategy implements FileUploadStrategy {
 		Map<String, String> metadata = new HashMap<>();
 		metadata.put("specificType", specificType);
 		metadata.put("size", bytesToUnit(binaryData.length));
-		metadata.put("messageType", WSMessage.AUDIO_MESSAGE.type());
+		metadata.put("messageType", Message.AUDIO_MESSAGE.type());
 
 		URI uri = S3.getInstance().uploadFile(file.getType(), file.getName(), binaryData, metadata);
 

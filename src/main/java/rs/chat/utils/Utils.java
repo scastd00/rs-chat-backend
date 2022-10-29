@@ -22,8 +22,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.function.Function;
 
-import static rs.chat.net.ws.WSMessage.ACTIVE_USERS_MESSAGE;
-import static rs.chat.net.ws.WSMessage.ERROR_MESSAGE;
+import static rs.chat.net.ws.Message.ACTIVE_USERS_MESSAGE;
+import static rs.chat.net.ws.Message.ERROR_MESSAGE;
 import static rs.chat.utils.Constants.ALGORITHM;
 import static rs.chat.utils.Constants.GSON;
 import static rs.chat.utils.Constants.JWT_TOKEN_PREFIX;

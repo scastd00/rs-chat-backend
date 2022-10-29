@@ -10,11 +10,11 @@ import java.util.Objects;
 /**
  * Record to keep track of a client's connection.
  *
- * @param session    {@link WebSocketSession} of the client.
- * @param wsClientID {@link WSClientID} of the client.
+ * @param session  {@link WebSocketSession} of the client.
+ * @param clientID {@link ClientID} of the client.
  */
 @Slf4j
-public record WSClient(WebSocketSession session, WSClientID wsClientID) {
+public record Client(WebSocketSession session, ClientID clientID) {
 	/**
 	 * Send a message to the client.
 	 *
@@ -46,13 +46,13 @@ public record WSClient(WebSocketSession session, WSClientID wsClientID) {
 		if (this == o) return true;
 		if (o == null || this.getClass() != o.getClass()) return false;
 
-		WSClient that = (WSClient) o;
+		Client that = (Client) o;
 
-		return this.wsClientID.equals(that.wsClientID);
+		return this.clientID.equals(that.clientID);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.wsClientID);
+		return Objects.hash(this.clientID);
 	}
 }
