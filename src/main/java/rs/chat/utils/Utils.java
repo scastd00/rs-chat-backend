@@ -5,6 +5,9 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import rs.chat.exceptions.TokenValidationException;
 import rs.chat.exceptions.WebSocketException;
 import rs.chat.net.ws.JsonMessageWrapper;
@@ -31,6 +34,7 @@ import static rs.chat.utils.Constants.TOKEN_EXPIRATION_DURATION_NORMAL;
 /**
  * Utility class for common operations.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Utils {
 	private static final ExecutorService EXECUTOR_SERVICE;
 
@@ -44,10 +48,7 @@ public final class Utils {
 		EXECUTOR_SERVICE = Executors.newCachedThreadPool(threadFactory);
 	}
 
-	private Utils() {
-	}
-
-	public static void executeTask(Task task, Function<TaskExecutionException, Void> exceptionHandler) {
+	public static void executeTask(@NotNull Task task, @NotNull Function<TaskExecutionException, Void> exceptionHandler) {
 		EXECUTOR_SERVICE.execute(() -> {
 			try {
 				task.run();

@@ -1,12 +1,13 @@
 package rs.chat.utils;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * Utility class for memory related operations.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MemoryUtils {
-	private MemoryUtils() {
-	}
-
 	/**
 	 * @return the current memory usage in bytes.
 	 */

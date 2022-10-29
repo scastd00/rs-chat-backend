@@ -4,16 +4,16 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.google.gson.Gson;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.io.File;
 import java.net.URI;
 import java.time.Duration;
 import java.util.List;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Constants {
-	private Constants() {
-	}
-
 	public static final List<String> ACCEPTED_ORIGINS = List.of(
 			// Local development
 			"http://localhost:3000",
