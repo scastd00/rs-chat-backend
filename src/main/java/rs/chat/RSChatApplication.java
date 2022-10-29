@@ -15,9 +15,9 @@ public class RSChatApplication {
 
 		log.info("RSChatApplication started successfully at port {}", System.getenv("PORT"));
 
-		SpringApplication.getShutdownHandlers().add(() -> {
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 			log.info("Shutting down RSChatApplication");
 			S3.getInstance().close();
-		});
+		}));
 	}
 }

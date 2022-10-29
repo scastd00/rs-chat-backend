@@ -1,5 +1,6 @@
 package rs.chat.config.security;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
@@ -15,13 +16,16 @@ import static rs.chat.utils.Constants.STRING_ARRAY;
  */
 @Configuration
 @EnableWebSocket
+@RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketConfigurer {
+	private final WebSocketHandler webSocketHandler;
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-		registry.addHandler(new WebSocketHandler(), WS_CHAT_ENDPOINT)
+		registry.addHandler(this.webSocketHandler, WS_CHAT_ENDPOINT)
 		        .setAllowedOrigins(ACCEPTED_ORIGINS.toArray(STRING_ARRAY));
 	}
 }

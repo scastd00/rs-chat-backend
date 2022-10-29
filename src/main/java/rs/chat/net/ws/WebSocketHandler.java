@@ -1,7 +1,9 @@
 package rs.chat.net.ws;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -13,6 +15,7 @@ import rs.chat.strategies.message.ImageMessageStrategy;
 import rs.chat.strategies.message.MessageStrategy;
 import rs.chat.strategies.message.PdfMessageStrategy;
 import rs.chat.strategies.message.PingStrategy;
+import rs.chat.strategies.message.ServerRestartMessage;
 import rs.chat.strategies.message.TextDocMessageStrategy;
 import rs.chat.strategies.message.TextMessageStrategy;
 import rs.chat.strategies.message.UserJoinedStrategy;
@@ -31,6 +34,7 @@ import static rs.chat.net.ws.WSMessage.GET_HISTORY_MESSAGE;
 import static rs.chat.net.ws.WSMessage.IMAGE_MESSAGE;
 import static rs.chat.net.ws.WSMessage.PDF_MESSAGE;
 import static rs.chat.net.ws.WSMessage.PING_MESSAGE;
+import static rs.chat.net.ws.WSMessage.RESTART_MESSAGE;
 import static rs.chat.net.ws.WSMessage.TEXT_DOC_MESSAGE;
 import static rs.chat.net.ws.WSMessage.TEXT_MESSAGE;
 import static rs.chat.net.ws.WSMessage.USER_JOINED;
@@ -42,30 +46,30 @@ import static rs.chat.utils.Utils.createServerErrorMessage;
  * WebSocket handler for the application.
  */
 @Slf4j
+@Component
+@RequiredArgsConstructor
 public class WebSocketHandler extends TextWebSocketHandler {
-	private final WebSocketChatMap chatMap = new WebSocketChatMap();
-	private final Map<String, MessageStrategy> strategies = new HashMap<>();
+	private static final Map<String, MessageStrategy> strategies = new HashMap<>();
+	private final WebSocketChatMap chatMap;
 
-	/**
-	 * Creates the instance of the class and initializes the strategies.
-	 */
-	public WebSocketHandler() {
+	static {
 		// Todo: this increases speed because instances are created once and then reused.
 		//  If we want to save memory, we can create a new instance every time.
-		this.strategies.put(USER_JOINED.type(), new UserJoinedStrategy());
-		this.strategies.put(USER_LEFT.type(), new UserLeftStrategy());
+		strategies.put(USER_JOINED.type(), new UserJoinedStrategy());
+		strategies.put(USER_LEFT.type(), new UserLeftStrategy());
 
-		this.strategies.put(TEXT_MESSAGE.type(), new TextMessageStrategy());
-		this.strategies.put(IMAGE_MESSAGE.type(), new ImageMessageStrategy());
-		this.strategies.put(AUDIO_MESSAGE.type(), new AudioMessageStrategy());
-		this.strategies.put(VIDEO_MESSAGE.type(), new VideoMessageStrategy());
-		this.strategies.put(PDF_MESSAGE.type(), new PdfMessageStrategy());
-		this.strategies.put(TEXT_DOC_MESSAGE.type(), new TextDocMessageStrategy());
+		strategies.put(TEXT_MESSAGE.type(), new TextMessageStrategy());
+		strategies.put(IMAGE_MESSAGE.type(), new ImageMessageStrategy());
+		strategies.put(AUDIO_MESSAGE.type(), new AudioMessageStrategy());
+		strategies.put(VIDEO_MESSAGE.type(), new VideoMessageStrategy());
+		strategies.put(PDF_MESSAGE.type(), new PdfMessageStrategy());
+		strategies.put(TEXT_DOC_MESSAGE.type(), new TextDocMessageStrategy());
 
-		this.strategies.put(ACTIVE_USERS_MESSAGE.type(), new ActiveUsersStrategy());
-		this.strategies.put(GET_HISTORY_MESSAGE.type(), new GetHistoryStrategy());
-		this.strategies.put(PING_MESSAGE.type(), new PingStrategy());
-		this.strategies.put(ERROR_MESSAGE.type(), new ErrorMessageStrategy());
+		strategies.put(ACTIVE_USERS_MESSAGE.type(), new ActiveUsersStrategy());
+		strategies.put(GET_HISTORY_MESSAGE.type(), new GetHistoryStrategy());
+		strategies.put(PING_MESSAGE.type(), new PingStrategy());
+		strategies.put(ERROR_MESSAGE.type(), new ErrorMessageStrategy());
+		strategies.put(RESTART_MESSAGE.type(), new ServerRestartMessage());
 	}
 
 	/**

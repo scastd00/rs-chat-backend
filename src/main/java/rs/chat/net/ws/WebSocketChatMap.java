@@ -3,9 +3,9 @@ package rs.chat.net.ws;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +18,7 @@ import static java.util.concurrent.TimeUnit.MINUTES;
  */
 @NoArgsConstructor
 @Slf4j
-@Configuration
+@Component
 @EnableScheduling
 public class WebSocketChatMap {
 	/**

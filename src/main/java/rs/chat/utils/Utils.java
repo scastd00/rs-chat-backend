@@ -12,6 +12,9 @@ import rs.chat.net.ws.JsonMessageWrapper;
 import java.net.URI;
 import java.time.Instant;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 import static rs.chat.net.ws.WSMessage.ACTIVE_USERS_MESSAGE;
 import static rs.chat.net.ws.WSMessage.ERROR_MESSAGE;
@@ -26,7 +29,23 @@ import static rs.chat.utils.Constants.TOKEN_EXPIRATION_DURATION_NORMAL;
  * Utility class for common operations.
  */
 public final class Utils {
+	private static final ExecutorService EXECUTOR_SERVICE;
+
+	static {
+		ThreadFactory threadFactory = r -> {
+			Thread t = new Thread(r);
+			t.setDaemon(true);
+			return t;
+		};
+
+		EXECUTOR_SERVICE = Executors.newScheduledThreadPool(2, threadFactory);
+	}
+
 	private Utils() {
+	}
+
+	public static ExecutorService taskExecutor() {
+		return EXECUTOR_SERVICE;
 	}
 
 	/**
