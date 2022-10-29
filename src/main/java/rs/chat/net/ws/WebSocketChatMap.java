@@ -185,6 +185,14 @@ public class WebSocketChatMap {
 	}
 
 	/**
+	 * Closes all the chats, writing to disk the messages that have not been written and
+	 * sends the history to S3 bucket.
+	 */
+	public void close() {
+		this.chats.values().forEach(Chat::finish);
+	}
+
+	/**
 	 * Saves all chat files to S3 bucket every 10 minutes (to avoid data loss).
 	 */
 	@Scheduled(fixedRate = 10, initialDelay = 10, timeUnit = MINUTES)

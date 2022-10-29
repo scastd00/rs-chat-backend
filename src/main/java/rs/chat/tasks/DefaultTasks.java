@@ -1,15 +1,11 @@
 package rs.chat.tasks;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.concurrent.TimeUnit;
 
-@Getter
-@RequiredArgsConstructor
-public enum DefaultTasks {
-	SHUTDOWN(new ShutdownServerTask(5, TimeUnit.SECONDS)),
-	;
-
-	private final Task task;
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DefaultTasks {
+	public static final ShutdownServerTask SHUTDOWN = new ShutdownServerTask(5, TimeUnit.SECONDS);
 }

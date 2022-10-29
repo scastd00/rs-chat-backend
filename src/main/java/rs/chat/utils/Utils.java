@@ -8,6 +8,7 @@ import com.google.gson.JsonObject;
 import rs.chat.exceptions.TokenValidationException;
 import rs.chat.exceptions.WebSocketException;
 import rs.chat.net.ws.JsonMessageWrapper;
+import rs.chat.tasks.Task;
 
 import java.net.URI;
 import java.time.Instant;
@@ -44,8 +45,8 @@ public final class Utils {
 	private Utils() {
 	}
 
-	public static ExecutorService taskExecutor() {
-		return EXECUTOR_SERVICE;
+	public static void executeTask(Task task) {
+		EXECUTOR_SERVICE.submit(task);
 	}
 
 	/**
