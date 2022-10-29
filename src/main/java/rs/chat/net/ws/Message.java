@@ -14,6 +14,11 @@ import static rs.chat.utils.Constants.LOCAL_FILES_PATH;
  * @param extension  extension of the file created for a specific type of message.
  */
 public record Message(String type, String filePrefix, String extension) {
+	public static final Message USER_CONNECTED = new Message("USER_CONNECTED", null, null);
+	public static final Message USER_DISCONNECTED = new Message("USER_DISCONNECTED", null, null);
+	public static final Message USER_TYPING = new Message("USER_TYPING", null, null);
+	public static final Message USER_STOPPED_TYPING = new Message("USER_STOPPED_TYPING", null, null);
+
 	public static final Message USER_JOINED = new Message("USER_JOINED", null, null);
 	public static final Message USER_LEFT = new Message("USER_LEFT", null, null);
 

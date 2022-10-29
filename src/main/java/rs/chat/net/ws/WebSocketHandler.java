@@ -18,6 +18,8 @@ import rs.chat.strategies.message.PingStrategy;
 import rs.chat.strategies.message.ServerRestartMessage;
 import rs.chat.strategies.message.TextDocMessageStrategy;
 import rs.chat.strategies.message.TextMessageStrategy;
+import rs.chat.strategies.message.UserConnectedStrategy;
+import rs.chat.strategies.message.UserDisconnectedStrategy;
 import rs.chat.strategies.message.UserJoinedStrategy;
 import rs.chat.strategies.message.UserLeftStrategy;
 import rs.chat.strategies.message.VideoMessageStrategy;
@@ -37,6 +39,8 @@ import static rs.chat.net.ws.Message.PING_MESSAGE;
 import static rs.chat.net.ws.Message.RESTART_MESSAGE;
 import static rs.chat.net.ws.Message.TEXT_DOC_MESSAGE;
 import static rs.chat.net.ws.Message.TEXT_MESSAGE;
+import static rs.chat.net.ws.Message.USER_CONNECTED;
+import static rs.chat.net.ws.Message.USER_DISCONNECTED;
 import static rs.chat.net.ws.Message.USER_JOINED;
 import static rs.chat.net.ws.Message.USER_LEFT;
 import static rs.chat.net.ws.Message.VIDEO_MESSAGE;
@@ -55,6 +59,9 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	static {
 		// Todo: this increases speed because instances are created once and then reused.
 		//  If we want to save memory, we can create a new instance every time.
+		strategies.put(USER_CONNECTED.type(), new UserConnectedStrategy());
+		strategies.put(USER_DISCONNECTED.type(), new UserDisconnectedStrategy());
+
 		strategies.put(USER_JOINED.type(), new UserJoinedStrategy());
 		strategies.put(USER_LEFT.type(), new UserLeftStrategy());
 
@@ -100,7 +107,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		MessageStrategy strategy = this.decideStrategy(receivedMessageType);
 
 		try {
-			log.debug("Handling message: " + receivedMessageType.type());
+			log.info("Handling message: {} by class {}.", receivedMessageType.type(), strategy.getClass().getSimpleName());
 			Utils.checkTokenValidity(wrappedMessage.token());
 			strategy.handle(wrappedMessage, this.chatMap, otherData);
 		} catch (IOException e) {
