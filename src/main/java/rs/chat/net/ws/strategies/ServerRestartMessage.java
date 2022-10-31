@@ -1,4 +1,4 @@
-package rs.chat.strategies.message;
+package rs.chat.net.ws.strategies;
 
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;

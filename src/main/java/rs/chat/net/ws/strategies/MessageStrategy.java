@@ -1,4 +1,4 @@
-package rs.chat.strategies.message;
+package rs.chat.net.ws.strategies;
 
 import rs.chat.exceptions.WebSocketException;
 import rs.chat.net.ws.JsonMessageWrapper;

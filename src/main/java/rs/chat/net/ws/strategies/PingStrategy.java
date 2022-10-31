@@ -1,6 +1,5 @@
-package rs.chat.strategies.message;
+package rs.chat.net.ws.strategies;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import rs.chat.exceptions.WebSocketException;
@@ -11,24 +10,20 @@ import rs.chat.net.ws.WebSocketChatMap;
 import java.io.IOException;
 import java.util.Map;
 
-import static rs.chat.net.ws.Message.USER_DISCONNECTED;
+import static rs.chat.net.ws.Message.PONG_MESSAGE;
 import static rs.chat.utils.Utils.createServerMessage;
 
 /**
- * Strategy for handling {@link Message#USER_DISCONNECTED} messages.
+ * Strategy for handling {@link Message#PING_MESSAGE} messages.
  */
-@Slf4j
-public class UserDisconnectedStrategy extends GenericMessageStrategy {
+public class PingStrategy implements MessageStrategy {
 	@Override
 	public void handle(JsonMessageWrapper wrappedMessage, WebSocketChatMap webSocketChatMap,
 	                   Map<String, Object> otherData) throws WebSocketException, IOException {
 		WebSocketSession session = (WebSocketSession) otherData.get("session");
+
 		session.sendMessage(new TextMessage(
-				createServerMessage(
-						"Disconnected from server",
-						USER_DISCONNECTED.type(),
-						""
-				)
+				createServerMessage("I send a pong message", PONG_MESSAGE.type(), wrappedMessage.chatId())
 		));
 	}
 }
