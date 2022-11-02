@@ -15,6 +15,7 @@ import rs.chat.service.FileService;
 import rs.chat.strategies.upload.AudioStrategy;
 import rs.chat.strategies.upload.FileUploadStrategy;
 import rs.chat.strategies.upload.ImageStrategy;
+import rs.chat.strategies.upload.PdfStrategy;
 import rs.chat.strategies.upload.TextStrategy;
 import rs.chat.strategies.upload.VideoStrategy;
 
@@ -64,6 +65,13 @@ public class FileController {
 			case "video" -> new VideoStrategy();
 			case "audio" -> new AudioStrategy();
 			case "text" -> new TextStrategy();
+			case "application" -> {
+				if (types[1].equals("pdf")) {
+					yield new PdfStrategy();
+				} else {
+					throw new BadRequestException("Unsupported application file type");
+				}
+			}
 			default -> throw new BadRequestException("Invalid file uploaded");
 		};
 

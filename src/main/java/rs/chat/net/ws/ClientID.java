@@ -9,12 +9,12 @@ import java.util.Objects;
  * @param chatId    id of the chat to which the client is connecting/connected/disconnecting.
  * @param sessionId id of the session that the user has in frontend.
  */
-public record WSClientID(String username, String chatId, long sessionId) {
+public record ClientID(String username, String chatId, long sessionId) {
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
-		WSClientID that = (WSClientID) o;
+		ClientID that = (ClientID) o;
 		return username.equals(that.username);
 	}
 

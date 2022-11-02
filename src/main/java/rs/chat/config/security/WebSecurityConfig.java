@@ -25,11 +25,11 @@ import static rs.chat.router.Routes.PostRoute.LOGIN_URL;
 import static rs.chat.router.Routes.PostRoute.LOGOUT_URL;
 import static rs.chat.router.Routes.PostRoute.REGISTER_URL;
 import static rs.chat.router.Routes.PutRoute;
-import static rs.chat.router.Routes.REFRESH_TOKEN_URL;
 import static rs.chat.router.Routes.ROOT_URL;
 import static rs.chat.router.Routes.WS_CHAT_ENDPOINT;
 import static rs.chat.utils.Constants.LOW_TIER_ROLES;
 import static rs.chat.utils.Constants.MEDIUM_TIER_ROLES;
+import static rs.chat.utils.Constants.STRING_ARRAY;
 import static rs.chat.utils.Constants.TOP_TIER_ROLES;
 
 // https://youtu.be/VVn9OG9nfH0?t=2983
@@ -83,15 +83,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		publicRoutes(http);
 
 		// Low tier
-		registerRoutesOfTier(http, LOW_TIER_ROLES,
+		registerRoutesOfTier(http, LOW_TIER_ROLES.toArray(STRING_ARRAY),
 		                     GetRoute.INSTANCE.lowTierRoutes(), PostRoute.INSTANCE.lowTierRoutes(),
 		                     PutRoute.INSTANCE.lowTierRoutes(), DeleteRoute.INSTANCE.lowTierRoutes());
 		// Medium tier
-		registerRoutesOfTier(http, MEDIUM_TIER_ROLES,
+		registerRoutesOfTier(http, MEDIUM_TIER_ROLES.toArray(STRING_ARRAY),
 		                     GetRoute.INSTANCE.mediumTierRoutes(), PostRoute.INSTANCE.mediumTierRoutes(),
 		                     PutRoute.INSTANCE.mediumTierRoutes(), DeleteRoute.INSTANCE.mediumTierRoutes());
 		// Top tier
-		registerRoutesOfTier(http, TOP_TIER_ROLES,
+		registerRoutesOfTier(http, TOP_TIER_ROLES.toArray(STRING_ARRAY),
 		                     GetRoute.INSTANCE.topTierRoutes(), PostRoute.INSTANCE.topTierRoutes(),
 		                     PutRoute.INSTANCE.topTierRoutes(), DeleteRoute.INSTANCE.topTierRoutes());
 
@@ -141,7 +141,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				    ROOT_URL,
 				    LOGIN_URL,
 				    LOGOUT_URL,
-				    REFRESH_TOKEN_URL,
 				    REGISTER_URL,
 				    WS_CHAT_ENDPOINT,
 				    FORGOT_PASSWORD_URL,

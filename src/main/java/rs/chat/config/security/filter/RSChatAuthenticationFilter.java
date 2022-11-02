@@ -11,7 +11,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import rs.chat.exceptions.CouldNotAuthenticateException;
 import rs.chat.net.http.HttpRequest;
-import rs.chat.utils.Constants;
 import rs.chat.utils.Utils;
 
 import javax.servlet.FilterChain;
@@ -20,7 +19,6 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Map;
 
 /**
  * Manager that authenticates the incoming requests.
@@ -64,7 +62,7 @@ public class RSChatAuthenticationFilter extends UsernamePasswordAuthenticationFi
 		HttpRequest req = new HttpRequest(request);
 		User user = (User) authentication.getPrincipal();
 
-		Map<String, String> tokens = Utils.generateTokens(
+		String token = Utils.generateJWTToken(
 				user.getUsername(),
 				request.getRequestURL().toString(),
 				user.getAuthorities()
@@ -74,7 +72,7 @@ public class RSChatAuthenticationFilter extends UsernamePasswordAuthenticationFi
 				req.body().get("remember").getAsBoolean()
 		);
 
-		req.set("USER:TOKENS", Constants.GSON.toJson(tokens));
+		req.set("USER:TOKEN", token);
 		req.set("USER:USERNAME", user.getUsername());
 
 		//! IMPORTANT: this enables calling a Controller after the token is created.

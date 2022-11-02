@@ -51,11 +51,11 @@ CREATE TABLE `files`
 	`size`          int          NOT NULL,
 	`path`          varchar(400) NOT NULL,
 	`metadata`      json         NOT NULL,
-	`type`          varchar(10)  NOT NULL, -- text / image / audio / video.
+	`type`          varchar(20)  NOT NULL, -- text / image / audio / video / application
 	`user_id`       bigint       NOT NULL,
 
 	CONSTRAINT `pk_file_id` PRIMARY KEY (`id`),
-	CONSTRAINT `ck_file_type` CHECK (`type` IN ('TEXT', 'IMAGE', 'AUDIO', 'VIDEO'))
+	CONSTRAINT `ck_file_type` CHECK (`type` IN ('TEXT', 'IMAGE', 'AUDIO', 'VIDEO', 'APPLICATION'))
 ) ENGINE InnoDB;
 
 CREATE TABLE `users`
@@ -65,8 +65,8 @@ CREATE TABLE `users`
 	`password`      varchar(126) NOT NULL,              -- Hashed password using Bcrypt.
 	`email`         varchar(70)  NOT NULL,
 	`full_name`     varchar(100) NOT NULL,
-	`age`           tinyint      NULL,
-	`birthdate`     date         NULL,
+	`age`           tinyint      NULL     DEFAULT NULL,
+	`birthdate`     date         NULL     DEFAULT NULL,
 	`role`          varchar(13)  NOT NULL DEFAULT 'STUDENT',
 	`block_until`   datetime     NULL     DEFAULT NULL, -- If null, user can login. If date is stored, user cannot login until it has expired.
 	`password_code` varchar(6)   NULL     DEFAULT NULL, -- Code used to reset password.
@@ -82,12 +82,12 @@ CREATE TABLE `users`
 
 CREATE TABLE `sessions`
 (
-	`id`            bigint       NOT NULL AUTO_INCREMENT,
-	`src_ip`        varchar(32)  NOT NULL, -- In case we support IPv6.
-	`date_started`  datetime     NOT NULL,
-	`access_token`  varchar(300) NOT NULL,
-	`refresh_token` varchar(300) NOT NULL,
-	`user_id`       bigint       NOT NULL,
+	`id`         bigint       NOT NULL AUTO_INCREMENT,
+	`src_ip`     varchar(32)  NOT NULL, -- In case we support IPv6.
+	`start_date` datetime     NOT NULL,
+	`end_date`   datetime     NOT NULL,
+	`token`      varchar(300) NOT NULL,
+	`user_id`    bigint       NOT NULL,
 
 	CONSTRAINT `pk_session_id` PRIMARY KEY (`id`)
 ) ENGINE = InnoDB;
@@ -97,7 +97,7 @@ CREATE TABLE `chats`
 	`id`              bigint       NOT NULL AUTO_INCREMENT,
 	`name`            varchar(100) NOT NULL,
 	`type`            varchar(10)  NOT NULL, -- User, Group, Subject, Degree.
-	`s3_folder`       varchar(300) NULL,
+	`s3_folder`       varchar(300) NOT NULL,
 	`metadata`        json         NOT NULL, -- JSON string. Initial value is the creation date.
 	`invitation_code` char(15)     NOT NULL, -- Random string of 15 characters.
 	`key`             varchar(30)  NOT NULL,

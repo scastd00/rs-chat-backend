@@ -13,14 +13,14 @@ import java.io.PrintWriter;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Class that stores the clients in a {@link CopyOnWriteArrayList<WSClient>} and have
+ * Class that stores the clients in a {@link CopyOnWriteArrayList< Client >} and have
  * a {@link PrintWriter} associated to a file to store all the messages received.
  */
 @Getter
 @Slf4j
 public class Chat {
 	private final String chatId;
-	private final CopyOnWriteArrayList<WSClient> clients;
+	private final CopyOnWriteArrayList<Client> clients;
 	private final PrintWriter writer;
 
 	/**
@@ -40,13 +40,22 @@ public class Chat {
 		this.writer = new PrintWriter(bufferedWriter, true); // Auto-Flush enabled
 	}
 
+	public void broadcast(String message) {
+		this.clients.forEach(client -> client.send(message));
+	}
+
 	/**
 	 * Writes the message to the file associated with this chat.
 	 *
 	 * @param message message to store in the file.
 	 */
-	public void saveMessageToChatFile(String message) {
+	public void saveMessageToHistoryFile(String message) {
 		this.writer.println(message); // Write a line and flush
+	}
+
+	public void broadcastAndSave(String message) {
+		this.broadcast(message);
+		this.saveMessageToHistoryFile(message);
 	}
 
 	/**

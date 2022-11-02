@@ -33,7 +33,7 @@ public class Chat {
 	@Column(name = "type", nullable = false, length = 10)
 	private String type;
 	@Basic
-	@Column(name = "s3_folder", length = 300)
+	@Column(name = "s3_folder", nullable = false, length = 300)
 	private String s3Folder;
 	/**
 	 * JSON content.

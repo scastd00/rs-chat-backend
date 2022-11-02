@@ -31,14 +31,14 @@ public class Session {
 	@Column(name = "src_ip", nullable = false, length = 32)
 	private String srcIp;
 	@Basic
-	@Column(name = "date_started", nullable = false)
-	private Instant dateStarted;
+	@Column(name = "start_date", nullable = false)
+	private Instant startDate;
 	@Basic
-	@Column(name = "access_token", nullable = false, length = 300)
-	private String accessToken;
+	@Column(name = "end_date", nullable = false)
+	private Instant endDate;
 	@Basic
-	@Column(name = "refresh_token", nullable = false, length = 300)
-	private String refreshToken;
+	@Column(name = "token", nullable = false, length = 300)
+	private String token;
 	@Basic
 	@Column(name = "user_id", nullable = false)
 	private Long userId;

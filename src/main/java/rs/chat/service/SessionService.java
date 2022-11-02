@@ -38,13 +38,13 @@ public class SessionService {
 	}
 
 	/**
-	 * Deletes a session given its access token.
+	 * Deletes a session given its token.
 	 *
-	 * @param token the access token of the session to be deleted.
+	 * @param token the token of the session to be deleted.
 	 */
 	public void deleteSession(String token) {
 		log.info("Removing session: {}", token);
-		this.sessionRepository.findByAccessToken(token)
+		this.sessionRepository.findByToken(token)
 		                      .ifPresent(this.sessionRepository::delete);
 	}
 
@@ -64,14 +64,14 @@ public class SessionService {
 	}
 
 	/**
-	 * Finds a session given its access token.
+	 * Finds a session given its token.
 	 *
-	 * @param token the access token of the session to be found.
+	 * @param token the token of the session to be found.
 	 *
 	 * @return the found session.
 	 */
 	public Session getSession(String token) {
-		return this.sessionRepository.findByAccessToken(token)
+		return this.sessionRepository.findByToken(token)
 		                             .orElse(null);
 	}
 
@@ -93,19 +93,17 @@ public class SessionService {
 	}
 
 	/**
-	 * Updates a session of the given user with the given access and refresh tokens.
+	 * Updates a session of the given user with the given token.
 	 *
-	 * @param username     the username of the user whose session is to be updated.
-	 * @param accessToken  the access token of the session to be updated.
-	 * @param refreshToken the refresh token of the session to be updated.
+	 * @param username the username of the user whose session is to be updated.
+	 * @param token    the token of the session to be updated.
 	 */
-	public void updateSession(String username, String accessToken, String refreshToken) {
+	public void updateSession(String username, String token) {
 		User user = this.userRepository.findByUsername(username)
 		                               .orElseThrow(() -> new UsernameNotFoundException("User %s not found".formatted(username)));
 		this.sessionRepository.findByUserId(user.getId())
 		                      .ifPresent(session -> {
-			                      session.setAccessToken(accessToken);
-			                      session.setRefreshToken(refreshToken);
+			                      session.setToken(token);
 			                      this.sessionRepository.save(session);
 		                      });
 	}

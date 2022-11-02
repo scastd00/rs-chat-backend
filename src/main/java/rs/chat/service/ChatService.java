@@ -196,4 +196,14 @@ public class ChatService {
 		                              .map(User::getUsername)
 		                              .toList();
 	}
+
+	/**
+	 * Removes a user from a chat.
+	 *
+	 * @param userId id of the user to remove.
+	 * @param chatId id of the chat to remove the user from.
+	 */
+	public void removeUserFromChat(Long userId, Long chatId) {
+		this.userChatRepository.deleteByUserChatPK_UserIdAndUserChatPK_ChatId(userId, chatId);
+	}
 }

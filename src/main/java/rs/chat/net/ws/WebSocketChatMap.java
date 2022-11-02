@@ -3,9 +3,9 @@ package rs.chat.net.ws;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +18,7 @@ import static java.util.concurrent.TimeUnit.MINUTES;
  */
 @NoArgsConstructor
 @Slf4j
-@Configuration
+@Component
 @EnableScheduling
 public class WebSocketChatMap {
 	/**
@@ -56,7 +56,7 @@ public class WebSocketChatMap {
 	 * @return the required chat or an empty list.
 	 */
 	@NotNull
-	private synchronized List<WSClient> getClientsOf(String chatId) {
+	private synchronized List<Client> getClientsOf(String chatId) {
 		return this.chatExists(chatId) ? this.chats.get(chatId).getClients() : List.of();
 	}
 
@@ -68,7 +68,7 @@ public class WebSocketChatMap {
 	 */
 	private synchronized void saveMessage(String chatId, String message) {
 		if (this.chatExists(chatId)) {
-			this.chats.get(chatId).saveMessageToChatFile(message);
+			this.chats.get(chatId).saveMessageToHistoryFile(message);
 		}
 	}
 
@@ -77,25 +77,25 @@ public class WebSocketChatMap {
 	 *
 	 * @param clientID ID of the client.
 	 *
-	 * @return a {@link WSClient} if the user is in the chat,
+	 * @return a {@link Client} if the user is in the chat,
 	 * {@code null} otherwise (if the chat is empty or the user is disconnected).
 	 */
-	public synchronized WSClient getClient(WSClientID clientID) {
+	public synchronized Client getClient(ClientID clientID) {
 		return this.getClientsOf(clientID.chatId())
 		           .stream()
-		           .filter(client -> client.wsClientID().equals(clientID))
+		           .filter(client -> client.clientID().equals(clientID))
 		           .findFirst()
 		           .orElse(null);
 	}
 
 	/**
 	 * Adds a client to the specified chat (id of the chat is stored in the
-	 * {@code wsClientID} attribute of {@link WSClient}).
+	 * {@code clientID} attribute of {@link Client}).
 	 *
 	 * @param client new client to add to the chat.
 	 */
-	public synchronized void addClientToChat(WSClient client) {
-		String chatId = client.wsClientID().chatId();
+	public synchronized void addClientToChat(Client client) {
+		String chatId = client.clientID().chatId();
 
 		if (!this.chatExists(chatId)) {
 			this.createChat(chatId);
@@ -106,7 +106,7 @@ public class WebSocketChatMap {
 
 	/**
 	 * Removes the client from the specified chat (id of the chat is stored in the
-	 * {@code wsClientID} attribute of {@link WSClient}). If the resulting chat is
+	 * {@code clientID} attribute of {@link Client}). If the resulting chat is
 	 * empty, the mapping is removed (so {@link #chatExists(String)} and
 	 * {@link Map#get(Object)} will return {@code false}) and the chat is finished {@link Chat#finish()}.
 	 * <p>
@@ -115,12 +115,12 @@ public class WebSocketChatMap {
 	 *
 	 * @param clientID id of the client to remove from the chat.
 	 */
-	public synchronized void removeClientFromChat(WSClientID clientID) {
+	public synchronized void removeClientFromChat(ClientID clientID) {
 		String chatId = clientID.chatId();
 
 		// Remove the user from the chat.
-		List<WSClient> clientsOfChat = this.getClientsOf(chatId);
-		clientsOfChat.removeIf(client -> client == null || client.wsClientID().equals(clientID));
+		List<Client> clientsOfChat = this.getClientsOf(chatId);
+		clientsOfChat.removeIf(client -> client == null || client.clientID().equals(clientID));
 
 		// Delete the chat and its entry in the map if there are no more
 		// clients connected to it.
@@ -137,8 +137,7 @@ public class WebSocketChatMap {
 	 * @param message message to send.
 	 */
 	public synchronized void broadcastToSingleChat(String chatId, String message) {
-		this.getClientsOf(chatId).forEach(client -> client.send(message));
-		this.saveMessage(chatId, message);
+		this.chats.get(chatId).broadcastAndSave(message);
 	}
 
 	/**
@@ -148,10 +147,10 @@ public class WebSocketChatMap {
 	 * @param clientID client to "ignore".
 	 * @param message  message to send.
 	 */
-	public synchronized void broadcastToSingleChatAndExcludeClient(WSClientID clientID, String message) {
+	public synchronized void broadcastToSingleChatAndExcludeClient(ClientID clientID, String message) {
 		this.getClientsOf(clientID.chatId())
 		    .stream()
-		    .filter(client -> !client.wsClientID().equals(clientID))
+		    .filter(client -> !client.clientID().equals(clientID))
 		    .forEach(client -> client.send(message));
 
 		this.saveMessage(clientID.chatId(), message);
@@ -166,8 +165,7 @@ public class WebSocketChatMap {
 	 * @param message message to send.
 	 */
 	public void totalBroadcast(String message) {
-		this.chats.values()
-		          .forEach(chat -> chat.getClients().forEach(client -> client.send(message)));
+		this.chats.values().forEach(chat -> chat.broadcastAndSave(message));
 	}
 
 	/**
@@ -180,8 +178,16 @@ public class WebSocketChatMap {
 	public List<String> getUsernamesOfChat(String chatId) {
 		return this.getClientsOf(chatId)
 		           .stream()
-		           .map(wsClient -> wsClient.wsClientID().username())
+		           .map(client -> client.clientID().username())
 		           .toList();
+	}
+
+	/**
+	 * Closes all the chats, writing to disk the messages that have not been written and
+	 * sends the history to S3 bucket.
+	 */
+	public void close() {
+		this.chats.values().forEach(Chat::finish);
 	}
 
 	/**

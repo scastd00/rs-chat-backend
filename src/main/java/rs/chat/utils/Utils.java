@@ -5,32 +5,57 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import rs.chat.exceptions.TokenValidationException;
 import rs.chat.exceptions.WebSocketException;
 import rs.chat.net.ws.JsonMessageWrapper;
+import rs.chat.tasks.Task;
+import rs.chat.tasks.TaskExecutionException;
 
 import java.net.URI;
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.function.Function;
 
-import static rs.chat.net.ws.WSMessage.ACTIVE_USERS_MESSAGE;
-import static rs.chat.net.ws.WSMessage.ERROR_MESSAGE;
+import static rs.chat.net.ws.Message.ACTIVE_USERS_MESSAGE;
+import static rs.chat.net.ws.Message.ERROR_MESSAGE;
 import static rs.chat.utils.Constants.ALGORITHM;
 import static rs.chat.utils.Constants.GSON;
 import static rs.chat.utils.Constants.JWT_TOKEN_PREFIX;
 import static rs.chat.utils.Constants.JWT_VERIFIER;
-import static rs.chat.utils.Constants.REFRESH_TOKEN_EXPIRATION_DURATION_EXTENDED;
-import static rs.chat.utils.Constants.REFRESH_TOKEN_EXPIRATION_DURATION_NORMAL;
 import static rs.chat.utils.Constants.TOKEN_EXPIRATION_DURATION_EXTENDED;
 import static rs.chat.utils.Constants.TOKEN_EXPIRATION_DURATION_NORMAL;
 
 /**
  * Utility class for common operations.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Utils {
-	private Utils() {
+	private static final ExecutorService EXECUTOR_SERVICE;
+
+	static {
+		ThreadFactory threadFactory = r -> {
+			Thread t = new Thread(r);
+			t.setDaemon(true);
+			return t;
+		};
+
+		EXECUTOR_SERVICE = Executors.newCachedThreadPool(threadFactory);
+	}
+
+	public static void executeTask(@NotNull Task task, @NotNull Function<TaskExecutionException, Void> exceptionHandler) {
+		EXECUTOR_SERVICE.execute(() -> {
+			try {
+				task.run();
+			} catch (TaskExecutionException e) {
+				exceptionHandler.apply(e);
+			}
+		});
 	}
 
 	/**
@@ -45,67 +70,39 @@ public final class Utils {
 	}
 
 	/**
-	 * Creates the tokens that are used to authenticate the user.
-	 * 2 tokens are created:
-	 * <ul>
-	 *     <li>Access token: this token is used to authenticate the user.</li>
-	 *     <li>Refresh token: this token is used to refresh the access token.</li>
-	 * </ul>
+	 * Creates the token that is used to authenticate the user.
 	 *
 	 * @param username             the username of the user.
 	 * @param requestURL           the URL of the request.
 	 * @param role                 the role of the user.
-	 * @param extendExpirationTime
+	 * @param extendExpirationTime if the expiration time of the token should be extended.
 	 *
 	 * @return the tokens that are used to authenticate the user.
 	 */
-	public static Map<String, String> generateTokens(String username, String requestURL, String role, boolean extendExpirationTime) {
-		Map<String, String> tokens = new HashMap<>();
-
-		String accessToken = JWT.create()
-		                        .withSubject(username)
-		                        .withExpiresAt(Instant.now().plus(
-				                        extendExpirationTime ?
-				                        TOKEN_EXPIRATION_DURATION_EXTENDED :
-				                        TOKEN_EXPIRATION_DURATION_NORMAL
-		                        ))
-		                        .withIssuer(requestURL) // URL of our application.
-		                        .withClaim("role", role) // Only one role is in DB.
-		                        .sign(ALGORITHM);
-
-		String refreshToken = JWT.create()
-		                         .withSubject(username)
-		                         .withExpiresAt(Instant.now().plus(
-				                         extendExpirationTime ?
-				                         REFRESH_TOKEN_EXPIRATION_DURATION_EXTENDED :
-				                         REFRESH_TOKEN_EXPIRATION_DURATION_NORMAL
-		                         ))
-		                         .withIssuer(requestURL) // URL of our application.
-		                         .sign(ALGORITHM);
-
-		tokens.put("accessToken", accessToken);
-		tokens.put("refreshToken", refreshToken);
-
-		return tokens;
+	public static String generateJWTToken(String username, String requestURL, String role, boolean extendExpirationTime) {
+		return JWT.create()
+		          .withSubject(username)
+		          .withExpiresAt(Instant.now().plus(
+				          extendExpirationTime ?
+				          TOKEN_EXPIRATION_DURATION_EXTENDED :
+				          TOKEN_EXPIRATION_DURATION_NORMAL
+		          ))
+		          .withIssuer(requestURL) // URL of our application.
+		          .withClaim("role", role) // Only one role is in DB.
+		          .sign(ALGORITHM);
 	}
 
 	/**
-	 * Verifies the access token.
+	 * Verifies an authorization token.
 	 *
-	 * @param fullToken the full token (with the "Bearer " prefix) to verify.
+	 * @param token the token to verify.
 	 *
 	 * @return the decoded JWT token.
 	 *
 	 * @throws JWTVerificationException if the token is invalid.
 	 */
-	public static DecodedJWT checkAuthorizationToken(String fullToken) throws JWTVerificationException {
-		if (!fullToken.startsWith(JWT_TOKEN_PREFIX)) {
-			throw new JWTVerificationException(
-					"Token does not start with the string '%s'".formatted(JWT_TOKEN_PREFIX)
-			);
-		}
-
-		return JWT_VERIFIER.verify(fullToken.substring(JWT_TOKEN_PREFIX.length()));
+	public static DecodedJWT checkAuthorizationToken(String token) throws JWTVerificationException {
+		return JWT_VERIFIER.verify(token.replace(JWT_TOKEN_PREFIX, ""));
 	}
 
 	/**
@@ -195,9 +192,9 @@ public final class Utils {
 	}
 
 	private static URI getCurrentS3EndpointURI() {
-		return isDevEnv() ?
-		       Constants.LOCAL_S3_ENDPOINT_URI_FOR_FILES :
-		       Constants.REMOTE_S3_ENDPOINT_URI_FOR_FILES;
+		return isDevEnv()
+		       ? Constants.LOCAL_S3_ENDPOINT_URI_FOR_FILES
+		       : Constants.REMOTE_S3_ENDPOINT_URI_FOR_FILES;
 	}
 
 	public static String bytesToUnit(int bytes) {
@@ -232,6 +229,10 @@ public final class Utils {
 		try {
 			checkAuthorizationToken(token);
 		} catch (JWTVerificationException e) {
+			if (token.replace(JWT_TOKEN_PREFIX, "").equals("empty")) {
+				return; // Client connected to the server without a token (started the app but not connected to a chat).
+			}
+
 			throw new TokenValidationException(e.getMessage());
 		}
 	}

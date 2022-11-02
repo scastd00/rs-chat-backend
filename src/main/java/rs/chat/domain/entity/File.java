@@ -43,7 +43,7 @@ public class File {
 	@Column(name = "metadata", nullable = false)
 	private String metadata;
 	@Basic
-	@Column(name = "type", nullable = false, length = 10)
+	@Column(name = "type", nullable = false, length = 20)
 	private String type;
 	@Basic
 	@Column(name = "user_id", nullable = false)

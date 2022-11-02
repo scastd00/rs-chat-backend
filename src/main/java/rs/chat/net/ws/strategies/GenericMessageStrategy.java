@@ -1,10 +1,10 @@
-package rs.chat.strategies.message;
+package rs.chat.net.ws.strategies;
 
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import rs.chat.exceptions.WebSocketException;
+import rs.chat.net.ws.ClientID;
 import rs.chat.net.ws.JsonMessageWrapper;
-import rs.chat.net.ws.WSClientID;
 import rs.chat.net.ws.WebSocketChatMap;
 
 import java.io.IOException;
@@ -19,11 +19,11 @@ public class GenericMessageStrategy implements MessageStrategy {
 	@Override
 	public void handle(JsonMessageWrapper wrappedMessage, WebSocketChatMap webSocketChatMap,
 	                   Map<String, Object> otherData) throws WebSocketException, IOException {
-		WSClientID wsClientID = (WSClientID) otherData.get("wsClientID");
+		ClientID clientID = (ClientID) otherData.get("clientID");
 
 		// Clear the sensitive data to send the message to other clients
 		String response = this.clearSensitiveDataChangeDateAndBuildResponse(wrappedMessage.getParsedPayload());
-		webSocketChatMap.broadcastToSingleChatAndExcludeClient(wsClientID, response);
+		webSocketChatMap.broadcastToSingleChatAndExcludeClient(clientID, response);
 	}
 
 	/**

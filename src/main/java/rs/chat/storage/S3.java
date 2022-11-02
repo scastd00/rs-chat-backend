@@ -27,7 +27,7 @@ import java.nio.file.Files;
 import java.time.LocalDate;
 import java.util.Map;
 
-import static rs.chat.net.ws.WSMessage.TEXT_MESSAGE;
+import static rs.chat.net.ws.Message.TEXT_MESSAGE;
 import static rs.chat.utils.Constants.LOCAL_S3_ENDPOINT_URI;
 import static rs.chat.utils.Constants.REMOTE_S3_ENDPOINT_URI;
 import static rs.chat.utils.Constants.S3_BUCKET_NAME;

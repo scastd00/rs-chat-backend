@@ -18,6 +18,6 @@ public class RSChatApplication {
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 			log.info("Shutting down RSChatApplication");
 			S3.getInstance().close();
-		}, "RSChatApplicationShutdownHookThread"));
+		}));
 	}
 }
