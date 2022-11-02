@@ -229,6 +229,10 @@ public final class Utils {
 		try {
 			checkAuthorizationToken(token);
 		} catch (JWTVerificationException e) {
+			if (token.replace(JWT_TOKEN_PREFIX, "").equals("empty")) {
+				return; // Client connected to the server without a token (started the app but not connected to a chat).
+			}
+
 			throw new TokenValidationException(e.getMessage());
 		}
 	}
