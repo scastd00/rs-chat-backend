@@ -92,6 +92,6 @@ public class FileController {
 		responseBody.add("metadata", fileToSave.getMetadata());
 
 		response.status(OK).send(responseBody);
-		log.info("File uploaded successfully");
+		log.info("File ({}) uploaded successfully", fileName);
 	}
 }
