@@ -1,5 +1,6 @@
 package rs.chat.net.ws.strategies;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import rs.chat.exceptions.WebSocketException;
@@ -16,7 +17,8 @@ import java.util.Map;
 /**
  * Strategy for handling {@link Message#RESTART_MESSAGE} messages.
  */
-public class ServerRestartMessage implements MessageStrategy {
+@Slf4j
+public class RestartMessageStrategy extends GenericMessageStrategy {
 	@Override
 	public void handle(JsonMessageWrapper wrappedMessage, WebSocketChatMap webSocketChatMap,
 	                   Map<String, Object> otherData) throws WebSocketException, IOException {
@@ -27,9 +29,9 @@ public class ServerRestartMessage implements MessageStrategy {
 			try {
 				WebSocketSession session = (WebSocketSession) otherData.get("session");
 				session.sendMessage(new TextMessage(
-						Utils.createServerMessage(
+						Utils.createMessage(
 								"An error occurred while shutting down the server.%n%s".formatted(exception.getStatus().getMessage()),
-								Message.SERVER_INFO_MESSAGE.type(),
+								Message.INFO_MESSAGE.type(),
 								""
 						)
 				));

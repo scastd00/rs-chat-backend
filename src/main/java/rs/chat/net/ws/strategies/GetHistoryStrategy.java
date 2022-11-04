@@ -25,7 +25,7 @@ import static rs.chat.net.ws.Message.GET_HISTORY_MESSAGE;
 import static rs.chat.net.ws.Message.USER_JOINED;
 import static rs.chat.net.ws.Message.USER_LEFT;
 import static rs.chat.utils.Constants.MAX_CHAT_HISTORY_PER_REQUEST;
-import static rs.chat.utils.Utils.createServerMessage;
+import static rs.chat.utils.Utils.createMessage;
 
 /**
  * Strategy for handling {@link Message#GET_HISTORY_MESSAGE} messages.
@@ -58,7 +58,7 @@ public class GetHistoryStrategy implements MessageStrategy {
 
 		WebSocketSession session = (WebSocketSession) otherData.get("session");
 		session.sendMessage(new TextMessage(
-				createServerMessage(lastMessages.toString(), GET_HISTORY_MESSAGE.type(), wrappedMessage.chatId())
+				createMessage(lastMessages.toString(), GET_HISTORY_MESSAGE.type(), wrappedMessage.chatId())
 		));
 	}
 

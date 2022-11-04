@@ -13,6 +13,8 @@ import static rs.chat.net.ws.Message.AUDIO_MESSAGE;
 import static rs.chat.net.ws.Message.ERROR_MESSAGE;
 import static rs.chat.net.ws.Message.GET_HISTORY_MESSAGE;
 import static rs.chat.net.ws.Message.IMAGE_MESSAGE;
+import static rs.chat.net.ws.Message.INFO_MESSAGE;
+import static rs.chat.net.ws.Message.MAINTENANCE_MESSAGE;
 import static rs.chat.net.ws.Message.PDF_MESSAGE;
 import static rs.chat.net.ws.Message.PING_MESSAGE;
 import static rs.chat.net.ws.Message.RESTART_MESSAGE;
@@ -29,8 +31,6 @@ public final class StrategyMappings {
 	private static final Map<String, MessageStrategy> strategies = new HashMap<>();
 
 	static {
-		// Todo: this increases speed because instances are created once and then reused.
-		//  If we want to save memory, we can create a new instance every time.
 		strategies.put(USER_CONNECTED.type(), new UserConnectedStrategy());
 		strategies.put(USER_DISCONNECTED.type(), new UserDisconnectedStrategy());
 
@@ -46,9 +46,11 @@ public final class StrategyMappings {
 
 		strategies.put(ACTIVE_USERS_MESSAGE.type(), new ActiveUsersStrategy());
 		strategies.put(GET_HISTORY_MESSAGE.type(), new GetHistoryStrategy());
+		strategies.put(INFO_MESSAGE.type(), new InfoMessageStrategy());
 		strategies.put(PING_MESSAGE.type(), new PingStrategy());
 		strategies.put(ERROR_MESSAGE.type(), new ErrorMessageStrategy());
-		strategies.put(RESTART_MESSAGE.type(), new ServerRestartMessage());
+		strategies.put(RESTART_MESSAGE.type(), new RestartMessageStrategy());
+		strategies.put(MAINTENANCE_MESSAGE.type(), new MaintenanceMessageStrategy());
 	}
 
 	/**

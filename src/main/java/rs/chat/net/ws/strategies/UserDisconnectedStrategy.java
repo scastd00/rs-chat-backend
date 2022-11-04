@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import static rs.chat.net.ws.Message.USER_DISCONNECTED;
-import static rs.chat.utils.Utils.createServerMessage;
+import static rs.chat.utils.Utils.createMessage;
 
 /**
  * Strategy for handling {@link Message#USER_DISCONNECTED} messages.
@@ -24,7 +24,7 @@ public class UserDisconnectedStrategy extends GenericMessageStrategy {
 	                   Map<String, Object> otherData) throws WebSocketException, IOException {
 		WebSocketSession session = (WebSocketSession) otherData.get("session");
 		session.sendMessage(new TextMessage(
-				createServerMessage(
+				createMessage(
 						"Disconnected from server",
 						USER_DISCONNECTED.type(),
 						""

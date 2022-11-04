@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import static rs.chat.net.ws.Message.USER_JOINED;
-import static rs.chat.utils.Utils.createServerMessage;
+import static rs.chat.utils.Utils.createMessage;
 
 /**
  * Strategy for handling {@link Message#USER_JOINED} messages.
@@ -31,7 +31,7 @@ public class UserJoinedStrategy implements MessageStrategy {
 		webSocketChatMap.addClientToChat(new Client(session, clientID));
 		webSocketChatMap.broadcastToSingleChatAndExcludeClient(
 				clientID,
-				createServerMessage(username + " has joined the chat", USER_JOINED.type(), chatId)
+				createMessage(username + " has joined the chat", USER_JOINED.type(), chatId)
 		);
 
 		log.debug(username + " has joined the chat");

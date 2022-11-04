@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static rs.chat.utils.Utils.createServerErrorMessage;
+import static rs.chat.utils.Utils.createErrorMessage;
 
 /**
  * WebSocket handler for the application.
@@ -67,7 +67,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	@Override
 	public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
 		session.sendMessage(
-				new TextMessage(createServerErrorMessage(exception.getMessage()))
+				new TextMessage(createErrorMessage(exception.getMessage()))
 		);
 	}
 }

@@ -22,25 +22,21 @@ public class GenericMessageStrategy implements MessageStrategy {
 		ClientID clientID = (ClientID) otherData.get("clientID");
 
 		// Clear the sensitive data to send the message to other clients
-		String response = this.clearSensitiveDataChangeDateAndBuildResponse(wrappedMessage.getParsedPayload());
-		webSocketChatMap.broadcastToSingleChatAndExcludeClient(clientID, response);
+		this.clearSensitiveDataChangeDateAndBuildResponse(wrappedMessage);
+		webSocketChatMap.broadcastToSingleChatAndExcludeClient(clientID, wrappedMessage.toString());
 	}
 
 	/**
-	 * Removes the fields of the received message to be able to send it to
+	 * Removes some fields of the received message to be able to send it to
 	 * other clients without sensitive information. In addition, it updates
 	 * the {@code date} field. NOTE: Only headers are modified.
 	 *
 	 * @param message received message to remove sensitive fields.
-	 *
-	 * @return the {@link String} message without the sensitive information
-	 * and the actual date of the server.
 	 */
-	private String clearSensitiveDataChangeDateAndBuildResponse(JsonObject message) {
-		JsonObject headers = (JsonObject) message.get("headers");
+	protected void clearSensitiveDataChangeDateAndBuildResponse(JsonMessageWrapper message) {
+		JsonObject headers = message.headers();
 		headers.remove("sessionId");
 		headers.remove("token");
-		headers.addProperty("date", System.currentTimeMillis()); // Modify property
-		return message.toString();
+		message.updateDateTime();
 	}
 }

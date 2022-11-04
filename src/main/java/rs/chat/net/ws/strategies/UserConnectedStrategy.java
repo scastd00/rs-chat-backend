@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import static rs.chat.net.ws.Message.USER_CONNECTED;
-import static rs.chat.utils.Utils.createServerMessage;
+import static rs.chat.utils.Utils.createMessage;
 
 /**
  * Strategy for handling {@link Message#USER_CONNECTED} messages.
@@ -24,7 +24,7 @@ public class UserConnectedStrategy extends GenericMessageStrategy {
 	                   Map<String, Object> otherData) throws WebSocketException, IOException {
 		WebSocketSession session = (WebSocketSession) otherData.get("session");
 		session.sendMessage(new TextMessage(
-				createServerMessage(
+				createMessage(
 						"Connected to server",
 						USER_CONNECTED.type(),
 						""

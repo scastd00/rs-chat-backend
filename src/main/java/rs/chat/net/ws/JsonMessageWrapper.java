@@ -114,6 +114,21 @@ public class JsonMessageWrapper {
 	}
 
 	/**
+	 * Updates the date of the message to the current date.
+	 */
+	public void updateDateTime() {
+		this.headers().addProperty("date", System.currentTimeMillis());
+	}
+
+	/**
+	 * @return the message as a string with the updated fields (if any).
+	 */
+	@Override
+	public String toString() {
+		return this.parsedPayload.toString();
+	}
+
+	/**
 	 * Creates a new builder to build a new message.
 	 *
 	 * @return the builder.

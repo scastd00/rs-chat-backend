@@ -10,7 +10,7 @@ import rs.chat.net.ws.WebSocketChatMap;
 import java.util.Map;
 
 import static rs.chat.net.ws.Message.USER_LEFT;
-import static rs.chat.utils.Utils.createServerMessage;
+import static rs.chat.utils.Utils.createMessage;
 
 /**
  * Strategy for handling {@link Message#USER_LEFT} messages.
@@ -24,13 +24,13 @@ public class UserLeftStrategy implements MessageStrategy {
 		String chatId = clientID.chatId();
 		String username = clientID.username();
 
-		webSocketChatMap.broadcastToSingleChat(
-				chatId,
-				createServerMessage(username + " has disconnected from the chat", USER_LEFT.type(), chatId)
+		webSocketChatMap.broadcastToSingleChatAndExcludeClient(
+				clientID,
+				createMessage(username + " has left the chat", USER_LEFT.type(), chatId)
 		);
 		webSocketChatMap.removeClientFromChat(clientID);
 		// Closed from the frontend
 
-		log.debug(username + " has disconnected from the chat");
+		log.debug("{} has left the chat {}", username, chatId);
 	}
 }

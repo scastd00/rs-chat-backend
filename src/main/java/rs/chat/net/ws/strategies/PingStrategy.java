@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import static rs.chat.net.ws.Message.PONG_MESSAGE;
-import static rs.chat.utils.Utils.createServerMessage;
+import static rs.chat.utils.Utils.createMessage;
 
 /**
  * Strategy for handling {@link Message#PING_MESSAGE} messages.
@@ -23,7 +23,7 @@ public class PingStrategy implements MessageStrategy {
 		WebSocketSession session = (WebSocketSession) otherData.get("session");
 
 		session.sendMessage(new TextMessage(
-				createServerMessage("I send a pong message", PONG_MESSAGE.type(), wrappedMessage.chatId())
+				createMessage("I send a pong message", PONG_MESSAGE.type(), wrappedMessage.chatId())
 		));
 	}
 }

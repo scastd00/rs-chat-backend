@@ -31,11 +31,12 @@ public record Message(String type, String filePrefix, String extension) {
 
 	public static final Message ACTIVE_USERS_MESSAGE = new Message("ACTIVE_USERS", null, null);
 	public static final Message GET_HISTORY_MESSAGE = new Message("GET_HISTORY", "chat/", TEXT_MESSAGE.extension);
-	public static final Message SERVER_INFO_MESSAGE = new Message("SERVER_INFO", null, null);
+	public static final Message INFO_MESSAGE = new Message("INFO_MESSAGE", null, null);
 	public static final Message ERROR_MESSAGE = new Message("ERROR_MESSAGE", null, null);
 	public static final Message PING_MESSAGE = new Message("PING", null, null);
 	public static final Message PONG_MESSAGE = new Message("PONG", null, null);
 	public static final Message RESTART_MESSAGE = new Message("RESTART", null, null);
+	public static final Message MAINTENANCE_MESSAGE = new Message("MAINTENANCE", null, null);
 
 	/**
 	 * Returns the file that is used to store the message in disk.

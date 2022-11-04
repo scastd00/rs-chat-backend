@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import static rs.chat.net.ws.Message.ERROR_MESSAGE;
-import static rs.chat.utils.Utils.createServerMessage;
+import static rs.chat.utils.Utils.createMessage;
 
 /**
  * Strategy for handling {@link Message#ERROR_MESSAGE} messages.
@@ -26,7 +26,7 @@ public class ErrorMessageStrategy implements MessageStrategy {
 		WebSocketSession session = (WebSocketSession) otherData.get("session");
 
 		session.sendMessage(new TextMessage(
-				createServerMessage(
+				createMessage(
 						"ERROR: type property is not present in the content of the JSON",
 						ERROR_MESSAGE.type(),
 						((ClientID) otherData.get("clientID")).chatId()
