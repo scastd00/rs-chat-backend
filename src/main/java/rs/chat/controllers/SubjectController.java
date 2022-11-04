@@ -79,8 +79,6 @@ public class SubjectController {
 			throw new BadRequestException("Subject '%s' already exists.".formatted(name));
 		}
 
-		// Todo: the problem comes when multiple degrees have the same subject. How do we treat the primary key?
-
 		Subject savedSubject = this.subjectService.save(
 				new Subject(
 						null,

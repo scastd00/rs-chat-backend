@@ -5,7 +5,7 @@ USE `rs_chat`;
 CREATE TABLE `subjects`
 (
 	`id`        bigint      NOT NULL AUTO_INCREMENT,
-	`name`      varchar(30) NOT NULL,
+	`name`      varchar(30) NOT NULL, -- Not unique because a subject can be in different degrees
 	`period`    varchar(2)  NOT NULL,
 	`type`      char(2)     NOT NULL,
 	`credits`   tinyint     NOT NULL,
@@ -13,7 +13,6 @@ CREATE TABLE `subjects`
 	`degree_id` bigint      NOT NULL,
 
 	CONSTRAINT `pk_subject_id` PRIMARY KEY (`id`),
-	CONSTRAINT `u_name` UNIQUE (`name`),
 	CONSTRAINT `ck_period` CHECK (`period` IN ('A', 'C1', 'C2', 'S1', 'S2')),
 	CONSTRAINT `ck_type` CHECK (`type` IN ('TR', 'BO', 'OB', 'OP', 'FB'))
 ) ENGINE = InnoDB;
