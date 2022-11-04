@@ -53,8 +53,9 @@ public class RSChatAuthorizationFilter extends OncePerRequestFilter {
 		String authorizationHeader = request.getHeader(AUTHORIZATION);
 
 		if (authorizationHeader == null || !authorizationHeader.startsWith(JWT_TOKEN_PREFIX)) {
-			// Todo: what is this case. Login, register and others are checked in the previous if ???
-			chain.doFilter(request, response);
+			// All routes need the JWT token except for the routes excluded above.
+			log.error("Authorization header is missing or invalid.");
+			throw new ServletException("Missing or invalid Authorization header.");
 		} else {
 			try {
 				DecodedJWT decodedJWT = Utils.checkAuthorizationToken(authorizationHeader);
