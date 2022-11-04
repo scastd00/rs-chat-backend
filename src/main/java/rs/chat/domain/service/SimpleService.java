@@ -1,4 +1,4 @@
-package rs.chat.service;
+package rs.chat.domain.service;
 
 import java.util.List;
 

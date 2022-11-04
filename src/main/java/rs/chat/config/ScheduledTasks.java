@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import rs.chat.domain.entity.Session;
-import rs.chat.service.SessionService;
+import rs.chat.domain.service.SessionService;
 
 import java.time.Clock;
 import java.time.Instant;

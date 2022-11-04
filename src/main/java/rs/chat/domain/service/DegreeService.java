@@ -1,4 +1,4 @@
-package rs.chat.service;
+package rs.chat.domain.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +9,9 @@ import rs.chat.domain.DomainUtils;
 import rs.chat.domain.entity.Degree;
 import rs.chat.domain.repository.ChatRepository;
 import rs.chat.domain.repository.DegreeRepository;
+import rs.chat.domain.repository.StudentSubjectRepository;
+import rs.chat.domain.repository.SubjectRepository;
+import rs.chat.domain.repository.TeacherSubjectRepository;
 import rs.chat.domain.repository.UserChatRepository;
 import rs.chat.exceptions.BadRequestException;
 import rs.chat.exceptions.NotFoundException;
@@ -26,6 +29,9 @@ public class DegreeService {
 	private final DegreeRepository degreeRepository;
 	private final ChatRepository chatRepository;
 	private final UserChatRepository userChatRepository;
+	private final SubjectRepository subjectRepository;
+	private final StudentSubjectRepository studentSubjectRepository;
+	private final TeacherSubjectRepository teacherSubjectRepository;
 
 	/**
 	 * Finds all degrees.
@@ -108,7 +114,20 @@ public class DegreeService {
 		// Key removal is degree-id
 		this.userChatRepository.deleteAllByUserChatPK_ChatId(id);
 		this.chatRepository.deleteById(id);
-		// Todo: Delete all subjects and associated chats and users (teachers and students) here
+
+		/*
+		 * - Delete all students of every subject of the degree
+		 * - Delete all teachers of every subject of the degree
+		 * - Delete all subjects of the degree
+		 *
+		 * - Delete all user-chat associated with the subject chat
+		 * - Delete chat of every subject
+		 *
+		 * - Delete the degree
+		 * - Delete the user-chats associated with the degree chat
+		 * - Delete the degree chat
+		 */
+
 		this.degreeRepository.deleteById(id);
 		S3.getInstance().deleteHistoryFile(DEGREE_CHAT + "-" + id);
 	}

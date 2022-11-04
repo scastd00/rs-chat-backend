@@ -1,4 +1,4 @@
-package rs.chat.service;
+package rs.chat.domain.service;
 
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;

@@ -10,6 +10,7 @@ import rs.chat.domain.entity.Degree;
 import rs.chat.domain.repository.ChatRepository;
 import rs.chat.domain.repository.DegreeRepository;
 import rs.chat.domain.repository.UserChatRepository;
+import rs.chat.domain.service.DegreeService;
 import rs.chat.exceptions.BadRequestException;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
