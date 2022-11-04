@@ -6,6 +6,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rs.chat.domain.DomainUtils;
+import rs.chat.domain.entity.Chat;
 import rs.chat.domain.entity.Degree;
 import rs.chat.domain.repository.ChatRepository;
 import rs.chat.domain.repository.DegreeRepository;
@@ -20,6 +21,7 @@ import rs.chat.storage.S3;
 import java.util.List;
 
 import static rs.chat.utils.Constants.DEGREE_CHAT;
+import static rs.chat.utils.Constants.SUBJECT_CHAT;
 
 @Service
 @RequiredArgsConstructor
@@ -111,9 +113,11 @@ public class DegreeService {
 			throw new NotFoundException("Degree with id '%d' does not exist.".formatted(id));
 		}
 
-		// Key removal is degree-id
-		this.userChatRepository.deleteAllByUserChatPK_ChatId(id);
-		this.chatRepository.deleteById(id);
+		String degreeChatKey = "%s-%s".formatted(DEGREE_CHAT, id);
+		Chat degreeChat = this.chatRepository.findByKey(degreeChatKey)
+		                                     .orElseThrow(
+				                                     () -> new NotFoundException("Chat for degree %s not found.".formatted(id))
+		                                     );
 
 		/*
 		 * - Delete all students of every subject of the degree
@@ -127,8 +131,26 @@ public class DegreeService {
 		 * - Delete the user-chats associated with the degree chat
 		 * - Delete the degree chat
 		 */
+		this.subjectRepository
+				.findAllByDegreeId(id)
+				.forEach(subject -> {
+					String subjectChatKey = "%s-%s".formatted(SUBJECT_CHAT, subject.getId());
+					Chat subjectChat = this.chatRepository
+							.findByKey(subjectChatKey)
+							.orElseThrow(
+									() -> new NotFoundException("Chat for subject %s not found.".formatted(subject.getId()))
+							);
+					this.studentSubjectRepository.deleteAllByStuSubjPK_SubjectId(subject.getId());
+					this.teacherSubjectRepository.deleteAllByTeaSubjPK_SubjectId(subject.getId());
+					this.subjectRepository.deleteById(subject.getId());
+					this.userChatRepository.deleteAllByUserChatPK_ChatId(subjectChat.getId());
+					this.chatRepository.deleteById(subjectChat.getId());
+					S3.getInstance().deleteHistoryFile(subjectChatKey);
+				});
 
 		this.degreeRepository.deleteById(id);
+		this.userChatRepository.deleteAllByUserChatPK_ChatId(degreeChat.getId());
+		this.chatRepository.deleteById(degreeChat.getId());
 		S3.getInstance().deleteHistoryFile(DEGREE_CHAT + "-" + id);
 	}
 }

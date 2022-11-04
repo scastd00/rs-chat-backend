@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rs.chat.domain.DomainUtils;
+import rs.chat.domain.entity.Chat;
 import rs.chat.domain.entity.Subject;
 import rs.chat.domain.repository.ChatRepository;
 import rs.chat.domain.repository.StudentSubjectRepository;
@@ -81,12 +82,17 @@ public class SubjectService {
 			throw new NotFoundException("Subject with id '%d' does not exist.".formatted(id));
 		}
 
-		// Key removal is subject-id
-		this.userChatRepository.deleteAllByUserChatPK_ChatId(id);
-		this.chatRepository.deleteById(id);
+		String chatKey = "%s-%s".formatted(SUBJECT_CHAT, id);
+		Chat chat = this.chatRepository.findByKey(chatKey)
+		                               .orElseThrow(
+				                               () -> new NotFoundException("Chat for subject %s not found.".formatted(id))
+		                               );
+
+		this.userChatRepository.deleteAllByUserChatPK_ChatId(chat.getId());
+		this.chatRepository.deleteById(chat.getId());
 		this.studentSubjectRepository.deleteAllByStuSubjPK_SubjectId(id);
 		this.teacherSubjectRepository.deleteAllByTeaSubjPK_SubjectId(id);
 		this.subjectRepository.deleteById(id);
-		S3.getInstance().deleteHistoryFile(SUBJECT_CHAT + "-" + id);
+		S3.getInstance().deleteHistoryFile(chatKey);
 	}
 }

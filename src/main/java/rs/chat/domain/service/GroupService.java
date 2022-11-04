@@ -70,17 +70,20 @@ public class GroupService {
 	}
 
 	public void deleteById(Long id) {
-		Group group = this.getById(id);
-		Long groupId = group.getId();
-		Chat chat = this.chatRepository.findByKey("%s-%s".formatted(GROUP_CHAT, groupId))
+		if (!this.groupRepository.existsById(id)) {
+			throw new NotFoundException("Group with id '%s' does not exist.".formatted(id));
+		}
+
+		String chatKey = "%s-%s".formatted(GROUP_CHAT, id);
+		Chat chat = this.chatRepository.findByKey(chatKey)
 		                               .orElseThrow(
-				                               () -> new NotFoundException("Chat for group %s (%s) not found.".formatted(groupId, group.getName()))
+				                               () -> new NotFoundException("Chat for group %s not found.".formatted(id))
 		                               );
 
 		this.userChatRepository.deleteAllByUserChatPK_ChatId(chat.getId());
 		this.chatRepository.deleteById(chat.getId());
-		this.userGroupRepository.deleteAllByUserGroupPK_GroupId(groupId);
-		this.groupRepository.deleteById(groupId);
-		S3.getInstance().deleteHistoryFile(GROUP_CHAT + "-" + id);
+		this.userGroupRepository.deleteAllByUserGroupPK_GroupId(id);
+		this.groupRepository.deleteById(id);
+		S3.getInstance().deleteHistoryFile(chatKey);
 	}
 }
