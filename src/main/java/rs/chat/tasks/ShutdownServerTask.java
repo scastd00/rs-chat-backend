@@ -8,7 +8,7 @@ import rs.chat.net.ws.WebSocketChatMap;
 
 import java.util.concurrent.TimeUnit;
 
-import static rs.chat.net.ws.Message.INFO_MESSAGE;
+import static rs.chat.net.ws.Message.RESTART_MESSAGE;
 import static rs.chat.utils.Utils.createMessage;
 
 /**
@@ -53,7 +53,7 @@ public class ShutdownServerTask implements Task {
 			this.webSocketChatMap.totalBroadcast(
 					createMessage(
 							"Server is shutting down in %d %s.".formatted(this.delay, this.timeUnit.name().toLowerCase()),
-							INFO_MESSAGE.type(),
+							RESTART_MESSAGE.type(),
 							""
 					)
 			);
