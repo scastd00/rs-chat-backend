@@ -10,11 +10,13 @@ import java.util.Map;
 
 import static rs.chat.net.ws.Message.ACTIVE_USERS_MESSAGE;
 import static rs.chat.net.ws.Message.AUDIO_MESSAGE;
+import static rs.chat.net.ws.Message.COMMAND_MESSAGE;
 import static rs.chat.net.ws.Message.ERROR_MESSAGE;
 import static rs.chat.net.ws.Message.GET_HISTORY_MESSAGE;
 import static rs.chat.net.ws.Message.IMAGE_MESSAGE;
 import static rs.chat.net.ws.Message.INFO_MESSAGE;
 import static rs.chat.net.ws.Message.MAINTENANCE_MESSAGE;
+import static rs.chat.net.ws.Message.MENTION_MESSAGE;
 import static rs.chat.net.ws.Message.PDF_MESSAGE;
 import static rs.chat.net.ws.Message.PING_MESSAGE;
 import static rs.chat.net.ws.Message.RESTART_MESSAGE;
@@ -26,6 +28,9 @@ import static rs.chat.net.ws.Message.USER_JOINED;
 import static rs.chat.net.ws.Message.USER_LEFT;
 import static rs.chat.net.ws.Message.VIDEO_MESSAGE;
 
+/**
+ * Utility class for mapping {@link Message} to {@link MessageStrategy}.
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StrategyMappings {
 	private static final Map<String, MessageStrategy> strategies = new HashMap<>();
@@ -43,6 +48,8 @@ public final class StrategyMappings {
 		strategies.put(VIDEO_MESSAGE.type(), new VideoMessageStrategy());
 		strategies.put(PDF_MESSAGE.type(), new PdfMessageStrategy());
 		strategies.put(TEXT_DOC_MESSAGE.type(), new TextDocMessageStrategy());
+		strategies.put(COMMAND_MESSAGE.type(), new CommandMessageStrategy());
+		strategies.put(MENTION_MESSAGE.type(), new MentionMessageStrategy());
 
 		strategies.put(ACTIVE_USERS_MESSAGE.type(), new ActiveUsersStrategy());
 		strategies.put(GET_HISTORY_MESSAGE.type(), new GetHistoryStrategy());
