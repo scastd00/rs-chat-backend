@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import rs.chat.net.ws.WebSocketChatMap;
+import rs.chat.net.ws.ChatManagement;
 
 import java.util.concurrent.TimeUnit;
 
@@ -22,16 +22,16 @@ public class ShutdownServerTask implements Task {
 	private final long delay;
 	private final TimeUnit timeUnit;
 	@Setter
-	private WebSocketChatMap webSocketChatMap;
+	private ChatManagement chatManagement;
 
 	@Override
 	public void run() throws TaskExecutionException {
-		if (this.webSocketChatMap == null) {
-			log.error("WebSocketChatMap is null, cannot send shutdown message.");
+		if (this.chatManagement == null) {
+			log.error("ChatManagement is null, cannot send shutdown message.");
 			throw new TaskExecutionException(
 					TaskStatus.builder()
 					          .status(TaskStatus.FATAL)
-					          .message("WebSocketChatMap is null, cannot send shutdown message.")
+					          .message("ChatManagement is null, cannot send shutdown message.")
 					          .build()
 			);
 		}
@@ -50,7 +50,7 @@ public class ShutdownServerTask implements Task {
 		log.info("Shutting down server...");
 
 		try {
-			this.webSocketChatMap.totalBroadcast(
+			this.chatManagement.totalBroadcast(
 					createMessage(
 							"Server is shutting down in %d %s.".formatted(this.delay, this.timeUnit.name().toLowerCase()),
 							RESTART_MESSAGE.type(),
@@ -60,7 +60,7 @@ public class ShutdownServerTask implements Task {
 
 			Thread.sleep(this.timeUnit.toMillis(this.delay));
 
-			this.webSocketChatMap.close();
+			this.chatManagement.close();
 			System.exit(0);
 		} catch (Exception e) {
 			log.error("Error while shutting down server.", e);

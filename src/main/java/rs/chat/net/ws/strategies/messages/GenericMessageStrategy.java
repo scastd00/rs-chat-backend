@@ -3,9 +3,9 @@ package rs.chat.net.ws.strategies.messages;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import rs.chat.exceptions.WebSocketException;
+import rs.chat.net.ws.ChatManagement;
 import rs.chat.net.ws.ClientID;
 import rs.chat.net.ws.JsonMessageWrapper;
-import rs.chat.net.ws.WebSocketChatMap;
 
 import java.io.IOException;
 import java.util.Map;
@@ -17,13 +17,13 @@ import java.util.Map;
 @Slf4j
 public class GenericMessageStrategy implements MessageStrategy {
 	@Override
-	public void handle(JsonMessageWrapper wrappedMessage, WebSocketChatMap webSocketChatMap,
+	public void handle(JsonMessageWrapper wrappedMessage, ChatManagement chatManagement,
 	                   Map<String, Object> otherData) throws WebSocketException, IOException {
 		ClientID clientID = (ClientID) otherData.get("clientID");
 
 		// Clear the sensitive data to send the message to other clients
 		this.clearSensitiveDataChangeDateAndBuildResponse(wrappedMessage);
-		webSocketChatMap.broadcastToSingleChatAndExcludeClient(clientID, wrappedMessage.toString());
+		chatManagement.broadcastToSingleChatAndExcludeClient(clientID, wrappedMessage.toString());
 	}
 
 	/**

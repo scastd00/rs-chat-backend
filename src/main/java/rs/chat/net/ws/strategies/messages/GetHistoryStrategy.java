@@ -7,10 +7,10 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import rs.chat.exceptions.WebSocketException;
+import rs.chat.net.ws.ChatManagement;
 import rs.chat.net.ws.ClientID;
 import rs.chat.net.ws.JsonMessageWrapper;
 import rs.chat.net.ws.Message;
-import rs.chat.net.ws.WebSocketChatMap;
 import rs.chat.utils.Utils;
 
 import java.io.File;
@@ -33,7 +33,7 @@ import static rs.chat.utils.Utils.createMessage;
 @Slf4j
 public class GetHistoryStrategy implements MessageStrategy {
 	@Override
-	public void handle(JsonMessageWrapper wrappedMessage, WebSocketChatMap webSocketChatMap,
+	public void handle(JsonMessageWrapper wrappedMessage, ChatManagement chatManagement,
 	                   Map<String, Object> otherData) throws WebSocketException, IOException {
 		// Todo: receive a number of the "page" to get the history from.
 		//  Received 1: get the last 65 messages.

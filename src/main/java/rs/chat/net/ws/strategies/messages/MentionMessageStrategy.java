@@ -2,9 +2,9 @@ package rs.chat.net.ws.strategies.messages;
 
 import lombok.extern.slf4j.Slf4j;
 import rs.chat.exceptions.WebSocketException;
+import rs.chat.net.ws.ChatManagement;
 import rs.chat.net.ws.JsonMessageWrapper;
 import rs.chat.net.ws.Message;
-import rs.chat.net.ws.WebSocketChatMap;
 
 import java.io.IOException;
 import java.util.Map;
@@ -15,7 +15,7 @@ import java.util.Map;
 @Slf4j
 public class MentionMessageStrategy implements MessageStrategy {
 	@Override
-	public void handle(JsonMessageWrapper wrappedMessage, WebSocketChatMap webSocketChatMap, Map<String, Object> otherData) throws WebSocketException, IOException {
+	public void handle(JsonMessageWrapper wrappedMessage, ChatManagement chatManagement, Map<String, Object> otherData) throws WebSocketException, IOException {
 
 	}
 }

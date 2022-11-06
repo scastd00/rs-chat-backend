@@ -2,7 +2,7 @@ package rs.chat.net.ws.strategies.commands;
 
 import org.springframework.web.socket.TextMessage;
 import rs.chat.exceptions.WebSocketException;
-import rs.chat.net.ws.WebSocketChatMap;
+import rs.chat.net.ws.ChatManagement;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -14,7 +14,7 @@ import static rs.chat.utils.Utils.createMessage;
 
 public class TimeCommandStrategy implements CommandStrategy {
 	@Override
-	public void handle(WebSocketChatMap webSocketChatMap, Map<String, Object> otherData)
+	public void handle(ChatManagement chatManagement, Map<String, Object> otherData)
 			throws WebSocketException, IOException {
 		getSession(otherData).sendMessage(new TextMessage(
 				createMessage(

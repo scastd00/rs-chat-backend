@@ -2,10 +2,10 @@ package rs.chat.net.ws.strategies.messages;
 
 import lombok.extern.slf4j.Slf4j;
 import rs.chat.exceptions.WebSocketException;
+import rs.chat.net.ws.ChatManagement;
 import rs.chat.net.ws.ClientID;
 import rs.chat.net.ws.JsonMessageWrapper;
 import rs.chat.net.ws.Message;
-import rs.chat.net.ws.WebSocketChatMap;
 
 import java.util.Map;
 
@@ -18,17 +18,17 @@ import static rs.chat.utils.Utils.createMessage;
 @Slf4j
 public class UserLeftStrategy implements MessageStrategy {
 	@Override
-	public void handle(JsonMessageWrapper wrappedMessage, WebSocketChatMap webSocketChatMap,
+	public void handle(JsonMessageWrapper wrappedMessage, ChatManagement chatManagement,
 	                   Map<String, Object> otherData) throws WebSocketException {
 		ClientID clientID = (ClientID) otherData.get("clientID");
 		String chatId = clientID.chatId();
 		String username = clientID.username();
 
-		webSocketChatMap.broadcastToSingleChatAndExcludeClient(
+		chatManagement.broadcastToSingleChatAndExcludeClient(
 				clientID,
 				createMessage(username + " has left the chat", USER_LEFT.type(), chatId)
 		);
-		webSocketChatMap.removeClientFromChat(clientID);
+		chatManagement.removeClientFromChat(clientID);
 		// Closed from the frontend
 
 		log.debug("{} has left the chat {}", username, chatId);

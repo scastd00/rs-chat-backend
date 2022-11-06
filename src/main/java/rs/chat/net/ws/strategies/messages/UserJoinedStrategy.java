@@ -3,11 +3,11 @@ package rs.chat.net.ws.strategies.messages;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.WebSocketSession;
 import rs.chat.exceptions.WebSocketException;
+import rs.chat.net.ws.ChatManagement;
 import rs.chat.net.ws.Client;
 import rs.chat.net.ws.ClientID;
 import rs.chat.net.ws.JsonMessageWrapper;
 import rs.chat.net.ws.Message;
-import rs.chat.net.ws.WebSocketChatMap;
 
 import java.io.IOException;
 import java.util.Map;
@@ -21,15 +21,15 @@ import static rs.chat.utils.Utils.createMessage;
 @Slf4j
 public class UserJoinedStrategy implements MessageStrategy {
 	@Override
-	public void handle(JsonMessageWrapper wrappedMessage, WebSocketChatMap webSocketChatMap,
+	public void handle(JsonMessageWrapper wrappedMessage, ChatManagement chatManagement,
 	                   Map<String, Object> otherData) throws WebSocketException, IOException {
 		WebSocketSession session = (WebSocketSession) otherData.get("session");
 		ClientID clientID = (ClientID) otherData.get("clientID");
 		String chatId = clientID.chatId();
 		String username = clientID.username();
 
-		webSocketChatMap.addClientToChat(new Client(session, clientID));
-		webSocketChatMap.broadcastToSingleChatAndExcludeClient(
+		chatManagement.addClientToChat(new Client(session, clientID));
+		chatManagement.broadcastToSingleChatAndExcludeClient(
 				clientID,
 				createMessage(username + " has joined the chat", USER_JOINED.type(), chatId)
 		);

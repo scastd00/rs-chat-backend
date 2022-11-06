@@ -23,7 +23,7 @@ import static rs.chat.utils.Utils.createErrorMessage;
 @Component
 @RequiredArgsConstructor
 public class WebSocketHandler extends TextWebSocketHandler {
-	private final WebSocketChatMap chatMap;
+	private final ChatManagement chatManagement;
 
 	/**
 	 * Handles text messages (JSON string).
@@ -54,7 +54,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		try {
 			log.debug("Handling message: {} by class {}.", receivedMessageType.type(), strategy.getClass().getSimpleName());
 			Utils.checkTokenValidity(wrappedMessage.token());
-			strategy.handle(wrappedMessage, this.chatMap, otherData);
+			strategy.handle(wrappedMessage, this.chatManagement, otherData);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
