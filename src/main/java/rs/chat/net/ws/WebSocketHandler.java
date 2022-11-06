@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-import rs.chat.net.ws.strategies.MessageStrategy;
-import rs.chat.net.ws.strategies.StrategyMappings;
+import rs.chat.net.ws.strategies.messages.MessageStrategy;
+import rs.chat.net.ws.strategies.messages.StrategyMappings;
 import rs.chat.utils.Utils;
 
 import java.io.IOException;

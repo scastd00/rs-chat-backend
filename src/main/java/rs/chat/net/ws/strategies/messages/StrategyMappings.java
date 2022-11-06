@@ -1,4 +1,4 @@
-package rs.chat.net.ws.strategies;
+package rs.chat.net.ws.strategies.messages;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

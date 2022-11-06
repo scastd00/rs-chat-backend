@@ -1,4 +1,4 @@
-package rs.chat.net.ws.strategies;
+package rs.chat.net.ws.strategies.messages;
 
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
