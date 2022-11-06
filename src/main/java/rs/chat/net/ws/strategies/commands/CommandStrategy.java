@@ -35,6 +35,13 @@ public interface CommandStrategy {
 		return (WebSocketSession) otherData.get("session");
 	}
 
+	/**
+	 * Method to ease the process of getting the {@link ClientID} of a specific {@link WebSocketSession}.
+	 *
+	 * @param otherData {@link Map} containing the session to get the {@link ClientID} from.
+	 *
+	 * @return {@link ClientID} of the session.
+	 */
 	default ClientID getClientID(Map<String, Object> otherData) {
 		return (ClientID) otherData.get("clientID");
 	}
