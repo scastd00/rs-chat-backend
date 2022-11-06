@@ -30,6 +30,7 @@ public record Message(String type, String filePrefix, String extension) {
 	public static final Message TEXT_DOC_MESSAGE = new Message("TEXT_DOC_MESSAGE", "texts/", null);
 	public static final Message COMMAND_MESSAGE = new Message("COMMAND_MESSAGE", null, null);
 	public static final Message MENTION_MESSAGE = new Message("MENTION_MESSAGE", null, null);
+	public static final Message COMMAND_RESPONSE = new Message("COMMAND_RESPONSE", null, null);
 
 	public static final Message ACTIVE_USERS_MESSAGE = new Message("ACTIVE_USERS", null, null);
 	public static final Message GET_HISTORY_MESSAGE = new Message("GET_HISTORY", "chat/", TEXT_MESSAGE.extension);

@@ -20,7 +20,7 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 @Slf4j
 @Component
 @EnableScheduling
-public class WebSocketChatMap {
+public class WebSocketChatMap { // Todo: rename the class
 	/**
 	 * Map to store each chat. The mapping key is the chatId.
 	 */
