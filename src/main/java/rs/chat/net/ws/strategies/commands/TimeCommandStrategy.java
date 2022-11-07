@@ -25,4 +25,14 @@ public class TimeCommandStrategy implements CommandStrategy {
 				))
 		);
 	}
+
+	@Override
+	public String getDescriptionOfCommand() {
+		return "Displays the current time of the server.";
+	}
+
+	@Override
+	public String getUsageOfCommand() {
+		return "/time";
+	}
 }

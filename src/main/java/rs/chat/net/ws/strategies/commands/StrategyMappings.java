@@ -50,4 +50,18 @@ public class StrategyMappings {
 		return Optional.ofNullable(strategies.get(command))
 		               .orElseThrow(() -> new CommandUnavailableException("Command " + command + " is not available."));
 	}
+
+	public static String getAvailableCommandsWithDescriptionAndUsage() {
+		StringBuilder sb = new StringBuilder("##");
+
+		strategies.forEach((command, strategy) -> sb.append(command)
+		                                            .append(" - ")
+		                                            .append(strategy.getDescriptionOfCommand())
+		                                            .append(" Usage: ")
+		                                            .append(strategy.getUsageOfCommand())
+		                                            .append("##")
+		);
+
+		return sb.toString();
+	}
 }

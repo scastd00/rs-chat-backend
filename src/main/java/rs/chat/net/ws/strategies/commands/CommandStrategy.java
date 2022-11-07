@@ -25,6 +25,20 @@ public interface CommandStrategy {
 			throws WebSocketException, IOException;
 
 	/**
+	 * @return the description of the command.
+	 */
+	default String getDescriptionOfCommand() {
+		return "No description available."; // Todo: implement in all classes and remove default
+	}
+
+	/**
+	 * @return the usage of the command.
+	 */
+	default String getUsageOfCommand() {
+		return "No usage available."; // Todo: implement in all classes and remove default
+	}
+
+	/**
 	 * Method to ease the process of sending a message to a specific {@link WebSocketSession}.
 	 *
 	 * @param otherData {@link Map} containing the session to send the message to.
