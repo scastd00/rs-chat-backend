@@ -26,6 +26,8 @@ import static rs.chat.net.ws.Message.USER_CONNECTED;
 import static rs.chat.net.ws.Message.USER_DISCONNECTED;
 import static rs.chat.net.ws.Message.USER_JOINED;
 import static rs.chat.net.ws.Message.USER_LEFT;
+import static rs.chat.net.ws.Message.USER_STOPPED_TYPING;
+import static rs.chat.net.ws.Message.USER_TYPING;
 import static rs.chat.net.ws.Message.VIDEO_MESSAGE;
 
 /**
@@ -38,6 +40,8 @@ public final class StrategyMappings {
 	static {
 		strategies.put(USER_CONNECTED.type(), new UserConnectedStrategy());
 		strategies.put(USER_DISCONNECTED.type(), new UserDisconnectedStrategy());
+		strategies.put(USER_TYPING.type(), new UserTypingStrategy());
+		strategies.put(USER_STOPPED_TYPING.type(), new UserStoppedTypingStrategy());
 
 		strategies.put(USER_JOINED.type(), new UserJoinedStrategy());
 		strategies.put(USER_LEFT.type(), new UserLeftStrategy());
