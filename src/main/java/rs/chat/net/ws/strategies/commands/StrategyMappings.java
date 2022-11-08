@@ -62,6 +62,6 @@ public class StrategyMappings {
 		                                            .append("##")
 		);
 
-		return sb.toString();
+		return sb.replace(sb.length() - 2, sb.length(), "").toString();
 	}
 }
