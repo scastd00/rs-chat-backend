@@ -14,6 +14,8 @@ import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Constants {
+	public static final String CHAT_VERSION = "1.11.0";
+
 	public static final List<String> ACCEPTED_ORIGINS = List.of(
 			// Local development
 			"http://localhost:3000",

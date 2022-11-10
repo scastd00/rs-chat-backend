@@ -7,11 +7,11 @@ import org.springframework.util.unit.DataSize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import rs.chat.domain.entity.File;
+import rs.chat.domain.service.FileService;
 import rs.chat.exceptions.BadRequestException;
 import rs.chat.net.http.HttpRequest;
 import rs.chat.net.http.HttpResponse;
 import rs.chat.net.http.HttpResponse.HttpResponseBody;
-import rs.chat.service.FileService;
 import rs.chat.strategies.upload.AudioStrategy;
 import rs.chat.strategies.upload.FileUploadStrategy;
 import rs.chat.strategies.upload.ImageStrategy;
@@ -92,6 +92,6 @@ public class FileController {
 		responseBody.add("metadata", fileToSave.getMetadata());
 
 		response.status(OK).send(responseBody);
-		log.info("File uploaded successfully");
+		log.info("File ({}) uploaded successfully", fileName);
 	}
 }

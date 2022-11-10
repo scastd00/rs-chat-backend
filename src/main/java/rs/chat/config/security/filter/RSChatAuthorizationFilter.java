@@ -22,6 +22,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static rs.chat.router.Routes.PostRoute.LOGIN_URL;
 import static rs.chat.router.Routes.PostRoute.REGISTER_URL;
+import static rs.chat.router.Routes.WS_CHAT_ENDPOINT;
 import static rs.chat.utils.Constants.ERROR_JSON_KEY;
 import static rs.chat.utils.Constants.JWT_TOKEN_PREFIX;
 
@@ -53,8 +54,9 @@ public class RSChatAuthorizationFilter extends OncePerRequestFilter {
 		String authorizationHeader = request.getHeader(AUTHORIZATION);
 
 		if (authorizationHeader == null || !authorizationHeader.startsWith(JWT_TOKEN_PREFIX)) {
-			// Todo: what is this case. Login, register and others are checked in the previous if ???
-			chain.doFilter(request, response);
+			// All routes need the JWT token except for the routes excluded above.
+			log.error("Authorization header is missing or invalid.");
+			throw new ServletException("Missing or invalid Authorization header.");
 		} else {
 			try {
 				DecodedJWT decodedJWT = Utils.checkAuthorizationToken(authorizationHeader);
@@ -78,6 +80,6 @@ public class RSChatAuthorizationFilter extends OncePerRequestFilter {
 	}
 
 	private boolean isExcludedPath(String path) {
-		return path.equals(LOGIN_URL) || path.equals(REGISTER_URL);
+		return path.equals(LOGIN_URL) || path.equals(REGISTER_URL) || path.equals(WS_CHAT_ENDPOINT);
 	}
 }

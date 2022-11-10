@@ -11,6 +11,4 @@ public interface ChatRepository extends JpaRepository<Chat, Long> {
 	Optional<Chat> findByInvitationCode(String invitationCode);
 
 	Optional<Chat> findByKey(String key);
-
-	void deleteByName(String name);
 }

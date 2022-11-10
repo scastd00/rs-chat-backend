@@ -7,6 +7,4 @@ public interface DegreeRepository extends JpaRepository<Degree, Long> {
 	Degree findByName(String name);
 
 	boolean existsByName(String name);
-
-	void deleteByName(String name);
 }

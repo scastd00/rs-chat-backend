@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import rs.chat.domain.entity.Group;
+import rs.chat.domain.service.ChatService;
+import rs.chat.domain.service.GroupService;
 import rs.chat.net.http.HttpRequest;
 import rs.chat.net.http.HttpResponse;
-import rs.chat.service.ChatService;
-import rs.chat.service.GroupService;
 
 import java.io.IOException;
 import java.util.List;

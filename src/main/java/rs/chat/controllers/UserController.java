@@ -8,12 +8,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import rs.chat.domain.entity.User;
+import rs.chat.domain.service.SessionService;
+import rs.chat.domain.service.UserService;
 import rs.chat.net.http.HttpRequest;
 import rs.chat.net.http.HttpResponse;
 import rs.chat.net.smtp.MailSender;
 import rs.chat.policies.Policies;
-import rs.chat.service.SessionService;
-import rs.chat.service.UserService;
 
 import java.io.IOException;
 import java.util.List;

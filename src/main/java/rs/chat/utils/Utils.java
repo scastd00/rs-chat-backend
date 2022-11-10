@@ -7,7 +7,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 import rs.chat.exceptions.TokenValidationException;
 import rs.chat.exceptions.WebSocketException;
 import rs.chat.net.ws.JsonMessageWrapper;
@@ -48,7 +47,7 @@ public final class Utils {
 		EXECUTOR_SERVICE = Executors.newCachedThreadPool(threadFactory);
 	}
 
-	public static void executeTask(@NotNull Task task, @NotNull Function<TaskExecutionException, Void> exceptionHandler) {
+	public static void executeTask(Task task, Function<TaskExecutionException, Void> exceptionHandler) {
 		EXECUTOR_SERVICE.execute(() -> {
 			try {
 				task.run();
@@ -116,7 +115,7 @@ public final class Utils {
 	public static String createActiveUsersMessage(List<String> usernames) {
 		JsonArray usersArray = new JsonArray();
 		usernames.forEach(usersArray::add);
-		return createServerMessage(usersArray.toString(), ACTIVE_USERS_MESSAGE.type(), "");
+		return createMessage(usersArray.toString(), ACTIVE_USERS_MESSAGE.type(), "");
 		// In the client the chatId is ignored, so we minimize the size of the message with an empty string.
 	}
 
@@ -129,7 +128,7 @@ public final class Utils {
 	 *
 	 * @return the {@link String} message containing the server message.
 	 */
-	public static String createServerMessage(String content, String type, String chatId) {
+	public static String createMessage(String content, String type, String chatId) {
 		return (JsonMessageWrapper.builder()
 		                          /* Headers */
 		                          .username("Server")
@@ -150,7 +149,7 @@ public final class Utils {
 	 *
 	 * @return the {@link String} message containing the error message.
 	 */
-	public static String createServerErrorMessage(String message) {
+	public static String createErrorMessage(String message) {
 		return (JsonMessageWrapper.builder()
 		                          /* Headers */
 		                          .username("Server")

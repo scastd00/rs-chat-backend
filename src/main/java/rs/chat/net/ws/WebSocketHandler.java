@@ -7,15 +7,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-import rs.chat.net.ws.strategies.MessageStrategy;
-import rs.chat.net.ws.strategies.StrategyMappings;
+import rs.chat.net.ws.strategies.messages.MessageStrategy;
+import rs.chat.net.ws.strategies.messages.StrategyMappings;
 import rs.chat.utils.Utils;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static rs.chat.utils.Utils.createServerErrorMessage;
+import static rs.chat.utils.Utils.createErrorMessage;
 
 /**
  * WebSocket handler for the application.
@@ -24,7 +23,7 @@ import static rs.chat.utils.Utils.createServerErrorMessage;
 @Component
 @RequiredArgsConstructor
 public class WebSocketHandler extends TextWebSocketHandler {
-	private final WebSocketChatMap chatMap;
+	private final ChatManagement chatManagement;
 
 	/**
 	 * Handles text messages (JSON string).
@@ -53,10 +52,10 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		MessageStrategy strategy = StrategyMappings.decideStrategy(receivedMessageType);
 
 		try {
-			log.info("Handling message: {} by class {}.", receivedMessageType.type(), strategy.getClass().getSimpleName());
+			log.debug("Handling message: {} by class {}.", receivedMessageType.type(), strategy.getClass().getSimpleName());
 			Utils.checkTokenValidity(wrappedMessage.token());
-			strategy.handle(wrappedMessage, this.chatMap, otherData);
-		} catch (IOException e) {
+			strategy.handle(wrappedMessage, this.chatManagement, otherData);
+		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
 	}
@@ -67,7 +66,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	@Override
 	public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
 		session.sendMessage(
-				new TextMessage(createServerErrorMessage(exception.getMessage()))
+				new TextMessage(createErrorMessage(exception.getMessage()))
 		);
 	}
 }

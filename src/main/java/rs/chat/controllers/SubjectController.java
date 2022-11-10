@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import rs.chat.domain.entity.Subject;
+import rs.chat.domain.service.ChatService;
+import rs.chat.domain.service.DegreeService;
+import rs.chat.domain.service.SubjectService;
 import rs.chat.exceptions.BadRequestException;
 import rs.chat.net.http.HttpRequest;
 import rs.chat.net.http.HttpResponse;
-import rs.chat.service.ChatService;
-import rs.chat.service.DegreeService;
-import rs.chat.service.SubjectService;
 
 import java.io.IOException;
 import java.util.List;
@@ -78,8 +78,6 @@ public class SubjectController {
 		if (this.subjectService.exists(name)) {
 			throw new BadRequestException("Subject '%s' already exists.".formatted(name));
 		}
-
-		// Todo: the problem comes when multiple degrees have the same subject. How do we treat the primary key?
 
 		Subject savedSubject = this.subjectService.save(
 				new Subject(

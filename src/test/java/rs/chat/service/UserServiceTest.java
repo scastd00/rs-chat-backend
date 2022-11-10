@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import rs.chat.domain.entity.User;
 import rs.chat.domain.repository.UserRepository;
+import rs.chat.domain.service.UserService;
 import rs.chat.exceptions.BadRequestException;
 import rs.chat.utils.Constants;
 

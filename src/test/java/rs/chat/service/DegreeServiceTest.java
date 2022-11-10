@@ -9,7 +9,11 @@ import org.springframework.data.domain.Sort;
 import rs.chat.domain.entity.Degree;
 import rs.chat.domain.repository.ChatRepository;
 import rs.chat.domain.repository.DegreeRepository;
+import rs.chat.domain.repository.StudentSubjectRepository;
+import rs.chat.domain.repository.SubjectRepository;
+import rs.chat.domain.repository.TeacherSubjectRepository;
 import rs.chat.domain.repository.UserChatRepository;
+import rs.chat.domain.service.DegreeService;
 import rs.chat.exceptions.BadRequestException;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -24,12 +28,19 @@ class DegreeServiceTest {
 	@Mock private DegreeRepository degreeRepository;
 	@Mock private ChatRepository chatRepository;
 	@Mock private UserChatRepository userChatRepository;
+	@Mock private SubjectRepository subjectRepository;
+	@Mock private StudentSubjectRepository studentSubjectRepository;
+	@Mock private TeacherSubjectRepository teacherSubjectRepository;
 	private DegreeService underTest;
 	private Degree degree;
 
 	@BeforeEach
 	void setUp() {
-		this.underTest = new DegreeService(this.degreeRepository, this.chatRepository, this.userChatRepository);
+		this.underTest = new DegreeService(
+				this.degreeRepository, this.chatRepository,
+				this.userChatRepository, this.subjectRepository,
+				this.studentSubjectRepository, this.teacherSubjectRepository
+		);
 		this.degree = new Degree(1L, "Test");
 	}
 

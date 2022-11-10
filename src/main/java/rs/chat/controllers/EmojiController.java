@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import rs.chat.domain.entity.Emoji;
+import rs.chat.domain.service.EmojiService;
 import rs.chat.exceptions.NotFoundException;
 import rs.chat.net.http.HttpResponse;
-import rs.chat.service.EmojiService;
 
 import java.io.IOException;
 import java.util.List;
