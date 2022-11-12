@@ -30,7 +30,7 @@
 	</appender>
 
 	<!-- The log level of info hides TRACE and DEBUG logs (INFO, WARN, ERROR traces are enabled) -->
-	<logger name="rs.chat" level="info" additivity="false">
+	<logger name="rs.chat" level="debug" additivity="false">
 		<appender-ref ref="CONSOLE"/>
 		<appender-ref ref="FILE"/>
 	</logger>

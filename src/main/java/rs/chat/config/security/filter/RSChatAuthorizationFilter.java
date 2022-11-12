@@ -20,6 +20,7 @@ import java.util.Collections;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static rs.chat.router.Routes.PostRoute.FORGOT_PASSWORD_URL;
 import static rs.chat.router.Routes.PostRoute.LOGIN_URL;
 import static rs.chat.router.Routes.PostRoute.REGISTER_URL;
 import static rs.chat.router.Routes.WS_CHAT_ENDPOINT;
@@ -79,7 +80,17 @@ public class RSChatAuthorizationFilter extends OncePerRequestFilter {
 		}
 	}
 
+	/**
+	 * Checks if the path is excluded from the authorization filter.
+	 *
+	 * @param path the path to check.
+	 *
+	 * @return {@code true} if the path is excluded, {@code false} otherwise.
+	 */
 	private boolean isExcludedPath(String path) {
-		return path.equals(LOGIN_URL) || path.equals(REGISTER_URL) || path.equals(WS_CHAT_ENDPOINT);
+		return path.equals(LOGIN_URL) ||
+				path.equals(REGISTER_URL) ||
+				path.equals(WS_CHAT_ENDPOINT) ||
+				path.equals(FORGOT_PASSWORD_URL);
 	}
 }
