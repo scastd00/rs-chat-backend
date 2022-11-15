@@ -51,6 +51,7 @@ public class RSChatAuthenticationFilter extends UsernamePasswordAuthenticationFi
 					new UsernamePasswordAuthenticationToken(username, password)
 			);
 		} catch (IOException e) {
+			log.error("Could not authenticate request", e);
 			throw new CouldNotAuthenticateException(e.getMessage());
 		}
 	}
@@ -59,6 +60,7 @@ public class RSChatAuthenticationFilter extends UsernamePasswordAuthenticationFi
 	protected void unsuccessfulAuthentication(HttpServletRequest request,
 	                                          HttpServletResponse response,
 	                                          AuthenticationException failed) throws IOException {
+		log.warn("Authentication failed", failed);
 		new HttpResponse(response)
 				.status(BAD_REQUEST) // Since the check for the user is only done one time, the exceptional case is that the user is not registered.
 				.send(ERROR_JSON_KEY, failed.getMessage());
