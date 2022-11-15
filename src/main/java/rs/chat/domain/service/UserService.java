@@ -21,7 +21,6 @@ import java.util.List;
 @Transactional
 @Slf4j
 public class UserService implements UserDetailsService {
-
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
 
@@ -117,7 +116,7 @@ public class UserService implements UserDetailsService {
 	 */
 	public User getUser(String username) {
 		return this.userRepository.findByUsername(username)
-		                          .orElseThrow(() -> new UsernameNotFoundException("Username %s not found".formatted(username)));
+		                          .orElseThrow(() -> new NotFoundException("Username %s not found".formatted(username)));
 	}
 
 	/**
@@ -128,7 +127,7 @@ public class UserService implements UserDetailsService {
 	 */
 	public void setRoleToUser(String username, String role) {
 		User user = this.userRepository.findByUsername(username)
-		                               .orElseThrow(() -> new UsernameNotFoundException("Username %s not found".formatted(username)));
+		                               .orElseThrow(() -> new NotFoundException("Username %s not found".formatted(username)));
 		user.setRole(role);
 		this.userRepository.save(user);
 	}

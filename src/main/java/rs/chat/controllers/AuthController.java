@@ -76,7 +76,10 @@ public class AuthController {
 		boolean isExtendedToken = request.body().get("remember").getAsBoolean();
 
 		// Get all data from db
-		User user = this.userService.getUser(username);
+		User user = (User) ControllerUtils.performActionThatMayThrow(
+				response, param -> this.userService.getUser(username)
+		);
+
 		Session savedSession = this.sessionService.saveSession(
 				new Session(
 						null,
