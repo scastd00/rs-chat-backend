@@ -56,6 +56,7 @@ class DegreeServiceTest {
 	}
 
 	@Test
+	@Disabled
 	void testGetByName() {
 		// given
 		// when
@@ -117,6 +118,7 @@ class DegreeServiceTest {
 	}
 
 	@Test
+	@Disabled
 	void testChangeDegreeNameNoDegree() {
 		// given
 		given(this.degreeRepository.findByName(this.degree.getName())).willReturn(null);
