@@ -1,9 +1,10 @@
 package rs.chat.router;
 
-public class Routes {
-	private Routes() {
-	}
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class Routes {
 	private static final String V_1 = "/api/v1";
 	public static final String ROOT_URL = "/";
 	public static final String ALL_ROUTES = "/**";
@@ -13,11 +14,9 @@ public class Routes {
 	/**
 	 * GET routes for the application.
 	 */
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class GetRoute {
 		public static final GetRoute INSTANCE = new GetRoute();
-
-		private GetRoute() {
-		}
 
 		public static final String USERS_URL = V_1 + "/users";
 		public static final String OPENED_SESSIONS_OF_USER_URL = V_1 + "/sessions/{username}";
@@ -72,11 +71,9 @@ public class Routes {
 	/**
 	 * POST routes for the application.
 	 */
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class PostRoute {
 		public static final PostRoute INSTANCE = new PostRoute();
-
-		private PostRoute() {
-		}
 
 		public static final String LOGIN_URL = V_1 + "/login";
 		public static final String LOGOUT_URL = V_1 + "/logout";
@@ -132,11 +129,9 @@ public class Routes {
 	/**
 	 * PUT routes for the application.
 	 */
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class PutRoute {
 		public static final PutRoute INSTANCE = new PutRoute();
-
-		private PutRoute() {
-		}
 
 		public static final String EDIT_DEGREE_NAME_URL = V_1 + "/degree/editName";
 
@@ -177,11 +172,9 @@ public class Routes {
 	/**
 	 * DELETE routes for the application.
 	 */
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class DeleteRoute {
 		public static final DeleteRoute INSTANCE = new DeleteRoute();
-
-		private DeleteRoute() {
-		}
 
 		public static final String DELETE_DEGREE_URL = V_1 + "/degree/delete/{id}";
 		public static final String DELETE_SUBJECT_URL = V_1 + "/subject/delete/{id}";

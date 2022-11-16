@@ -1,5 +1,7 @@
 package rs.chat.net.smtp;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 
@@ -17,10 +19,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 @Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MailSender {
-	private MailSender() {
-	}
-
 	private static final String FROM = System.getenv("GMAIL_ACCOUNT");
 	private static final String SMTP_HOST = "smtp.gmail.com";
 	private static final Properties PROPERTIES = System.getProperties();
