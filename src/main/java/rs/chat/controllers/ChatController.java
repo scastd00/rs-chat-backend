@@ -119,7 +119,7 @@ public class ChatController {
 			this.userGroupService.addUserToGroup(userId, Long.parseLong(key));
 		}
 
-		response.status(OK).send("name", chat.getName());
+		response.ok().send("name", chat.getName());
 		// Update the user's chats list in frontend.
 	}
 

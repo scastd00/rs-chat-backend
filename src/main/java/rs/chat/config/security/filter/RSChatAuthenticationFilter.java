@@ -21,7 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static rs.chat.utils.Constants.ERROR_JSON_KEY;
 
 /**
@@ -62,7 +61,7 @@ public class RSChatAuthenticationFilter extends UsernamePasswordAuthenticationFi
 	                                          AuthenticationException failed) throws IOException {
 		log.warn("Authentication failed", failed);
 		new HttpResponse(response)
-				.status(BAD_REQUEST) // Since the check for the user is only done one time, the exceptional case is that the user is not registered.
+				.badRequest() // Since the check for the user is only done one time, the exceptional case is that the user is not registered.
 				.send(ERROR_JSON_KEY, failed.getMessage());
 	}
 

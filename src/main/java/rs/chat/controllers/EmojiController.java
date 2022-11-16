@@ -2,7 +2,6 @@ package rs.chat.controllers;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,13 +28,13 @@ public class EmojiController {
 
 	@GetMapping(RANDOM_EMOJIS_URL)
 	public void getRandomEmojis(HttpResponse response, @PathVariable Long count) throws IOException {
-		response.status(HttpStatus.OK).send("emojis", this.emojiService.getRandomEmojis(count));
+		response.ok().send("emojis", this.emojiService.getRandomEmojis(count));
 	}
 
 	@GetMapping(EMOJI_STARTING_WITH_STRING_URL)
 	public void getEmojisStartingWithString(HttpResponse response, @PathVariable String string) throws IOException {
 		if (string.length() == 0) {
-			response.status(HttpStatus.OK).send("emojis", List.of());
+			response.ok().send("emojis", List.of());
 			return; // The user has not typed anything yet
 		}
 
@@ -46,7 +45,7 @@ public class EmojiController {
 			return;
 		}
 
-		response.status(HttpStatus.OK).send("emojis", emojis);
+		response.ok().send("emojis", emojis);
 	}
 
 	@GetMapping(EMOJI_BY_CATEGORY_URL)
@@ -58,11 +57,11 @@ public class EmojiController {
 			return;
 		}
 
-		response.status(HttpStatus.OK).send("emojis", emojis);
+		response.ok().send("emojis", emojis);
 	}
 
 	@GetMapping(EMOJIS_GROUPED_BY_CATEGORY_URL)
 	public void getEmojisGroupedByCategory(HttpResponse response) throws IOException {
-		response.status(HttpStatus.OK).send("emojis", this.emojiService.getEmojisGroupedByCategory());
+		response.ok().send("emojis", this.emojiService.getEmojisGroupedByCategory());
 	}
 }
