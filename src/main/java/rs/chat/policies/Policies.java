@@ -2,16 +2,16 @@ package rs.chat.policies;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import rs.chat.exceptions.InvalidPasswordException;
 import rs.chat.exceptions.MaliciousCodeInjectionException;
 import rs.chat.exceptions.MinimumRequirementsNotMetException;
 
 import java.util.ArrayList;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Policies {
-	private Policies() {
-	}
-
 	private static final ArrayList<String> excludedCharacters = new ArrayList<>();
 
 	static {

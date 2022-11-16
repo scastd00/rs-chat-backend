@@ -20,6 +20,7 @@ import rs.chat.storage.S3;
 
 import java.util.List;
 
+import static rs.chat.utils.Constants.CHAT_KEY_FORMAT;
 import static rs.chat.utils.Constants.DEGREE_CHAT;
 import static rs.chat.utils.Constants.SUBJECT_CHAT;
 
@@ -113,7 +114,7 @@ public class DegreeService {
 			throw new NotFoundException("Degree with id '%d' does not exist.".formatted(id));
 		}
 
-		String degreeChatKey = "%s-%s".formatted(DEGREE_CHAT, id);
+		String degreeChatKey = CHAT_KEY_FORMAT.formatted(DEGREE_CHAT, id);
 		Chat degreeChat = this.chatRepository.findByKey(degreeChatKey)
 		                                     .orElseThrow(
 				                                     () -> new NotFoundException("Chat for degree %s not found.".formatted(id))
@@ -134,7 +135,7 @@ public class DegreeService {
 		this.subjectRepository
 				.findAllByDegreeId(id)
 				.forEach(subject -> {
-					String subjectChatKey = "%s-%s".formatted(SUBJECT_CHAT, subject.getId());
+					String subjectChatKey = CHAT_KEY_FORMAT.formatted(SUBJECT_CHAT, subject.getId());
 					Chat subjectChat = this.chatRepository
 							.findByKey(subjectChatKey)
 							.orElseThrow(

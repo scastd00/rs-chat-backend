@@ -29,6 +29,7 @@ public final class Constants {
 
 	public static final Gson GSON = new Gson();
 	public static final String ERROR_JSON_KEY = "error";
+	public static final String CHAT_KEY_FORMAT = "%s-%s";
 
 	public static final String LOCAL_FILES_PATH = "/tmp" + File.separator;
 	public static final String[] STRING_ARRAY = new String[0];

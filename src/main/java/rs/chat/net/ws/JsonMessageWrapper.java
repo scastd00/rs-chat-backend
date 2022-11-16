@@ -1,6 +1,8 @@
 package rs.chat.net.ws;
 
 import com.google.gson.JsonObject;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import rs.chat.utils.Builder;
 import rs.chat.utils.Utils;
 
@@ -140,12 +142,10 @@ public class JsonMessageWrapper {
 	/**
 	 * Builder implementation for the message wrapper.
 	 */
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class BuilderImpl implements Builder {
 		private final JsonObject headers = new JsonObject();
 		private final JsonObject body = new JsonObject();
-
-		private BuilderImpl() {
-		}
 
 		/**
 		 * {@inheritDoc}
