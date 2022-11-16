@@ -43,7 +43,6 @@ public class SessionService {
 	 * @param token the token of the session to be deleted.
 	 */
 	public void deleteSession(String token) {
-		log.info("Removing session: {}", token);
 		this.sessionRepository.findByToken(token)
 		                      .ifPresent(this.sessionRepository::delete);
 	}

@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import rs.chat.domain.entity.Degree;
 import rs.chat.domain.service.ChatService;
 import rs.chat.domain.service.DegreeService;
-import rs.chat.exceptions.BadRequestException;
-import rs.chat.exceptions.NotFoundException;
 import rs.chat.net.http.HttpRequest;
 import rs.chat.net.http.HttpResponse;
 
@@ -68,11 +66,9 @@ public class DegreeController {
 	 */
 	@GetMapping(DEGREE_BY_NAME_URL)
 	public void getDegreeByName(HttpResponse response, @PathVariable String degreeName) throws IOException {
-		Degree degree = this.degreeService.getByName(degreeName);
-
-		if (degree == null) {
-			throw new NotFoundException("degree '%s' not found".formatted(degreeName));
-		}
+		Degree degree = ControllerUtils.performActionThatMayThrowException(
+				response, () -> this.degreeService.getByName(degreeName)
+		);
 
 		response.ok().send("degree", degree);
 	}
@@ -90,11 +86,15 @@ public class DegreeController {
 		String degreeName = request.body().get("name").getAsString();
 
 		if (this.degreeService.existsDegree(degreeName)) {
-			throw new BadRequestException("Degree '" + degreeName + "' already exists");
+			response.badRequest().send("Degree '%s' already exists".formatted(degreeName));
+			log.warn("Degree '{}' already exists", degreeName);
+			return;
 		}
 
-		Degree degree = this.degreeService.saveDegree(
-				new Degree(null, degreeName)
+		Degree degree = ControllerUtils.performActionThatMayThrowException(
+				response, () -> this.degreeService.saveDegree(
+						new Degree(null, degreeName)
+				)
 		);
 
 		response.created(DEGREE_SAVE_URL).send("degree", this.getDegreeWithInvitationCode(degree).toString());
@@ -114,7 +114,9 @@ public class DegreeController {
 		String oldName = body.get("oldName").getAsString();
 		String newName = body.get("newName").getAsString();
 
-		Degree degree = this.degreeService.changeDegreeName(oldName, newName);
+		Degree degree = ControllerUtils.performActionThatMayThrowException(
+				response, () -> this.degreeService.changeDegreeName(oldName, newName)
+		);
 
 		response.ok().send("degree", degree);
 	}
@@ -130,7 +132,13 @@ public class DegreeController {
 	 */
 	@DeleteMapping(DELETE_DEGREE_URL)
 	public void deleteDegree(HttpResponse response, @PathVariable Long id) throws IOException {
-		this.degreeService.deleteById(id);
+		ControllerUtils.performActionThatMayThrowException(
+				response, () -> {
+					this.degreeService.deleteById(id);
+					return null;
+				}
+		);
+
 		response.sendStatus(OK);
 	}
 

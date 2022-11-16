@@ -10,8 +10,6 @@ import rs.chat.utils.NoParamFunction;
 
 import java.io.IOException;
 
-import static rs.chat.utils.Constants.ERROR_JSON_KEY;
-
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public final class ControllerUtils {
@@ -32,7 +30,7 @@ public final class ControllerUtils {
 				response.status(HttpStatus.BAD_GATEWAY);
 			}
 
-			response.send(ERROR_JSON_KEY, e.getMessage());
+			response.send(e.getMessage());
 			log.error("Error while performing action", e);
 			throw e; // Exit from executing the rest of the controller method.
 		}

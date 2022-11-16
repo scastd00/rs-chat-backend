@@ -195,7 +195,6 @@ public class ChatManagement {
 	 */
 	@Scheduled(fixedRate = 10, initialDelay = 10, timeUnit = MINUTES)
 	private void saveAllToS3() {
-		log.debug("Saving all chats to S3");
 		this.chats.values().forEach(Chat::saveToS3);
 	}
 
@@ -205,7 +204,6 @@ public class ChatManagement {
 	 */
 	@Scheduled(fixedRate = 3, initialDelay = 3, timeUnit = MINUTES)
 	private void deleteNullUsers() {
-		log.debug("Deleting null users of all chats");
 		this.chats.values().forEach(Chat::deleteUnwantedUsers);
 	}
 }

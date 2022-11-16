@@ -53,7 +53,8 @@ public class DegreeService {
 	 * @return the {@link Degree} with the given name.
 	 */
 	public Degree getByName(String name) {
-		return this.degreeRepository.findByName(name);
+		return this.degreeRepository.findByName(name)
+		                            .orElseThrow(() -> new NotFoundException("Degree with name %s not found.".formatted(name)));
 	}
 
 	/**
@@ -95,11 +96,7 @@ public class DegreeService {
 	 * @return modified {@link Degree} object.
 	 */
 	public Degree changeDegreeName(String oldName, String newName) {
-		Degree degree = this.degreeRepository.findByName(oldName);
-
-		if (degree == null) {
-			throw new BadRequestException("Degree does not exist: " + oldName);
-		}
+		Degree degree = this.getByName(oldName);
 
 		if (degree.getName().equals(newName)) {
 			return degree; // Do not modify

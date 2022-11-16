@@ -24,7 +24,6 @@ import java.time.Clock;
 import java.time.Instant;
 import java.util.Base64;
 
-import static org.springframework.http.HttpStatus.OK;
 import static rs.chat.router.Routes.PostRoute.UPLOAD_URL;
 
 /**
@@ -91,7 +90,7 @@ public class FileController {
 		responseBody.add("name", fileName);
 		responseBody.add("metadata", fileToSave.getMetadata());
 
-		response.status(OK).send(responseBody);
+		response.ok().send(responseBody);
 		log.info("File ({}) uploaded successfully", fileName);
 	}
 }
