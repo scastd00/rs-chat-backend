@@ -56,7 +56,10 @@ public class UserController {
 	public void saveUser(HttpRequest request, HttpResponse response) throws IOException {
 		JsonObject user = (JsonObject) request.body().get("user");
 
-		Policies.checkRegister(user);
+		ControllerUtils.performActionThatMayThrowException(response, () -> {
+			Policies.checkRegister(user);
+			return null;
+		});
 
 		User savedUser = this.userService.createUser(
 				new User(

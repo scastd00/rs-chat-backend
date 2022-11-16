@@ -63,6 +63,7 @@ public class GroupService {
 	 * @return the saved group.
 	 */
 	public Group saveGroup(Group group) {
+		// Todo: check name?
 		Group savedGroup = this.groupRepository.save(group);
 
 		// When I know that the group is saved, chat is created.

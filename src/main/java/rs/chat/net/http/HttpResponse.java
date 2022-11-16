@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static rs.chat.utils.Constants.ERROR_JSON_KEY;
 
 /**
  * Class that simplifies the management of the response to the client.
@@ -53,7 +54,7 @@ public class HttpResponse extends HttpServletResponseWrapper {
 	/**
 	 * Sets the status of the response to {@link HttpStatus#OK}.
 	 *
-	 * @return
+	 * @return this response with the status set.
 	 */
 	public HttpResponse ok() {
 		return this.status(HttpStatus.OK);
@@ -76,6 +77,24 @@ public class HttpResponse extends HttpServletResponseWrapper {
 	}
 
 	/**
+	 * Sets the status of the response to {@link HttpStatus#BAD_REQUEST}.
+	 *
+	 * @return this response with the status set.
+	 */
+	public HttpResponse badRequest() {
+		return this.status(HttpStatus.BAD_REQUEST);
+	}
+
+	/**
+	 * Sets the status of the response to {@link HttpStatus#NOT_FOUND}.
+	 *
+	 * @return this response with the status set.
+	 */
+	public HttpResponse notFound() {
+		return this.status(HttpStatus.NOT_FOUND);
+	}
+
+	/**
 	 * Immediately sends a response with the given status and empty body.
 	 *
 	 * @param status the status to be set.
@@ -84,6 +103,28 @@ public class HttpResponse extends HttpServletResponseWrapper {
 	 */
 	public void sendStatus(HttpStatus status) throws IOException {
 		this.status(status).send(HttpResponseBody.EMPTY);
+	}
+
+	/**
+	 * Sends the error response to the client.
+	 *
+	 * @param message the error message to be sent.
+	 *
+	 * @throws IOException if an error occurs while sending the response.
+	 */
+	public void sendError(String message) throws IOException {
+		this.send(ERROR_JSON_KEY, message);
+	}
+
+	/**
+	 * Sends the given body to the client.
+	 *
+	 * @param message the message to be sent.
+	 *
+	 * @throws IOException if an error occurs while sending the response.
+	 */
+	public void send(String message) throws IOException {
+		this.send("data", message);
 	}
 
 	/**

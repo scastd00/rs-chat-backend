@@ -33,14 +33,12 @@ import java.util.List;
 import java.util.Map;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
 import static rs.chat.router.Routes.PostRoute.CREATE_PASSWORD_URL;
 import static rs.chat.router.Routes.PostRoute.FORGOT_PASSWORD_URL;
 import static rs.chat.router.Routes.PostRoute.LOGIN_URL;
 import static rs.chat.router.Routes.PostRoute.LOGOUT_URL;
 import static rs.chat.router.Routes.PostRoute.REGISTER_URL;
-import static rs.chat.utils.Constants.ERROR_JSON_KEY;
 import static rs.chat.utils.Constants.JWT_TOKEN_PREFIX;
 import static rs.chat.utils.Constants.JWT_VERIFIER;
 import static rs.chat.utils.Constants.STUDENT_ROLE;
@@ -200,14 +198,15 @@ public class AuthController {
 		String authorizationHeader = request.getHeader(AUTHORIZATION);
 
 		if (authorizationHeader == null) {
-			// If request does not contain authorization header send error.
-			response.status(BAD_REQUEST).send(ERROR_JSON_KEY, "You must provide the authorization token");
+			// If request does not contain authorization header, send error.
+			response.badRequest().sendError("You must provide the authorization token");
 			log.warn("Request does not contain authorization header");
 			return;
 		}
 
 		String token = authorizationHeader.substring(JWT_TOKEN_PREFIX.length());
 		DecodedJWT decodedJWT = JWT_VERIFIER.verify(token); //! WARNING: the token could be expired
+		// Todo: try catch this and delete token from db if an exception is thrown
 		String username = decodedJWT.getSubject();
 
 		// Check if we must delete all the user sessions or only one.
@@ -239,13 +238,15 @@ public class AuthController {
 		JsonObject body = request.body();
 
 		// Check if the email is correct.
-		Policies.checkEmail(body);
+		ControllerUtils.performActionThatMayThrowException(response, () -> {
+			Policies.checkEmail(body);
+			return null;
+		});
 
 		String email = body.get("email").getAsString();
 		User user = ControllerUtils.performActionThatMayThrowException(response, () -> this.userService.getUserByEmail(email));
 
 		String code = RandomStringUtils.randomAlphanumeric(6);
-
 		user.setPasswordCode(code);
 		this.userService.updateUser(user);
 
@@ -267,10 +268,12 @@ public class AuthController {
 		String code = body.get("code").getAsString();
 
 		// Check if the code exists
-		User user = ControllerUtils.performActionThatMayThrowException(response, () -> this.userService.getUserByCode(code));
+		User user = ControllerUtils.performActionThatMayThrowException(response, () -> {
+			// Check if the passwords are correct.
+			Policies.checkPasswords(body);
 
-		// Check if the passwords are correct.
-		Policies.checkPasswords(body);
+			return this.userService.getUserByCode(code);
+		});
 
 		user.setPassword(body.get("newPassword").getAsString());
 		user.setPasswordCode(null); // Remove the password code.

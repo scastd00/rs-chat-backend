@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import rs.chat.domain.entity.Emoji;
 import rs.chat.domain.service.EmojiService;
-import rs.chat.exceptions.NotFoundException;
 import rs.chat.net.http.HttpResponse;
 
 import java.io.IOException;
@@ -43,7 +42,8 @@ public class EmojiController {
 		List<Emoji> emojis = this.emojiService.getEmojisStartingWith(string);
 
 		if (emojis.isEmpty()) {
-			throw new NotFoundException("No emojis found");
+			response.notFound().sendError("No emojis found");
+			return;
 		}
 
 		response.status(HttpStatus.OK).send("emojis", emojis);
@@ -54,7 +54,8 @@ public class EmojiController {
 		List<Emoji> emojis = this.emojiService.getEmojisByCategory(category.replace("%20", " "));
 
 		if (emojis.isEmpty()) {
-			throw new NotFoundException("No emojis found");
+			response.notFound().sendError("No emojis found");
+			return;
 		}
 
 		response.status(HttpStatus.OK).send("emojis", emojis);

@@ -14,7 +14,6 @@ import rs.chat.domain.entity.Subject;
 import rs.chat.domain.service.ChatService;
 import rs.chat.domain.service.DegreeService;
 import rs.chat.domain.service.SubjectService;
-import rs.chat.exceptions.BadRequestException;
 import rs.chat.net.http.HttpRequest;
 import rs.chat.net.http.HttpResponse;
 
@@ -76,7 +75,9 @@ public class SubjectController {
 		String degree = body.get("degree").getAsString();
 
 		if (this.subjectService.exists(name)) {
-			throw new BadRequestException("Subject '%s' already exists.".formatted(name));
+			response.badRequest().sendError("Subject '%s' already exists.".formatted(name));
+			log.warn("Subject '{}' already exists.", name);
+			return;
 		}
 
 		Subject savedSubject = this.subjectService.save(
