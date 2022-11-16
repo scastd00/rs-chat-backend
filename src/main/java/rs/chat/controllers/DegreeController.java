@@ -86,7 +86,7 @@ public class DegreeController {
 		String degreeName = request.body().get("name").getAsString();
 
 		if (this.degreeService.existsDegree(degreeName)) {
-			response.badRequest().sendError("Degree '%s' already exists".formatted(degreeName));
+			response.badRequest().send("Degree '%s' already exists".formatted(degreeName));
 			log.warn("Degree '{}' already exists", degreeName);
 			return;
 		}

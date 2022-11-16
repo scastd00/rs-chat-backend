@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import rs.chat.exceptions.InternalServerException;
+import rs.chat.utils.Constants;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
@@ -17,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static rs.chat.utils.Constants.DATA_JSON_KEY;
 import static rs.chat.utils.Constants.ERROR_JSON_KEY;
 
 /**
@@ -106,25 +108,21 @@ public class HttpResponse extends HttpServletResponseWrapper {
 	}
 
 	/**
-	 * Sends the error response to the client.
-	 *
-	 * @param message the error message to be sent.
-	 *
-	 * @throws IOException if an error occurs while sending the response.
-	 */
-	public void sendError(String message) throws IOException {
-		this.send(ERROR_JSON_KEY, message);
-	}
-
-	/**
 	 * Sends the given body to the client.
+	 * <p>
+	 * If it is an error, the key is set to {@link Constants#ERROR_JSON_KEY}.
+	 * If not, the key is set to {@link Constants#DATA_JSON_KEY}.
 	 *
-	 * @param message the message to be sent.
+	 * @param content the content to be sent.
 	 *
 	 * @throws IOException if an error occurs while sending the response.
 	 */
-	public void send(String message) throws IOException {
-		this.send("data", message);
+	public void send(Object content) throws IOException {
+		if (this.status.isError()) {
+			this.send(ERROR_JSON_KEY, content);
+		} else {
+			this.send(DATA_JSON_KEY, content);
+		}
 	}
 
 	/**

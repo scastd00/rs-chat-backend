@@ -42,7 +42,7 @@ public class EmojiController {
 		List<Emoji> emojis = this.emojiService.getEmojisStartingWith(string);
 
 		if (emojis.isEmpty()) {
-			response.notFound().sendError("No emojis found");
+			response.notFound().send("No emojis found");
 			return;
 		}
 
@@ -54,7 +54,7 @@ public class EmojiController {
 		List<Emoji> emojis = this.emojiService.getEmojisByCategory(category.replace("%20", " "));
 
 		if (emojis.isEmpty()) {
-			response.notFound().sendError("No emojis found");
+			response.notFound().send("No emojis found");
 			return;
 		}
 

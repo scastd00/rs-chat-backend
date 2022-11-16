@@ -1,5 +1,6 @@
 package rs.chat.controllers;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
@@ -199,14 +200,24 @@ public class AuthController {
 
 		if (authorizationHeader == null) {
 			// If request does not contain authorization header, send error.
-			response.badRequest().sendError("You must provide the authorization token");
+			response.badRequest().send("You must provide the authorization token");
 			log.warn("Request does not contain authorization header");
 			return;
 		}
 
 		String token = authorizationHeader.substring(JWT_TOKEN_PREFIX.length());
-		DecodedJWT decodedJWT = JWT_VERIFIER.verify(token); //! WARNING: the token could be expired
-		// Todo: try catch this and delete token from db if an exception is thrown
+		DecodedJWT decodedJWT;
+
+		try {
+			decodedJWT = JWT_VERIFIER.verify(token); //! WARNING: the token could be expired
+		} catch (JWTVerificationException e) {
+			// If the token is not valid, send error.
+			response.badRequest().send("The token is not valid");
+			log.warn("The token is not valid");
+			this.sessionService.deleteSession(token);
+			return;
+		}
+
 		String username = decodedJWT.getSubject();
 
 		// Check if we must delete all the user sessions or only one.

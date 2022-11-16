@@ -30,7 +30,7 @@ public final class ControllerUtils {
 				response.status(HttpStatus.BAD_GATEWAY);
 			}
 
-			response.sendError(e.getMessage());
+			response.send(e.getMessage());
 			log.error("Error while performing action", e);
 			throw e; // Exit from executing the rest of the controller method.
 		}

@@ -97,7 +97,7 @@ public class ChatController {
 	@PostMapping(JOIN_CHAT_URL)
 	public void joinChat(HttpRequest request, HttpResponse response, @PathVariable String code) throws IOException {
 		if (code.trim().isEmpty()) {
-			response.badRequest().sendError("Chat code cannot be empty");
+			response.badRequest().send("Chat code cannot be empty");
 			log.warn("Chat code cannot be empty");
 			return;
 		}
@@ -106,7 +106,7 @@ public class ChatController {
 		Long userId = request.body().get("userId").getAsLong();
 
 		if (this.chatService.userAlreadyBelongsToChat(userId, chat.getId())) {
-			response.badRequest().sendError("You are already in chat %s".formatted(chat.getName()));
+			response.badRequest().send("You are already in chat %s".formatted(chat.getName()));
 			return;
 		}
 

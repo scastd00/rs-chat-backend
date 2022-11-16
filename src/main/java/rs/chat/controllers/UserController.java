@@ -21,6 +21,7 @@ import java.util.List;
 import static rs.chat.router.Routes.GetRoute.OPENED_SESSIONS_OF_USER_URL;
 import static rs.chat.router.Routes.GetRoute.USERS_URL;
 import static rs.chat.router.Routes.PostRoute.USER_SAVE_URL;
+import static rs.chat.utils.Constants.DATA_JSON_KEY;
 
 /**
  * Controller that manages all user-related requests.
@@ -41,7 +42,7 @@ public class UserController {
 	 */
 	@GetMapping(USERS_URL)
 	public void getUsers(HttpResponse response) throws IOException {
-		response.ok().send("data", this.userService.getUsers());
+		response.ok().send(DATA_JSON_KEY, this.userService.getUsers());
 	}
 
 	/**
@@ -75,7 +76,7 @@ public class UserController {
 			);
 		});
 
-		response.created(USER_SAVE_URL).send("data", savedUser);
+		response.created(USER_SAVE_URL).send(DATA_JSON_KEY, savedUser);
 		MailSender.sendRegistrationEmail(savedUser.getEmail(), savedUser.getUsername());
 	}
 

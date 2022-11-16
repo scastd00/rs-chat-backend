@@ -75,7 +75,7 @@ public class SubjectController {
 		String degree = body.get("degree").getAsString();
 
 		if (this.subjectService.exists(name)) {
-			response.badRequest().sendError("Subject '%s' already exists.".formatted(name));
+			response.badRequest().send("Subject '%s' already exists.".formatted(name));
 			log.warn("Subject '{}' already exists.", name);
 			return;
 		}
