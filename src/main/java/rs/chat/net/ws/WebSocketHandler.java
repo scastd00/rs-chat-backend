@@ -25,12 +25,6 @@ import static rs.chat.utils.Utils.createErrorMessage;
 public class WebSocketHandler extends TextWebSocketHandler {
 	private final ChatManagement chatManagement;
 
-	@Override
-	public void afterConnectionEstablished(@NotNull WebSocketSession session) throws Exception {
-		super.afterConnectionEstablished(session);
-		log.info("New connection established: {}", session.getId());
-	}
-
 	/**
 	 * Handles text messages (JSON string).
 	 *

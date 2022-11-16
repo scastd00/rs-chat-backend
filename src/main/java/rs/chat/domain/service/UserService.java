@@ -70,7 +70,6 @@ public class UserService implements UserDetailsService {
 			throw new BadRequestException("Email %s taken".formatted(user.getEmail()));
 		}
 
-		log.info("Saving user: {}", user.getUsername());
 		String rawPassword = user.getPassword();
 		user.setPassword(this.passwordEncoder.encode(rawPassword));
 		return this.userRepository.save(user);
@@ -82,7 +81,6 @@ public class UserService implements UserDetailsService {
 	 * @param user the user to be updated.
 	 */
 	public void updateUser(User user) {
-		log.info("Updating user: {}", user.getUsername());
 		this.userRepository.save(user);
 	}
 
@@ -92,7 +90,6 @@ public class UserService implements UserDetailsService {
 	 * @param user the user whose password is to be changed.
 	 */
 	public void changePassword(User user) {
-		log.info("Changing password for user: {}", user.getUsername());
 		String rawPassword = user.getPassword();
 		user.setPassword(this.passwordEncoder.encode(rawPassword));
 		this.userRepository.save(user);
