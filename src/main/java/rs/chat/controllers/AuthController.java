@@ -76,7 +76,10 @@ public class AuthController {
 		boolean isExtendedToken = request.body().get("remember").getAsBoolean();
 
 		// Get all data from db
-		User user = this.userService.getUser(username);
+		User user = ControllerUtils.performActionThatMayThrowException(
+				response, () -> this.userService.getUser(username)
+		);
+
 		Session savedSession = this.sessionService.saveSession(
 				new Session(
 						null,
@@ -116,21 +119,23 @@ public class AuthController {
 		JsonObject body = request.body();
 
 		// Check if all the body contains all the necessary fields.
-		Policies.checkRegister(body);
+		User savedUser = ControllerUtils.performActionThatMayThrowException(response, () -> {
+			Policies.checkRegister(body);
 
-		// Register the user and the session.
-		User savedUser = this.userService.createUser(new User(
-				null,
-				body.get("username").getAsString().trim(),
-				body.get("password").getAsString().trim(),
-				body.get("email").getAsString().trim(),
-				body.get("fullName").getAsString().trim(),
-				null,
-				null,
-				STUDENT_ROLE,
-				null,
-				null
-		));
+			// Register the user and the session.
+			return this.userService.createUser(new User(
+					null,
+					body.get("username").getAsString().trim(),
+					body.get("password").getAsString().trim(),
+					body.get("email").getAsString().trim(),
+					body.get("fullName").getAsString().trim(),
+					null,
+					null,
+					STUDENT_ROLE,
+					null,
+					null
+			));
+		});
 
 		// Generate tokens
 		String token = Utils.generateJWTToken(
@@ -237,12 +242,7 @@ public class AuthController {
 		Policies.checkEmail(body);
 
 		String email = body.get("email").getAsString();
-		User user = this.userService.getUserByEmail(email);
-
-		if (user == null) {
-			response.status(BAD_REQUEST).send(ERROR_JSON_KEY, "The email is not registered");
-			return;
-		}
+		User user = ControllerUtils.performActionThatMayThrowException(response, () -> this.userService.getUserByEmail(email));
 
 		String code = RandomStringUtils.randomAlphanumeric(6);
 
@@ -250,7 +250,6 @@ public class AuthController {
 		this.userService.updateUser(user);
 
 		response.sendStatus(OK);
-
 		MailSender.resetPassword(email, code);
 	}
 
@@ -268,12 +267,7 @@ public class AuthController {
 		String code = body.get("code").getAsString();
 
 		// Check if the code exists
-		User user = this.userService.getUserByCode(code);
-
-		if (user == null) {
-			response.status(BAD_REQUEST).send(ERROR_JSON_KEY, "The code is not valid");
-			return;
-		}
+		User user = ControllerUtils.performActionThatMayThrowException(response, () -> this.userService.getUserByCode(code));
 
 		// Check if the passwords are correct.
 		Policies.checkPasswords(body);

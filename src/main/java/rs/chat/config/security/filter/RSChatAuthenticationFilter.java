@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import rs.chat.exceptions.CouldNotAuthenticateException;
 import rs.chat.net.http.HttpRequest;
+import rs.chat.net.http.HttpResponse;
 import rs.chat.utils.Utils;
 
 import javax.servlet.FilterChain;
@@ -19,6 +20,9 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static rs.chat.utils.Constants.ERROR_JSON_KEY;
 
 /**
  * Manager that authenticates the incoming requests.
@@ -47,8 +51,19 @@ public class RSChatAuthenticationFilter extends UsernamePasswordAuthenticationFi
 					new UsernamePasswordAuthenticationToken(username, password)
 			);
 		} catch (IOException e) {
+			log.error("Could not authenticate request", e);
 			throw new CouldNotAuthenticateException(e.getMessage());
 		}
+	}
+
+	@Override
+	protected void unsuccessfulAuthentication(HttpServletRequest request,
+	                                          HttpServletResponse response,
+	                                          AuthenticationException failed) throws IOException {
+		log.warn("Authentication failed", failed);
+		new HttpResponse(response)
+				.status(BAD_REQUEST) // Since the check for the user is only done one time, the exceptional case is that the user is not registered.
+				.send(ERROR_JSON_KEY, failed.getMessage());
 	}
 
 	/**
