@@ -16,6 +16,7 @@ import rs.chat.storage.S3;
 
 import java.util.List;
 
+import static rs.chat.utils.Constants.CHAT_KEY_FORMAT;
 import static rs.chat.utils.Constants.GROUP_CHAT;
 
 @Service
@@ -74,7 +75,7 @@ public class GroupService {
 			throw new NotFoundException("Group with id '%s' does not exist.".formatted(id));
 		}
 
-		String chatKey = "%s-%s".formatted(GROUP_CHAT, id);
+		String chatKey = CHAT_KEY_FORMAT.formatted(GROUP_CHAT, id);
 		Chat chat = this.chatRepository.findByKey(chatKey)
 		                               .orElseThrow(
 				                               () -> new NotFoundException("Chat for group %s not found.".formatted(id))

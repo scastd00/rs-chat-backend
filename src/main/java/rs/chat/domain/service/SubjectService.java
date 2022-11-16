@@ -17,6 +17,7 @@ import rs.chat.storage.S3;
 
 import java.util.List;
 
+import static rs.chat.utils.Constants.CHAT_KEY_FORMAT;
 import static rs.chat.utils.Constants.SUBJECT_CHAT;
 
 @Service
@@ -82,7 +83,7 @@ public class SubjectService {
 			throw new NotFoundException("Subject with id '%d' does not exist.".formatted(id));
 		}
 
-		String chatKey = "%s-%s".formatted(SUBJECT_CHAT, id);
+		String chatKey = CHAT_KEY_FORMAT.formatted(SUBJECT_CHAT, id);
 		Chat chat = this.chatRepository.findByKey(chatKey)
 		                               .orElseThrow(
 				                               () -> new NotFoundException("Chat for subject %s not found.".formatted(id))

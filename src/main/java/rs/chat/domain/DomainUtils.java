@@ -1,10 +1,13 @@
 package rs.chat.domain;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
 import rs.chat.domain.entity.Chat;
 import rs.chat.utils.Utils;
 
+import static rs.chat.utils.Constants.CHAT_KEY_FORMAT;
 import static rs.chat.utils.Constants.DEGREE_CHAT;
 import static rs.chat.utils.Constants.DEGREE_CHAT_S3_FOLDER_PREFIX;
 import static rs.chat.utils.Constants.GROUP_CHAT;
@@ -14,10 +17,8 @@ import static rs.chat.utils.Constants.SUBJECT_CHAT_S3_FOLDER_PREFIX;
 import static rs.chat.utils.Constants.USER_CHAT;
 import static rs.chat.utils.Constants.USER_CHAT_S3_FOLDER_PREFIX;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DomainUtils {
-	private DomainUtils() {
-	}
-
 	/**
 	 * Instantiates a new {@link Chat} object with the given parameters.
 	 *
@@ -37,7 +38,7 @@ public final class DomainUtils {
 				s3ChatPrefix + name,
 				Utils.jsonOfNumber("createdAt", System.currentTimeMillis()),
 				RandomStringUtils.randomAlphanumeric(15),
-				"%s-%s".formatted(chatType, entityId.toString())
+				CHAT_KEY_FORMAT.formatted(chatType, entityId.toString())
 		);
 	}
 
