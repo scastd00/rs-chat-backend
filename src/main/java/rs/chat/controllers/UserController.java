@@ -56,25 +56,24 @@ public class UserController {
 	public void saveUser(HttpRequest request, HttpResponse response) throws IOException {
 		JsonObject user = (JsonObject) request.body().get("user");
 
-		ControllerUtils.performActionThatMayThrowException(response, () -> {
+		User savedUser = ControllerUtils.performActionThatMayThrowException(response, () -> {
 			Policies.checkRegister(user);
-			return null;
-		});
 
-		User savedUser = this.userService.createUser(
-				new User(
-						null, // ID
-						user.get("username").getAsString(),
-						user.get("password").getAsString(),
-						user.get("email").getAsString(),
-						user.get("fullName").getAsString(),
-						null, // Age
-						null, // Birthdate
-						user.get("role").getAsString(),
-						null, // Block until
-						null // Password change
-				)
-		);
+			return this.userService.createUser(
+					new User(
+							null, // ID
+							user.get("username").getAsString(),
+							user.get("password").getAsString(),
+							user.get("email").getAsString(),
+							user.get("fullName").getAsString(),
+							null, // Age
+							null, // Birthdate
+							user.get("role").getAsString(),
+							null, // Block until
+							null // Password change
+					)
+			);
+		});
 
 		response.created(USER_SAVE_URL).send("data", savedUser);
 		MailSender.sendRegistrationEmail(savedUser.getEmail(), savedUser.getUsername());
