@@ -3,8 +3,10 @@ package rs.chat.domain.service;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import rs.chat.domain.DomainUtils;
 import rs.chat.domain.entity.Chat;
 import rs.chat.domain.entity.User;
 import rs.chat.domain.entity.UserChat;
@@ -20,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import static rs.chat.utils.Constants.USER_CHAT;
 
 @Service
 @RequiredArgsConstructor
@@ -144,6 +148,18 @@ public class ChatService {
 	}
 
 	/**
+	 * Retrieves a chat given its key.
+	 *
+	 * @param key key of the chat.
+	 *
+	 * @return found chat.
+	 */
+	public @Nullable Chat getChatByKey(String key) {
+		return this.chatRepository.findByKey(key)
+		                          .orElse(null);
+	}
+
+	/**
 	 * Checks if a user is a member of a chat.
 	 *
 	 * @param userId id of the user.
@@ -158,18 +174,33 @@ public class ChatService {
 	/**
 	 * Determines if a user can access a chat.
 	 *
-	 * @param userId id of the user.
-	 * @param chatId id of the chat.
+	 * @param userId  id of the user.
+	 * @param chatKey key of the chat (can be a single number or a 2 numbers separated by an underscore).
+	 *                - user-id1_id2
+	 *                - otherType-id
 	 *
 	 * @return {@code true} if the user can access the chat, {@code false} otherwise.
 	 */
-	public boolean userCanConnectToChat(Long userId, Long chatId) {
-		// Could be replaced by a query to database
-		return this.userChatRepository.findAllByUserChatPK_UserId(userId)
-		                              .stream()
-		                              .map(UserChat::getUserChatPK)
-		                              .map(UserChatPK::getChatId)
-		                              .anyMatch(aLong -> aLong.equals(chatId));
+	public boolean connectToChat(Long userId, String chatKey) {
+		if (chatKey.contains("_")) {
+			String key = chatKey.split("-")[1];
+			String[] userIds = key.split("_");
+			Chat chat1 = this.getChatByKey(chatKey);
+			Chat chat2 = this.getChatByKey("%s-%s_%s".formatted(USER_CHAT, userIds[1], userIds[0]));
+
+			if ((chat1 != null && this.userAlreadyBelongsToChat(userId, chat1.getId())) ||
+					(chat2 != null && this.userAlreadyBelongsToChat(userId, chat2.getId()))) {
+				return true;
+			}
+
+			// If the user does not have a private chat with the other user, create one.
+			this.saveChat(DomainUtils.individualChat("Chat with %s".formatted(key), key));
+			return true;
+		} else {
+			Chat chat = this.getChatByKey(chatKey);
+
+			return chat != null && this.userAlreadyBelongsToChat(userId, chat.getId());
+		}
 	}
 
 	/**
@@ -185,6 +216,13 @@ public class ChatService {
 		                          .orElseThrow(() -> new NotFoundException("Chat with name=%s does not exist".formatted(chatName)));
 	}
 
+	/**
+	 * Retrieves all the usernames that belong to a chat.
+	 *
+	 * @param chatId id of the chat to get the users from.
+	 *
+	 * @return list of usernames of the users that belong to the chat.
+	 */
 	public List<String> getAllUsersOfChat(Long chatId) {
 		return this.userChatRepository.findAllByUserChatPK_ChatId(chatId)
 		                              .stream()

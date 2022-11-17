@@ -30,7 +30,7 @@ public final class DomainUtils {
 	 * @return the new {@link Chat} object.
 	 */
 	@NotNull
-	private static Chat createChat(String name, String chatType, String s3ChatPrefix, Long entityId) {
+	private static Chat createChat(String name, String chatType, String s3ChatPrefix, String entityId) {
 		return new Chat(
 				null,
 				name,
@@ -38,7 +38,7 @@ public final class DomainUtils {
 				s3ChatPrefix + name,
 				Utils.jsonOfNumber("createdAt", System.currentTimeMillis()),
 				RandomStringUtils.randomAlphanumeric(15),
-				CHAT_KEY_FORMAT.formatted(chatType, entityId.toString())
+				CHAT_KEY_FORMAT.formatted(chatType, entityId)
 		);
 	}
 
@@ -50,7 +50,7 @@ public final class DomainUtils {
 	 *
 	 * @return the new {@link Chat} of <b>individual</b> type.
 	 */
-	public static Chat individualChat(String name, Long entityId) {
+	public static Chat individualChat(String name, String entityId) {
 		//! Caution with entityId: it can follow the structure: "user-userId1_userId2"
 		//! When going to remove this type of chat, the order of the ids is not important, because it is like a set.
 		return createChat(name, USER_CHAT, USER_CHAT_S3_FOLDER_PREFIX, entityId);
@@ -65,7 +65,7 @@ public final class DomainUtils {
 	 * @return the new {@link Chat} of <b>group</b> type.
 	 */
 	public static Chat groupChat(String name, Long entityId) {
-		return createChat(name, GROUP_CHAT, GROUP_CHAT_S3_FOLDER_PREFIX, entityId);
+		return createChat(name, GROUP_CHAT, GROUP_CHAT_S3_FOLDER_PREFIX, entityId.toString());
 	}
 
 	/**
@@ -77,7 +77,7 @@ public final class DomainUtils {
 	 * @return the new {@link Chat} of <b>subject</b> type.
 	 */
 	public static Chat subjectChat(String name, Long entityId) {
-		return createChat(name, SUBJECT_CHAT, SUBJECT_CHAT_S3_FOLDER_PREFIX, entityId);
+		return createChat(name, SUBJECT_CHAT, SUBJECT_CHAT_S3_FOLDER_PREFIX, entityId.toString());
 	}
 
 	/**
@@ -89,6 +89,6 @@ public final class DomainUtils {
 	 * @return the new {@link Chat} of <b>degree</b> type.
 	 */
 	public static Chat degreeChat(String name, Long entityId) {
-		return createChat(name, DEGREE_CHAT, DEGREE_CHAT_S3_FOLDER_PREFIX, entityId);
+		return createChat(name, DEGREE_CHAT, DEGREE_CHAT_S3_FOLDER_PREFIX, entityId.toString());
 	}
 }

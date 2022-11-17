@@ -21,7 +21,7 @@ import static rs.chat.net.http.HttpResponse.HttpResponseBody;
 import static rs.chat.router.Routes.GetRoute.ALL_CHATS_OF_USER_URL;
 import static rs.chat.router.Routes.GetRoute.ALL_USERS_OF_CHAT_URL;
 import static rs.chat.router.Routes.GetRoute.CHAT_INFO_URL;
-import static rs.chat.router.Routes.PostRoute.CAN_USER_CONNECT_TO_CHAT_URL;
+import static rs.chat.router.Routes.PostRoute.CONNECT_TO_CHAT_URL;
 import static rs.chat.router.Routes.PostRoute.JOIN_CHAT_URL;
 import static rs.chat.router.Routes.PostRoute.LEAVE_CHAT_URL;
 import static rs.chat.utils.Constants.GROUP_CHAT;
@@ -123,11 +123,11 @@ public class ChatController {
 		// Update the user's chats list in frontend.
 	}
 
-	@PostMapping(CAN_USER_CONNECT_TO_CHAT_URL)
-	public void canUserConnectToChat(HttpRequest request, HttpResponse response, @PathVariable Long chatId) throws IOException {
+	@PostMapping(CONNECT_TO_CHAT_URL)
+	public void connectToChat(HttpRequest request, HttpResponse response, @PathVariable String chatKey) throws IOException {
 		Long userId = request.body().get("userId").getAsLong();
 
-		response.ok().send("canConnect", this.chatService.userCanConnectToChat(userId, chatId));
+		response.ok().send("connect", this.chatService.connectToChat(userId, chatKey));
 	}
 
 	@PostMapping(LEAVE_CHAT_URL)
