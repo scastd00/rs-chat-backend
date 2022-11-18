@@ -3,7 +3,6 @@ package rs.chat.domain.service;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rs.chat.domain.DomainUtils;
@@ -100,8 +99,8 @@ public class ChatService {
 		allChatsOfUser.forEach(chat -> {
 			String chatType = chat.getType();
 			Map<String, Object> chatItem = new HashMap<>();
-			chatItem.put("id", chat.getId());
 			chatItem.put("name", chat.getName());
+			chatItem.put("key", chat.getKey());
 
 			if (!groups.containsKey(chatType)) {
 				groups.put(chatType, Lists.newArrayList(chatItem));
@@ -154,9 +153,8 @@ public class ChatService {
 	 *
 	 * @return found chat.
 	 */
-	public @Nullable Chat getChatByKey(String key) {
-		return this.chatRepository.findByKey(key)
-		                          .orElse(null);
+	public Optional<Chat> getChatByKey(String key) {
+		return this.chatRepository.findByKey(key);
 	}
 
 	/**
@@ -182,11 +180,12 @@ public class ChatService {
 	 * @return the key of the chat if the user can access it, null otherwise.
 	 */
 	public String connectToChat(Long userId, String chatKey) {
+		// Todo: change all orElse with something better.
 		if (chatKey.contains("_")) {
 			String key = chatKey.split("-")[1];
 			String[] userIds = key.split("_");
-			Chat chat1 = this.getChatByKey(chatKey);
-			Chat chat2 = this.getChatByKey("%s-%s_%s".formatted(USER_CHAT, userIds[1], userIds[0]));
+			Chat chat1 = this.getChatByKey(chatKey).orElse(null);
+			Chat chat2 = this.getChatByKey("%s-%s_%s".formatted(USER_CHAT, userIds[1], userIds[0])).orElse(null);
 
 			if (chat1 != null && this.userAlreadyBelongsToChat(userId, chat1.getId())) {
 				return chat1.getKey();
@@ -201,7 +200,7 @@ public class ChatService {
 
 			return chat.getKey();
 		} else {
-			Chat chat = this.getChatByKey(chatKey);
+			Chat chat = this.getChatByKey(chatKey).orElse(null);
 			return chat != null && this.userAlreadyBelongsToChat(userId, chat.getId())
 			       ? chatKey
 			       : null;
@@ -243,10 +242,12 @@ public class ChatService {
 	/**
 	 * Removes a user from a chat.
 	 *
-	 * @param userId id of the user to remove.
-	 * @param chatId id of the chat to remove the user from.
+	 * @param userId  id of the user to remove.
+	 * @param chatKey key of the chat to remove the user from.
 	 */
-	public void removeUserFromChat(Long userId, Long chatId) {
-		this.userChatRepository.deleteByUserChatPK_UserIdAndUserChatPK_ChatId(userId, chatId);
+	public void removeUserFromChat(Long userId, String chatKey) {
+		this.getChatByKey(chatKey).ifPresent(
+				chat -> this.userChatRepository.deleteByUserChatPK_UserIdAndUserChatPK_ChatId(userId, chat.getId())
+		);
 	}
 }

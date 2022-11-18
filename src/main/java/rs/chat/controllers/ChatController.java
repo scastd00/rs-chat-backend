@@ -11,6 +11,7 @@ import rs.chat.domain.entity.User;
 import rs.chat.domain.service.ChatService;
 import rs.chat.domain.service.UserGroupService;
 import rs.chat.domain.service.UserService;
+import rs.chat.exceptions.BadRequestException;
 import rs.chat.net.http.HttpRequest;
 import rs.chat.net.http.HttpResponse;
 
@@ -64,7 +65,12 @@ public class ChatController {
 	 */
 	@GetMapping(CHAT_INFO_URL)
 	public void getChatInformation(HttpResponse response, @PathVariable String chatKey) throws IOException {
-		Chat chat = ControllerUtils.performActionThatMayThrowException(response, () -> this.chatService.getChatByKey(chatKey));
+		Chat chat = ControllerUtils.performActionThatMayThrowException(response, () ->
+				this.chatService.getChatByKey(chatKey)
+				                .orElseThrow(() -> {
+					                throw new BadRequestException("Chat with key=%s does not exist.".formatted(chatKey));
+				                })
+		);
 
 		HttpResponseBody body = new HttpResponseBody("name", chat.getName());
 		body.add("metadata", chat.getMetadata());
@@ -82,7 +88,12 @@ public class ChatController {
 	 */
 	@GetMapping(ALL_USERS_OF_CHAT_URL)
 	public void getAllUsersOfChat(HttpResponse response, @PathVariable String chatKey) throws IOException {
-		Chat chat = ControllerUtils.performActionThatMayThrowException(response, () -> this.chatService.getChatByKey(chatKey));
+		Chat chat = ControllerUtils.performActionThatMayThrowException(response, () ->
+				this.chatService.getChatByKey(chatKey)
+				                .orElseThrow(() -> {
+					                throw new BadRequestException("Chat with key=%s does not exist.".formatted(chatKey));
+				                })
+		);
 
 		response.ok().send("users", this.chatService.getAllUsersOfChat(chat.getId()));
 	}
@@ -133,10 +144,10 @@ public class ChatController {
 	}
 
 	@PostMapping(LEAVE_CHAT_URL)
-	public void leaveChat(HttpRequest request, HttpResponse response, @PathVariable Long chatId) throws IOException {
+	public void leaveChat(HttpRequest request, HttpResponse response, @PathVariable String chatKey) throws IOException {
 		Long userId = request.body().get("userId").getAsLong();
 
-		this.chatService.removeUserFromChat(userId, chatId);
+		this.chatService.removeUserFromChat(userId, chatKey);
 
 		response.sendStatus(OK);
 	}
