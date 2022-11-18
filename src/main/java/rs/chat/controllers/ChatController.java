@@ -58,13 +58,13 @@ public class ChatController {
 	 *
 	 * @param response response object that contains the name and metadata information
 	 *                 of the chat.
-	 * @param id       id of the chat to be returned information about.
+	 * @param chatKey  key of the chat to be returned information about.
 	 *
 	 * @throws IOException if an error occurs while sending the response back to the client.
 	 */
 	@GetMapping(CHAT_INFO_URL)
-	public void getChatInformation(HttpResponse response, @PathVariable Long id) throws IOException {
-		Chat chat = ControllerUtils.performActionThatMayThrowException(response, () -> this.chatService.getChatById(id));
+	public void getChatInformation(HttpResponse response, @PathVariable String chatKey) throws IOException {
+		Chat chat = ControllerUtils.performActionThatMayThrowException(response, () -> this.chatService.getChatByKey(chatKey));
 
 		HttpResponseBody body = new HttpResponseBody("name", chat.getName());
 		body.add("metadata", chat.getMetadata());
@@ -76,13 +76,15 @@ public class ChatController {
 	 * Returns all users of a chat.
 	 *
 	 * @param response response object that contains the users of the chat.
-	 * @param chatId   id of the chat whose users are to be returned.
+	 * @param chatKey  key of the chat whose users are to be returned.
 	 *
 	 * @throws IOException if an error occurs while sending the response back to the client.
 	 */
 	@GetMapping(ALL_USERS_OF_CHAT_URL)
-	public void getAllUsersOfChat(HttpResponse response, @PathVariable Long chatId) throws IOException {
-		response.ok().send("users", this.chatService.getAllUsersOfChat(chatId));
+	public void getAllUsersOfChat(HttpResponse response, @PathVariable String chatKey) throws IOException {
+		Chat chat = ControllerUtils.performActionThatMayThrowException(response, () -> this.chatService.getChatByKey(chatKey));
+
+		response.ok().send("users", this.chatService.getAllUsersOfChat(chat.getId()));
 	}
 
 	/**

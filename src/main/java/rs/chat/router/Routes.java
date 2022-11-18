@@ -25,8 +25,8 @@ public class Routes {
 		public static final String SUBJECTS_URL = V_1 + "/subjects";
 		public static final String GROUPS_URL = V_1 + "/groups";
 		public static final String ALL_CHATS_OF_USER_URL = V_1 + "/chats/{username}";
-		public static final String CHAT_INFO_URL = V_1 + "/chats/info/{id}";
-		public static final String ALL_USERS_OF_CHAT_URL = V_1 + "/chat/users/{chatId}";
+		public static final String CHAT_INFO_URL = V_1 + "/chats/info/{chatKey}";
+		public static final String ALL_USERS_OF_CHAT_URL = V_1 + "/chat/users/{chatKey}";
 		public static final String RANDOM_EMOJIS_URL = V_1 + "/emojis/random/{count}";
 		public static final String EMOJI_STARTING_WITH_STRING_URL = V_1 + "/emojis/{string}";
 		public static final String EMOJI_BY_CATEGORY_URL = V_1 + "/emojis/category/{category}";
