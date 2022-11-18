@@ -194,11 +194,13 @@ public class ChatService {
 			}
 
 			// If the user does not have a private chat with the other user, create one.
-			this.saveChat(DomainUtils.individualChat("Chat with %s".formatted(key), key));
+			Chat chat = this.saveChat(DomainUtils.individualChat("Chat with %s".formatted(key), key));
+			this.addUserToChat(userId, chat.getId());
+			this.addUserToChat(Long.parseLong(userIds[1]), chat.getId());
+
 			return true;
 		} else {
 			Chat chat = this.getChatByKey(chatKey);
-
 			return chat != null && this.userAlreadyBelongsToChat(userId, chat.getId());
 		}
 	}
