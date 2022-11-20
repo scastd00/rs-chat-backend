@@ -180,17 +180,16 @@ public class ChatService {
 	 * @return the key of the chat if the user can access it, null otherwise.
 	 */
 	public String connectToChat(Long userId, String chatKey) {
-		// Todo: change all orElse with something better.
 		if (chatKey.contains("_")) {
 			String key = chatKey.split("-")[1];
 			String[] userIds = key.split("_");
-			Chat chat1 = this.getChatByKey(chatKey).orElse(null);
-			Chat chat2 = this.getChatByKey("%s-%s_%s".formatted(USER_CHAT, userIds[1], userIds[0])).orElse(null);
+			Optional<Chat> chat1 = this.getChatByKey(chatKey);
+			Optional<Chat> chat2 = this.getChatByKey("%s-%s_%s".formatted(USER_CHAT, userIds[1], userIds[0]));
 
-			if (chat1 != null && this.userAlreadyBelongsToChat(userId, chat1.getId())) {
-				return chat1.getKey();
-			} else if (chat2 != null && this.userAlreadyBelongsToChat(userId, chat2.getId())) {
-				return chat2.getKey();
+			if (chat1.isPresent() && this.userAlreadyBelongsToChat(userId, chat1.get().getId())) {
+				return chat1.get().getKey();
+			} else if (chat2.isPresent() && this.userAlreadyBelongsToChat(userId, chat2.get().getId())) {
+				return chat2.get().getKey();
 			}
 
 			// If the user does not have a private chat with the other user, create one.
@@ -200,8 +199,8 @@ public class ChatService {
 
 			return chat.getKey();
 		} else {
-			Chat chat = this.getChatByKey(chatKey).orElse(null);
-			return chat != null && this.userAlreadyBelongsToChat(userId, chat.getId())
+			Optional<Chat> chat = this.getChatByKey(chatKey);
+			return chat.isPresent() && this.userAlreadyBelongsToChat(userId, chat.get().getId())
 			       ? chatKey
 			       : null;
 		}
