@@ -20,6 +20,7 @@ import java.util.List;
 
 import static rs.chat.router.Routes.GetRoute.OPENED_SESSIONS_OF_USER_URL;
 import static rs.chat.router.Routes.GetRoute.USERS_URL;
+import static rs.chat.router.Routes.GetRoute.USER_ID_BY_USERNAME_URL;
 import static rs.chat.router.Routes.PostRoute.USER_SAVE_URL;
 import static rs.chat.utils.Constants.DATA_JSON_KEY;
 
@@ -94,5 +95,12 @@ public class UserController {
 		List<String> sessionsOfUser = this.sessionService.getSessionsOfUser(username);
 
 		response.ok().send("sessions", sessionsOfUser);
+	}
+
+	@GetMapping(USER_ID_BY_USERNAME_URL)
+	public void getUserIdByUsername(HttpResponse response,
+	                                @PathVariable String username) throws IOException {
+		User user = ControllerUtils.performActionThatMayThrowException(response, () -> this.userService.getUser(username));
+		response.ok().send("id", user.getId());
 	}
 }

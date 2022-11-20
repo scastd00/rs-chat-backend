@@ -11,6 +11,7 @@ import rs.chat.domain.entity.User;
 import rs.chat.domain.service.ChatService;
 import rs.chat.domain.service.UserGroupService;
 import rs.chat.domain.service.UserService;
+import rs.chat.exceptions.BadRequestException;
 import rs.chat.net.http.HttpRequest;
 import rs.chat.net.http.HttpResponse;
 
@@ -21,7 +22,7 @@ import static rs.chat.net.http.HttpResponse.HttpResponseBody;
 import static rs.chat.router.Routes.GetRoute.ALL_CHATS_OF_USER_URL;
 import static rs.chat.router.Routes.GetRoute.ALL_USERS_OF_CHAT_URL;
 import static rs.chat.router.Routes.GetRoute.CHAT_INFO_URL;
-import static rs.chat.router.Routes.PostRoute.CAN_USER_CONNECT_TO_CHAT_URL;
+import static rs.chat.router.Routes.PostRoute.CONNECT_TO_CHAT_URL;
 import static rs.chat.router.Routes.PostRoute.JOIN_CHAT_URL;
 import static rs.chat.router.Routes.PostRoute.LEAVE_CHAT_URL;
 import static rs.chat.utils.Constants.GROUP_CHAT;
@@ -58,13 +59,18 @@ public class ChatController {
 	 *
 	 * @param response response object that contains the name and metadata information
 	 *                 of the chat.
-	 * @param id       id of the chat to be returned information about.
+	 * @param chatKey  key of the chat to be returned information about.
 	 *
 	 * @throws IOException if an error occurs while sending the response back to the client.
 	 */
 	@GetMapping(CHAT_INFO_URL)
-	public void getChatInformation(HttpResponse response, @PathVariable Long id) throws IOException {
-		Chat chat = ControllerUtils.performActionThatMayThrowException(response, () -> this.chatService.getChatById(id));
+	public void getChatInformation(HttpResponse response, @PathVariable String chatKey) throws IOException {
+		Chat chat = ControllerUtils.performActionThatMayThrowException(response, () ->
+				this.chatService.getChatByKey(chatKey)
+				                .orElseThrow(() -> {
+					                throw new BadRequestException("Chat with key=%s does not exist.".formatted(chatKey));
+				                })
+		);
 
 		HttpResponseBody body = new HttpResponseBody("name", chat.getName());
 		body.add("metadata", chat.getMetadata());
@@ -76,13 +82,20 @@ public class ChatController {
 	 * Returns all users of a chat.
 	 *
 	 * @param response response object that contains the users of the chat.
-	 * @param chatId   id of the chat whose users are to be returned.
+	 * @param chatKey  key of the chat whose users are to be returned.
 	 *
 	 * @throws IOException if an error occurs while sending the response back to the client.
 	 */
 	@GetMapping(ALL_USERS_OF_CHAT_URL)
-	public void getAllUsersOfChat(HttpResponse response, @PathVariable Long chatId) throws IOException {
-		response.ok().send("users", this.chatService.getAllUsersOfChat(chatId));
+	public void getAllUsersOfChat(HttpResponse response, @PathVariable String chatKey) throws IOException {
+		Chat chat = ControllerUtils.performActionThatMayThrowException(response, () ->
+				this.chatService.getChatByKey(chatKey)
+				                .orElseThrow(() -> {
+					                throw new BadRequestException("Chat with key=%s does not exist.".formatted(chatKey));
+				                })
+		);
+
+		response.ok().send("users", this.chatService.getAllUsersOfChat(chat.getId()));
 	}
 
 	/**
@@ -123,18 +136,18 @@ public class ChatController {
 		// Update the user's chats list in frontend.
 	}
 
-	@PostMapping(CAN_USER_CONNECT_TO_CHAT_URL)
-	public void canUserConnectToChat(HttpRequest request, HttpResponse response, @PathVariable Long chatId) throws IOException {
+	@PostMapping(CONNECT_TO_CHAT_URL)
+	public void connectToChat(HttpRequest request, HttpResponse response, @PathVariable String chatKey) throws IOException {
 		Long userId = request.body().get("userId").getAsLong();
 
-		response.ok().send("canConnect", this.chatService.userCanConnectToChat(userId, chatId));
+		response.ok().send("connect", this.chatService.connectToChat(userId, chatKey));
 	}
 
 	@PostMapping(LEAVE_CHAT_URL)
-	public void leaveChat(HttpRequest request, HttpResponse response, @PathVariable Long chatId) throws IOException {
+	public void leaveChat(HttpRequest request, HttpResponse response, @PathVariable String chatKey) throws IOException {
 		Long userId = request.body().get("userId").getAsLong();
 
-		this.chatService.removeUserFromChat(userId, chatId);
+		this.chatService.removeUserFromChat(userId, chatKey);
 
 		response.sendStatus(OK);
 	}
