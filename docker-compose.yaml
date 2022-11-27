@@ -4,7 +4,7 @@ services:
   rs-chat:
     image: rs-chat
     env_file:
-      - .env.dev
+      - .env.prod
     volumes:
       - ./logs/rs_chat-app.log:/tmp/rs_chat-app.log
       - ./logs/rs_chat-warns.log:/tmp/rs_chat-warns.log
@@ -47,15 +47,7 @@ services:
   rschat-db:
     image: mysql:latest
     env_file:
-      - .env.prod
-    environment:
-      MYSQL_DATABASE: 'rs_chat'
-      # So you don't have to use root, but you can if you like
-      MYSQL_USER: ${DB_USER}
-      # You can use whatever password you like
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-      # Password for root access
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      - .env.prod # Todo extract database env variables to a separate file
     ports:
       # <Port exposed> : <MySQL Port running inside container>
       - '3306:3306'
