@@ -3,51 +3,24 @@ services:
   # RS Chat application
   rs-chat:
     image: rs-chat
+    restart: on-failure
     env_file:
-      - .env.prod
+      - .env.dev
     volumes:
       - ./logs/rs_chat-app.log:/tmp/rs_chat-app.log
       - ./logs/rs_chat-warns.log:/tmp/rs_chat-warns.log
-    #    environment:
-    #      JAVA_TOOL_OPTIONS: -javaagent:./opentelemetry-javaagent.jar
-    #      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://agent:4317
-    #      OTEL_SERVICE_NAME: rs-chat-observability
-    #      OTEL_TRACES_EXPORTER: otlp
     ports:
       - "4040:4040"
     depends_on:
       - rschat-db
+      - localstack
     networks:
       - rschat-net
-
-  #  agent:
-  #    image: grafana/agent:v0.29.0
-  #    volumes:
-  #      - ./config/agent.yaml:/etc/agent-config/agent.yaml
-  #      - ./logs/rs_chat-app.log:/tmp/rs_chat-app.log
-  #      - ./logs/rs_chat-warns.log:/tmp/rs_chat-warns.log
-  #      # - /:/host/root:ro,rslave
-  #      # - /sys:/host/sys:ro,rslave
-  #      # - /proc:/host/proc:ro,rslave
-  #      - /tmp/agent:/etc/agent
-  #    entrypoint:
-  #      - /bin/agent
-  #      - -config.file=/etc/agent-config/agent.yaml
-  #      - -metrics.wal-directory=/tmp/agent/wal
-  #      - -enable-features=integrations-next
-  #      - -config.expand-env
-  #      - -config.enable-read-api
-  #    environment:
-  #      HOSTNAME: agent
-  #    ports:
-  #      - "4317:4317"
-  #    networks:
-  #      - rschat-net
 
   rschat-db:
     image: mysql:latest
     env_file:
-      - .env.prod # Todo extract database env variables to a separate file
+      - .env.dev # Todo extract database env variables to a separate file
     ports:
       # <Port exposed> : <MySQL Port running inside container>
       - '3306:3306'
@@ -59,6 +32,13 @@ services:
       - my-db:/var/lib/mysql
     networks:
       - rschat-net
+
+  localstack:
+    image: localstack/localstack:latest
+    ports:
+      - "127.0.0.1:4566:4566"            # LocalStack Gateway
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
 
 volumes:
   my-db:
