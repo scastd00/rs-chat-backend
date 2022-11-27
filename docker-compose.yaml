@@ -1,0 +1,63 @@
+version: "3.7"
+services:
+  # RS Chat application
+  rs-chat:
+    image: rs-chat
+    env_file:
+      - .env.dev
+    volumes:
+      - ./logs/rs_chat-app.log:/tmp/rs_chat-app.log
+      - ./logs/rs_chat-warns.log:/tmp/rs_chat-warns.log
+    environment:
+      JAVA_TOOL_OPTIONS: -javaagent:./opentelemetry-javaagent.jar
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://agent:4317
+      OTEL_SERVICE_NAME: rs-chat-observability
+      OTEL_TRACES_EXPORTER: otlp
+    ports:
+      - "4041:4041"
+
+  agent:
+    image: grafana/agent:v0.29.0
+    volumes:
+      - ./config/agent.yaml:/etc/agent-config/agent.yaml
+      - ./logs/rs_chat-app.log:/tmp/rs_chat-app.log
+      - ./logs/rs_chat-warns.log:/tmp/rs_chat-warns.log
+      # - /:/host/root:ro,rslave
+      # - /sys:/host/sys:ro,rslave
+      # - /proc:/host/proc:ro,rslave
+      - /tmp/agent:/etc/agent
+    entrypoint:
+      - /bin/agent
+      - -config.file=/etc/agent-config/agent.yaml
+      - -metrics.wal-directory=/tmp/agent/wal
+      - -enable-features=integrations-next
+      - -config.expand-env
+      - -config.enable-read-api
+    environment:
+      HOSTNAME: agent
+    ports:
+      - "4317:4317"
+
+  mysql:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'db'
+      # So you don't have to use root, but you can if you like
+      MYSQL_USER: 'user'
+      # You can use whatever password you like
+      MYSQL_PASSWORD: 'password'
+      # Password for root access
+      MYSQL_ROOT_PASSWORD: 'password'
+    ports:
+      # <Port exposed> : < MySQL Port running inside container>
+      - '3306:3306'
+    expose:
+      # Opens port 3306 on the container
+      - '3306'
+      # Where our data will be persisted
+    volumes:
+      - my-db:/var/lib/mysql
+
+volumes:
+  my-db:
