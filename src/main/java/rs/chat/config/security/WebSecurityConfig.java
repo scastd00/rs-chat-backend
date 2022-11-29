@@ -66,7 +66,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		http.cors();
 		http.csrf().disable();
 		http.sessionManagement().sessionCreationPolicy(STATELESS);
-		http.requiresChannel(channel -> channel.anyRequest().requiresSecure());
+//		http.requiresChannel(channel -> channel.anyRequest().requiresSecure());
 
 		this.authorizeRequests(http);
 		this.addFilters(http);
