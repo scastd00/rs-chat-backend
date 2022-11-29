@@ -1,4 +1,14 @@
 FROM openjdk:17-slim
+
+WORKDIR /app
+
+COPY .mvn .mvn
+COPY mvnw pom.xml ./
+RUN ./mvnw dependency:go-offline
+
+COPY src ./src
+COPY env ./env
+COPY run_in_docker.sh ./
+
 EXPOSE 4040-4041
-COPY target/rs-chat-backend-0.0.1.jar /app.jar
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+ENTRYPOINT ["./run_in_docker.sh"]

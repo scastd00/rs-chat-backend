@@ -18,6 +18,7 @@ import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.io.Closeable;
 import java.io.File;
@@ -85,11 +86,18 @@ public final class S3 implements Closeable {
 	 * @throws SdkException if the bucket does not exist or there is an error.
 	 */
 	public void checkS3BucketConnectivity() {
-		HeadBucketResponse headBucketResponse = this.s3Client.headBucket(
-				HeadBucketRequest.builder()
-				                 .bucket(S3_BUCKET_NAME)
-				                 .build()
-		);
+		HeadBucketResponse headBucketResponse;
+
+		try {
+			headBucketResponse = this.s3Client.headBucket(
+					HeadBucketRequest.builder()
+					                 .bucket(S3_BUCKET_NAME)
+					                 .build()
+			);
+		} catch (S3Exception e) {
+		    this.s3Client.createBucket(b -> b.bucket(S3_BUCKET_NAME));
+			return;
+		}
 
 		SdkHttpResponse response = headBucketResponse.sdkHttpResponse();
 

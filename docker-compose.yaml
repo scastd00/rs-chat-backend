@@ -1,1 +1,48 @@
-#
+version: '3.7'
+
+services:
+  rschat:
+    image: rs-chat
+    env_file: ./env/.env.dev
+    ports:
+      - "4041:4041"
+#    expose:
+#      - 4041
+    networks:
+      - rschat-net-db
+    depends_on:
+      - rschat-db
+      - rschat-localstack-aws
+
+  rschat-db:
+    image: mysql:latest
+    container_name: rschat-db-host
+    env_file: ./env/.env.db
+    ports:
+      - "33006:3306"
+    volumes:
+      - ./src/main/resources/db/rs_chat.sql:/docker-entrypoint-initdb.d/1.sql
+    networks:
+      - rschat-net-db
+
+  rschat-localstack-aws:
+    image: localstack/localstack
+    container_name: localstack-host
+    ports:
+      - "4566"
+      - "4571"
+    environment:
+      - SERVICES=s3
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+      - PORT_WEB_UI=8080
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - HOST_TMP_FOLDER=/tmp/localstack
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - rschat-net-db
+
+networks:
+  rschat-net-db:
+    driver: bridge
