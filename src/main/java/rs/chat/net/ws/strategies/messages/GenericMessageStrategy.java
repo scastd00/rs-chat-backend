@@ -11,8 +11,8 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * Strategy for handling messages that have a message body containing the string to
- * a specific resource in S3.
+ * Strategy for handling messages that can be broadcast to the entire chat without
+ * any processing.
  */
 @Slf4j
 public class GenericMessageStrategy implements MessageStrategy {

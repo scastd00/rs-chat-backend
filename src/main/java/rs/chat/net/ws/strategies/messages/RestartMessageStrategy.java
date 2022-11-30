@@ -18,7 +18,7 @@ import java.util.Map;
  * Strategy for handling {@link Message#RESTART_MESSAGE} messages.
  */
 @Slf4j
-public class RestartMessageStrategy extends GenericMessageStrategy {
+public class RestartMessageStrategy extends GenericScheduledMessageStrategy {
 	@Override
 	public void handle(JsonMessageWrapper wrappedMessage, ChatManagement chatManagement,
 	                   Map<String, Object> otherData) throws WebSocketException, IOException {
