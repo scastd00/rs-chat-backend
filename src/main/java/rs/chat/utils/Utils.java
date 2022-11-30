@@ -24,9 +24,12 @@ import java.util.function.Function;
 import static rs.chat.net.ws.Message.ACTIVE_USERS_MESSAGE;
 import static rs.chat.net.ws.Message.ERROR_MESSAGE;
 import static rs.chat.utils.Constants.ALGORITHM;
+import static rs.chat.utils.Constants.DOCKER_S3_ENDPOINT_URI_FOR_FILES;
 import static rs.chat.utils.Constants.GSON;
 import static rs.chat.utils.Constants.JWT_TOKEN_PREFIX;
 import static rs.chat.utils.Constants.JWT_VERIFIER;
+import static rs.chat.utils.Constants.LOCAL_S3_ENDPOINT_URI_FOR_FILES;
+import static rs.chat.utils.Constants.REMOTE_S3_ENDPOINT_URI_FOR_FILES;
 import static rs.chat.utils.Constants.TOKEN_EXPIRATION_DURATION_EXTENDED;
 import static rs.chat.utils.Constants.TOKEN_EXPIRATION_DURATION_NORMAL;
 
@@ -173,6 +176,24 @@ public final class Utils {
 	}
 
 	/**
+	 * Determines if the running environment is PRODUCTION.
+	 *
+	 * @return {@code true} if the environment is PRODUCTION, {@code false} otherwise.
+	 */
+	public static boolean isProdEnv() {
+		return System.getenv("ENV").toLowerCase().startsWith("prod");
+	}
+
+	/**
+	 * Determines if the running environment is inside a Docker container.
+	 *
+	 * @return {@code true} if the environment is inside a Docker container, {@code false} otherwise.
+	 */
+	public static boolean isDockerEnv() {
+		return System.getenv("DOCKER").equals("true");
+	}
+
+	/**
 	 * Adds a {@link Number} to a {@link JsonObject} and returns the {@link String} representation.
 	 *
 	 * @param key   the key of the {@link Number} to add.
@@ -191,9 +212,15 @@ public final class Utils {
 	}
 
 	private static URI getCurrentS3EndpointURI() {
-		return isDevEnv()
-		       ? Constants.LOCAL_S3_ENDPOINT_URI_FOR_FILES
-		       : Constants.REMOTE_S3_ENDPOINT_URI_FOR_FILES;
+		if (isDockerEnv()) {
+			return DOCKER_S3_ENDPOINT_URI_FOR_FILES;
+		}
+
+		if (isProdEnv()) {
+			return REMOTE_S3_ENDPOINT_URI_FOR_FILES;
+		}
+
+		return LOCAL_S3_ENDPOINT_URI_FOR_FILES;
 	}
 
 	public static String bytesToUnit(int bytes) {
@@ -234,5 +261,15 @@ public final class Utils {
 
 			throw new TokenValidationException(e.getMessage());
 		}
+	}
+
+	public static void setSpringDatasourceURLIfDockerIsRunning() {
+		String docker = System.getenv("DOCKER");
+
+		if (docker == null || docker.equals("false")) {
+			return;
+		}
+
+		System.setProperty("spring.datasource.url", "jdbc:mysql://rschat-db-host:3306/rs_chat");
 	}
 }

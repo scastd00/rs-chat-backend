@@ -1,16 +1,12 @@
 package rs.chat.config.security;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
-import static rs.chat.utils.Constants.STRING_ARRAY;
 
 /**
  * Class that configures all the routes that the application can handle.
@@ -18,10 +14,6 @@ import static rs.chat.utils.Constants.STRING_ARRAY;
 public class RouterSecurityConfig {
 	private final HttpSecurity http;
 	private final String[] authorizedRoles;
-	private final List<String> getRoutes = new ArrayList<>();
-	private final List<String> postRoutes = new ArrayList<>();
-	private final List<String> putRoutes = new ArrayList<>();
-	private final List<String> deleteRoutes = new ArrayList<>();
 
 	/**
 	 * Constructor that initializes the class with the http security configuration.
@@ -41,9 +33,8 @@ public class RouterSecurityConfig {
 	 *
 	 * @return the router security config.
 	 */
-	public RouterSecurityConfig addGETRoutes(String... urls) {
-		Collections.addAll(this.getRoutes, urls);
-		return this;
+	public RouterSecurityConfig registerGETRoutes(String... urls) throws Exception {
+		return this.registerRoutes(GET, urls);
 	}
 
 	/**
@@ -53,9 +44,8 @@ public class RouterSecurityConfig {
 	 *
 	 * @return the router security config.
 	 */
-	public RouterSecurityConfig addPOSTRoutes(String... urls) {
-		Collections.addAll(this.postRoutes, urls);
-		return this;
+	public RouterSecurityConfig registerPOSTRoutes(String... urls) throws Exception {
+		return this.registerRoutes(POST, urls);
 	}
 
 	/**
@@ -65,9 +55,8 @@ public class RouterSecurityConfig {
 	 *
 	 * @return the router security config.
 	 */
-	public RouterSecurityConfig addPUTRoutes(String... urls) {
-		Collections.addAll(this.putRoutes, urls);
-		return this;
+	public RouterSecurityConfig registerPUTRoutes(String... urls) throws Exception {
+		return this.registerRoutes(PUT, urls);
 	}
 
 	/**
@@ -77,32 +66,25 @@ public class RouterSecurityConfig {
 	 *
 	 * @return the router security config.
 	 */
-	public RouterSecurityConfig addDELETERoutes(String... urls) {
-		Collections.addAll(this.deleteRoutes, urls);
-		return this;
+	public RouterSecurityConfig registerDELETERoutes(String... urls) throws Exception {
+		return this.registerRoutes(DELETE, urls);
 	}
 
 	/**
-	 * Method that establishes the routes that can be accessed by the user in
-	 * the http security configuration.
+	 * Method that configures the routes that can be accessed by the user.
 	 *
-	 * @throws Exception if there is an error.
+	 * @param method the method used to access the route.
+	 * @param routes the routes that can be accessed by the user.
+	 *
+	 * @return this router security config.
+	 *
+	 * @throws Exception if an error occurs.
 	 */
-	public void registerRoutes() throws Exception {
+	private RouterSecurityConfig registerRoutes(HttpMethod method, String... routes) throws Exception {
 		this.http.authorizeRequests()
-		         .antMatchers(GET, this.getRoutes.toArray(STRING_ARRAY))
+		         .antMatchers(method, routes)
 		         .hasAnyAuthority(this.authorizedRoles);
 
-		this.http.authorizeRequests()
-		         .antMatchers(POST, this.postRoutes.toArray(STRING_ARRAY))
-		         .hasAnyAuthority(this.authorizedRoles);
-
-		this.http.authorizeRequests()
-		         .antMatchers(PUT, this.putRoutes.toArray(STRING_ARRAY))
-		         .hasAnyAuthority(this.authorizedRoles);
-
-		this.http.authorizeRequests()
-		         .antMatchers(DELETE, this.deleteRoutes.toArray(STRING_ARRAY))
-		         .hasAnyAuthority(this.authorizedRoles);
+		return this;
 	}
 }

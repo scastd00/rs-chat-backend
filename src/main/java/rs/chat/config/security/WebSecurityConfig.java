@@ -80,7 +80,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	 * @throws Exception if an error occurs.
 	 */
 	private void authorizeRequests(HttpSecurity http) throws Exception {
-		publicRoutes(http);
+		this.publicRoutes(http);
 
 		// Low tier
 		registerRoutesOfTier(http, LOW_TIER_ROLES.toArray(STRING_ARRAY),
@@ -118,14 +118,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	                                         String[] postRoutes,
 	                                         String[] putRoutes,
 	                                         String[] deleteRoutes) throws Exception {
-		RouterSecurityConfig routerSecurityConfig = new RouterSecurityConfig(http, allowedRoles);
-
-		routerSecurityConfig
-				.addGETRoutes(getRoutes)
-				.addPOSTRoutes(postRoutes)
-				.addPUTRoutes(putRoutes)
-				.addDELETERoutes(deleteRoutes)
-				.registerRoutes();
+		new RouterSecurityConfig(http, allowedRoles)
+				.registerGETRoutes(getRoutes)
+				.registerPOSTRoutes(postRoutes)
+				.registerPUTRoutes(putRoutes)
+				.registerDELETERoutes(deleteRoutes);
 	}
 
 	/**

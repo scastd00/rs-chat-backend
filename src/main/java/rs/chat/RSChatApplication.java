@@ -4,11 +4,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import rs.chat.storage.S3;
+import rs.chat.utils.Utils;
 
 @SpringBootApplication
 @Slf4j
 public class RSChatApplication {
 	public static void main(String[] args) {
+//		Utils.setSpringDatasourceURLIfDockerIsRunning();
+		log.info("Starting RSChatApplication...");
+
 		SpringApplication.run(RSChatApplication.class, args);
 
 		S3.getInstance().checkS3BucketConnectivity();

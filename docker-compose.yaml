@@ -4,6 +4,8 @@ services:
   rschat:
     image: rs-chat
     env_file: ./env/.env.dev
+    environment:
+      - DOCKER=true
     ports:
       - "4041:4041"
 #    expose:
@@ -19,7 +21,7 @@ services:
     container_name: rschat-db-host
     env_file: ./env/.env.db
     ports:
-      - "33006:3306"
+      - "3306"
     volumes:
       - ./src/main/resources/db/rs_chat.sql:/docker-entrypoint-initdb.d/1.sql
     networks:
@@ -32,6 +34,7 @@ services:
       - "4566"
       - "4571"
     environment:
+      - EAGER_SERVICE_LOADING=1
       - SERVICES=s3
       - DEBUG=1
       - DATA_DIR=/tmp/localstack/data

@@ -49,20 +49,19 @@ public final class Constants {
 	public static final String JWT_TOKEN_PREFIX = "Bearer ";
 
 	public static final String S3_BUCKET_NAME = System.getenv("AWS_S3_BUCKET_NAME");
-	public static final URI LOCAL_S3_ENDPOINT_URI = URI.create("http://localstack-host:4566/");
+	public static final URI DOCKER_S3_ENDPOINT_URI = URI.create("http://localstack-host:4566/");
+	public static final URI LOCAL_S3_ENDPOINT_URI = URI.create("http://localhost:4566/");
 	public static final URI REMOTE_S3_ENDPOINT_URI = null;
+	public static final URI DOCKER_S3_ENDPOINT_URI_FOR_FILES = URI.create("https://rs-chat-local.s3.localstack-host.localstack.cloud:4566/");
 	public static final URI LOCAL_S3_ENDPOINT_URI_FOR_FILES = URI.create("https://rs-chat-local.s3.localhost.localstack.cloud:4566/");
 	public static final URI REMOTE_S3_ENDPOINT_URI_FOR_FILES = URI.create("https://rs-chat-bucket.s3.eu-west-3.amazonaws.com/");
 
 	public static final String USER_CHAT = "user";
 	public static final String USER_CHAT_S3_FOLDER_PREFIX = USER_CHAT + "/";
-
 	public static final String GROUP_CHAT = "group";
 	public static final String GROUP_CHAT_S3_FOLDER_PREFIX = GROUP_CHAT + "/";
-
 	public static final String SUBJECT_CHAT = "subject";
 	public static final String SUBJECT_CHAT_S3_FOLDER_PREFIX = SUBJECT_CHAT + "/";
-
 	public static final String DEGREE_CHAT = "degree";
 	public static final String DEGREE_CHAT_S3_FOLDER_PREFIX = DEGREE_CHAT + "/";
 

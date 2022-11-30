@@ -2,6 +2,7 @@ package rs.chat.storage;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.jetbrains.annotations.Nullable;
 import rs.chat.utils.Utils;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.core.exception.SdkException;
@@ -29,6 +30,7 @@ import java.time.LocalDate;
 import java.util.Map;
 
 import static rs.chat.net.ws.Message.TEXT_MESSAGE;
+import static rs.chat.utils.Constants.DOCKER_S3_ENDPOINT_URI;
 import static rs.chat.utils.Constants.LOCAL_S3_ENDPOINT_URI;
 import static rs.chat.utils.Constants.REMOTE_S3_ENDPOINT_URI;
 import static rs.chat.utils.Constants.S3_BUCKET_NAME;
@@ -47,12 +49,23 @@ public final class S3 implements Closeable {
 	 */
 	private S3() {
 		this.s3Client = S3Client.builder()
-		                        .endpointOverride(isDevEnv() ?
-		                                          LOCAL_S3_ENDPOINT_URI :
-		                                          REMOTE_S3_ENDPOINT_URI)
+		                        .endpointOverride(getEndpointOverride())
 		                        .credentialsProvider(this::obtainCredentials)
 		                        .region(Region.EU_WEST_3)
 		                        .build();
+	}
+
+	@Nullable
+	private static URI getEndpointOverride() {
+		if (Utils.isDockerEnv()) {
+			return DOCKER_S3_ENDPOINT_URI;
+		}
+
+		if (isDevEnv()) {
+			return LOCAL_S3_ENDPOINT_URI;
+		}
+
+		return REMOTE_S3_ENDPOINT_URI;
 	}
 
 	/**
@@ -95,7 +108,7 @@ public final class S3 implements Closeable {
 					                 .build()
 			);
 		} catch (S3Exception e) {
-		    this.s3Client.createBucket(b -> b.bucket(S3_BUCKET_NAME));
+			this.s3Client.createBucket(b -> b.bucket(S3_BUCKET_NAME));
 			return;
 		}
 
