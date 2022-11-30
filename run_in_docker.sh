@@ -24,7 +24,7 @@ function main() {
   export_env_variables env/.env.docker
 
   ./mvnw compile # To make some time :)
-  ./mvnw spring-boot:run
+  ./mvnw spring-boot:run -Dspring.profiles.active=docker
 }
 
 main "$@"
