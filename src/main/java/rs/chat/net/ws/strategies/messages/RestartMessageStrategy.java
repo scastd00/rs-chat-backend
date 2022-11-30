@@ -30,7 +30,7 @@ public class RestartMessageStrategy extends GenericMessageStrategy {
 				WebSocketSession session = (WebSocketSession) otherData.get("session");
 				session.sendMessage(new TextMessage(
 						Utils.createMessage(
-								"An error occurred while shutting down the server.%n%s".formatted(exception.getStatus().getMessage()),
+								"An error occurred while shutting down the server.%n%s".formatted(exception.getStatus().message()),
 								Message.INFO_MESSAGE.type(),
 								""
 						)

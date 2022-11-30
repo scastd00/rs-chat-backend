@@ -5,10 +5,10 @@ import rs.chat.tasks.Task.TaskStatus;
 
 @Getter
 public class TaskExecutionException extends RuntimeException {
-	private final TaskStatus status;
+	private final transient TaskStatus status;
 
 	public TaskExecutionException(TaskStatus taskStatus) {
-		super(taskStatus.getMessage());
+		super(taskStatus.message());
 		this.status = taskStatus;
 	}
 }
