@@ -3,7 +3,7 @@ version: '3.7'
 services:
   rschat:
     image: rs-chat
-    env_file: ./env/.env.dev
+    env_file: ./env/.env.docker
     environment:
       - DOCKER=true
     ports:

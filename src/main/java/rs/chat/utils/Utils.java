@@ -262,14 +262,4 @@ public final class Utils {
 			throw new TokenValidationException(e.getMessage());
 		}
 	}
-
-	public static void setSpringDatasourceURLIfDockerIsRunning() {
-		String docker = System.getenv("DOCKER");
-
-		if (docker == null || docker.equals("false")) {
-			return;
-		}
-
-		System.setProperty("spring.datasource.url", "jdbc:mysql://rschat-db-host:3306/rs_chat");
-	}
 }

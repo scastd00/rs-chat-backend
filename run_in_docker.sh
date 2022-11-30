@@ -21,10 +21,9 @@ function export_env_variables() {
 #  None
 #######################################
 function main() {
-  export_env_variables env/.env.dev
+  export_env_variables env/.env.docker
 
-  sleep 10
-
+  ./mvnw compile # To make some time :)
   ./mvnw spring-boot:run
 }
 
