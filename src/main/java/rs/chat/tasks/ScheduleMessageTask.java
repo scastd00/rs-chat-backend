@@ -19,9 +19,7 @@ import java.time.temporal.ChronoUnit;
 public class ScheduleMessageTask implements Task {
 	private final JsonMessageWrapper message;
 	private final LocalDateTime schedule;
-
-	@Setter
-	private ChatManagement chatManagement;
+	@Setter private ChatManagement chatManagement;
 
 	@Override
 	public void run() throws TaskExecutionException {
@@ -33,6 +31,13 @@ public class ScheduleMessageTask implements Task {
 		}
 
 		long millisToWait = LocalDateTime.now().until(this.schedule, ChronoUnit.MILLIS);
+
+		if (millisToWait < 0) {
+			throw new TaskExecutionException(
+					new TaskStatus(TaskStatus.FATAL, "Cannot schedule message in the past.")
+			);
+		}
+
 		log.info("Sending scheduled message: {} (waiting {} milliseconds)", this.message.type(), millisToWait);
 
 		try {

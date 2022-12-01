@@ -32,6 +32,7 @@ public class GenericScheduledMessageStrategy extends GenericMessageStrategy {
 		LocalDateTime schedule = (LocalDateTime) otherData.get("schedule");
 		ScheduleMessageTask task = new ScheduleMessageTask(wrappedMessage, schedule);
 		task.setChatManagement(chatManagement);
+
 		Utils.executeTask(task, exception -> {
 			log.error("Error while scheduling message.", exception);
 			return null;
