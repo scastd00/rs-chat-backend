@@ -14,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import rs.chat.config.security.filter.RSChatAuthenticationFilter;
 import rs.chat.config.security.filter.RSChatAuthorizationFilter;
+import rs.chat.utils.Utils;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 import static rs.chat.router.Routes.DeleteRoute;
@@ -67,7 +68,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		http.cors();
 		http.csrf().disable();
 		http.sessionManagement().sessionCreationPolicy(STATELESS);
-		http.requiresChannel(channel -> channel.anyRequest().requiresSecure());
+
+		if (Utils.isProdEnv() || Utils.isDockerEnv()) {
+			http.requiresChannel(channel -> channel.anyRequest().requiresSecure());
+		}
 
 		this.authorizeRequests(http);
 		this.addFilters(http);
