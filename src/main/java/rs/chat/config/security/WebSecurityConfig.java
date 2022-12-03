@@ -18,6 +18,7 @@ import rs.chat.config.security.filter.RSChatAuthorizationFilter;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 import static rs.chat.router.Routes.DeleteRoute;
 import static rs.chat.router.Routes.GetRoute;
+import static rs.chat.router.Routes.GetRoute.STATUS_URL;
 import static rs.chat.router.Routes.PostRoute;
 import static rs.chat.router.Routes.PostRoute.CREATE_PASSWORD_URL;
 import static rs.chat.router.Routes.PostRoute.FORGOT_PASSWORD_URL;
@@ -66,7 +67,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		http.cors();
 		http.csrf().disable();
 		http.sessionManagement().sessionCreationPolicy(STATELESS);
-//		http.requiresChannel(channel -> channel.anyRequest().requiresSecure());
+		http.requiresChannel(channel -> channel.anyRequest().requiresSecure());
 
 		this.authorizeRequests(http);
 		this.addFilters(http);
@@ -126,7 +127,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	/**
-	 * Registers all the public routes.
+	 * Registers all the public routes. These routes do not need authentication.
 	 *
 	 * @param http {@link HttpSecurity} object.
 	 *
@@ -135,13 +136,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	private void publicRoutes(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
 		    .antMatchers(
-				    ROOT_URL,
-				    LOGIN_URL,
-				    LOGOUT_URL,
-				    REGISTER_URL,
-				    WS_CHAT_ENDPOINT,
-				    FORGOT_PASSWORD_URL,
-				    CREATE_PASSWORD_URL
+				    ROOT_URL, LOGIN_URL,
+				    LOGOUT_URL, REGISTER_URL,
+				    WS_CHAT_ENDPOINT, FORGOT_PASSWORD_URL,
+				    CREATE_PASSWORD_URL, STATUS_URL
 		    )
 		    .permitAll();
 	}

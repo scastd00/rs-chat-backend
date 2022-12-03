@@ -23,8 +23,10 @@ function export_env_variables() {
 function main() {
   export_env_variables env/.env.docker
 
-  ./mvnw compile # To make some time :)
-  ./mvnw spring-boot:run -Dspring.profiles.active=docker
+  ./mvnw package -DskipTests
+  echo "Sleeping for 5 seconds to allow the database to start"
+  sleep 5
+  java -jar -Dspring.profiles.active=docker target/rs-chat-backend-0.0.1.jar
 }
 
 main "$@"

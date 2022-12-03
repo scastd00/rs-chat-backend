@@ -35,6 +35,7 @@ import static rs.chat.utils.Constants.LOCAL_S3_ENDPOINT_URI;
 import static rs.chat.utils.Constants.REMOTE_S3_ENDPOINT_URI;
 import static rs.chat.utils.Constants.S3_BUCKET_NAME;
 import static rs.chat.utils.Utils.isDevEnv;
+import static rs.chat.utils.Utils.isDockerEnv;
 
 /**
  * Class that provides utility methods to work with S3.
@@ -57,7 +58,7 @@ public final class S3 implements Closeable {
 
 	@Nullable
 	private static URI getEndpointOverride() {
-		if (Utils.isDockerEnv()) {
+		if (isDockerEnv()) {
 			return DOCKER_S3_ENDPOINT_URI;
 		}
 

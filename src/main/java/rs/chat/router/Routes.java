@@ -32,6 +32,7 @@ public class Routes {
 		public static final String EMOJI_BY_CATEGORY_URL = V_1 + "/emojis/category/{category}";
 		public static final String EMOJIS_GROUPED_BY_CATEGORY_URL = V_1 + "/emojis/grouped";
 		public static final String USER_ID_BY_USERNAME_URL = V_1 + "/user/id/{username}";
+		public static final String STATUS_URL = V_1 + "/status";
 
 		/**
 		 * Generate an array containing all GET routes allowed to low tier users.

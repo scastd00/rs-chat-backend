@@ -37,7 +37,6 @@ services:
       - EAGER_SERVICE_LOADING=1
       - SERVICES=s3
       - DEBUG=1
-      - DATA_DIR=/tmp/localstack/data
       - PORT_WEB_UI=8080
       - DOCKER_HOST=unix:///var/run/docker.sock
       - HOST_TMP_FOLDER=/tmp/localstack
