@@ -10,5 +10,5 @@ COPY src ./src
 COPY env ./env
 COPY run_in_docker.sh ./
 
-EXPOSE 4040-4041
+EXPOSE 4040
 ENTRYPOINT ["./run_in_docker.sh"]

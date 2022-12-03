@@ -69,10 +69,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		http.cors();
 		http.csrf().disable();
 		http.sessionManagement().sessionCreationPolicy(STATELESS);
-
-		if (Utils.isProdEnv() || Utils.isDockerEnv()) {
-			http.requiresChannel(channel -> channel.anyRequest().requiresSecure());
-		}
+		http.requiresChannel(channel -> channel.anyRequest().requiresSecure());
 
 		this.authorizeRequests(http);
 		this.addFilters(http);
