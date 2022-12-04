@@ -9,8 +9,11 @@ services:
       - DOCKER=true
     ports:
       - "4040:4040"
+    expose: [ 4040 ]
+    volumes:
+      - rschat-logs:/app/logs
     networks:
-      - rschat-net-db
+      - rschat-net
     depends_on:
       - rschat-db
       - rschat-localstack-aws
@@ -20,60 +23,96 @@ services:
     container_name: rschat-db-host
     env_file: ./env/.env.db
     ports:
-      - "3306"
+      - "4041:3306"
+    expose: [ 4041 ]
     volumes:
       - ./src/main/resources/db/rs_chat.sql:/docker-entrypoint-initdb.d/1.sql
     networks:
-      - rschat-net-db
+      - rschat-net
 
   rschat-localstack-aws:
     image: localstack/localstack
     container_name: localstack-host
     ports:
-      - "4566"
-      - "4571"
+      - "4042:4566"
     environment:
       - EAGER_SERVICE_LOADING=1
       - SERVICES=s3
       - DEBUG=1
-      - PORT_WEB_UI=8080
       - DOCKER_HOST=unix:///var/run/docker.sock
-      - HOST_TMP_FOLDER=/tmp/localstack
+      #      - HOST_TMP_FOLDER=/tmp/localstack
+      - S3_DIR=/tmp/localstack/data
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
+      - /var/run/docker.sock:/var/run/docker.sock
+      - localstack-data:/tmp/localstack
     networks:
-      - rschat-net-db
+      - rschat-net
 
   prometheus:
     image: prom/prometheus:v2.40.5
     container_name: prometheus
+    hostname: prometheus
     restart: unless-stopped
     ports:
-      - "9090:9090"
+      - "4043:9090"
+    expose: [ 4043 ]
     volumes:
       - ./config/prometheus.yaml:/etc/prometheus/prometheus.yml
     depends_on:
       - rschat
       - rschat-db
     networks:
-      - rschat-net-db
+      - rschat-net
 
   grafana:
     image: grafana/grafana-oss:9.3.1
     container_name: grafana
     restart: unless-stopped
     ports:
-      - "9091:3000"
+      - "4046:3000"
+    expose: [ 4046 ]
     links:
       - prometheus:prometheus
     volumes:
       - grafana-storage:/var/lib/grafana
+    depends_on:
+      - rschat
     env_file:
       - ./env/.env.grafana
+    networks:
+      - rschat-net
+
+#  loki:
+#    image: grafana/loki:2.7.0
+#    container_name: loki
+#    restart: unless-stopped
+#    ports:
+#      - "4045:3100"
+#    volumes:
+#      - ./config/loki.yaml:/etc/loki/local-config.yaml
+#    depends_on:
+#      - promtail
+#    networks:
+#      - rschat-net
+#
+#  promtail:
+#    image: grafana/promtail:2.7.0
+#    container_name: promtail
+#    restart: unless-stopped
+#    ports:
+#      - "4044:9080"
+#    volumes:
+#      - ./config/promtail.yaml:/etc/promtail/promtail.yaml
+#    depends_on:
+#      - rschat
+#    networks:
+#      - rschat-net
 
 networks:
-  rschat-net-db:
+  rschat-net:
     driver: bridge
 
 volumes:
   grafana-storage:
+  localstack-data:
+  rschat-logs:
