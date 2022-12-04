@@ -14,10 +14,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import rs.chat.config.security.filter.RSChatAuthenticationFilter;
 import rs.chat.config.security.filter.RSChatAuthorizationFilter;
+import rs.chat.utils.Utils;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
+import static rs.chat.router.Routes.ACTUATOR_URL;
 import static rs.chat.router.Routes.DeleteRoute;
 import static rs.chat.router.Routes.GetRoute;
+import static rs.chat.router.Routes.GetRoute.STATUS_URL;
 import static rs.chat.router.Routes.PostRoute;
 import static rs.chat.router.Routes.PostRoute.CREATE_PASSWORD_URL;
 import static rs.chat.router.Routes.PostRoute.FORGOT_PASSWORD_URL;
@@ -80,7 +83,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	 * @throws Exception if an error occurs.
 	 */
 	private void authorizeRequests(HttpSecurity http) throws Exception {
-		publicRoutes(http);
+		this.publicRoutes(http);
 
 		// Low tier
 		registerRoutesOfTier(http, LOW_TIER_ROLES.toArray(STRING_ARRAY),
@@ -118,18 +121,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	                                         String[] postRoutes,
 	                                         String[] putRoutes,
 	                                         String[] deleteRoutes) throws Exception {
-		RouterSecurityConfig routerSecurityConfig = new RouterSecurityConfig(http, allowedRoles);
-
-		routerSecurityConfig
-				.addGETRoutes(getRoutes)
-				.addPOSTRoutes(postRoutes)
-				.addPUTRoutes(putRoutes)
-				.addDELETERoutes(deleteRoutes)
-				.registerRoutes();
+		new RouterSecurityConfig(http, allowedRoles)
+				.registerGETRoutes(getRoutes)
+				.registerPOSTRoutes(postRoutes)
+				.registerPUTRoutes(putRoutes)
+				.registerDELETERoutes(deleteRoutes);
 	}
 
 	/**
-	 * Registers all the public routes.
+	 * Registers all the public routes. These routes do not need authentication.
 	 *
 	 * @param http {@link HttpSecurity} object.
 	 *
@@ -138,13 +138,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	private void publicRoutes(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
 		    .antMatchers(
-				    ROOT_URL,
-				    LOGIN_URL,
-				    LOGOUT_URL,
-				    REGISTER_URL,
-				    WS_CHAT_ENDPOINT,
-				    FORGOT_PASSWORD_URL,
-				    CREATE_PASSWORD_URL
+				    ROOT_URL, LOGIN_URL,
+				    LOGOUT_URL, REGISTER_URL,
+				    WS_CHAT_ENDPOINT, FORGOT_PASSWORD_URL,
+				    CREATE_PASSWORD_URL, STATUS_URL,
+				    ACTUATOR_URL
 		    )
 		    .permitAll();
 	}

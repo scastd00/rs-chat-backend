@@ -1,67 +1,118 @@
-version: "3.7"
+version: '3.7'
+
 services:
-  # RS Chat application
-  rs-chat:
-    image: rs-chat
-    env_file:
-      - .env.prod
-    volumes:
-      - ./logs/rs_chat-app.log:/tmp/rs_chat-app.log
-      - ./logs/rs_chat-warns.log:/tmp/rs_chat-warns.log
-    #    environment:
-    #      JAVA_TOOL_OPTIONS: -javaagent:./opentelemetry-javaagent.jar
-    #      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://agent:4317
-    #      OTEL_SERVICE_NAME: rs-chat-observability
-    #      OTEL_TRACES_EXPORTER: otlp
+  rschat:
+    image: rs-chat:latest
+    container_name: rschat
+    env_file: ./env/.env.docker
+    environment:
+      - DOCKER=true
     ports:
       - "4040:4040"
+    expose: [ 4040 ]
+    volumes:
+      - rschat-logs:/app/logs
+    networks:
+      - rschat-net
     depends_on:
+      - rschat-db
+      - rschat-localstack-aws
+
+  rschat-db:
+    image: mysql:latest
+    container_name: rschat-db-host
+    env_file: ./env/.env.db
+    ports:
+      - "4041:3306"
+    expose: [ 4041 ]
+    volumes:
+      - ./src/main/resources/db/rs_chat.sql:/docker-entrypoint-initdb.d/1.sql
+    networks:
+      - rschat-net
+
+  rschat-localstack-aws:
+    image: localstack/localstack
+    container_name: localstack-host
+    ports:
+      - "4042:4566"
+    environment:
+      - EAGER_SERVICE_LOADING=1
+      - SERVICES=s3
+      - DEBUG=1
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      #      - HOST_TMP_FOLDER=/tmp/localstack
+      - S3_DIR=/tmp/localstack/data
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - localstack-data:/tmp/localstack
+    networks:
+      - rschat-net
+
+  prometheus:
+    image: prom/prometheus:v2.40.5
+    container_name: prometheus
+    hostname: prometheus
+    restart: unless-stopped
+    ports:
+      - "4043:9090"
+    expose: [ 4043 ]
+    volumes:
+      - ./config/prometheus.yaml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - rschat
       - rschat-db
     networks:
       - rschat-net
 
-  #  agent:
-  #    image: grafana/agent:v0.29.0
-  #    volumes:
-  #      - ./config/agent.yaml:/etc/agent-config/agent.yaml
-  #      - ./logs/rs_chat-app.log:/tmp/rs_chat-app.log
-  #      - ./logs/rs_chat-warns.log:/tmp/rs_chat-warns.log
-  #      # - /:/host/root:ro,rslave
-  #      # - /sys:/host/sys:ro,rslave
-  #      # - /proc:/host/proc:ro,rslave
-  #      - /tmp/agent:/etc/agent
-  #    entrypoint:
-  #      - /bin/agent
-  #      - -config.file=/etc/agent-config/agent.yaml
-  #      - -metrics.wal-directory=/tmp/agent/wal
-  #      - -enable-features=integrations-next
-  #      - -config.expand-env
-  #      - -config.enable-read-api
-  #    environment:
-  #      HOSTNAME: agent
-  #    ports:
-  #      - "4317:4317"
-  #    networks:
-  #      - rschat-net
-
-  rschat-db:
-    image: mysql:latest
-    env_file:
-      - .env.prod # Todo extract database env variables to a separate file
+  grafana:
+    image: grafana/grafana-oss:9.3.1
+    container_name: grafana
+    restart: unless-stopped
     ports:
-      # <Port exposed> : <MySQL Port running inside container>
-      - '3306:3306'
-    expose:
-      # Opens port 3306 on the container
-      - '3306'
-      # Where our data will be persisted
+      - "4046:3000"
+    expose: [ 4046 ]
+    links:
+      - prometheus:prometheus
     volumes:
-      - my-db:/var/lib/mysql
+      - grafana-storage:/var/lib/grafana
+    depends_on:
+      - rschat
+    env_file:
+      - ./env/.env.grafana
     networks:
       - rschat-net
 
-volumes:
-  my-db:
+#  loki:
+#    image: grafana/loki:2.7.0
+#    container_name: loki
+#    restart: unless-stopped
+#    ports:
+#      - "4045:3100"
+#    volumes:
+#      - ./config/loki.yaml:/etc/loki/local-config.yaml
+#    depends_on:
+#      - promtail
+#    networks:
+#      - rschat-net
+#
+#  promtail:
+#    image: grafana/promtail:2.7.0
+#    container_name: promtail
+#    restart: unless-stopped
+#    ports:
+#      - "4044:9080"
+#    volumes:
+#      - ./config/promtail.yaml:/etc/promtail/promtail.yaml
+#    depends_on:
+#      - rschat
+#    networks:
+#      - rschat-net
 
 networks:
   rschat-net:
+    driver: bridge
+
+volumes:
+  grafana-storage:
+  localstack-data:
+  rschat-logs:

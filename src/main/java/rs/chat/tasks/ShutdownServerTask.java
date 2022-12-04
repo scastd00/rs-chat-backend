@@ -29,20 +29,14 @@ public class ShutdownServerTask implements Task {
 		if (this.chatManagement == null) {
 			log.error("ChatManagement is null, cannot send shutdown message.");
 			throw new TaskExecutionException(
-					TaskStatus.builder()
-					          .status(TaskStatus.FATAL)
-					          .message("ChatManagement is null, cannot send shutdown message.")
-					          .build()
+					new TaskStatus(TaskStatus.FATAL, "ChatManagement is null, cannot send shutdown message.")
 			);
 		}
 
 		if (this.running) {
 			log.warn("Server is already shutting down.");
 			throw new TaskExecutionException(
-					TaskStatus.builder()
-					          .status(TaskStatus.WARNING)
-					          .message("Server is already shutting down.")
-					          .build()
+					new TaskStatus(TaskStatus.WARNING, "Server is already shutting down.")
 			);
 		}
 
@@ -66,10 +60,7 @@ public class ShutdownServerTask implements Task {
 			log.error("Error while shutting down server.", e);
 
 			throw new TaskExecutionException(
-					TaskStatus.builder()
-					          .status(TaskStatus.FATAL)
-					          .message("Error while shutting down server.")
-					          .build()
+					new TaskStatus(TaskStatus.FATAL, "Error while shutting down server.")
 			);
 		}
 	}

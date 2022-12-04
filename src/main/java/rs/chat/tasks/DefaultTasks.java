@@ -7,5 +7,5 @@ import java.util.concurrent.TimeUnit;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DefaultTasks {
-	public static final ShutdownServerTask SHUTDOWN = new ShutdownServerTask(5, TimeUnit.SECONDS);
+	public static final ShutdownServerTask SHUTDOWN = new ShutdownServerTask(5, TimeUnit.MINUTES);
 }

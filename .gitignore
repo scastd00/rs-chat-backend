@@ -44,7 +44,7 @@ run.sh
 .idea/workspace.xml
 .idea/dataSources
 .idea/httpRequests
-.env*
+/env
 
 keystore*
 rs_chat_server*

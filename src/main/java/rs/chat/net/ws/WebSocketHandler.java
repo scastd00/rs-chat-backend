@@ -11,6 +11,8 @@ import rs.chat.net.ws.strategies.messages.MessageStrategy;
 import rs.chat.net.ws.strategies.messages.StrategyMappings;
 import rs.chat.utils.Utils;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,6 +49,12 @@ public class WebSocketHandler extends TextWebSocketHandler {
 				wrappedMessage.chatId(),
 				wrappedMessage.sessionId()
 		));
+
+		if (wrappedMessage.content().contains("#SCHEDULE#")) {
+			String[] strings = wrappedMessage.content().split("#SCHEDULE#");
+			otherData.put("schedule", LocalDateTime.parse(strings[1], DateTimeFormatter.ISO_DATE_TIME));
+			wrappedMessage.setContent(strings[0]);
+		}
 
 		// Strategy pattern for handling messages.
 		MessageStrategy strategy = StrategyMappings.decideStrategy(receivedMessageType);

@@ -122,6 +122,10 @@ public class JsonMessageWrapper {
 		this.headers().addProperty("date", System.currentTimeMillis());
 	}
 
+	public void setContent(String content) {
+		this.body().addProperty("content", content);
+	}
+
 	/**
 	 * @return the message as a string with the updated fields (if any).
 	 */

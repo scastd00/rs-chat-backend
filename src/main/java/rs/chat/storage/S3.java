@@ -2,6 +2,7 @@ package rs.chat.storage;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.jetbrains.annotations.Nullable;
 import rs.chat.utils.Utils;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.core.exception.SdkException;
@@ -18,6 +19,7 @@ import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.io.Closeable;
 import java.io.File;
@@ -28,10 +30,12 @@ import java.time.LocalDate;
 import java.util.Map;
 
 import static rs.chat.net.ws.Message.TEXT_MESSAGE;
+import static rs.chat.utils.Constants.DOCKER_S3_ENDPOINT_URI;
 import static rs.chat.utils.Constants.LOCAL_S3_ENDPOINT_URI;
 import static rs.chat.utils.Constants.REMOTE_S3_ENDPOINT_URI;
 import static rs.chat.utils.Constants.S3_BUCKET_NAME;
 import static rs.chat.utils.Utils.isDevEnv;
+import static rs.chat.utils.Utils.isDockerEnv;
 
 /**
  * Class that provides utility methods to work with S3.
@@ -46,12 +50,23 @@ public final class S3 implements Closeable {
 	 */
 	private S3() {
 		this.s3Client = S3Client.builder()
-		                        .endpointOverride(isDevEnv() ?
-		                                          LOCAL_S3_ENDPOINT_URI :
-		                                          REMOTE_S3_ENDPOINT_URI)
+		                        .endpointOverride(getEndpointOverride())
 		                        .credentialsProvider(this::obtainCredentials)
 		                        .region(Region.EU_WEST_3)
 		                        .build();
+	}
+
+	@Nullable
+	private static URI getEndpointOverride() {
+		if (isDockerEnv()) {
+			return DOCKER_S3_ENDPOINT_URI;
+		}
+
+		if (isDevEnv()) {
+			return LOCAL_S3_ENDPOINT_URI;
+		}
+
+		return REMOTE_S3_ENDPOINT_URI;
 	}
 
 	/**
@@ -85,11 +100,18 @@ public final class S3 implements Closeable {
 	 * @throws SdkException if the bucket does not exist or there is an error.
 	 */
 	public void checkS3BucketConnectivity() {
-		HeadBucketResponse headBucketResponse = this.s3Client.headBucket(
-				HeadBucketRequest.builder()
-				                 .bucket(S3_BUCKET_NAME)
-				                 .build()
-		);
+		HeadBucketResponse headBucketResponse;
+
+		try {
+			headBucketResponse = this.s3Client.headBucket(
+					HeadBucketRequest.builder()
+					                 .bucket(S3_BUCKET_NAME)
+					                 .build()
+			);
+		} catch (S3Exception e) {
+			this.s3Client.createBucket(b -> b.bucket(S3_BUCKET_NAME));
+			return;
+		}
 
 		SdkHttpResponse response = headBucketResponse.sdkHttpResponse();
 
