@@ -1,5 +1,14 @@
 version: '3.7'
 
+networks:
+  rschat-net:
+    driver: bridge
+
+volumes:
+  grafana-storage:
+  localstack-data:
+  rschat-logs:
+
 services:
   rschat:
     image: rs-chat:latest
@@ -82,37 +91,32 @@ services:
     networks:
       - rschat-net
 
-#  loki:
-#    image: grafana/loki:2.7.0
-#    container_name: loki
-#    restart: unless-stopped
-#    ports:
-#      - "4045:3100"
-#    volumes:
-#      - ./config/loki.yaml:/etc/loki/local-config.yaml
-#    depends_on:
-#      - promtail
-#    networks:
-#      - rschat-net
-#
-#  promtail:
-#    image: grafana/promtail:2.7.0
-#    container_name: promtail
-#    restart: unless-stopped
-#    ports:
-#      - "4044:9080"
-#    volumes:
-#      - ./config/promtail.yaml:/etc/promtail/promtail.yaml
-#    depends_on:
-#      - rschat
-#    networks:
-#      - rschat-net
+  loki:
+    image: grafana/loki:2.7.0
+    container_name: loki
+    restart: unless-stopped
+    ports:
+      - "4045:3100"
+    volumes:
+      - ./config/loki.yaml:/etc/loki/loki-config.yaml
+    command: -config.file=/etc/loki/loki-config.yaml
+    depends_on:
+      - promtail
+    networks:
+      - rschat-net
 
-networks:
-  rschat-net:
-    driver: bridge
-
-volumes:
-  grafana-storage:
-  localstack-data:
-  rschat-logs:
+  promtail:
+    image: grafana/promtail:2.7.0
+    container_name: promtail
+    restart: unless-stopped
+    ports:
+      - "4044:9080"
+    volumes:
+      - /var/log:/var/log
+      - ./config/promtail.yaml:/etc/promtail/promtail.yaml
+      - /var/lib/docker/containers:/var/lib/docker/containers
+    command: -config.file=/etc/promtail/promtail.yaml
+    depends_on:
+      - rschat
+    networks:
+      - rschat-net
