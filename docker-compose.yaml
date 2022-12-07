@@ -35,7 +35,7 @@ services:
 
   rschat-db:
     image: mysql:latest
-    container_name: rschat-db-host
+    container_name: rschat-db
     env_file: ./env/.env.db
     ports:
       - "4041:3306"
@@ -48,7 +48,7 @@ services:
 
   rschat-localstack-aws:
     image: localstack/localstack
-    container_name: localstack-host
+    container_name: rschat-localstack
     ports:
       - "4042:4566"
     environment:
