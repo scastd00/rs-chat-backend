@@ -36,9 +36,5 @@ scrape_configs:
       - labels:
           tag:
           stream:
-          image_name:
-          container_name:
-          image_id:
-          container_id:
       - output:
           source: output

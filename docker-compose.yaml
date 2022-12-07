@@ -9,6 +9,11 @@ volumes:
   localstack-data:
   rschat-logs:
 
+x-logging: &default-logging
+  driver: json-file
+  options:
+    tag: "{{.Name}}"
+
 services:
   rschat:
     image: rs-chat:latest
@@ -26,6 +31,7 @@ services:
     depends_on:
       - rschat-db
       - rschat-localstack-aws
+    logging: *default-logging
 
   rschat-db:
     image: mysql:latest
@@ -38,6 +44,7 @@ services:
       - ./src/main/resources/db/rs_chat.sql:/docker-entrypoint-initdb.d/1.sql
     networks:
       - rschat-net
+    logging: *default-logging
 
   rschat-localstack-aws:
     image: localstack/localstack
@@ -56,6 +63,7 @@ services:
       - localstack-data:/tmp/localstack
     networks:
       - rschat-net
+    logging: *default-logging
 
   prometheus:
     image: prom/prometheus:v2.40.5
@@ -72,6 +80,7 @@ services:
       - rschat-db
     networks:
       - rschat-net
+    logging: *default-logging
 
   grafana:
     image: grafana/grafana-oss:9.3.1
@@ -90,6 +99,7 @@ services:
       - ./env/.env.grafana
     networks:
       - rschat-net
+    logging: *default-logging
 
   loki:
     image: grafana/loki:2.7.0
@@ -104,6 +114,7 @@ services:
       - promtail
     networks:
       - rschat-net
+    logging: *default-logging
 
   promtail:
     image: grafana/promtail:2.7.0
@@ -120,3 +131,4 @@ services:
       - rschat
     networks:
       - rschat-net
+    logging: *default-logging
