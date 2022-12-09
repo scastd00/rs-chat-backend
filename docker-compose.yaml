@@ -29,8 +29,12 @@ services:
       - rschat-net
     depends_on:
       - rschat-db
-#      - rschat-localstack-aws
     logging: *default-logging
+    healthcheck:
+      test: curl -f https://localhost:4040/api/v1/health --insecure -s > /dev/null || exit 1
+      interval: 2m
+      timeout: 10s
+      retries: 3
 
   rschat-db:
     image: mysql:latest

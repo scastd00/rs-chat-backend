@@ -14,13 +14,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import rs.chat.config.security.filter.RSChatAuthenticationFilter;
 import rs.chat.config.security.filter.RSChatAuthorizationFilter;
-import rs.chat.utils.Utils;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 import static rs.chat.router.Routes.ACTUATOR_URL;
 import static rs.chat.router.Routes.DeleteRoute;
 import static rs.chat.router.Routes.GetRoute;
-import static rs.chat.router.Routes.GetRoute.STATUS_URL;
+import static rs.chat.router.Routes.GetRoute.HEALTH_URL;
 import static rs.chat.router.Routes.PostRoute;
 import static rs.chat.router.Routes.PostRoute.CREATE_PASSWORD_URL;
 import static rs.chat.router.Routes.PostRoute.FORGOT_PASSWORD_URL;
@@ -141,7 +140,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				    ROOT_URL, LOGIN_URL,
 				    LOGOUT_URL, REGISTER_URL,
 				    WS_CHAT_ENDPOINT, FORGOT_PASSWORD_URL,
-				    CREATE_PASSWORD_URL, STATUS_URL,
+				    CREATE_PASSWORD_URL, HEALTH_URL,
 				    ACTUATOR_URL
 		    )
 		    .permitAll();
