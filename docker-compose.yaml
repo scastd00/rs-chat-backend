@@ -29,7 +29,7 @@ services:
       - rschat-net
     depends_on:
       - rschat-db
-      - rschat-localstack-aws
+#      - rschat-localstack-aws
     logging: *default-logging
 
   rschat-db:
