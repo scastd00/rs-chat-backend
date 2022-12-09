@@ -24,12 +24,10 @@ import java.util.function.Function;
 import static rs.chat.net.ws.Message.ACTIVE_USERS_MESSAGE;
 import static rs.chat.net.ws.Message.ERROR_MESSAGE;
 import static rs.chat.utils.Constants.ALGORITHM;
-import static rs.chat.utils.Constants.DOCKER_S3_ENDPOINT_URI_FOR_FILES;
 import static rs.chat.utils.Constants.GSON;
 import static rs.chat.utils.Constants.JWT_TOKEN_PREFIX;
 import static rs.chat.utils.Constants.JWT_VERIFIER;
-import static rs.chat.utils.Constants.LOCAL_S3_ENDPOINT_URI_FOR_FILES;
-import static rs.chat.utils.Constants.REMOTE_S3_ENDPOINT_URI_FOR_FILES;
+import static rs.chat.utils.Constants.S3_ENDPOINT_URI_FOR_FILES;
 import static rs.chat.utils.Constants.TOKEN_EXPIRATION_DURATION_EXTENDED;
 import static rs.chat.utils.Constants.TOKEN_EXPIRATION_DURATION_NORMAL;
 
@@ -208,19 +206,7 @@ public final class Utils {
 	}
 
 	public static URI uploadedFileURI(String s3Key) {
-		return getCurrentS3EndpointURI().resolve(s3Key);
-	}
-
-	private static URI getCurrentS3EndpointURI() {
-		if (isDockerEnv()) {
-			return DOCKER_S3_ENDPOINT_URI_FOR_FILES;
-		}
-
-		if (isProdEnv()) {
-			return REMOTE_S3_ENDPOINT_URI_FOR_FILES;
-		}
-
-		return LOCAL_S3_ENDPOINT_URI_FOR_FILES;
+		return S3_ENDPOINT_URI_FOR_FILES.resolve(s3Key);
 	}
 
 	public static String bytesToUnit(int bytes) {

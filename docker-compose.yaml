@@ -8,6 +8,7 @@ volumes:
   grafana-storage:
   localstack-data:
   rschat-logs:
+  rschat-db:
 
 x-logging: &default-logging
   driver: json-file
@@ -42,6 +43,7 @@ services:
     expose: [ 4041 ]
     volumes:
       - ./src/main/resources/db/rs_chat.sql:/docker-entrypoint-initdb.d/1.sql
+      - rschat-db:/var/lib/mysql
     networks:
       - rschat-net
     logging: *default-logging
@@ -56,11 +58,10 @@ services:
       - SERVICES=s3
       - DEBUG=1
       - DOCKER_HOST=unix:///var/run/docker.sock
-      #      - HOST_TMP_FOLDER=/tmp/localstack
-      - S3_DIR=/tmp/localstack/data
+      - S3_DIR=~/.appdata/rschat/data
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - localstack-data:/tmp/localstack
+      - localstack-data:${HOME}/.appdata/rschat/data
     networks:
       - rschat-net
     logging: *default-logging
