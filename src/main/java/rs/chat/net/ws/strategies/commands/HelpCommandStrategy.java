@@ -23,13 +23,4 @@ public class HelpCommandStrategy implements CommandStrategy {
 		));
 	}
 
-	@Override
-	public String getDescriptionOfCommand() {
-		return "Displays all available commands or information about a specific command.";
-	}
-
-	@Override
-	public String getUsageOfCommand() {
-		return "/help | /help <command>"; // Todo: implement specific command help
-	}
 }

@@ -22,7 +22,7 @@ public class CommandMessageStrategy implements MessageStrategy {
 		String[] commandParts = wrappedMessage.content().split(" ");
 
 		if (commandParts.length == 2) {
-			otherData.put("commandText", commandParts[1]);
+			otherData.put("commandParams", commandParts[1]);
 		}
 
 		CommandStrategy strategy = StrategyMappings.decideStrategy(commandParts[0]);
