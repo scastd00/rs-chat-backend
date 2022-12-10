@@ -53,10 +53,9 @@ public class StrategyMappings {
 		commands.put("/8ball", new Command("/8ball", NORMAL, "Asks the magic 8-ball a question.", "/8ball <question>", new EightBallCommandStrategy()));
 	}
 
-	public static CommandStrategy decideStrategy(String command) {
+	public static Command getCommand(String command) {
 		return Optional.ofNullable(commands.getOrDefault(command, null))
-		               .orElseThrow(() -> new CommandUnavailableException("Command " + command + " is not available."))
-		               .strategy();
+		               .orElseThrow(() -> new CommandUnavailableException("Command " + command + " is not available."));
 	}
 
 	public static String getAvailableCommandsWithDescriptionAndUsage() {
