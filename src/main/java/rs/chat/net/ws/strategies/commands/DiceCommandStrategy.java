@@ -17,7 +17,7 @@ public class DiceCommandStrategy implements CommandStrategy {
 	@Override
 	public void handle(ChatManagement chatManagement, Map<String, Object> otherData) throws WebSocketException, IOException {
 		ClientID clientID = getClientID(otherData);
-		String userToChallenge = (String) otherData.get("commandParams");
+		String userToChallenge = ((CommandParams) otherData.get("commandParams")).get("user");
 		String messageContent;
 
 		if (userToChallenge != null) {

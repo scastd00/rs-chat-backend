@@ -1,5 +1,8 @@
 package rs.chat.net.ws.strategies.commands;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 /**
  * Record that represents a command that can be executed by a client.
  *
@@ -8,6 +11,7 @@ package rs.chat.net.ws.strategies.commands;
  * @param description A description of the command.
  * @param usage       The usage of the command.
  * @param strategy    The strategy to be used to execute the command.
+ * @param paramNames  The names of the parameters that the command takes.
  */
 public record Command(
 		String command,
@@ -15,7 +19,7 @@ public record Command(
 		String description,
 		String usage,
 		CommandStrategy strategy,
-		int params) {
+		String... paramNames) {
 	/**
 	 * Type of the command.
 	 * <p>
@@ -26,9 +30,41 @@ public record Command(
 	 *     <li>{@link CommandType#ADMIN} - The command is executed by the client that sent the command if the client is an admin.</li>
 	 * </ul>
 	 */
-	enum CommandType {
+	public enum CommandType {
 		NORMAL,
 		TEACHER,
 		ADMIN
+	}
+
+	@Override
+	public String toString() {
+		return "Command{" +
+				"command='/" + command + '\'' +
+				", type=" + type +
+				", description='" + description + '\'' +
+				", usage='" + usage + '\'' +
+				", strategy=" + strategy +
+				", paramNames=" + Arrays.toString(paramNames) +
+				'}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Command command1 = (Command) o;
+		return Objects.equals(command, command1.command) &&
+				type == command1.type &&
+				Objects.equals(description, command1.description) &&
+				Objects.equals(usage, command1.usage) &&
+				Objects.equals(strategy, command1.strategy) &&
+				Arrays.equals(paramNames, command1.paramNames);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = Objects.hash(command, type, description, usage, strategy);
+		result = 31 * result + Arrays.hashCode(paramNames);
+		return result;
 	}
 }

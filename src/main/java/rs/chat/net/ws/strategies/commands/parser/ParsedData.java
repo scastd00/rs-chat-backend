@@ -1,6 +1,15 @@
 package rs.chat.net.ws.strategies.commands.parser;
 
-import java.util.List;
+import rs.chat.net.ws.strategies.commands.CommandParams;
 
-public record ParsedData(String data, List<String> params, boolean isCommand) {
+public record ParsedData(String data, CommandParams params, Type type) {
+	public enum Type {
+		MESSAGE,
+		COMMAND,
+		MENTION
+	}
+
+	public boolean isMessage() {
+		return type == Type.MESSAGE;
+	}
 }
