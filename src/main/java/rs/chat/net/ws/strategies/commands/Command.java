@@ -9,7 +9,13 @@ package rs.chat.net.ws.strategies.commands;
  * @param usage       The usage of the command.
  * @param strategy    The strategy to be used to execute the command.
  */
-public record Command(String command, CommandType type, String description, String usage, CommandStrategy strategy) {
+public record Command(
+		String command,
+		CommandType type,
+		String description,
+		String usage,
+		CommandStrategy strategy,
+		int params) {
 	/**
 	 * Type of the command.
 	 * <p>

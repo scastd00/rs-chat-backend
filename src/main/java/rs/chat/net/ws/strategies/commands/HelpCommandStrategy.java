@@ -16,7 +16,7 @@ public class HelpCommandStrategy implements CommandStrategy {
 			throws WebSocketException, IOException {
 		getSession(otherData).sendMessage(new TextMessage(
 				createMessage(
-						"Available commands: " + StrategyMappings.getAvailableCommandsWithDescriptionAndUsage(),
+						"Available commands: " + CommandMappings.getAvailableCommandsWithDescriptionAndUsage(),
 						COMMAND_RESPONSE.type(),
 						getClientID(otherData).chatId()
 				)

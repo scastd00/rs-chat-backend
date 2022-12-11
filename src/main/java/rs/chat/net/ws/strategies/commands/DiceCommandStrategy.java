@@ -7,7 +7,6 @@ import rs.chat.net.ws.ClientID;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.Optional;
 
 import static rs.chat.net.ws.Message.COMMAND_RESPONSE;
 import static rs.chat.utils.Constants.SECURE_RANDOM;
