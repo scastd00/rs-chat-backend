@@ -7,6 +7,7 @@ import rs.chat.net.ws.ClientID;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
 
 import static rs.chat.net.ws.Message.COMMAND_RESPONSE;
 import static rs.chat.utils.Constants.SECURE_RANDOM;
@@ -17,7 +18,9 @@ public class DiceCommandStrategy implements CommandStrategy {
 	@Override
 	public void handle(ChatManagement chatManagement, Map<String, Object> otherData) throws WebSocketException, IOException {
 		ClientID clientID = getClientID(otherData);
-		String userToChallenge = ((CommandParams) otherData.get("commandParams")).get("user");
+		String userToChallenge = Optional.ofNullable((otherData.get("commandParams")))
+		                                 .map(params -> ((CommandParams) params).get("user"))
+		                                 .orElse(null);
 		String messageContent;
 
 		if (userToChallenge != null) {

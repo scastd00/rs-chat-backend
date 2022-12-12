@@ -39,7 +39,7 @@ public record Command(
 	@Override
 	public String toString() {
 		return "Command{" +
-				"command='/" + command + '\'' +
+				"command='" + command + '\'' +
 				", type=" + type +
 				", description='" + description + '\'' +
 				", usage='" + usage + '\'' +

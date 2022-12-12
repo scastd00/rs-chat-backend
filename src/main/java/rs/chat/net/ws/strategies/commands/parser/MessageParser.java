@@ -12,6 +12,7 @@ import java.util.List;
 
 import static rs.chat.net.ws.strategies.commands.parser.ParsedData.Type.COMMAND;
 import static rs.chat.net.ws.strategies.commands.parser.ParsedData.Type.MENTION;
+import static rs.chat.net.ws.strategies.commands.parser.ParsedData.Type.MESSAGE;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -41,7 +42,7 @@ public class MessageParser {
 
 		int parameters = command.paramNames().length;
 
-		if (parameters == 0) {
+		if (parts.length - 1 == 0) {
 			return new ParsedData(parts[pos], null, COMMAND);
 		}
 
@@ -52,7 +53,14 @@ public class MessageParser {
 		CommandParams commandParams = new CommandParams(command.paramNames());
 		for (int i = 0; i < parameters; i++) {
 			// Todo: check that the parameter is valid.
-			commandParams.put(command.paramNames()[i], parts[pos + i + 1]);
+			String paramName = command.paramNames()[i];
+			String paramValue = parts[pos + i + 1];
+
+			if (paramName.equals("user") && paramValue.startsWith(MENTION_PREFIX)) {
+				paramValue = paramValue.substring(1);
+			}
+
+			commandParams.put(paramName, paramValue);
 		}
 
 		return new ParsedData(parts[pos], commandParams, COMMAND);
@@ -63,6 +71,6 @@ public class MessageParser {
 	}
 
 	private static ParsedData parseMessage(String[] parts, int pos) {
-		return new ParsedData(parts[pos], null, ParsedData.Type.MESSAGE);
+		return new ParsedData(parts[pos], null, MESSAGE);
 	}
 }
