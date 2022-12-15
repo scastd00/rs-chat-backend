@@ -10,7 +10,7 @@ import java.util.Map;
 
 import static rs.chat.net.ws.Message.ACTIVE_USERS_MESSAGE;
 import static rs.chat.net.ws.Message.AUDIO_MESSAGE;
-import static rs.chat.net.ws.Message.COMMAND_MESSAGE;
+import static rs.chat.net.ws.Message.PARSEABLE_MESSAGE;
 import static rs.chat.net.ws.Message.ERROR_MESSAGE;
 import static rs.chat.net.ws.Message.GET_HISTORY_MESSAGE;
 import static rs.chat.net.ws.Message.IMAGE_MESSAGE;
@@ -34,7 +34,7 @@ import static rs.chat.net.ws.Message.VIDEO_MESSAGE;
  * Utility class for mapping {@link Message} to {@link MessageStrategy}.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class StrategyMappings {
+public final class MessageStrategyMappings {
 	private static final Map<String, MessageStrategy> strategies = new HashMap<>();
 
 	static {
@@ -52,7 +52,7 @@ public final class StrategyMappings {
 		strategies.put(VIDEO_MESSAGE.type(), new VideoMessageStrategy());
 		strategies.put(PDF_MESSAGE.type(), new PdfMessageStrategy());
 		strategies.put(TEXT_DOC_MESSAGE.type(), new TextDocMessageStrategy());
-		strategies.put(COMMAND_MESSAGE.type(), new CommandMessageStrategy());
+		strategies.put(PARSEABLE_MESSAGE.type(), new ParseableMessageStrategy());
 		strategies.put(MENTION_MESSAGE.type(), new MentionMessageStrategy());
 
 		strategies.put(ACTIVE_USERS_MESSAGE.type(), new ActiveUsersStrategy());

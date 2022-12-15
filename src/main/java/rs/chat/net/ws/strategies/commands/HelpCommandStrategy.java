@@ -16,20 +16,11 @@ public class HelpCommandStrategy implements CommandStrategy {
 			throws WebSocketException, IOException {
 		getSession(otherData).sendMessage(new TextMessage(
 				createMessage(
-						"Available commands: " + StrategyMappings.getAvailableCommandsWithDescriptionAndUsage(),
+						"Available commands: " + CommandMappings.getAvailableCommandsWithDescriptionAndUsage(),
 						COMMAND_RESPONSE.type(),
 						getClientID(otherData).chatId()
 				)
 		));
 	}
 
-	@Override
-	public String getDescriptionOfCommand() {
-		return "Displays all available commands or information about a specific command.";
-	}
-
-	@Override
-	public String getUsageOfCommand() {
-		return "/help | /help <command>"; // Todo: implement specific command help
-	}
 }

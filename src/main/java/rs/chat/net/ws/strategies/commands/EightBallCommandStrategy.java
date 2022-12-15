@@ -6,10 +6,9 @@ import rs.chat.net.ws.ChatManagement;
 import java.io.IOException;
 import java.util.Map;
 
-public class PartCommandStrategy implements CommandStrategy {
+public class EightBallCommandStrategy implements CommandStrategy {
 	@Override
-	public void handle(ChatManagement chatManagement, Map<String, Object> otherData)
-			throws WebSocketException, IOException {
+	public void handle(ChatManagement chatManagement, Map<String, Object> otherData) throws WebSocketException, IOException {
 
 	}
 }

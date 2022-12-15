@@ -8,6 +8,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.net.URI;
+import java.security.SecureRandom;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
@@ -67,4 +68,5 @@ public final class Constants {
 	public static final String DEGREE_CHAT_S3_FOLDER_PREFIX = DEGREE_CHAT + "/";
 
 	public static final int MAX_CHAT_HISTORY_PER_REQUEST = 65;
+	public static final SecureRandom SECURE_RANDOM = new SecureRandom();
 }

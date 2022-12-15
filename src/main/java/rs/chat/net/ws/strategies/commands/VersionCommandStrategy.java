@@ -24,13 +24,4 @@ public class VersionCommandStrategy implements CommandStrategy {
 		);
 	}
 
-	@Override
-	public String getDescriptionOfCommand() {
-		return "Displays the current version of the chat.";
-	}
-
-	@Override
-	public String getUsageOfCommand() {
-		return "/version";
-	}
 }

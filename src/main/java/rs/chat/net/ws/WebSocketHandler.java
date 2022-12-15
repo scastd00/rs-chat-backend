@@ -8,7 +8,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import rs.chat.net.ws.strategies.messages.MessageStrategy;
-import rs.chat.net.ws.strategies.messages.StrategyMappings;
+import rs.chat.net.ws.strategies.messages.MessageStrategyMappings;
 import rs.chat.utils.Utils;
 
 import java.time.LocalDateTime;
@@ -57,7 +57,13 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		}
 
 		// Strategy pattern for handling messages.
-		MessageStrategy strategy = StrategyMappings.decideStrategy(receivedMessageType);
+		MessageStrategy strategy;
+
+		if (this.isParseableMessage(wrappedMessage.content())) {
+			strategy = MessageStrategyMappings.decideStrategy(Message.PARSEABLE_MESSAGE);
+		} else {
+			strategy = MessageStrategyMappings.decideStrategy(receivedMessageType);
+		}
 
 		try {
 			log.debug("Handling message: {} by class {}.", receivedMessageType.type(), strategy.getClass().getSimpleName());
@@ -77,5 +83,9 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		session.sendMessage(
 				new TextMessage(createErrorMessage(exception.getMessage()))
 		);
+	}
+
+	private boolean isParseableMessage(String message) {
+		return message.contains("/") || message.contains("@");
 	}
 }
