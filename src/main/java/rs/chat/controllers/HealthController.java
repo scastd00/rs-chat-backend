@@ -24,7 +24,6 @@ public class HealthController {
 	 */
 	@GetMapping(HEALTH_URL)
 	public void status(HttpResponse response) throws IOException {
-		log.info("Health check");
-		response.status(OK).send("Health OK");
+		response.sendStatus(OK);
 	}
 }
