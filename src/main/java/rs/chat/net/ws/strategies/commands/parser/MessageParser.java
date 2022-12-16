@@ -85,14 +85,15 @@ public class MessageParser {
 	}
 
 	/**
-	 * Parses a mention. Mentions are made of a single word, and are prefixed with the @ symbol.
+	 * Parses a mention. Mentions are made of a single word, and are prefixed with the @ symbol and may
+	 * be followed by symbols.
 	 *
 	 * @param mention mention to parse.
 	 *
 	 * @return a {@link ParsedData} containing the mention.
 	 */
 	private static ParsedData parseMention(String mention) {
-		return new ParsedData(mention.substring(1), null, MENTION);
+		return new ParsedData(mention.split("\\W+")[1], null, MENTION);
 	}
 
 	/**
