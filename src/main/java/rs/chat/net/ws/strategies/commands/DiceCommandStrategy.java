@@ -19,7 +19,7 @@ public class DiceCommandStrategy implements CommandStrategy {
 	public void handle(ChatManagement chatManagement, Map<String, Object> otherData) throws WebSocketException, IOException {
 		ClientID clientID = getClientID(otherData);
 		String userToChallenge = Optional.ofNullable((otherData.get("commandParams")))
-		                                 .map(params -> ((CommandParams) params).get("user"))
+		                                 .map(params -> ((Params) params).get("user"))
 		                                 .orElse(null);
 		String messageContent;
 

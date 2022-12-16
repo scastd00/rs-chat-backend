@@ -16,8 +16,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
-import static rs.chat.utils.Utils.createErrorMessage;
-
 /**
  * WebSocket handler for the application.
  */
@@ -66,7 +64,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		}
 
 		try {
-			log.debug("Handling message: {} by class {}.", receivedMessageType.type(), strategy.getClass().getSimpleName());
 			Utils.checkTokenValidity(wrappedMessage.token());
 			strategy.handle(wrappedMessage, this.chatManagement, otherData);
 		} catch (Exception e) {
@@ -78,13 +75,17 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
+	public void handleTransportError(@NotNull WebSocketSession session, @NotNull Throwable exception) {
 		log.error(exception.getMessage(), exception);
-		session.sendMessage(
-				new TextMessage(createErrorMessage(exception.getMessage()))
-		);
 	}
 
+	/**
+	 * Checks if the message is a parseable message.
+	 *
+	 * @param message message to check.
+	 *
+	 * @return true if the message is a parseable message, false otherwise.
+	 */
 	private boolean isParseableMessage(String message) {
 		return message.contains("/") || message.contains("@");
 	}
