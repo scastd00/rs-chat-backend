@@ -15,6 +15,9 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import static rs.chat.net.ws.Message.MENTION_MESSAGE;
+import static rs.chat.utils.Utils.createMessage;
+
 /**
  * Strategy for handling {@link Message#PARSEABLE_MESSAGE} messages.
  */
@@ -31,23 +34,57 @@ public class ParseableMessageStrategy extends GenericMessageStrategy {
 			             .filter(Predicate.not(ParsedData::isMessage)) // Ignore messages
 			             .forEach(parsedData -> {
 				             switch (parsedData.type()) {
-					             case COMMAND -> {
-						             Command command = CommandMappings.getCommand(parsedData.data());
-						             otherData.put("commandParams", parsedData.params());
-
-						             try {
-							             command.strategy().handle(chatManagement, otherData);
-						             } catch (IOException e) {
-							             throw new RuntimeException(e);
-						             }
-					             }
-					             case MENTION -> log.info("Mention"); // Todo: implement. Send special message to notify the user with a sound.
-					             default -> log.info("Message");
+					             case COMMAND -> runCommand(chatManagement, otherData, parsedData);
+					             case MENTION -> sendMentionToUser(wrappedMessage, chatManagement, parsedData);
+					             default -> {/**/}
 				             }
 			             });
 		} catch (CommandUnavailableException | IllegalArgumentException e) {
 			log.error("Error while parsing message", e);
 			// Todo: Warn the user that an error occurred
+		}
+	}
+
+	/**
+	 * Sends a mention message to the user to notify them.
+	 *
+	 * @param wrappedMessage message received from the client.
+	 * @param chatManagement chat management to send the message.
+	 * @param parsedData     parsed data from the message (contains the mentioned username).
+	 */
+	private static void sendMentionToUser(JsonMessageWrapper wrappedMessage, ChatManagement chatManagement, ParsedData parsedData) {
+		// If the user is the same as the one who sent the message, ignore it
+		if (wrappedMessage.username().equals(parsedData.data())) {
+			return;
+		}
+
+		String chatId = wrappedMessage.chatId();
+		chatManagement.mentionUser(
+				chatId,
+				parsedData.data(),
+				createMessage(
+						"You have been mentioned by " + wrappedMessage.username(),
+						MENTION_MESSAGE.type(),
+						chatId
+				)
+		);
+	}
+
+	/**
+	 * Runs the command.
+	 *
+	 * @param chatManagement chat management to send the message.
+	 * @param otherData      other data to pass to the command.
+	 * @param parsedData     parsed data from the message (contains the command).
+	 */
+	private static void runCommand(ChatManagement chatManagement, Map<String, Object> otherData, ParsedData parsedData) {
+		Command command = CommandMappings.getCommand(parsedData.data());
+		otherData.put("commandParams", parsedData.params());
+
+		try {
+			command.strategy().handle(chatManagement, otherData);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
 	}
 }

@@ -169,6 +169,20 @@ public class ChatManagement {
 	}
 
 	/**
+	 * Sends a message to a client that is mentioned in the message.
+	 *
+	 * @param chatId   id of the chat to which the message was sent.
+	 * @param username username of the client to send the message to.
+	 * @param message  message to send.
+	 */
+	public void mentionUser(String chatId, String username, String message) {
+		this.getClientsOf(chatId)
+		    .stream()
+		    .filter(client -> client.clientID().username().equals(username))
+		    .forEach(client -> client.send(message));
+	}
+
+	/**
 	 * Retrieves all the usernames of the clients connected to the given chat.
 	 *
 	 * @param chatId id of the chat to get the usernames of.

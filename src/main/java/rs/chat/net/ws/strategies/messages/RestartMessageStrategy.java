@@ -17,6 +17,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import static rs.chat.net.ws.Message.INFO_MESSAGE;
+
 /**
  * Strategy for handling {@link Message#RESTART_MESSAGE} messages.
  */
@@ -45,7 +47,7 @@ public class RestartMessageStrategy extends GenericScheduledMessageStrategy {
 				session.sendMessage(new TextMessage(
 						Utils.createMessage(
 								"An error occurred while shutting down the server.%n%s".formatted(exception.getStatus().message()),
-								Message.INFO_MESSAGE.type(),
+								INFO_MESSAGE.type(),
 								""
 						)
 				));
