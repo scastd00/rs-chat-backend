@@ -9,6 +9,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import rs.chat.net.ws.strategies.messages.MessageStrategy;
 import rs.chat.net.ws.strategies.messages.MessageStrategyMappings;
+import rs.chat.observability.metrics.Metrics;
 import rs.chat.utils.Utils;
 
 import java.time.LocalDateTime;
@@ -24,6 +25,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class WebSocketHandler extends TextWebSocketHandler {
 	private final ChatManagement chatManagement;
+	private final Metrics metrics;
 
 	/**
 	 * Handles text messages (JSON string).
@@ -66,6 +68,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		try {
 			Utils.checkTokenValidity(wrappedMessage.token());
 			strategy.handle(wrappedMessage, this.chatManagement, otherData);
+			this.metrics.incrementMessageCount(receivedMessageType.type());
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}

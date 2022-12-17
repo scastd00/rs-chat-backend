@@ -1,11 +1,12 @@
 package rs.chat.net.ws;
 
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import rs.chat.observability.metrics.Metrics;
 
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +17,7 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 /**
  * Class that manages the chats to which the clients are connected.
  */
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 @Component
 @EnableScheduling
@@ -25,6 +26,7 @@ public class ChatManagement {
 	 * Map to store each chat. The mapping key is the chatId.
 	 */
 	private final Map<String, Chat> chats = new HashMap<>();
+	private final Metrics metrics;
 
 	/**
 	 * Creates a new {@link Chat} for the specified key.
@@ -180,6 +182,8 @@ public class ChatManagement {
 		    .stream()
 		    .filter(client -> client.clientID().username().equals(username))
 		    .forEach(client -> client.send(message));
+
+		this.metrics.incrementMentionedUsers();
 	}
 
 	/**
