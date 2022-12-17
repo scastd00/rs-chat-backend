@@ -34,6 +34,7 @@ public final class Constants {
 	public static final String ERROR_JSON_KEY = "error";
 	public static final String DATA_JSON_KEY = "data";
 	public static final String CHAT_KEY_FORMAT = "%s-%s";
+	public static final String SCHEDULE_STRING = "#SCHEDULE#";
 
 	public static final String LOCAL_FILES_PATH = System.getProperty("user.home") + "/.appdata/rschat/data/";
 	public static final String[] STRING_ARRAY = new String[0];

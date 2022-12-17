@@ -75,22 +75,6 @@ public class ChatManagement {
 	}
 
 	/**
-	 * Returns the client that is stored in the chat and has the specified ID.
-	 *
-	 * @param clientID ID of the client.
-	 *
-	 * @return a {@link Client} if the user is in the chat,
-	 * {@code null} otherwise (if the chat is empty or the user is disconnected).
-	 */
-	public synchronized Client getClient(ClientID clientID) {
-		return this.getClientsOf(clientID.chatId())
-		           .stream()
-		           .filter(client -> client.clientID().equals(clientID))
-		           .findFirst()
-		           .orElse(null);
-	}
-
-	/**
 	 * Adds a client to the specified chat (id of the chat is stored in the
 	 * {@code clientID} attribute of {@link Client}).
 	 *
