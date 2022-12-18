@@ -7,8 +7,10 @@ import org.springframework.transaction.annotation.Transactional;
 import rs.chat.domain.entity.Subject;
 import rs.chat.domain.entity.TeaSubj;
 import rs.chat.domain.entity.TeaSubjPK;
+import rs.chat.domain.entity.User;
 import rs.chat.domain.repository.SubjectRepository;
 import rs.chat.domain.repository.TeacherSubjectRepository;
+import rs.chat.domain.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +22,7 @@ import java.util.Optional;
 public class TeacherService {
 	private final TeacherSubjectRepository teacherSubjectRepository;
 	private final SubjectRepository subjectRepository;
+	private final UserRepository userRepository;
 
 	public List<Subject> getSubjects(Long id) {
 		return this.teacherSubjectRepository.findAllByTeaSubjPK_TeacherId(id)
@@ -30,5 +33,22 @@ public class TeacherService {
 		                                    .filter(Optional::isPresent)
 		                                    .map(Optional::get)
 		                                    .toList();
+	}
+
+	public List<User> getTeachers() {
+		return this.teacherSubjectRepository.findAll()
+		                                    .stream()
+		                                    .map(TeaSubj::getTeaSubjPK)
+		                                    .map(TeaSubjPK::getTeacherId)
+		                                    .map(this.userRepository::findById)
+		                                    .filter(Optional::isPresent)
+		                                    .map(Optional::get)
+		                                    .map(this::clearPassword)
+		                                    .toList();
+	}
+
+	private User clearPassword(User user) {
+		user.setPassword(null);
+		return user;
 	}
 }
