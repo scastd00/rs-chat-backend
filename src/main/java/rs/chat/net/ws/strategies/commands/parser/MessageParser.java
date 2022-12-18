@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import rs.chat.net.ws.strategies.commands.Command;
 import rs.chat.net.ws.strategies.commands.CommandMappings;
-import rs.chat.net.ws.strategies.commands.Params;
 
 import java.util.ArrayList;
 import java.util.List;

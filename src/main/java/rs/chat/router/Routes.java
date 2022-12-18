@@ -35,6 +35,9 @@ public class Routes {
 		public static final String USER_ID_BY_USERNAME_URL = V_1 + "/user/id/{username}";
 		public static final String HEALTH_URL = V_1 + "/health";
 
+		public static final String TEACHER_DEGREES_URL = V_1 + "/teacher/degrees/{id}";
+		public static final String TEACHER_SUBJECTS_URL = V_1 + "/teacher/subjects/{id}";
+
 		/**
 		 * Generate an array containing all GET routes allowed to low tier users.
 		 *
@@ -56,7 +59,7 @@ public class Routes {
 		 */
 		public String[] mediumTierRoutes() {
 			return new String[] {
-
+					TEACHER_DEGREES_URL, TEACHER_SUBJECTS_URL
 			};
 		}
 

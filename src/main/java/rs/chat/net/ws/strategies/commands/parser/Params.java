@@ -1,4 +1,4 @@
-package rs.chat.net.ws.strategies.commands;
+package rs.chat.net.ws.strategies.commands.parser;
 
 import java.util.HashMap;
 import java.util.Map;

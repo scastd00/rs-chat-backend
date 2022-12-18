@@ -50,8 +50,11 @@ public class CommandMappings {
 		commands.put("/ping", new Command("/ping", NORMAL, "Pings the server.", "/ping", new PingCommandStrategy()));
 		commands.put("/quit", new Command("/quit", NORMAL, "Disconnects from the server.", "/quit", new QuitCommandStrategy()));
 		// todo: challenge or not??
+
+		// Fun commands
 		commands.put("/dice", new Command("/dice", NORMAL, "Rolls a dice (or challenges another user).", "/dice (<user>)", new DiceCommandStrategy(), "user"));
 		commands.put("/8ball", new Command("/8ball", NORMAL, "Asks the magic 8-ball a question.", "/8ball <question>", new EightBallCommandStrategy(), "question"));
+		commands.put("/flip", new Command("/flip", NORMAL, "Flips a coin.", "/flip", new FlipCommandStrategy()));
 	}
 
 	public static Command getCommand(String command) {

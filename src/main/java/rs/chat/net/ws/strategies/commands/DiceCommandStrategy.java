@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import rs.chat.exceptions.WebSocketException;
 import rs.chat.net.ws.ChatManagement;
 import rs.chat.net.ws.ClientID;
+import rs.chat.net.ws.strategies.commands.parser.Params;
 
 import java.io.IOException;
 import java.util.Map;

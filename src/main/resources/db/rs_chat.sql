@@ -5,7 +5,7 @@ USE `rs_chat`;
 CREATE TABLE `subjects`
 (
 	`id`        bigint      NOT NULL AUTO_INCREMENT,
-	`name`      varchar(30) NOT NULL, -- Not unique because a subject can be in different degrees
+	`name`      varchar(70) NOT NULL, -- Not unique because a subject can be in different degrees
 	`period`    varchar(2)  NOT NULL,
 	`type`      char(2)     NOT NULL,
 	`credits`   tinyint     NOT NULL,
