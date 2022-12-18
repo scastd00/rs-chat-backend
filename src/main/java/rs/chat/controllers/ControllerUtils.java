@@ -3,17 +3,17 @@ package rs.chat.controllers;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jooq.lambda.function.Function0;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import rs.chat.net.http.HttpResponse;
-import rs.chat.utils.NoParamFunction;
 
 import java.io.IOException;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public final class ControllerUtils {
-	public static <R> R performActionThatMayThrowException(HttpResponse response, NoParamFunction<R> action)
+	public static <R> R performActionThatMayThrowException(HttpResponse response, Function0<R> action)
 			throws IOException {
 		try {
 			return action.apply();
