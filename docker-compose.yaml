@@ -6,7 +6,6 @@ networks:
 
 volumes:
   grafana-storage:
-  localstack-data:
   rschat-logs:
   rschat-db:
 
@@ -49,24 +48,6 @@ services:
     networks:
       - rschat-net
     logging: *default-logging
-
-  #  rschat-localstack-aws:
-  #    image: localstack/localstack
-  #    container_name: rschat-localstack
-  #    ports:
-  #      - "4042:4566"
-  #    environment:
-  #      - EAGER_SERVICE_LOADING=1
-  #      - SERVICES=s3
-  #      - DEBUG=1
-  #      - DOCKER_HOST=unix:///var/run/docker.sock
-  #      - S3_DIR=~/.appdata/rschat/data
-  #    volumes:
-  #      - /var/run/docker.sock:/var/run/docker.sock
-  #      - localstack-data:${HOME}/.appdata/rschat/data
-  #    networks:
-  #      - rschat-net
-  #    logging: *default-logging
 
   prometheus:
     image: prom/prometheus:v2.40.5
