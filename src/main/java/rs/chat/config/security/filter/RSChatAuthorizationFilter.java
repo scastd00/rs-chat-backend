@@ -20,6 +20,7 @@ import java.util.Collections;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static rs.chat.router.Routes.ACTUATOR_URL;
 import static rs.chat.router.Routes.GetRoute.HEALTH_URL;
 import static rs.chat.router.Routes.PostRoute.CREATE_PASSWORD_URL;
@@ -50,6 +51,11 @@ public class RSChatAuthorizationFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(@NotNull HttpServletRequest request,
 	                                @NotNull HttpServletResponse response,
 	                                @NotNull FilterChain chain) throws ServletException, IOException {
+		if (this.isUnknownPath(request.getServletPath())) {
+			new HttpResponse(response).sendStatus(NOT_FOUND);
+			return;
+		}
+
 		if (this.isExcludedPath(request.getServletPath())) {
 			chain.doFilter(request, response);
 			return;
@@ -95,5 +101,9 @@ public class RSChatAuthorizationFilter extends OncePerRequestFilter {
 				path.equals(WS_CHAT_ENDPOINT) || path.equals(FORGOT_PASSWORD_URL) ||
 				path.equals(CREATE_PASSWORD_URL) || path.equals(HEALTH_URL) ||
 				path.equals(ACTUATOR_URL);
+	}
+
+	private boolean isUnknownPath(String path) {
+		return path.equals("/favicon.ico");
 	}
 }
