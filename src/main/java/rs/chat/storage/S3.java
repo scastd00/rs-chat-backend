@@ -111,7 +111,7 @@ public final class S3 implements Closeable {
 	 * @param chatId the chat id of the chat history file to upload to S3 bucket.
 	 */
 	public void uploadHistoryFile(String chatId) {
-		File file = TEXT_MESSAGE.buildFileInDisk(chatId);
+		File file = TEXT_MESSAGE.getFileInDisk(chatId);
 		String s3Key = TEXT_MESSAGE.s3Key(chatId);
 
 		this.s3Client.putObject(
@@ -140,7 +140,7 @@ public final class S3 implements Closeable {
 	 * @return the downloaded chat history file.
 	 */
 	public File downloadHistoryFile(String chatId) {
-		File file = TEXT_MESSAGE.buildFileInDisk(chatId);
+		File file = TEXT_MESSAGE.getFileInDisk(chatId);
 		String s3Key = TEXT_MESSAGE.s3Key(chatId);
 
 		if (this.existsKeyInBucket(s3Key)) {
