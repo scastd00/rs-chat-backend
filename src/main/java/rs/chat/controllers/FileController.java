@@ -12,12 +12,12 @@ import rs.chat.exceptions.BadRequestException;
 import rs.chat.net.http.HttpRequest;
 import rs.chat.net.http.HttpResponse;
 import rs.chat.net.http.HttpResponse.HttpResponseBody;
-import rs.chat.strategies.upload.AudioStrategy;
-import rs.chat.strategies.upload.FileUploadStrategy;
-import rs.chat.strategies.upload.ImageStrategy;
-import rs.chat.strategies.upload.PdfStrategy;
-import rs.chat.strategies.upload.TextStrategy;
-import rs.chat.strategies.upload.VideoStrategy;
+import rs.chat.storage.strategies.upload.AudioStrategy;
+import rs.chat.storage.strategies.upload.FileUploadStrategy;
+import rs.chat.storage.strategies.upload.ImageStrategy;
+import rs.chat.storage.strategies.upload.PdfStrategy;
+import rs.chat.storage.strategies.upload.TextStrategy;
+import rs.chat.storage.strategies.upload.VideoStrategy;
 
 import java.io.IOException;
 import java.time.Clock;
