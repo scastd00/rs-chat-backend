@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketSession;
 import rs.chat.exceptions.WebSocketException;
 import rs.chat.net.ws.ChatManagement;
 import rs.chat.net.ws.ClientID;
@@ -56,8 +55,7 @@ public class GetHistoryStrategy implements MessageStrategy {
 		               .filter(jsonObject -> this.filterUserActivityMessages(jsonObject, username))
 		               .forEach(lastMessages::add);
 
-		WebSocketSession session = (WebSocketSession) otherData.get("session");
-		session.sendMessage(new TextMessage(
+		getSession(otherData).sendMessage(new TextMessage(
 				createMessage(lastMessages.toString(), GET_HISTORY_MESSAGE.type(), wrappedMessage.chatId())
 		));
 	}

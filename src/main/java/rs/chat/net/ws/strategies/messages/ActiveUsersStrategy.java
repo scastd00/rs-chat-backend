@@ -23,7 +23,7 @@ public class ActiveUsersStrategy implements MessageStrategy {
 	@Override
 	public void handle(JsonMessageWrapper wrappedMessage, ChatManagement chatManagement,
 	                   Map<String, Object> otherData) throws WebSocketException, IOException {
-		WebSocketSession session = (WebSocketSession) otherData.get("session");
+		WebSocketSession session = getSession(otherData);
 		ClientID clientID = (ClientID) otherData.get("clientID");
 
 		List<String> usernamesOfChat = chatManagement.getUsernamesOfChat(clientID.chatId());

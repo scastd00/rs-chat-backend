@@ -2,7 +2,6 @@ package rs.chat.net.ws.strategies.messages;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketSession;
 import rs.chat.exceptions.WebSocketException;
 import rs.chat.net.ws.ChatManagement;
 import rs.chat.net.ws.JsonMessageWrapper;
@@ -43,10 +42,9 @@ public class RestartMessageStrategy extends GenericScheduledMessageStrategy {
 
 		Utils.executeTask(shutdownTask, exception -> {
 			try {
-				WebSocketSession session = (WebSocketSession) otherData.get("session");
-				session.sendMessage(new TextMessage(
+				getSession(otherData).sendMessage(new TextMessage(
 						Utils.createMessage(
-								"An error occurred while shutting down the server.%n%s".formatted(exception.getStatus().message()),
+								"An error occurred while shutting down the server (%s)".formatted(exception.getStatus().message()),
 								INFO_MESSAGE.type(),
 								""
 						)
