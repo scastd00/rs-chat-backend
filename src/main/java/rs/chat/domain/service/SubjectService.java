@@ -52,6 +52,11 @@ public class SubjectService {
 		                             .orElseThrow(() -> new NotFoundException("Subject with name " + subjectName + " not found."));
 	}
 
+	public Subject getById(long subjectId) {
+		return this.subjectRepository.findById(subjectId)
+		                             .orElseThrow(() -> new NotFoundException("Subject with id %d not found.".formatted(subjectId)));
+	}
+
 	/**
 	 * Checks if a subject with given name exists.
 	 *

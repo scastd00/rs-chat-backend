@@ -131,6 +131,10 @@ public class ChatService {
 	 * @param chatId id of the chat.
 	 */
 	public void addUserToChat(Long userId, Long chatId) {
+		if (this.userAlreadyBelongsToChat(userId, chatId)) {
+			throw new BadRequestException("User with id=%d already belongs to chat with id=%d".formatted(userId, chatId));
+		} // todo replace controller check with ControllerUtils.performActionThatMayThrowException and leave this unchanged
+
 		this.userChatRepository.save(new UserChat(new UserChatPK(userId, chatId)));
 	}
 

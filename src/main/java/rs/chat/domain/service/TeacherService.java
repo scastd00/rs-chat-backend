@@ -11,6 +11,7 @@ import rs.chat.domain.entity.User;
 import rs.chat.domain.repository.SubjectRepository;
 import rs.chat.domain.repository.TeacherSubjectRepository;
 import rs.chat.domain.repository.UserRepository;
+import rs.chat.exceptions.BadRequestException;
 import rs.chat.exceptions.NotFoundException;
 import rs.chat.utils.Constants;
 
@@ -40,5 +41,23 @@ public class TeacherService {
 	public List<User> getTeachers() {
 		return this.userRepository.findAllByRole(Constants.TEACHER_ROLE)
 		                          .orElseThrow(() -> new NotFoundException("No teachers found"));
+	}
+
+	/**
+	 * Adds a teacher to a subject. If the relation already exists, it will throw an
+	 * {@link IllegalArgumentException} and will not add it. Otherwise, it will add it.
+	 *
+	 * @param teacherId The id of the teacher.
+	 * @param subjectId The id of the subject.
+	 */
+	public void addTeacherToSubject(long teacherId, long subjectId) {
+		boolean exists = this.teacherSubjectRepository.existsByTeaSubjPK_TeacherIdAndTeaSubjPK_SubjectId(teacherId, subjectId);
+
+		if (exists) {
+			throw new BadRequestException("Teacher already teaches this subject");
+		}
+
+		TeaSubj teaSubj = new TeaSubj(new TeaSubjPK(teacherId, subjectId));
+		this.teacherSubjectRepository.save(teaSubj);
 	}
 }

@@ -38,8 +38,20 @@ public final class DomainUtils {
 				s3ChatPrefix + name,
 				Utils.jsonOfNumber("createdAt", System.currentTimeMillis()),
 				RandomStringUtils.randomAlphanumeric(15),
-				CHAT_KEY_FORMAT.formatted(chatType, entityId)
+				getChatKey(chatType, entityId)
 		);
+	}
+
+	/**
+	 * Key of the chat in the database by using the chat type and the id of the entity.
+	 *
+	 * @param chatType the type of the chat.
+	 * @param entityId the id of the entity.
+	 *
+	 * @return the key of the chat.
+	 */
+	public static String getChatKey(String chatType, String entityId) {
+		return CHAT_KEY_FORMAT.formatted(chatType, entityId);
 	}
 
 	/**

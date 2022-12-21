@@ -100,6 +100,8 @@ public class Routes {
 		public static final String CONNECT_TO_CHAT_URL = V_1 + "/chat/connect/{chatKey}";
 		public static final String LEAVE_CHAT_URL = V_1 + "/chat/leave/{chatKey}";
 
+		public static final String ADD_TEACHER_TO_SUBJECT_URL = V_1 + "/teacher/subject/add";
+
 		/**
 		 * Generate an array containing all POST routes allowed to low tier users.
 		 *
@@ -129,7 +131,8 @@ public class Routes {
 		 */
 		public String[] topTierRoutes() {
 			return new String[] {
-					USER_SAVE_URL, DEGREE_SAVE_URL, SUBJECT_SAVE_URL, GROUP_SAVE_URL
+					USER_SAVE_URL, DEGREE_SAVE_URL, SUBJECT_SAVE_URL, GROUP_SAVE_URL,
+					ADD_TEACHER_TO_SUBJECT_URL
 			};
 		}
 	}

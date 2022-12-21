@@ -11,4 +11,6 @@ public interface TeacherSubjectRepository extends JpaRepository<TeaSubj, TeaSubj
 	List<TeaSubj> findAllByTeaSubjPK_TeacherId(Long id);
 
 	void deleteAllByTeaSubjPK_SubjectId(Long subjectId);
+
+	boolean existsByTeaSubjPK_TeacherIdAndTeaSubjPK_SubjectId(Long teacherId, Long subjectId);
 }
