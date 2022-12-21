@@ -11,6 +11,8 @@ import rs.chat.domain.entity.User;
 import rs.chat.domain.repository.SubjectRepository;
 import rs.chat.domain.repository.TeacherSubjectRepository;
 import rs.chat.domain.repository.UserRepository;
+import rs.chat.exceptions.NotFoundException;
+import rs.chat.utils.Constants;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,19 +38,7 @@ public class TeacherService {
 	}
 
 	public List<User> getTeachers() {
-		return this.teacherSubjectRepository.findAll()
-		                                    .stream()
-		                                    .map(TeaSubj::getTeaSubjPK)
-		                                    .map(TeaSubjPK::getTeacherId)
-		                                    .map(this.userRepository::findById)
-		                                    .filter(Optional::isPresent)
-		                                    .map(Optional::get)
-		                                    .map(this::clearPassword)
-		                                    .toList();
-	}
-
-	private User clearPassword(User user) {
-		user.setPassword(null);
-		return user;
+		return this.userRepository.findAllByRole(Constants.TEACHER_ROLE)
+		                          .orElseThrow(() -> new NotFoundException("No teachers found"));
 	}
 }
