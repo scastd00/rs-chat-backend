@@ -21,7 +21,6 @@ services:
     env_file: ./env/.env.prod
     ports:
       - "4040:4040"
-    expose: [ 4040 ]
     volumes:
       - rschat-logs:/app/logs
     networks:
@@ -41,7 +40,6 @@ services:
     env_file: ./env/.env.db
     ports:
       - "4041:3306"
-    expose: [ 4041 ]
     volumes:
       - ./src/main/resources/db/rs_chat.sql:/docker-entrypoint-initdb.d/1.sql
       - rschat-db:/var/lib/mysql
@@ -56,7 +54,6 @@ services:
     restart: unless-stopped
     ports:
       - "4043:9090"
-    expose: [ 4043 ]
     volumes:
       - ./config/prometheus.yaml:/etc/prometheus/prometheus.yml
     depends_on:
@@ -72,7 +69,6 @@ services:
     restart: unless-stopped
     ports:
       - "4046:3000"
-    expose: [ 4046 ]
     links:
       - prometheus:prometheus
     volumes:
