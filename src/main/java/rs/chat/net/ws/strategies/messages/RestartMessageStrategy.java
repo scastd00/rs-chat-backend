@@ -8,6 +8,8 @@ import rs.chat.net.ws.JsonMessageWrapper;
 import rs.chat.net.ws.Message;
 import rs.chat.tasks.DefaultTasks;
 import rs.chat.tasks.ShutdownServerTask;
+import rs.chat.tasks.Task.TaskStatus;
+import rs.chat.tasks.TaskExecutionException;
 import rs.chat.utils.Utils;
 
 import java.io.IOException;
@@ -50,7 +52,7 @@ public class RestartMessageStrategy extends GenericScheduledMessageStrategy {
 						)
 				));
 			} catch (IOException e) {
-				throw new RuntimeException(e);
+				throw new TaskExecutionException(new TaskStatus(TaskStatus.FAILURE, e.getMessage()));
 			}
 
 			return null;

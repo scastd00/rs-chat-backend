@@ -55,6 +55,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
 				wrappedMessage.sessionId()
 		));
 
+		// Scheduled messages contain, as content, only a string with the message and the
+		// string of the constant SCHEDULE_STRING.
 		boolean hasTextBody = this.hasTextBody(wrappedMessage);
 		if (hasTextBody && wrappedMessage.content().contains(SCHEDULE_STRING)) {
 			// Message format is: <content>SCHEDULE_STRING<date>
@@ -105,9 +107,9 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	 * Checks if the message has text body (check {@link JsonObject#isJsonPrimitive()}).
 	 * If it is not, it is a JSON object (unable to parse a {@link String} inside it).
 	 *
-	 * @param wrappedMessage
+	 * @param wrappedMessage message to check.
 	 *
-	 * @return
+	 * @return {@code true} if the message has a string as body, {@code false} otherwise.
 	 */
 	private boolean hasTextBody(JsonMessageWrapper wrappedMessage) {
 		return ((JsonObject) wrappedMessage.getParsedPayload().get("body"))
