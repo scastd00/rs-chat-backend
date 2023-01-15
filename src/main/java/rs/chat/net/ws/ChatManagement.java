@@ -171,16 +171,18 @@ public class ChatManagement {
 	}
 
 	/**
-	 * Retrieves all the usernames of the clients connected to the given chat.
+	 * Retrieves all the usernames of the clients connected to the given chat. The usernames
+	 * are sorted.
 	 *
 	 * @param chatId id of the chat to get the usernames of.
 	 *
-	 * @return a list of usernames.
+	 * @return a sorted list of usernames.
 	 */
 	public List<String> getUsernamesOfChat(String chatId) {
 		return this.getClientsOf(chatId)
 		           .stream()
 		           .map(client -> client.clientID().username())
+		           .sorted(String::compareToIgnoreCase)
 		           .toList();
 	}
 

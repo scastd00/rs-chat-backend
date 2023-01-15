@@ -39,8 +39,6 @@ public class Routes {
 		public static final String TEACHER_SUBJECTS_URL = V_1 + "/teacher/subjects/{id}";
 		public static final String TEACHERS_URL = V_1 + "/teachers";
 
-		public static final String LOGS_URL = V_1 + "/logs";
-
 		/**
 		 * Generate an array containing all GET routes allowed to low tier users.
 		 *
@@ -73,7 +71,7 @@ public class Routes {
 		 */
 		public String[] topTierRoutes() {
 			return new String[] {
-					USERS_URL, SUBJECTS_URL, GROUPS_URL, TEACHERS_URL, LOGS_URL
+					USERS_URL, SUBJECTS_URL, GROUPS_URL, TEACHERS_URL
 			};
 		}
 	}
