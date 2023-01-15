@@ -36,6 +36,14 @@ public class FileController {
 	private final FileService fileService;
 	private final Clock clock;
 
+	/**
+	 * Uploads a file to the server.
+	 *
+	 * @param request  request that contains the file.
+	 * @param response response that will be sent to the client.
+	 *
+	 * @throws IOException if an I/O error occurs.
+	 */
 	@PostMapping(UPLOAD_URL)
 	public void uploadFile(HttpRequest request, HttpResponse response) throws IOException {
 		JsonObject body = request.body();
@@ -44,7 +52,7 @@ public class FileController {
 		JsonObject file = body.get("file").getAsJsonObject();
 
 		String fileName = file.get("name").getAsString().replace(" ", "_");
-		String[] types = file.get("type").getAsString().split("/");
+		String[] mimeTypes = file.get("type").getAsString().split("/");
 		String encodedData = file.get("data")
 		                         .getAsString()
 		                         .split(",")[1];
@@ -59,13 +67,13 @@ public class FileController {
 
 		log.info("Uploading file...");
 
-		FileUploadStrategy strategy = switch (types[0]) {
+		FileUploadStrategy strategy = switch (mimeTypes[0]) {
 			case "image" -> new ImageStrategy();
 			case "video" -> new VideoStrategy();
 			case "audio" -> new AudioStrategy();
 			case "text" -> new TextStrategy();
 			case "application" -> {
-				if (types[1].equals("pdf")) {
+				if (mimeTypes[1].equals("pdf")) {
 					yield new PdfStrategy();
 				} else {
 					throw new BadRequestException("Unsupported application file type");
@@ -74,15 +82,18 @@ public class FileController {
 			default -> throw new BadRequestException("Invalid file uploaded");
 		};
 
-		File fileToSave = new File();
-		fileToSave.setId(null);
-		fileToSave.setName(fileName);
-		fileToSave.setDateUploaded(Instant.now(this.clock));
-		fileToSave.setSize(fileBytes.length);
-		fileToSave.setType(types[0]);
-		fileToSave.setUserId(userId);
+		File fileToSave = new File(
+				null,
+				fileName,
+				Instant.now(this.clock),
+				fileBytes.length,
+				null,
+				null,
+				mimeTypes[0],
+				userId
+		);
 
-		strategy.handle(fileBytes, types[1], fileToSave);
+		strategy.handle(fileBytes, mimeTypes[1], fileToSave); // Modifies the fileToSave object
 
 		this.fileService.save(fileToSave);
 

@@ -17,7 +17,7 @@ import static rs.chat.net.ws.strategies.commands.Command.CommandType.TEACHER;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @SuppressWarnings("java:S1192") // Suppress "String literals should not be duplicated" warning
-public class CommandMappings {
+public final class CommandMappings {
 	private static final Map<String, Command> commands = new HashMap<>();
 
 	static {
