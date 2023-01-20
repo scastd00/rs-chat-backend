@@ -1,5 +1,10 @@
 package rs.chat.policies;
 
+import am.ik.yavi.builder.ValidatorBuilder;
+import am.ik.yavi.constraint.BooleanConstraint;
+import am.ik.yavi.constraint.password.CharSequencePasswordPoliciesBuilder;
+import am.ik.yavi.core.ConstraintViolations;
+import am.ik.yavi.core.Validator;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.AccessLevel;
@@ -21,6 +26,14 @@ public final class Policies {
 		excludedCharacters.add("=");
 	}
 
+	private static final String emailKey = "email";
+	private static final String usernameKey = "username";
+	private static final String fullNameKey = "fullName";
+	private static final String passwordKey = "password";
+	private static final String confirmPasswordKey = "confirmPassword";
+	private static final String agreeTermsKey = "agreeTerms";
+	private static final String equalPasswordsKey = "equalPasswords";
+
 	/**
 	 * Checks if the given user contains valid fields to register a new user.
 	 *
@@ -31,38 +44,43 @@ public final class Policies {
 	 * @throws MaliciousCodeInjectionException    if the username or passwords contains malicious code.
 	 */
 	public static void checkRegister(JsonObject body) {
-		String email = get(body, "email").getAsString().trim();
-		String username = get(body, "username").getAsString().trim();
-		String fullName = get(body, "fullName").getAsString().trim();
-		String password = get(body, "password").getAsString().trim();
-		String confirmPassword = get(body, "confirmPassword").getAsString().trim();
-		boolean agreeTerms = get(body, "agreeTerms").getAsBoolean();
+		String email = get(body, emailKey).getAsString().trim();
+		String username = get(body, usernameKey).getAsString().trim();
+		String fullName = get(body, fullNameKey).getAsString().trim();
+		String password = get(body, passwordKey).getAsString().trim();
+		String confirmPassword = get(body, confirmPasswordKey).getAsString().trim();
+		boolean agreeTerms = get(body, agreeTermsKey).getAsBoolean();
 
-		if (!agreeTerms) {
-			throw new MinimumRequirementsNotMetException("You must accept the terms and conditions before using the app.");
+		Validator<JsonObject> validator = ValidatorBuilder
+				.<JsonObject>of()
+				._boolean(o -> agreeTerms, agreeTermsKey, BooleanConstraint::isTrue)
+				._string(o -> email, emailKey, c -> c.notBlank().email())
+				._string(o -> username, usernameKey, c -> c.notBlank().greaterThanOrEqual(5).lessThanOrEqual(15).pattern("^[a-zA-Z0-9_]+$"))
+				._string(o -> fullName, fullNameKey, c -> c.notBlank().lessThanOrEqual(100))
+				._string(o -> fullName, fullNameKey, c -> c.predicate(Policies::containsSQLKeywords, fullNameKey, "contains malicious code"))
+				._string(o -> password, passwordKey, c -> c.notBlank().password(CharSequencePasswordPoliciesBuilder::strong).greaterThanOrEqual(8).lessThanOrEqual(28))
+				._string(o -> password, passwordKey, c -> c.predicate(Policies::containsSQLKeywords, passwordKey, "contains malicious code"))
+				._string(o -> confirmPassword, confirmPasswordKey, c -> c.notBlank().greaterThanOrEqual(8).lessThanOrEqual(28))
+				._boolean(o -> password.equals(confirmPassword), equalPasswordsKey, BooleanConstraint::isTrue)
+				.failFast(true)
+				.build();
+
+		ConstraintViolations violations = validator.validate(body);
+
+		if (violations.isValid()) {
+			return;
 		}
 
-		if (!email.matches("^[^@]+@[^@]+\\.[^@]{2,}$")) {
-			throw new MinimumRequirementsNotMetException("Email must have a valid structure. Eg: hello@domain.com");
+		switch (violations.get(0).name()) {
+			case agreeTermsKey -> throw new MinimumRequirementsNotMetException("You must agree to the terms and conditions.");
+			case emailKey -> throw new MinimumRequirementsNotMetException("The email is invalid.");
+			case usernameKey -> throw new MinimumRequirementsNotMetException("The username is invalid.");
+			case fullNameKey -> throw new MinimumRequirementsNotMetException("The full name is invalid.");
+			case passwordKey -> throw new InvalidPasswordException("The password is invalid.");
+			case confirmPasswordKey -> throw new InvalidPasswordException("The confirm password is invalid.");
+			case equalPasswordsKey -> throw new InvalidPasswordException("The passwords do not match.");
+			default -> throw new MinimumRequirementsNotMetException("The request is invalid.");
 		}
-
-		if (username.length() < 5 || username.length() > 15) {
-			throw new MinimumRequirementsNotMetException("Username must contain between 5 and 15 characters.");
-		}
-
-		if (fullName.length() > 100) {
-			throw new MinimumRequirementsNotMetException("Full name must be shorter than 100 characters.");
-		}
-
-		if (containsSQLKeywords(fullName)) {
-			throw new MaliciousCodeInjectionException("Full name", excludedCharacters);
-		}
-
-		if (containsSQLKeywords(password)) {
-			throw new MaliciousCodeInjectionException("Password", excludedCharacters);
-		}
-
-		checkPasswords(password, confirmPassword);
 	}
 
 	/**
@@ -86,6 +104,14 @@ public final class Policies {
 		if (!password.equals(confirmPassword)) {
 			throw new InvalidPasswordException("Passwords do not match.");
 		}
+	}
+
+	public static void passwordValidator(String password) {
+		ValidatorBuilder
+				.<String>of()
+				._string(s -> password, passwordKey, c -> c.notBlank().password(CharSequencePasswordPoliciesBuilder::strong).greaterThanOrEqual(8).lessThanOrEqual(28))
+				._string(s -> password, passwordKey, c -> c.predicate(Policies::containsSQLKeywords, passwordKey, "contains malicious code"))
+				.build();
 	}
 
 	/**
@@ -124,13 +150,13 @@ public final class Policies {
 	 */
 	public static void checkPasswords(JsonObject body) {
 		String newPassword = get(body, "newPassword").getAsString().trim();
-		String confirmPassword = get(body, "confirmPassword").getAsString().trim();
+		String confirmPassword = get(body, confirmPasswordKey).getAsString().trim();
 
 		checkPasswords(newPassword, confirmPassword);
 	}
 
 	public static void checkEmail(JsonObject body) {
-		String email = get(body, "email").getAsString().trim();
+		String email = get(body, emailKey).getAsString().trim();
 
 		if (!email.matches("^[^@]+@[^@]+\\.[^@]{2,}$")) {
 			throw new MinimumRequirementsNotMetException("Email must have a valid structure. Eg: hello@domain.com");

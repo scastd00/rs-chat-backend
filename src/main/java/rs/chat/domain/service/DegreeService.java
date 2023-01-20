@@ -21,8 +21,8 @@ import rs.chat.storage.S3;
 import java.util.List;
 
 import static rs.chat.utils.Constants.CHAT_KEY_FORMAT;
-import static rs.chat.utils.Constants.DEGREE_CHAT;
-import static rs.chat.utils.Constants.SUBJECT_CHAT;
+import static rs.chat.utils.Constants.DEGREE;
+import static rs.chat.utils.Constants.SUBJECT;
 
 @Service
 @RequiredArgsConstructor
@@ -111,7 +111,7 @@ public class DegreeService {
 			throw new NotFoundException("Degree with id '%d' does not exist.".formatted(id));
 		}
 
-		String degreeChatKey = CHAT_KEY_FORMAT.formatted(DEGREE_CHAT, id);
+		String degreeChatKey = CHAT_KEY_FORMAT.formatted(DEGREE, id);
 		Chat degreeChat = this.chatRepository.findByKey(degreeChatKey)
 		                                     .orElseThrow(
 				                                     () -> new NotFoundException("Chat for degree %s not found.".formatted(id))
@@ -132,7 +132,7 @@ public class DegreeService {
 		this.subjectRepository
 				.findAllByDegreeId(id)
 				.forEach(subject -> {
-					String subjectChatKey = CHAT_KEY_FORMAT.formatted(SUBJECT_CHAT, subject.getId());
+					String subjectChatKey = CHAT_KEY_FORMAT.formatted(SUBJECT, subject.getId());
 					Chat subjectChat = this.chatRepository
 							.findByKey(subjectChatKey)
 							.orElseThrow(
@@ -149,6 +149,6 @@ public class DegreeService {
 		this.degreeRepository.deleteById(id);
 		this.userChatRepository.deleteAllByUserChatPK_ChatId(degreeChat.getId());
 		this.chatRepository.deleteById(degreeChat.getId());
-		S3.getInstance().deleteHistoryFile(DEGREE_CHAT + "-" + id);
+		S3.getInstance().deleteHistoryFile(DEGREE + "-" + id);
 	}
 }

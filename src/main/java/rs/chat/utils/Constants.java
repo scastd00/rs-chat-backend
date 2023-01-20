@@ -59,14 +59,14 @@ public final class Constants {
 	                                                         .orElse(null);
 	public static final URI S3_ENDPOINT_URI_FOR_FILES = URI.create(System.getenv("S3_ENDPOINT_URI_FOR_FILES"));
 
-	public static final String USER_CHAT = "user";
-	public static final String USER_CHAT_S3_FOLDER_PREFIX = USER_CHAT + "/";
-	public static final String GROUP_CHAT = "group";
-	public static final String GROUP_CHAT_S3_FOLDER_PREFIX = GROUP_CHAT + "/";
-	public static final String SUBJECT_CHAT = "subject";
-	public static final String SUBJECT_CHAT_S3_FOLDER_PREFIX = SUBJECT_CHAT + "/";
-	public static final String DEGREE_CHAT = "degree";
-	public static final String DEGREE_CHAT_S3_FOLDER_PREFIX = DEGREE_CHAT + "/";
+	public static final String USER = "user";
+	public static final String USER_CHAT_S3_FOLDER_PREFIX = USER + "/";
+	public static final String GROUP = "group";
+	public static final String GROUP_CHAT_S3_FOLDER_PREFIX = GROUP + "/";
+	public static final String SUBJECT = "subject";
+	public static final String SUBJECT_CHAT_S3_FOLDER_PREFIX = SUBJECT + "/";
+	public static final String DEGREE = "degree";
+	public static final String DEGREE_CHAT_S3_FOLDER_PREFIX = DEGREE + "/";
 
 	public static final int MAX_CHAT_HISTORY_PER_REQUEST = 65;
 	public static final SecureRandom SECURE_RANDOM = new SecureRandom();

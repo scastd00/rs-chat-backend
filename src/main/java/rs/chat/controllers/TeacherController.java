@@ -23,8 +23,8 @@ import static org.springframework.http.HttpStatus.OK;
 import static rs.chat.router.Routes.GetRoute.TEACHERS_URL;
 import static rs.chat.router.Routes.GetRoute.TEACHER_SUBJECTS_URL;
 import static rs.chat.router.Routes.PostRoute.ADD_TEACHER_TO_SUBJECT_URL;
-import static rs.chat.utils.Constants.DEGREE_CHAT;
-import static rs.chat.utils.Constants.SUBJECT_CHAT;
+import static rs.chat.utils.Constants.DEGREE;
+import static rs.chat.utils.Constants.SUBJECT;
 
 /**
  * Controller for the teacher functionality.
@@ -64,12 +64,12 @@ public class TeacherController {
 			this.teacherService.addTeacherToSubject(teacherId, subjectId);
 
 			Subject subject = this.subjectService.getById(subjectId);
-			this.chatService.getChatByKey(DomainUtils.getChatKey(SUBJECT_CHAT, Long.toString(subjectId)))
+			this.chatService.getChatByKey(DomainUtils.getChatKey(SUBJECT, Long.toString(subjectId)))
 			                .ifPresent(chat -> this.chatService.addUserToChat(teacherId, chat.getId()));
 
 			// If the user already belongs to the degree chat, do not add again.
 			if (!this.chatService.userAlreadyBelongsToChat(teacherId, subject.getDegreeId())) {
-				this.chatService.getChatByKey(DomainUtils.getChatKey(DEGREE_CHAT, subject.getDegreeId().toString()))
+				this.chatService.getChatByKey(DomainUtils.getChatKey(DEGREE, subject.getDegreeId().toString()))
 				                .ifPresent(chat -> this.chatService.addUserToChat(teacherId, chat.getId()));
 			}
 
