@@ -1,7 +1,6 @@
 package rs.chat.net.ws.strategies.messages;
 
 import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketSession;
 import rs.chat.exceptions.WebSocketException;
 import rs.chat.net.ws.ChatManagement;
 import rs.chat.net.ws.JsonMessageWrapper;
@@ -20,9 +19,7 @@ public class PingStrategy implements MessageStrategy {
 	@Override
 	public void handle(JsonMessageWrapper wrappedMessage, ChatManagement chatManagement,
 	                   Map<String, Object> otherData) throws WebSocketException, IOException {
-		WebSocketSession session = (WebSocketSession) otherData.get("session");
-
-		session.sendMessage(new TextMessage(
+		getSession(otherData).sendMessage(new TextMessage(
 				createMessage("I send a pong message", PONG_MESSAGE.type(), wrappedMessage.chatId())
 		));
 	}

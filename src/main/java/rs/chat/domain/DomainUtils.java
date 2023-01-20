@@ -8,13 +8,13 @@ import rs.chat.domain.entity.Chat;
 import rs.chat.utils.Utils;
 
 import static rs.chat.utils.Constants.CHAT_KEY_FORMAT;
-import static rs.chat.utils.Constants.DEGREE_CHAT;
+import static rs.chat.utils.Constants.DEGREE;
 import static rs.chat.utils.Constants.DEGREE_CHAT_S3_FOLDER_PREFIX;
-import static rs.chat.utils.Constants.GROUP_CHAT;
+import static rs.chat.utils.Constants.GROUP;
 import static rs.chat.utils.Constants.GROUP_CHAT_S3_FOLDER_PREFIX;
-import static rs.chat.utils.Constants.SUBJECT_CHAT;
+import static rs.chat.utils.Constants.SUBJECT;
 import static rs.chat.utils.Constants.SUBJECT_CHAT_S3_FOLDER_PREFIX;
-import static rs.chat.utils.Constants.USER_CHAT;
+import static rs.chat.utils.Constants.USER;
 import static rs.chat.utils.Constants.USER_CHAT_S3_FOLDER_PREFIX;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -38,8 +38,20 @@ public final class DomainUtils {
 				s3ChatPrefix + name,
 				Utils.jsonOfNumber("createdAt", System.currentTimeMillis()),
 				RandomStringUtils.randomAlphanumeric(15),
-				CHAT_KEY_FORMAT.formatted(chatType, entityId)
+				getChatKey(chatType, entityId)
 		);
+	}
+
+	/**
+	 * Key of the chat in the database by using the chat type and the id of the entity.
+	 *
+	 * @param chatType the type of the chat.
+	 * @param entityId the id of the entity.
+	 *
+	 * @return the key of the chat.
+	 */
+	public static String getChatKey(String chatType, String entityId) {
+		return CHAT_KEY_FORMAT.formatted(chatType, entityId);
 	}
 
 	/**
@@ -53,7 +65,7 @@ public final class DomainUtils {
 	public static Chat individualChat(String name, String entityId) {
 		//! Caution with entityId: it can follow the structure: "user-userId1_userId2"
 		//! When going to remove this type of chat, the order of the ids is not important, because it is like a set.
-		return createChat(name, USER_CHAT, USER_CHAT_S3_FOLDER_PREFIX, entityId);
+		return createChat(name, USER, USER_CHAT_S3_FOLDER_PREFIX, entityId);
 	}
 
 	/**
@@ -65,7 +77,7 @@ public final class DomainUtils {
 	 * @return the new {@link Chat} of <b>group</b> type.
 	 */
 	public static Chat groupChat(String name, Long entityId) {
-		return createChat(name, GROUP_CHAT, GROUP_CHAT_S3_FOLDER_PREFIX, entityId.toString());
+		return createChat(name, GROUP, GROUP_CHAT_S3_FOLDER_PREFIX, entityId.toString());
 	}
 
 	/**
@@ -77,7 +89,7 @@ public final class DomainUtils {
 	 * @return the new {@link Chat} of <b>subject</b> type.
 	 */
 	public static Chat subjectChat(String name, Long entityId) {
-		return createChat(name, SUBJECT_CHAT, SUBJECT_CHAT_S3_FOLDER_PREFIX, entityId.toString());
+		return createChat(name, SUBJECT, SUBJECT_CHAT_S3_FOLDER_PREFIX, entityId.toString());
 	}
 
 	/**
@@ -89,6 +101,6 @@ public final class DomainUtils {
 	 * @return the new {@link Chat} of <b>degree</b> type.
 	 */
 	public static Chat degreeChat(String name, Long entityId) {
-		return createChat(name, DEGREE_CHAT, DEGREE_CHAT_S3_FOLDER_PREFIX, entityId.toString());
+		return createChat(name, DEGREE, DEGREE_CHAT_S3_FOLDER_PREFIX, entityId.toString());
 	}
 }

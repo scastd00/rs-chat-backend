@@ -10,16 +10,16 @@ import rs.chat.utils.Utils;
  * Class that wraps the received JSON messages. They follow the next structure:
  * <pre>{@code
  * {
- * 	"headers": {
- * 	   "username": "<username>",
- * 	   "chatId": "<chatId>",
- * 	   "sessionId": "<sessionId>",
- * 	   "type": "<typeConstant>",
- * 	   "date": "<currentDate>",
- * 	   "token": "Bearer <token>"
+ *  "headers": {
+ *    "username": "<username>",
+ *    "chatId": "<chatId>",
+ *    "sessionId": "<sessionId>",
+ *    "type": "<typeConstant>",
+ *    "date": "<currentDate>",
+ *    "token": "Bearer <token>"
  *  },
- * 	"body": {
- * 	   "content": "<contentOfMessage>"
+ *  "body": {
+ *    "content": "<contentOfMessage>"
  *  }
  * }
  * }</pre>

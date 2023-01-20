@@ -1,4 +1,4 @@
-package rs.chat.strategies.upload;
+package rs.chat.storage.strategies.upload;
 
 import lombok.extern.slf4j.Slf4j;
 import org.mp4parser.IsoFile;

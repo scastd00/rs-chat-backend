@@ -27,7 +27,7 @@ public class Subject {
 	@Column(name = "id", nullable = false)
 	private Long id;
 	@Basic
-	@Column(name = "name", nullable = false, length = 30)
+	@Column(name = "name", nullable = false, length = 70)
 	private String name;
 	@Basic
 	@Column(name = "period", nullable = false, length = 2)

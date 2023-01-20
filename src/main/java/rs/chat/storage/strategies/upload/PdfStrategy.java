@@ -1,4 +1,4 @@
-package rs.chat.strategies.upload;
+package rs.chat.storage.strategies.upload;
 
 import rs.chat.domain.entity.File;
 import rs.chat.net.ws.Message;

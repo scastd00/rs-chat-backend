@@ -3,7 +3,6 @@ package rs.chat.utils;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -15,13 +14,11 @@ import rs.chat.tasks.TaskExecutionException;
 
 import java.net.URI;
 import java.time.Instant;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.function.Function;
 
-import static rs.chat.net.ws.Message.ACTIVE_USERS_MESSAGE;
 import static rs.chat.net.ws.Message.ERROR_MESSAGE;
 import static rs.chat.utils.Constants.ALGORITHM;
 import static rs.chat.utils.Constants.GSON;
@@ -103,21 +100,6 @@ public final class Utils {
 	 */
 	public static DecodedJWT checkAuthorizationToken(String token) throws JWTVerificationException {
 		return JWT_VERIFIER.verify(token.replace(JWT_TOKEN_PREFIX, ""));
-	}
-
-	/**
-	 * Creates a {@link String} message containing the active users given a
-	 * {@link List<String>} of usernames.
-	 *
-	 * @param usernames the {@link List<String>} of usernames.
-	 *
-	 * @return the {@link String} message containing the active users.
-	 */
-	public static String createActiveUsersMessage(List<String> usernames) {
-		JsonArray usersArray = new JsonArray();
-		usernames.forEach(usersArray::add);
-		return createMessage(usersArray.toString(), ACTIVE_USERS_MESSAGE.type(), "");
-		// In the client the chatId is ignored, so we minimize the size of the message with an empty string.
 	}
 
 	/**

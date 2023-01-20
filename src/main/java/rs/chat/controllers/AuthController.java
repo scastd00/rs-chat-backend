@@ -286,7 +286,7 @@ public class AuthController {
 			return this.userService.getUserByCode(code);
 		});
 
-		user.setPassword(body.get("newPassword").getAsString());
+		user.setPassword(body.get("password").getAsString());
 		user.setPasswordCode(null); // Remove the password code.
 		this.userService.changePassword(user);
 

@@ -2,7 +2,6 @@ package rs.chat.net.ws.strategies.messages;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketSession;
 import rs.chat.exceptions.WebSocketException;
 import rs.chat.net.ws.ChatManagement;
 import rs.chat.net.ws.ClientID;
@@ -23,9 +22,7 @@ public class ErrorMessageStrategy implements MessageStrategy {
 	@Override
 	public void handle(JsonMessageWrapper wrappedMessage, ChatManagement chatManagement,
 	                   Map<String, Object> otherData) throws WebSocketException, IOException {
-		WebSocketSession session = (WebSocketSession) otherData.get("session");
-
-		session.sendMessage(new TextMessage(
+		getSession(otherData).sendMessage(new TextMessage(
 				createMessage(
 						"ERROR: type property is not present in the content of the JSON",
 						ERROR_MESSAGE.type(),

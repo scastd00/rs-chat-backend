@@ -25,7 +25,7 @@ import static rs.chat.router.Routes.GetRoute.CHAT_INFO_URL;
 import static rs.chat.router.Routes.PostRoute.CONNECT_TO_CHAT_URL;
 import static rs.chat.router.Routes.PostRoute.JOIN_CHAT_URL;
 import static rs.chat.router.Routes.PostRoute.LEAVE_CHAT_URL;
-import static rs.chat.utils.Constants.GROUP_CHAT;
+import static rs.chat.utils.Constants.GROUP;
 
 /**
  * Controller that manages all chat-related requests.
@@ -127,7 +127,7 @@ public class ChatController {
 
 		// If the users join a group chat, add them to the group as well.
 		// Users can only join degree and subject chats if they are added by teachers or admins.
-		if (GROUP_CHAT.equals(chat.getType())) {
+		if (GROUP.equals(chat.getType())) {
 			String key = chat.getKey().split("-")[1];
 			this.userGroupService.addUserToGroup(userId, Long.parseLong(key));
 		}

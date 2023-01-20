@@ -13,7 +13,7 @@ import java.io.PrintWriter;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Class that stores the clients in a {@link CopyOnWriteArrayList< Client >} and have
+ * Class that stores the clients in a {@link CopyOnWriteArrayList} and have
  * a {@link PrintWriter} associated to a file to store all the messages received.
  */
 @Getter
@@ -79,7 +79,7 @@ public class Chat {
 	/**
 	 * Deletes the users that are null or their connection is nonexistent, or it is closed.
 	 */
-	public void deleteUnwantedUsers() {
+	public synchronized void deleteUnwantedUsers() {
 		this.clients.removeIf(client -> client == null || client.session() == null || !client.session().isOpen());
 	}
 }

@@ -26,6 +26,7 @@ import static rs.chat.router.Routes.GetRoute.DEGREES_URL;
 import static rs.chat.router.Routes.GetRoute.DEGREE_BY_NAME_URL;
 import static rs.chat.router.Routes.PostRoute.DEGREE_SAVE_URL;
 import static rs.chat.router.Routes.PutRoute.EDIT_DEGREE_NAME_URL;
+import static rs.chat.utils.Constants.DEGREE;
 
 /**
  * Controller that manages all degree-related requests.
@@ -70,7 +71,7 @@ public class DegreeController {
 				response, () -> this.degreeService.getByName(degreeName)
 		);
 
-		response.ok().send("degree", degree);
+		response.ok().send(DEGREE, degree);
 	}
 
 	/**
@@ -97,7 +98,7 @@ public class DegreeController {
 				)
 		);
 
-		response.created(DEGREE_SAVE_URL).send("degree", this.getDegreeWithInvitationCode(degree).toString());
+		response.created(DEGREE_SAVE_URL).send(DEGREE, this.getDegreeWithInvitationCode(degree).toString());
 	}
 
 	/**
@@ -118,7 +119,7 @@ public class DegreeController {
 				response, () -> this.degreeService.changeDegreeName(oldName, newName)
 		);
 
-		response.ok().send("degree", degree);
+		response.ok().send(DEGREE, degree);
 	}
 
 	/**

@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import rs.chat.net.ws.strategies.commands.Command;
 import rs.chat.net.ws.strategies.commands.CommandMappings;
-import rs.chat.net.ws.strategies.commands.Params;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +48,9 @@ public class MessageParser {
 
 	/**
 	 * Parses a command. If it is made of multiple words, it will be parsed as a single command with params.
+	 * <p>
+	 * The following parameters are needed in order to be able to parse the options of the command (in
+	 * case they are needed).
 	 *
 	 * @param parts message parts.
 	 * @param pos   position of the command.
@@ -59,21 +61,24 @@ public class MessageParser {
 		Command command = CommandMappings.getCommand(parts[pos]);
 		int parameters = command.paramNames().length;
 
+		// Command without parameters
 		if (parts.length - 1 == 0) {
 			return new ParsedData(parts[pos], null, COMMAND);
 		}
 
+		// Check if the command has more parameters than needed
 		if (pos + parameters >= parts.length) {
 			throw new IllegalArgumentException("Not enough parameters for command " + parts[pos]);
 		}
 
+		// Save the parameters
 		Params params = new Params(command.paramNames());
 		for (int i = 0; i < parameters; i++) {
 			// Todo: check that the parameter is valid.
 			String paramName = command.paramNames()[i];
 			String paramValue = parts[pos + i + 1];
 
-			// A user is mentioned by their username with the @ prefix, so we remove it.
+			// Users can be mentioned by their username with the @ prefix, so we remove it if it is present.
 			if (paramName.equals("user") && paramValue.startsWith(MENTION_PREFIX)) {
 				paramValue = paramValue.substring(1);
 			}

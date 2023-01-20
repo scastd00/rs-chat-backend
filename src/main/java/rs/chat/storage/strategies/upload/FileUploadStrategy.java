@@ -1,4 +1,4 @@
-package rs.chat.strategies.upload;
+package rs.chat.storage.strategies.upload;
 
 import rs.chat.domain.entity.File;
 
@@ -6,7 +6,8 @@ import java.io.IOException;
 
 public interface FileUploadStrategy {
 	/**
-	 * Performs all the necessary operations to upload a file.
+	 * Performs all the necessary operations to upload a file. This method should modify the next
+	 * file attributes: path and metadata.
 	 *
 	 * @param binaryData   The data of the file.
 	 * @param specificType MIME specific type of the file.

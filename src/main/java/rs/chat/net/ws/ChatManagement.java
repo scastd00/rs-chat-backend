@@ -1,11 +1,12 @@
 package rs.chat.net.ws;
 
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import rs.chat.observability.metrics.Metrics;
 
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +17,7 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 /**
  * Class that manages the chats to which the clients are connected.
  */
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 @Component
 @EnableScheduling
@@ -25,6 +26,7 @@ public class ChatManagement {
 	 * Map to store each chat. The mapping key is the chatId.
 	 */
 	private final Map<String, Chat> chats = new HashMap<>();
+	private final Metrics metrics;
 
 	/**
 	 * Creates a new {@link Chat} for the specified key.
@@ -70,22 +72,6 @@ public class ChatManagement {
 		if (this.chatExists(chatId)) {
 			this.chats.get(chatId).saveMessageToHistoryFile(message);
 		}
-	}
-
-	/**
-	 * Returns the client that is stored in the chat and has the specified ID.
-	 *
-	 * @param clientID ID of the client.
-	 *
-	 * @return a {@link Client} if the user is in the chat,
-	 * {@code null} otherwise (if the chat is empty or the user is disconnected).
-	 */
-	public synchronized Client getClient(ClientID clientID) {
-		return this.getClientsOf(clientID.chatId())
-		           .stream()
-		           .filter(client -> client.clientID().equals(clientID))
-		           .findFirst()
-		           .orElse(null);
 	}
 
 	/**
@@ -180,19 +166,23 @@ public class ChatManagement {
 		    .stream()
 		    .filter(client -> client.clientID().username().equals(username))
 		    .forEach(client -> client.send(message));
+
+		this.metrics.incrementMentionedUsers();
 	}
 
 	/**
-	 * Retrieves all the usernames of the clients connected to the given chat.
+	 * Retrieves all the usernames of the clients connected to the given chat. The usernames
+	 * are sorted.
 	 *
 	 * @param chatId id of the chat to get the usernames of.
 	 *
-	 * @return a list of usernames.
+	 * @return a sorted list of usernames.
 	 */
 	public List<String> getUsernamesOfChat(String chatId) {
 		return this.getClientsOf(chatId)
 		           .stream()
 		           .map(client -> client.clientID().username())
+		           .sorted(String::compareToIgnoreCase)
 		           .toList();
 	}
 

@@ -1,6 +1,8 @@
 package rs.chat.net.ws.strategies.messages;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.socket.TextMessage;
+import rs.chat.exceptions.CommandFailureException;
 import rs.chat.exceptions.CommandUnavailableException;
 import rs.chat.exceptions.WebSocketException;
 import rs.chat.net.ws.ChatManagement;
@@ -10,6 +12,7 @@ import rs.chat.net.ws.strategies.commands.Command;
 import rs.chat.net.ws.strategies.commands.CommandMappings;
 import rs.chat.net.ws.strategies.commands.parser.MessageParser;
 import rs.chat.net.ws.strategies.commands.parser.ParsedData;
+import rs.chat.utils.Utils;
 
 import java.io.IOException;
 import java.util.Map;
@@ -41,7 +44,8 @@ public class ParseableMessageStrategy extends GenericMessageStrategy {
 			             });
 		} catch (CommandUnavailableException | IllegalArgumentException e) {
 			log.error("Error while parsing message", e);
-			// Todo: Warn the user that an error occurred
+			String errorMessage = Utils.createErrorMessage("An error occurred while parsing the message, %s".formatted(e.getMessage()));
+			getSession(otherData).sendMessage(new TextMessage(errorMessage));
 		}
 	}
 
@@ -77,14 +81,15 @@ public class ParseableMessageStrategy extends GenericMessageStrategy {
 	 * @param otherData      other data to pass to the command.
 	 * @param parsedData     parsed data from the message (contains the command).
 	 */
-	private static void runCommand(ChatManagement chatManagement, Map<String, Object> otherData, ParsedData parsedData) {
+	private static void runCommand(ChatManagement chatManagement, Map<String, Object> otherData,
+	                               ParsedData parsedData) {
 		Command command = CommandMappings.getCommand(parsedData.data());
 		otherData.put("commandParams", parsedData.params());
 
 		try {
 			command.strategy().handle(chatManagement, otherData);
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new CommandFailureException(e.getMessage());
 		}
 	}
 }

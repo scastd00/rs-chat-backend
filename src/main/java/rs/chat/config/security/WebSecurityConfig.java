@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -121,10 +122,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	                                         String[] putRoutes,
 	                                         String[] deleteRoutes) throws Exception {
 		new RouterSecurityConfig(http, allowedRoles)
-				.registerGETRoutes(getRoutes)
-				.registerPOSTRoutes(postRoutes)
-				.registerPUTRoutes(putRoutes)
-				.registerDELETERoutes(deleteRoutes);
+				.registerRoutes(HttpMethod.GET, getRoutes)
+				.registerRoutes(HttpMethod.POST, postRoutes)
+				.registerRoutes(HttpMethod.PUT, putRoutes)
+				.registerRoutes(HttpMethod.DELETE, deleteRoutes);
 	}
 
 	/**

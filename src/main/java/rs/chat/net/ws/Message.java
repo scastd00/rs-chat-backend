@@ -48,11 +48,11 @@ public record Message(String type, String filePrefix, String extension) {
 	 *
 	 * @return {@link File} that is used to store the message in disk.
 	 */
-	public File buildFileInDisk(String fileNameWithoutExtension) {
+	public File getFileInDisk(String fileNameWithoutExtension) {
 		File file = this.historyFile(fileNameWithoutExtension);
 
 		if (file.getParentFile() != null) {
-			file.getParentFile().mkdirs(); // Create parent folder if it doesn't exist.
+			file.getParentFile().mkdirs(); // Create parent folders if they don't exist.
 		}
 
 		return file;

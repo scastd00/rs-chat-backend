@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static rs.chat.utils.Constants.USER_CHAT;
+import static rs.chat.utils.Constants.USER;
 
 @Service
 @RequiredArgsConstructor
@@ -131,6 +131,10 @@ public class ChatService {
 	 * @param chatId id of the chat.
 	 */
 	public void addUserToChat(Long userId, Long chatId) {
+		if (this.userAlreadyBelongsToChat(userId, chatId)) {
+			throw new BadRequestException("User with id=%d already belongs to chat with id=%d".formatted(userId, chatId));
+		} // todo replace controller check with ControllerUtils.performActionThatMayThrowException and leave this unchanged
+
 		this.userChatRepository.save(new UserChat(new UserChatPK(userId, chatId)));
 	}
 
@@ -184,7 +188,7 @@ public class ChatService {
 			String key = chatKey.split("-")[1];
 			String[] userIds = key.split("_");
 			Optional<Chat> chat1 = this.getChatByKey(chatKey);
-			Optional<Chat> chat2 = this.getChatByKey("%s-%s_%s".formatted(USER_CHAT, userIds[1], userIds[0]));
+			Optional<Chat> chat2 = this.getChatByKey("%s-%s_%s".formatted(USER, userIds[1], userIds[0]));
 
 			if (chat1.isPresent() && this.userAlreadyBelongsToChat(userId, chat1.get().getId())) {
 				return chat1.get().getKey();
