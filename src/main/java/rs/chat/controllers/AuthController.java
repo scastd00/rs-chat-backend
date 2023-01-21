@@ -84,7 +84,8 @@ public class AuthController {
 						null,
 						request.getRemoteAddr(),
 						Instant.now(this.clock),
-						Instant.now(this.clock).plus(isExtendedToken ? Constants.TOKEN_EXPIRATION_DURATION_NORMAL : Duration.ZERO),
+						Instant.now(this.clock).plus(isExtendedToken ? Constants.TOKEN_EXPIRATION_DURATION_EXTENDED
+						                                             : Constants.TOKEN_EXPIRATION_DURATION_NORMAL),
 						token,
 						user.getId()
 				)
