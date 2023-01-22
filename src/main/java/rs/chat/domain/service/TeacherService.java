@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import rs.chat.domain.entity.Degree;
 import rs.chat.domain.entity.Subject;
 import rs.chat.domain.entity.TeaSubj;
-import rs.chat.domain.entity.TeaSubjPK;
+import rs.chat.domain.entity.TeaSubjId;
 import rs.chat.domain.entity.User;
 import rs.chat.domain.repository.DegreeRepository;
 import rs.chat.domain.repository.SubjectRepository;
@@ -28,13 +28,14 @@ public class TeacherService {
 	private final TeacherSubjectRepository teacherSubjectRepository;
 	private final SubjectRepository subjectRepository;
 	private final UserRepository userRepository;
+	private final UserRepository teacherRepository;
 	private final DegreeRepository degreeRepository;
 
 	public List<Subject> getSubjects(Long id) {
 		return this.teacherSubjectRepository.findAllByTeaSubjPK_TeacherId(id)
 		                                    .stream()
-		                                    .map(TeaSubj::getTeaSubjPK)
-		                                    .map(TeaSubjPK::getSubjectId)
+		                                    .map(TeaSubj::getId)
+		                                    .map(TeaSubjId::getSubjectId)
 		                                    .map(this.subjectRepository::findById)
 		                                    .filter(Optional::isPresent)
 		                                    .map(Optional::get)
@@ -44,14 +45,16 @@ public class TeacherService {
 	public List<Degree> getDegrees(Long id) {
 		List<Long> degreeIds = this.teacherSubjectRepository.findAllByTeaSubjPK_TeacherId(id)
 		                                                    .stream()
-		                                                    .map(TeaSubj::getTeaSubjPK)
-		                                                    .map(TeaSubjPK::getSubjectId)
+		                                                    .map(TeaSubj::getId)
+		                                                    .map(TeaSubjId::getSubjectId)
 		                                                    .map(this.subjectRepository::findById)
 		                                                    .filter(Optional::isPresent)
 		                                                    .map(Optional::get)
-		                                                    .map(Subject::getDegreeId)
+		                                                    .map(Subject::getDegree)
+		                                                    .map(Degree::getId)
+		                                                    .distinct()
 		                                                    .toList();
-		return this.degreeRepository.findAllById(degreeIds.stream().distinct().toList());
+		return this.degreeRepository.findAllById(degreeIds);
 	}
 
 	public List<User> getTeachers() {
@@ -73,7 +76,11 @@ public class TeacherService {
 			throw new BadRequestException("Teacher already teaches this subject");
 		}
 
-		TeaSubj teaSubj = new TeaSubj(new TeaSubjPK(teacherId, subjectId));
-		this.teacherSubjectRepository.save(teaSubj);
+		User teacher = this.teacherRepository.findById(teacherId).orElseThrow(() -> new NotFoundException("Teacher not found"));
+		Subject subject = this.subjectRepository.findById(subjectId).orElseThrow(() -> new NotFoundException("Subject not found"));
+
+		this.teacherSubjectRepository.save(
+				new TeaSubj(new TeaSubjId(teacherId, subjectId), teacher, subject)
+		);
 	}
 }

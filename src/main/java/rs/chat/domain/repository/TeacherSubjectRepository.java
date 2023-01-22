@@ -2,12 +2,12 @@ package rs.chat.domain.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import rs.chat.domain.entity.TeaSubj;
-import rs.chat.domain.entity.TeaSubjPK;
+import rs.chat.domain.entity.TeaSubjId;
 
 import java.util.List;
 
 @SuppressWarnings("java:S100")
-public interface TeacherSubjectRepository extends JpaRepository<TeaSubj, TeaSubjPK> {
+public interface TeacherSubjectRepository extends JpaRepository<TeaSubj, TeaSubjId> {
 	List<TeaSubj> findAllByTeaSubjPK_TeacherId(Long id);
 
 	void deleteAllByTeaSubjPK_SubjectId(Long subjectId);

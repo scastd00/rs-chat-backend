@@ -9,7 +9,7 @@ import rs.chat.domain.DomainUtils;
 import rs.chat.domain.entity.Chat;
 import rs.chat.domain.entity.User;
 import rs.chat.domain.entity.UserChat;
-import rs.chat.domain.entity.UserChatPK;
+import rs.chat.domain.entity.UserChatId;
 import rs.chat.domain.repository.ChatRepository;
 import rs.chat.domain.repository.UserChatRepository;
 import rs.chat.domain.repository.UserRepository;
@@ -78,8 +78,8 @@ public class ChatService {
 
 		this.userChatRepository.findAllByUserChatPK_UserId(userId)
 		                       .stream()
-		                       .map(UserChat::getUserChatPK)
-		                       .map(userChatPK -> this.chatRepository.findById(userChatPK.getChatId()))
+		                       .map(UserChat::getId)
+		                       .map(userChatId -> this.chatRepository.findById(userChatId.getChatId()))
 		                       .forEach(chat -> chat.ifPresent(chatsOfUser::add));
 
 		return chatsOfUser;
@@ -135,7 +135,12 @@ public class ChatService {
 			throw new BadRequestException("User with id=%d already belongs to chat with id=%d".formatted(userId, chatId));
 		} // todo replace controller check with ControllerUtils.performActionThatMayThrowException and leave this unchanged
 
-		this.userChatRepository.save(new UserChat(new UserChatPK(userId, chatId)));
+		User user = this.userRepository.findById(userId).orElseThrow(() -> new BadRequestException("User with id=%d does not exist".formatted(userId)));
+		Chat chat = this.chatRepository.findById(chatId).orElseThrow(() -> new BadRequestException("Chat with id=%d does not exist".formatted(chatId)));
+
+		// Todo: check if in this type of entities second and third parameters are needed
+		//  to prevent calling DB.
+		this.userChatRepository.save(new UserChat(new UserChatId(userId, chatId), user, chat));
 	}
 
 	/**
@@ -233,8 +238,8 @@ public class ChatService {
 	public List<String> getAllUsersOfChat(Long chatId) {
 		return this.userChatRepository.findAllByUserChatPK_ChatId(chatId)
 		                              .stream()
-		                              .map(UserChat::getUserChatPK)
-		                              .map(UserChatPK::getUserId)
+		                              .map(UserChat::getId)
+		                              .map(UserChatId::getUserId)
 		                              .map(this.userRepository::findById)
 		                              .filter(Optional::isPresent)
 		                              .map(Optional::get)

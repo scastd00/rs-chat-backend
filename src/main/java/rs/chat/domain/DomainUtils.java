@@ -7,6 +7,9 @@ import org.jetbrains.annotations.NotNull;
 import rs.chat.domain.entity.Chat;
 import rs.chat.utils.Utils;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import static rs.chat.utils.Constants.CHAT_KEY_FORMAT;
 import static rs.chat.utils.Constants.DEGREE;
 import static rs.chat.utils.Constants.DEGREE_CHAT_S3_FOLDER_PREFIX;
@@ -38,7 +41,8 @@ public final class DomainUtils {
 				s3ChatPrefix + name,
 				Utils.jsonOfNumber("createdAt", System.currentTimeMillis()),
 				RandomStringUtils.randomAlphanumeric(15),
-				getChatKey(chatType, entityId)
+				getChatKey(chatType, entityId),
+				new LinkedHashSet<>()
 		);
 	}
 
