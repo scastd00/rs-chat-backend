@@ -7,13 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import rs.chat.domain.entity.Degree;
 
+import static java.util.Collections.emptySet;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @DataJpaTest
 class DegreeRepositoryTest {
 
 	@Autowired private DegreeRepository underTest;
-	private final Degree degree = new Degree(1L, "Bachelor");
+	private final Degree degree = new Degree(1L, "Bachelor", emptySet());
 
 	@AfterEach
 	void tearDown() {
