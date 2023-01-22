@@ -138,4 +138,9 @@ public class UserService implements UserDetailsService {
 		return this.userRepository.findByPasswordCode(code)
 		                          .orElseThrow(() -> new NotFoundException("Code %s not found".formatted(code)));
 	}
+
+	public User getUserById(Long userId) {
+		return this.userRepository.findById(userId)
+		                          .orElseThrow(() -> new NotFoundException("User with id %d not found".formatted(userId)));
+	}
 }

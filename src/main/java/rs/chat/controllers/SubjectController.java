@@ -21,6 +21,7 @@ import rs.chat.net.http.HttpResponse;
 import java.io.IOException;
 import java.util.List;
 
+import static java.util.Collections.emptySet;
 import static org.springframework.http.HttpStatus.OK;
 import static rs.chat.router.Routes.DeleteRoute.DELETE_SUBJECT_URL;
 import static rs.chat.router.Routes.GetRoute.SUBJECTS_URL;
@@ -73,7 +74,7 @@ public class SubjectController {
 		String type = body.get("type").getAsString();
 		Byte credits = body.get("credits").getAsByte();
 		Byte grade = body.get("grade").getAsByte();
-		String degree = body.get("degree").getAsString();
+		String degree = body.get("degree").getAsString(); // Degree name
 
 		if (this.subjectService.exists(name)) {
 			response.badRequest().send("Subject '%s' already exists.".formatted(name));
@@ -89,7 +90,9 @@ public class SubjectController {
 						type,
 						credits,
 						grade,
-						this.degreeService.getByName(degree).getId()
+						this.degreeService.getByName(degree),
+						emptySet(),
+						emptySet()
 				)
 		);
 
@@ -121,7 +124,7 @@ public class SubjectController {
 	@NotNull
 	private JsonObject getSubjectWithInvitationCode(Subject subject) {
 		JsonObject subjectWithInvitationCode = new JsonObject();
-		Degree degree = this.degreeService.getById(subject.getDegreeId());
+		Degree degree = this.degreeService.getById(subject.getDegree().getId());
 
 		subjectWithInvitationCode.addProperty("id", subject.getId());
 		subjectWithInvitationCode.addProperty("name", "%s (%s)".formatted(subject.getName(), degree.getName()));

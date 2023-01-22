@@ -8,7 +8,6 @@ import rs.chat.domain.entity.Chat;
 import rs.chat.utils.Utils;
 
 import java.util.LinkedHashSet;
-import java.util.Set;
 
 import static rs.chat.utils.Constants.CHAT_KEY_FORMAT;
 import static rs.chat.utils.Constants.DEGREE;

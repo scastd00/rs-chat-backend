@@ -20,6 +20,7 @@ import rs.chat.net.http.HttpResponse;
 import java.io.IOException;
 import java.util.List;
 
+import static java.util.Collections.emptySet;
 import static org.springframework.http.HttpStatus.OK;
 import static rs.chat.router.Routes.DeleteRoute.DELETE_DEGREE_URL;
 import static rs.chat.router.Routes.GetRoute.DEGREES_URL;
@@ -94,7 +95,7 @@ public class DegreeController {
 
 		Degree degree = ControllerUtils.performActionThatMayThrowException(
 				response, () -> this.degreeService.saveDegree(
-						new Degree(null, degreeName)
+						new Degree(null, degreeName, emptySet())
 				)
 		);
 

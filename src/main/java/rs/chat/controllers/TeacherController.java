@@ -74,8 +74,8 @@ public class TeacherController {
 			                .ifPresent(chat -> this.chatService.addUserToChat(teacherId, chat.getId()));
 
 			// If the user already belongs to the degree chat, do not add again.
-			if (!this.chatService.userAlreadyBelongsToChat(teacherId, subject.getDegreeId())) {
-				this.chatService.getChatByKey(DomainUtils.getChatKey(DEGREE, subject.getDegreeId().toString()))
+			if (!this.chatService.userAlreadyBelongsToChat(teacherId, subject.getDegree().getId())) {
+				this.chatService.getChatByKey(DomainUtils.getChatKey(DEGREE, subject.getDegree().getId().toString()))
 				                .ifPresent(chat -> this.chatService.addUserToChat(teacherId, chat.getId()));
 			}
 

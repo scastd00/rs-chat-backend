@@ -14,6 +14,7 @@ import rs.chat.domain.service.UserService;
 import rs.chat.exceptions.BadRequestException;
 import rs.chat.utils.Constants;
 
+import static java.util.Collections.emptySet;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -43,7 +44,13 @@ class UserServiceTest {
 				null,
 				Constants.STUDENT_ROLE,
 				null,
-				null
+				null,
+				emptySet(),
+				emptySet(),
+				emptySet(),
+				emptySet(),
+				emptySet(),
+				emptySet()
 		);
 	}
 

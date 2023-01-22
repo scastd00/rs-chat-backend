@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import rs.chat.domain.entity.File;
 import rs.chat.domain.service.FileService;
+import rs.chat.domain.service.UserService;
 import rs.chat.exceptions.BadRequestException;
 import rs.chat.net.http.HttpRequest;
 import rs.chat.net.http.HttpResponse;
@@ -34,6 +35,7 @@ import static rs.chat.router.Routes.PostRoute.UPLOAD_URL;
 @RequiredArgsConstructor
 public class FileController {
 	private final FileService fileService;
+	private final UserService userService;
 	private final Clock clock;
 
 	/**
@@ -88,7 +90,7 @@ public class FileController {
 				null,
 				null,
 				mimeTypes[0],
-				userId
+				this.userService.getUserById(userId)
 		);
 
 		strategy.handle(fileBytes, mimeTypes[1], fileToSave); // Modifies the fileToSave object

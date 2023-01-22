@@ -28,11 +28,12 @@ import rs.chat.utils.Utils;
 
 import java.io.IOException;
 import java.time.Clock;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import static java.util.Collections.emptySet;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.OK;
 import static rs.chat.router.Routes.PostRoute.CREATE_PASSWORD_URL;
@@ -87,7 +88,7 @@ public class AuthController {
 						Instant.now(this.clock).plus(isExtendedToken ? Constants.TOKEN_EXPIRATION_DURATION_EXTENDED
 						                                             : Constants.TOKEN_EXPIRATION_DURATION_NORMAL),
 						token,
-						user.getId()
+						user
 				)
 		);
 
@@ -118,22 +119,31 @@ public class AuthController {
 	public void register(HttpRequest request, HttpResponse response) throws IOException {
 		JsonObject body = request.body();
 
+		Chat globalChat = this.chatService.getByName("Global");
+		Group globalGroup = this.groupService.getGroupByName("Global");
+
 		// Check if all the body contains all the necessary fields.
 		User savedUser = ControllerUtils.performActionThatMayThrowException(response, () -> {
 			Policies.checkRegister(body);
 
 			// Register the user and the session.
 			return this.userService.createUser(new User(
-					null,
-					body.get("username").getAsString().trim(),
-					body.get("password").getAsString().trim(),
-					body.get("email").getAsString().trim(),
-					body.get("fullName").getAsString().trim(),
-					null,
-					null,
-					STUDENT_ROLE,
-					null,
-					null
+					null, // id
+					body.get("username").getAsString().trim(), // username
+					body.get("password").getAsString().trim(), // password
+					body.get("email").getAsString().trim(), // email
+					body.get("fullName").getAsString().trim(), // fullName
+					null, // age
+					null, // birthdate
+					STUDENT_ROLE, // role
+					null, // blockUntil
+					null, // passwordCode
+					emptySet(), // teacherSubjects
+					Set.of(globalGroup), // groups
+					emptySet(), // sessions
+					emptySet(), // files
+					Set.of(globalChat), // chats
+					emptySet() // studentSubjects
 			));
 		});
 
@@ -153,16 +163,16 @@ public class AuthController {
 						Instant.now(this.clock),
 						Instant.now(this.clock).plus(Constants.TOKEN_EXPIRATION_DURATION_NORMAL),
 						token,
-						savedUser.getId()
+						savedUser
 				)
 		);
 
-		Chat globalChat = this.chatService.getByName("Global");
-		Group globalGroup = this.groupService.getGroupByName("Global");
 		Long userId = savedUser.getId();
 
-		this.userGroupService.addUserToGroup(userId, globalGroup.getId());
-		this.chatService.addUserToChat(userId, globalChat.getId());
+		// Check if the User constructor adds the user to the global group and chat
+		// If not, uncomment the following lines
+//		this.userGroupService.addUserToGroup(userId, globalGroup.getId());
+//		this.chatService.addUserToChat(userId, globalChat.getId());
 
 		// Make the Map of the only available chat without calling database
 		Map<String, List<Map<String, Object>>> defaultChat =
@@ -185,7 +195,7 @@ public class AuthController {
 		responseBody.add("chats", defaultChat);
 
 		response.ok().send(responseBody);
-		MailSender.sendRegistrationEmail(savedUser.getEmail(), savedUser.getUsername());
+		MailSender.sendRegistrationEmail(savedUser.getEmail(), savedUser.getUsername()); // Todo: change for a Task
 	}
 
 	/**
