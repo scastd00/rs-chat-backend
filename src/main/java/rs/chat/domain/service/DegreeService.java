@@ -149,16 +149,16 @@ public class DegreeService {
 							.orElseThrow(
 									() -> new NotFoundException("Chat for subject %s not found.".formatted(subject.getId()))
 							);
-					this.studentSubjectRepository.deleteAllByStuSubjPK_SubjectId(subject.getId());
-					this.teacherSubjectRepository.deleteAllByTeaSubjPK_SubjectId(subject.getId());
+					this.studentSubjectRepository.deleteAllById_SubjectId(subject.getId());
+					this.teacherSubjectRepository.deleteAllById_SubjectId(subject.getId());
 					this.subjectRepository.deleteById(subject.getId());
-					this.userChatRepository.deleteAllByUserChatPK_ChatId(subjectChat.getId());
+					this.userChatRepository.deleteAllById_ChatId(subjectChat.getId());
 					this.chatRepository.deleteById(subjectChat.getId());
 					S3.getInstance().deleteHistoryFile(subjectChatKey);
 				});
 
 		this.degreeRepository.deleteById(id);
-		this.userChatRepository.deleteAllByUserChatPK_ChatId(degreeChat.getId());
+		this.userChatRepository.deleteAllById_ChatId(degreeChat.getId());
 		this.chatRepository.deleteById(degreeChat.getId());
 		S3.getInstance().deleteHistoryFile(DEGREE + "-" + id);
 	}

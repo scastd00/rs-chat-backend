@@ -76,7 +76,7 @@ public class ChatService {
 	public List<Chat> getAllChatsOfUser(Long userId) {
 		List<Chat> chatsOfUser = new ArrayList<>();
 
-		this.userChatRepository.findAllByUserChatPK_UserId(userId)
+		this.userChatRepository.findAllById_UserId(userId)
 		                       .stream()
 		                       .map(UserChat::getId)
 		                       .map(userChatId -> this.chatRepository.findById(userChatId.getChatId()))
@@ -175,7 +175,7 @@ public class ChatService {
 	 * @return true if the user is a member of the chat, false otherwise.
 	 */
 	public boolean userAlreadyBelongsToChat(Long userId, Long chatId) {
-		return this.userChatRepository.existsByUserChatPK_UserIdAndUserChatPK_ChatId(userId, chatId);
+		return this.userChatRepository.existsById_UserIdAndId_ChatId(userId, chatId);
 	}
 
 	/**
@@ -236,7 +236,7 @@ public class ChatService {
 	 * @return list of usernames of the users that belong to the chat.
 	 */
 	public List<String> getAllUsersOfChat(Long chatId) {
-		return this.userChatRepository.findAllByUserChatPK_ChatId(chatId)
+		return this.userChatRepository.findAllById_ChatId(chatId)
 		                              .stream()
 		                              .map(UserChat::getId)
 		                              .map(UserChatId::getUserId)
@@ -255,7 +255,7 @@ public class ChatService {
 	 */
 	public void removeUserFromChat(Long userId, String chatKey) {
 		this.getChatByKey(chatKey).ifPresent(
-				chat -> this.userChatRepository.deleteByUserChatPK_UserIdAndUserChatPK_ChatId(userId, chat.getId())
+				chat -> this.userChatRepository.deleteById_UserIdAndId_ChatId(userId, chat.getId())
 		);
 	}
 }

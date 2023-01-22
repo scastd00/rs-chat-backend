@@ -94,10 +94,10 @@ public class SubjectService {
 				                               () -> new NotFoundException("Chat for subject %s not found.".formatted(id))
 		                               );
 
-		this.userChatRepository.deleteAllByUserChatPK_ChatId(chat.getId());
+		this.userChatRepository.deleteAllById_ChatId(chat.getId());
 		this.chatRepository.deleteById(chat.getId());
-		this.studentSubjectRepository.deleteAllByStuSubjPK_SubjectId(id);
-		this.teacherSubjectRepository.deleteAllByTeaSubjPK_SubjectId(id);
+		this.studentSubjectRepository.deleteAllById_SubjectId(id);
+		this.teacherSubjectRepository.deleteAllById_SubjectId(id);
 		this.subjectRepository.deleteById(id);
 		S3.getInstance().deleteHistoryFile(chatKey);
 	}

@@ -95,8 +95,8 @@ public class AuthController {
 		var allChatsOfUserGroupedByType = this.chatService.getAllChatsOfUserGroupedByType(user.getId());
 
 		// Clear sensitive data
-		user.setPassword(null); // Password not visible in the response
-		savedSession.setSrcIp(null);
+		user.setPassword(""); // Password not visible in the response
+		savedSession.setSrcIp("");
 
 		HttpResponseBody responseBody = new HttpResponseBody("session", savedSession);
 		responseBody.add("user", user);
@@ -187,12 +187,12 @@ public class AuthController {
 				);
 
 		// Clear the password
-		savedUser.setPassword(null);
-		session.setSrcIp(null);
+		savedUser.setPassword("");
+		session.setSrcIp("");
 
 		HttpResponseBody responseBody = new HttpResponseBody("session", session);
-		responseBody.add("user", savedUser);
-		responseBody.add("chats", defaultChat);
+		responseBody.add("user", savedUser.toString());
+		responseBody.add("chats", defaultChat.toString());
 
 		response.ok().send(responseBody);
 		MailSender.sendRegistrationEmail(savedUser.getEmail(), savedUser.getUsername()); // Todo: change for a Task

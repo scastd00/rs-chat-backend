@@ -8,9 +8,9 @@ import java.util.List;
 
 @SuppressWarnings("java:S100")
 public interface TeacherSubjectRepository extends JpaRepository<TeaSubj, TeaSubjId> {
-	List<TeaSubj> findAllByTeaSubjPK_TeacherId(Long id);
+	List<TeaSubj> findAllById_TeacherId(Long id);
 
-	void deleteAllByTeaSubjPK_SubjectId(Long subjectId);
+	void deleteAllById_SubjectId(Long subjectId);
 
-	boolean existsByTeaSubjPK_TeacherIdAndTeaSubjPK_SubjectId(Long teacherId, Long subjectId);
+	boolean existsById_TeacherIdAndId_SubjectId(Long teacherId, Long subjectId);
 }

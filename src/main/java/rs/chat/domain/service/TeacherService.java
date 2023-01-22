@@ -32,7 +32,7 @@ public class TeacherService {
 	private final DegreeRepository degreeRepository;
 
 	public List<Subject> getSubjects(Long id) {
-		return this.teacherSubjectRepository.findAllByTeaSubjPK_TeacherId(id)
+		return this.teacherSubjectRepository.findAllById_TeacherId(id)
 		                                    .stream()
 		                                    .map(TeaSubj::getId)
 		                                    .map(TeaSubjId::getSubjectId)
@@ -43,7 +43,7 @@ public class TeacherService {
 	}
 
 	public List<Degree> getDegrees(Long id) {
-		List<Long> degreeIds = this.teacherSubjectRepository.findAllByTeaSubjPK_TeacherId(id)
+		List<Long> degreeIds = this.teacherSubjectRepository.findAllById_TeacherId(id)
 		                                                    .stream()
 		                                                    .map(TeaSubj::getId)
 		                                                    .map(TeaSubjId::getSubjectId)
@@ -70,7 +70,7 @@ public class TeacherService {
 	 * @param subjectId The id of the subject.
 	 */
 	public void addTeacherToSubject(long teacherId, long subjectId) {
-		boolean exists = this.teacherSubjectRepository.existsByTeaSubjPK_TeacherIdAndTeaSubjPK_SubjectId(teacherId, subjectId);
+		boolean exists = this.teacherSubjectRepository.existsById_TeacherIdAndId_SubjectId(teacherId, subjectId);
 
 		if (exists) {
 			throw new BadRequestException("Teacher already teaches this subject");

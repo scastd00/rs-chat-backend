@@ -6,5 +6,5 @@ import rs.chat.domain.entity.StuSubjId;
 
 @SuppressWarnings("java:S100")
 public interface StudentSubjectRepository extends JpaRepository<StuSubj, StuSubjId> {
-	void deleteAllByStuSubjPK_SubjectId(Long subjectId);
+	void deleteAllById_SubjectId(Long subjectId);
 }
