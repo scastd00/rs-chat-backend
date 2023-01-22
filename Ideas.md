@@ -1,0 +1,2 @@
+- Room with bingo game.
+- Room with a game of hangman.

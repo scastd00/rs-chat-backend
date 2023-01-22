@@ -142,7 +142,8 @@ public class AuthController {
 				savedUser.getUsername(),
 				request.getRequestURL().toString(),
 				savedUser.getRole(),
-				false
+				false,
+				this.clock
 		);
 
 		Session session = this.sessionService.saveSession(

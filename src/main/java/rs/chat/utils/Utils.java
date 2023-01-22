@@ -13,6 +13,7 @@ import rs.chat.tasks.Task;
 import rs.chat.tasks.TaskExecutionException;
 
 import java.net.URI;
+import java.time.Clock;
 import java.time.Instant;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -76,10 +77,12 @@ public final class Utils {
 	 *
 	 * @return the tokens that are used to authenticate the user.
 	 */
-	public static String generateJWTToken(String username, String requestURL, String role, boolean extendExpirationTime) {
+	public static String generateJWTToken(String username, String requestURL,
+	                                      String role, boolean extendExpirationTime,
+	                                      Clock clock) {
 		return JWT.create()
 		          .withSubject(username)
-		          .withExpiresAt(Instant.now().plus(
+		          .withExpiresAt(Instant.now(clock).plus(
 				          extendExpirationTime ?
 				          TOKEN_EXPIRATION_DURATION_EXTENDED :
 				          TOKEN_EXPIRATION_DURATION_NORMAL
