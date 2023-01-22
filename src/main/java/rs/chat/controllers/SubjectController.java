@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import rs.chat.domain.entity.Degree;
 import rs.chat.domain.entity.Subject;
 import rs.chat.domain.service.ChatService;
 import rs.chat.domain.service.DegreeService;
@@ -120,9 +121,10 @@ public class SubjectController {
 	@NotNull
 	private JsonObject getSubjectWithInvitationCode(Subject subject) {
 		JsonObject subjectWithInvitationCode = new JsonObject();
+		Degree degree = this.degreeService.getById(subject.getDegreeId());
 
 		subjectWithInvitationCode.addProperty("id", subject.getId());
-		subjectWithInvitationCode.addProperty("name", subject.getName());
+		subjectWithInvitationCode.addProperty("name", "%s (%s)".formatted(subject.getName(), degree.getName()));
 		subjectWithInvitationCode.addProperty("invitationCode", this.chatService.getInvitationCodeByChatName(subject.getName()));
 
 		return subjectWithInvitationCode;

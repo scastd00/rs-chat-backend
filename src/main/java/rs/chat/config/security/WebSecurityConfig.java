@@ -16,6 +16,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import rs.chat.config.security.filter.RSChatAuthenticationFilter;
 import rs.chat.config.security.filter.RSChatAuthorizationFilter;
 
+import java.time.Clock;
+
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 import static rs.chat.router.Routes.ACTUATOR_URL;
 import static rs.chat.router.Routes.DeleteRoute;
@@ -49,6 +51,7 @@ import static rs.chat.utils.Constants.TOP_TIER_ROLES;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	private final UserDetailsService userDetailsService;
 	private final BCryptPasswordEncoder passwordEncoder;
+	private final Clock clock;
 
 	/**
 	 * {@inheritDoc}
@@ -180,7 +183,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	 * @throws Exception if an error occurs.
 	 */
 	private RSChatAuthenticationFilter getRSChatCustomAuthenticationFilter() throws Exception {
-		RSChatAuthenticationFilter authenticationFilter = new RSChatAuthenticationFilter(this.authenticationManagerBean());
+		RSChatAuthenticationFilter authenticationFilter =
+				new RSChatAuthenticationFilter(this.authenticationManagerBean(), this.clock);
 		authenticationFilter.setFilterProcessesUrl(LOGIN_URL);
 		return authenticationFilter;
 	}

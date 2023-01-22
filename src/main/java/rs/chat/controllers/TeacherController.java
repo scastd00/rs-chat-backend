@@ -21,6 +21,7 @@ import java.util.List;
 
 import static org.springframework.http.HttpStatus.OK;
 import static rs.chat.router.Routes.GetRoute.TEACHERS_URL;
+import static rs.chat.router.Routes.GetRoute.TEACHER_DEGREES_URL;
 import static rs.chat.router.Routes.GetRoute.TEACHER_SUBJECTS_URL;
 import static rs.chat.router.Routes.PostRoute.ADD_TEACHER_TO_SUBJECT_URL;
 import static rs.chat.utils.Constants.DEGREE;
@@ -52,6 +53,11 @@ public class TeacherController {
 	@GetMapping(TEACHER_SUBJECTS_URL)
 	public void getSubjects(HttpResponse response, @PathVariable Long id) throws IOException {
 		response.status(OK).send(this.teacherService.getSubjects(id));
+	}
+
+	@GetMapping(TEACHER_DEGREES_URL)
+	public void getTeacherDegrees(HttpResponse response, @PathVariable Long id) throws IOException {
+		response.status(OK).send(this.teacherService.getDegrees(id));
 	}
 
 	@PostMapping(ADD_TEACHER_TO_SUBJECT_URL)

@@ -53,9 +53,7 @@ public class FileController {
 
 		String fileName = file.get("name").getAsString().replace(" ", "_");
 		String[] mimeTypes = file.get("type").getAsString().split("/");
-		String encodedData = file.get("data")
-		                         .getAsString()
-		                         .split(",")[1];
+		String encodedData = file.get("data").getAsString().split(",")[1];
 
 		byte[] fileBytes = Base64.getDecoder().decode(encodedData);
 

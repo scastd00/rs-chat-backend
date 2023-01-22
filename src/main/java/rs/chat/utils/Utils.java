@@ -12,7 +12,6 @@ import rs.chat.net.ws.JsonMessageWrapper;
 import rs.chat.tasks.Task;
 import rs.chat.tasks.TaskExecutionException;
 
-import java.net.URI;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.concurrent.ExecutorService;
@@ -25,7 +24,6 @@ import static rs.chat.utils.Constants.ALGORITHM;
 import static rs.chat.utils.Constants.GSON;
 import static rs.chat.utils.Constants.JWT_TOKEN_PREFIX;
 import static rs.chat.utils.Constants.JWT_VERIFIER;
-import static rs.chat.utils.Constants.S3_ENDPOINT_URI_FOR_FILES;
 import static rs.chat.utils.Constants.TOKEN_EXPIRATION_DURATION_EXTENDED;
 import static rs.chat.utils.Constants.TOKEN_EXPIRATION_DURATION_NORMAL;
 
@@ -188,10 +186,6 @@ public final class Utils {
 		JsonObject json = new JsonObject();
 		json.addProperty(key, value);
 		return json.toString();
-	}
-
-	public static URI uploadedFileURI(String s3Key) {
-		return S3_ENDPOINT_URI_FOR_FILES.resolve(s3Key);
 	}
 
 	public static String bytesToUnit(int bytes) {

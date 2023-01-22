@@ -46,6 +46,17 @@ public class DegreeService {
 	}
 
 	/**
+	 * Finds a degree by id.
+	 *
+	 * @param degreeId the id of the degree.
+	 * @return the {@link Degree} with the given id.
+	 */
+	public Degree getById(Long degreeId) {
+		return this.degreeRepository.findById(degreeId)
+		                            .orElseThrow(() -> new NotFoundException("Degree with id %d not found.".formatted(degreeId)));
+	}
+
+	/**
 	 * Finds a degree by name.
 	 *
 	 * @param name the name of the degree.
