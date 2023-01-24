@@ -18,7 +18,6 @@ import rs.chat.exceptions.NotFoundException;
 import rs.chat.utils.Constants;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -34,22 +33,14 @@ public class TeacherService {
 	public List<Subject> getSubjects(Long id) {
 		return this.teacherSubjectRepository.findAllById_TeacherId(id)
 		                                    .stream()
-		                                    .map(TeaSubj::getId)
-		                                    .map(TeaSubjId::getSubjectId)
-		                                    .map(this.subjectRepository::findById)
-		                                    .filter(Optional::isPresent)
-		                                    .map(Optional::get)
+		                                    .map(TeaSubj::getSubject)
 		                                    .toList();
 	}
 
 	public List<Degree> getDegrees(Long id) {
 		List<Long> degreeIds = this.teacherSubjectRepository.findAllById_TeacherId(id)
 		                                                    .stream()
-		                                                    .map(TeaSubj::getId)
-		                                                    .map(TeaSubjId::getSubjectId)
-		                                                    .map(this.subjectRepository::findById)
-		                                                    .filter(Optional::isPresent)
-		                                                    .map(Optional::get)
+		                                                    .map(TeaSubj::getSubject)
 		                                                    .map(Subject::getDegree)
 		                                                    .map(Degree::getId)
 		                                                    .distinct()
@@ -76,11 +67,13 @@ public class TeacherService {
 			throw new BadRequestException("Teacher already teaches this subject");
 		}
 
-		User teacher = this.teacherRepository.findById(teacherId).orElseThrow(() -> new NotFoundException("Teacher not found"));
-		Subject subject = this.subjectRepository.findById(subjectId).orElseThrow(() -> new NotFoundException("Subject not found"));
+//		User teacher = this.teacherRepository.findById(teacherId).orElseThrow(() -> new NotFoundException("Teacher not found"));
+//		Subject subject = this.subjectRepository.findById(subjectId).orElseThrow(() -> new NotFoundException("Subject not found"));
 
+		// Todo: check if in this type of entities second and third parameters are needed
+		//  to prevent calling DB.
 		this.teacherSubjectRepository.save(
-				new TeaSubj(new TeaSubjId(teacherId, subjectId), teacher, subject)
+				new TeaSubj(new TeaSubjId(teacherId, subjectId), null, null)
 		);
 	}
 }

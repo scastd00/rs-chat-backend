@@ -4,14 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import rs.chat.domain.entity.Group;
-import rs.chat.domain.entity.User;
 import rs.chat.domain.entity.UserGroup;
 import rs.chat.domain.entity.UserGroupId;
 import rs.chat.domain.repository.GroupRepository;
 import rs.chat.domain.repository.UserGroupRepository;
 import rs.chat.domain.repository.UserRepository;
-import rs.chat.exceptions.NotFoundException;
 
 @Service
 @RequiredArgsConstructor
@@ -31,16 +28,18 @@ public class UserGroupService {
 	 * @param groupId group id to add user to.
 	 */
 	public void addUserToGroup(Long userId, Long groupId) {
-		User user = this.userRepository.findById(userId).orElseThrow(() -> {
-			throw new NotFoundException("User not found");
-		});
+//		User user = this.userRepository.findById(userId).orElseThrow(() -> {
+//			throw new NotFoundException("User not found");
+//		});
+//
+//		Group group = this.groupRepository.findById(groupId).orElseThrow(() -> {
+//			throw new NotFoundException("Group not found");
+//		});
 
-		Group group = this.groupRepository.findById(groupId).orElseThrow(() -> {
-			throw new NotFoundException("Group not found");
-		});
-
+		// Todo: check if in this type of entities second and third parameters are needed
+		//  to prevent calling DB.
 		this.userGroupRepository.save(
-				new UserGroup(new UserGroupId(user.getId(), groupId), user, group)
+				new UserGroup(new UserGroupId(userId, groupId), null, null)
 		);
 	}
 }

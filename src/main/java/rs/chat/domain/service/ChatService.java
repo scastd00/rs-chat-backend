@@ -78,9 +78,8 @@ public class ChatService {
 
 		this.userChatRepository.findAllById_UserId(userId)
 		                       .stream()
-		                       .map(UserChat::getId)
-		                       .map(userChatId -> this.chatRepository.findById(userChatId.getChatId()))
-		                       .forEach(chat -> chat.ifPresent(chatsOfUser::add));
+		                       .map(UserChat::getChat)
+		                       .forEach(chatsOfUser::add);
 
 		return chatsOfUser;
 	}
@@ -188,7 +187,7 @@ public class ChatService {
 	 *
 	 * @return the key of the chat if the user can access it, null otherwise.
 	 */
-	public String connectToChat(Long userId, String chatKey) {
+	public String canConnectToChat(Long userId, String chatKey) {
 		if (chatKey.contains("_")) {
 			String key = chatKey.split("-")[1];
 			String[] userIds = key.split("_");
@@ -207,12 +206,12 @@ public class ChatService {
 			this.addUserToChat(Long.parseLong(userIds[1]), chat.getId());
 
 			return chat.getKey();
-		} else {
-			Optional<Chat> chat = this.getChatByKey(chatKey);
-			return chat.isPresent() && this.userAlreadyBelongsToChat(userId, chat.get().getId())
-			       ? chatKey
-			       : null;
 		}
+
+		Optional<Chat> chat = this.getChatByKey(chatKey);
+		return chat.isPresent() && this.userAlreadyBelongsToChat(userId, chat.get().getId())
+		       ? chatKey
+		       : null;
 	}
 
 	/**
@@ -238,11 +237,7 @@ public class ChatService {
 	public List<String> getAllUsersOfChat(Long chatId) {
 		return this.userChatRepository.findAllById_ChatId(chatId)
 		                              .stream()
-		                              .map(UserChat::getId)
-		                              .map(UserChatId::getUserId)
-		                              .map(this.userRepository::findById)
-		                              .filter(Optional::isPresent)
-		                              .map(Optional::get)
+		                              .map(UserChat::getUser)
 		                              .map(User::getUsername)
 		                              .toList();
 	}
