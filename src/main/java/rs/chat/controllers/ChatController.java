@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import rs.chat.domain.entity.Chat;
 import rs.chat.domain.entity.User;
+import rs.chat.domain.entity.mappers.ChatMapper;
 import rs.chat.domain.service.ChatService;
 import rs.chat.domain.service.UserGroupService;
 import rs.chat.domain.service.UserService;
@@ -18,7 +19,6 @@ import rs.chat.net.http.HttpResponse;
 import java.io.IOException;
 
 import static org.springframework.http.HttpStatus.OK;
-import static rs.chat.net.http.HttpResponse.HttpResponseBody;
 import static rs.chat.router.Routes.GetRoute.ALL_CHATS_OF_USER_URL;
 import static rs.chat.router.Routes.GetRoute.ALL_USERS_OF_CHAT_URL;
 import static rs.chat.router.Routes.GetRoute.CHAT_INFO_URL;
@@ -37,6 +37,7 @@ public class ChatController {
 	private final UserService userService;
 	private final ChatService chatService;
 	private final UserGroupService userGroupService;
+	private final ChatMapper chatMapper;
 
 	/**
 	 * Returns all chats of a user organized by chat type.
@@ -51,7 +52,7 @@ public class ChatController {
 	                                           @PathVariable String username) throws IOException {
 		User user = ControllerUtils.performActionThatMayThrowException(response, () -> this.userService.getUser(username));
 
-		response.ok().send("chats", this.chatService.getAllChatsOfUserGroupedByType(user.getId()));
+		response.ok().send(this.chatService.getAllChatsOfUserGroupedByType(user));
 	}
 
 	/**
@@ -72,10 +73,7 @@ public class ChatController {
 				                })
 		);
 
-		HttpResponseBody body = new HttpResponseBody("name", chat.getName());
-		body.add("metadata", chat.getMetadata());
-
-		response.ok().send(body);
+		response.ok().send(this.chatMapper.toDto(chat));
 	}
 
 	/**
@@ -95,7 +93,7 @@ public class ChatController {
 				                })
 		);
 
-		response.ok().send("users", this.chatService.getAllUsersOfChat(chat.getId()));
+		response.ok().send(this.chatService.getAllUsersOfChat(chat.getId()));
 	}
 
 	/**
@@ -132,7 +130,7 @@ public class ChatController {
 			this.userGroupService.addUserToGroup(userId, Long.parseLong(key));
 		}
 
-		response.ok().send("name", chat.getName());
+		response.ok().send(chat.getName());
 		// Update the user's chats list in frontend.
 	}
 
@@ -140,7 +138,7 @@ public class ChatController {
 	public void connectToChat(HttpRequest request, HttpResponse response, @PathVariable String chatKey) throws IOException {
 		Long userId = request.body().get("userId").getAsLong();
 
-		response.ok().send("connect", this.chatService.connectToChat(userId, chatKey));
+		response.ok().send(this.chatService.canConnectToChat(userId, chatKey));
 	}
 
 	@PostMapping(LEAVE_CHAT_URL)

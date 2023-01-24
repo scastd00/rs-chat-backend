@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import rs.chat.domain.entity.User;
 import rs.chat.utils.Constants;
 
+import static java.util.Collections.emptySet;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @DataJpaTest
@@ -36,7 +37,13 @@ class UserRepositoryTest {
 				null,
 				Constants.STUDENT_ROLE,
 				null,
-				passwordCode
+				passwordCode,
+				emptySet(),
+				emptySet(),
+				emptySet(),
+				emptySet(),
+				emptySet(),
+				emptySet()
 		);
 	}
 

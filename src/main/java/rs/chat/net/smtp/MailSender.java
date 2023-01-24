@@ -4,6 +4,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import rs.chat.tasks.TaskExecutionException;
+import rs.chat.utils.Utils;
 
 import javax.mail.Authenticator;
 import javax.mail.Message.RecipientType;
@@ -17,6 +19,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
+
+import static rs.chat.tasks.Task.TaskStatus;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -47,26 +51,55 @@ public class MailSender {
 		SESSION.setDebug(false); // Prevent printing lots of debug info to console
 	}
 
-	public static void sendRegistrationEmail(String to, String username) {
-		MimeMessage message = getMimeMessage(to, "Welcome to RSChat!",
-		                                     "src/main/resources/templates/email/welcome/rs-chat-welcome-email.html",
-		                                     "{{username}}", username);
-		try {
-			Transport.send(message);
-		} catch (MessagingException e) {
-			throw new RuntimeException(e);
-		}
+	public static void sendRegistrationEmailBackground(String to, String username) {
+		Utils.executeTask(
+				() -> {
+					MimeMessage message = getMimeMessage(
+							to,
+							"Welcome to RSChat!",
+							"src/main/resources/templates/email/welcome/rs-chat-welcome-email.html",
+							"{{username}}",
+							username
+					);
+
+					try {
+						Transport.send(message);
+					} catch (MessagingException e) {
+						throw new TaskExecutionException(
+								new TaskStatus(TaskStatus.FAILURE, e.getMessage())
+						);
+					}
+				},
+				exception -> {
+					log.error("Failed to send registration email to {}", to, exception);
+					return null;
+				}
+		);
 	}
 
-	public static void resetPassword(String to, String code) {
-		MimeMessage message = getMimeMessage(to, "Reset your password",
-		                                     "src/main/resources/templates/email/resetPassword/rs-chat-reset-password-email.html",
-		                                     "{{code}}", code);
-		try {
-			Transport.send(message);
-		} catch (MessagingException e) {
-			throw new RuntimeException(e);
-		}
+	public static void sendResetPasswordEmailBackground(String to, String code) {
+		Utils.executeTask(
+				() -> {
+					MimeMessage message = getMimeMessage(
+							to,
+							"Reset your password",
+							"src/main/resources/templates/email/resetPassword/rs-chat-reset-password-email.html",
+							"{{code}}",
+							code
+					);
+					try {
+						Transport.send(message);
+					} catch (MessagingException e) {
+						throw new TaskExecutionException(
+								new TaskStatus(TaskStatus.FAILURE, e.getMessage())
+						);
+					}
+				},
+				exception -> {
+					log.error("Failed to send reset password email to {}", to, exception);
+					return null;
+				}
+		);
 	}
 
 	private static MimeMessage getMimeMessage(String to, String subject, String fileName, String target, String value) {

@@ -9,11 +9,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import rs.chat.domain.entity.User;
+import rs.chat.domain.entity.mappers.UserMapper;
 import rs.chat.domain.repository.UserRepository;
 import rs.chat.domain.service.UserService;
 import rs.chat.exceptions.BadRequestException;
 import rs.chat.utils.Constants;
 
+import static java.util.Collections.emptySet;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -27,12 +29,13 @@ class UserServiceTest {
 	// We mock it because we already know that it works perfectly
 	@Mock private UserRepository userRepository;
 	@Mock private PasswordEncoder passwordEncoder;
+	@Mock private UserMapper userMapper;
 	private UserService underTest;
 	private User user;
 
 	@BeforeEach
 	void setUp() {
-		this.underTest = new UserService(this.userRepository, this.passwordEncoder);
+		this.underTest = new UserService(this.userRepository, this.passwordEncoder, this.userMapper);
 		this.user = new User(
 				1L,
 				"david",
@@ -43,7 +46,13 @@ class UserServiceTest {
 				null,
 				Constants.STUDENT_ROLE,
 				null,
-				null
+				null,
+				emptySet(),
+				emptySet(),
+				emptySet(),
+				emptySet(),
+				emptySet(),
+				emptySet()
 		);
 	}
 

@@ -82,9 +82,9 @@ public class GroupService {
 				                               () -> new NotFoundException("Chat for group %s not found.".formatted(id))
 		                               );
 
-		this.userChatRepository.deleteAllByUserChatPK_ChatId(chat.getId());
+		this.userChatRepository.deleteAllById_ChatId(chat.getId());
 		this.chatRepository.deleteById(chat.getId());
-		this.userGroupRepository.deleteAllByUserGroupPK_GroupId(id);
+		this.userGroupRepository.deleteAllById_GroupId(id);
 		this.groupRepository.deleteById(id);
 		S3.getInstance().deleteHistoryFile(chatKey);
 	}

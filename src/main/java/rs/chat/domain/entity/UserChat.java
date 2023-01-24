@@ -8,6 +8,10 @@ import lombok.ToString;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
 import javax.persistence.Table;
 
 @AllArgsConstructor
@@ -16,8 +20,20 @@ import javax.persistence.Table;
 @Setter
 @ToString
 @Entity
-@Table(name = "user_chat", schema = "rs_chat")
+@Table(name = "user_chat")
 public class UserChat {
 	@EmbeddedId
-	private UserChatPK userChatPK;
+	private UserChatId id;
+
+	@MapsId("userId")
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "user_id", nullable = false)
+	@ToString.Exclude
+	private User user;
+
+	@MapsId("chatId")
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "chat_id", nullable = false)
+	@ToString.Exclude
+	private Chat chat;
 }

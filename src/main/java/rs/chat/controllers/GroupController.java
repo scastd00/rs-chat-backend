@@ -19,6 +19,7 @@ import rs.chat.net.http.HttpResponse;
 import java.io.IOException;
 import java.util.List;
 
+import static java.util.Collections.emptySet;
 import static org.springframework.http.HttpStatus.OK;
 import static rs.chat.router.Routes.DeleteRoute.DELETE_GROUP_URL;
 import static rs.chat.router.Routes.GetRoute.GROUPS_URL;
@@ -50,7 +51,7 @@ public class GroupController {
 		      .map(this::getGroupWithInvitationCode)
 		      .forEach(groupsWithInvitationCode::add);
 
-		response.ok().send("groups", groupsWithInvitationCode.toString());
+		response.ok().send(groupsWithInvitationCode.toString());
 	}
 
 	/**
@@ -64,9 +65,9 @@ public class GroupController {
 	@PostMapping(GROUP_SAVE_URL)
 	public void saveGroup(HttpRequest request, HttpResponse response) throws IOException {
 		String groupName = request.body().get("name").getAsString();
-		Group savedGroup = this.groupService.saveGroup(new Group(null, groupName));
+		Group savedGroup = this.groupService.saveGroup(new Group(null, groupName, emptySet()));
 
-		response.created(GROUP_SAVE_URL).send("group", this.getGroupWithInvitationCode(savedGroup).toString());
+		response.created(GROUP_SAVE_URL).send(this.getGroupWithInvitationCode(savedGroup).toString());
 	}
 
 	/**

@@ -4,10 +4,11 @@
     <option name="defaultUnitInitialized" value="true" />
     <option name="renamerInitialized" value="true" />
     <option name="snapshotDbValue" value="50c424a2-aa3a-421e-a3d7-f5841498c309" />
-    <option name="reverseEngineeringLastDbConnectionId" value="df4b5217-39de-4f5c-afab-5d5b630a681f" />
-    <option name="reLastEntityCreationPackage" value="src/main/java/rs/chat/domain" />
+    <option name="reverseEngineeringLastDbConnectionId" value="a3d6d777-e675-4fdb-933a-3b6310872c7f" />
+    <option name="reLastEntityCreationPackage" value="src/main/java/rs/chat/domain/entity" />
     <option name="reIgnoreSlowDbConnections">
       <ignoreDs id="df4b5217-39de-4f5c-afab-5d5b630a681f" />
+      <ignoreDs id="a3d6d777-e675-4fdb-933a-3b6310872c7f" />
     </option>
   </component>
 </project>

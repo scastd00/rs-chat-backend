@@ -17,6 +17,7 @@ import rs.chat.domain.repository.UserChatRepository;
 import rs.chat.domain.service.DegreeService;
 import rs.chat.exceptions.BadRequestException;
 
+import static java.util.Collections.emptySet;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,7 +43,7 @@ class DegreeServiceTest {
 				this.userChatRepository, this.subjectRepository,
 				this.studentSubjectRepository, this.teacherSubjectRepository
 		);
-		this.degree = new Degree(1L, "Test");
+		this.degree = new Degree(1L, "Test", emptySet());
 	}
 
 	@Test

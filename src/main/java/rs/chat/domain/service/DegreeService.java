@@ -46,6 +46,17 @@ public class DegreeService {
 	}
 
 	/**
+	 * Finds a degree by id.
+	 *
+	 * @param degreeId the id of the degree.
+	 * @return the {@link Degree} with the given id.
+	 */
+	public Degree getById(Long degreeId) {
+		return this.degreeRepository.findById(degreeId)
+		                            .orElseThrow(() -> new NotFoundException("Degree with id %d not found.".formatted(degreeId)));
+	}
+
+	/**
 	 * Finds a degree by name.
 	 *
 	 * @param name the name of the degree.
@@ -138,16 +149,16 @@ public class DegreeService {
 							.orElseThrow(
 									() -> new NotFoundException("Chat for subject %s not found.".formatted(subject.getId()))
 							);
-					this.studentSubjectRepository.deleteAllByStuSubjPK_SubjectId(subject.getId());
-					this.teacherSubjectRepository.deleteAllByTeaSubjPK_SubjectId(subject.getId());
+					this.studentSubjectRepository.deleteAllById_SubjectId(subject.getId());
+					this.teacherSubjectRepository.deleteAllById_SubjectId(subject.getId());
 					this.subjectRepository.deleteById(subject.getId());
-					this.userChatRepository.deleteAllByUserChatPK_ChatId(subjectChat.getId());
+					this.userChatRepository.deleteAllById_ChatId(subjectChat.getId());
 					this.chatRepository.deleteById(subjectChat.getId());
 					S3.getInstance().deleteHistoryFile(subjectChatKey);
 				});
 
 		this.degreeRepository.deleteById(id);
-		this.userChatRepository.deleteAllByUserChatPK_ChatId(degreeChat.getId());
+		this.userChatRepository.deleteAllById_ChatId(degreeChat.getId());
 		this.chatRepository.deleteById(degreeChat.getId());
 		S3.getInstance().deleteHistoryFile(DEGREE + "-" + id);
 	}

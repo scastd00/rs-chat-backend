@@ -133,9 +133,7 @@ public final class Policies {
 			return;
 		}
 
-		String name = violations.get(0).name();
-
-		if (name.equals(EQUAL_PASSWORDS_KEY)) {
+		if (violations.get(0).name().equals(EQUAL_PASSWORDS_KEY)) {
 			throw new InvalidPasswordException(violations.get(0).message());
 		}
 

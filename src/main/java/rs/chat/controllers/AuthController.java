@@ -13,10 +13,11 @@ import rs.chat.domain.entity.Chat;
 import rs.chat.domain.entity.Group;
 import rs.chat.domain.entity.Session;
 import rs.chat.domain.entity.User;
+import rs.chat.domain.entity.mappers.SessionMapper;
+import rs.chat.domain.entity.mappers.UserMapper;
 import rs.chat.domain.service.ChatService;
 import rs.chat.domain.service.GroupService;
 import rs.chat.domain.service.SessionService;
-import rs.chat.domain.service.UserGroupService;
 import rs.chat.domain.service.UserService;
 import rs.chat.net.http.HttpRequest;
 import rs.chat.net.http.HttpResponse;
@@ -28,11 +29,12 @@ import rs.chat.utils.Utils;
 
 import java.io.IOException;
 import java.time.Clock;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import static java.util.Collections.emptySet;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.OK;
 import static rs.chat.router.Routes.PostRoute.CREATE_PASSWORD_URL;
@@ -55,8 +57,9 @@ public class AuthController {
 	private final SessionService sessionService;
 	private final ChatService chatService;
 	private final GroupService groupService;
-	private final UserGroupService userGroupService;
 	private final Clock clock;
+	private final SessionMapper sessionMapper;
+	private final UserMapper userMapper;
 
 	/**
 	 * Performs the login of the user.
@@ -84,20 +87,20 @@ public class AuthController {
 						null,
 						request.getRemoteAddr(),
 						Instant.now(this.clock),
-						Instant.now(this.clock).plus(isExtendedToken ? Constants.TOKEN_EXPIRATION_DURATION_NORMAL : Duration.ZERO),
+						Instant.now(this.clock).plus(isExtendedToken ? Constants.TOKEN_EXPIRATION_DURATION_EXTENDED
+						                                             : Constants.TOKEN_EXPIRATION_DURATION_NORMAL),
 						token,
-						user.getId()
+						user
 				)
 		);
 
-		var allChatsOfUserGroupedByType = this.chatService.getAllChatsOfUserGroupedByType(user.getId());
+		var allChatsOfUserGroupedByType = this.chatService.getAllChatsOfUserGroupedByType(user);
 
-		// Clear sensitive data
-		user.setPassword(null); // Password not visible in the response
-		savedSession.setSrcIp(null);
+		// Remove the source IP from the session.
+		savedSession.setSrcIp("");
 
-		HttpResponseBody responseBody = new HttpResponseBody("session", savedSession);
-		responseBody.add("user", user);
+		HttpResponseBody responseBody = new HttpResponseBody("session", this.sessionMapper.toDto(savedSession));
+		responseBody.add("user", this.userMapper.toDto(user));
 		responseBody.add("chats", allChatsOfUserGroupedByType);
 
 		response.ok().send(responseBody);
@@ -117,22 +120,31 @@ public class AuthController {
 	public void register(HttpRequest request, HttpResponse response) throws IOException {
 		JsonObject body = request.body();
 
+		Chat globalChat = this.chatService.getByName("Global");
+		Group globalGroup = this.groupService.getGroupByName("Global");
+
 		// Check if all the body contains all the necessary fields.
 		User savedUser = ControllerUtils.performActionThatMayThrowException(response, () -> {
 			Policies.checkRegister(body);
 
 			// Register the user and the session.
 			return this.userService.createUser(new User(
-					null,
-					body.get("username").getAsString().trim(),
-					body.get("password").getAsString().trim(),
-					body.get("email").getAsString().trim(),
-					body.get("fullName").getAsString().trim(),
-					null,
-					null,
-					STUDENT_ROLE,
-					null,
-					null
+					null, // id
+					body.get("username").getAsString().trim(), // username
+					body.get("password").getAsString().trim(), // password
+					body.get("email").getAsString().trim(), // email
+					body.get("fullName").getAsString().trim(), // fullName
+					null, // age
+					null, // birthdate
+					STUDENT_ROLE, // role
+					null, // blockUntil
+					null, // passwordCode
+					emptySet(), // teacherSubjects
+					Set.of(globalGroup), // groups
+					emptySet(), // sessions
+					emptySet(), // files
+					Set.of(globalChat), // chats
+					emptySet() // studentSubjects
 			));
 		});
 
@@ -141,7 +153,8 @@ public class AuthController {
 				savedUser.getUsername(),
 				request.getRequestURL().toString(),
 				savedUser.getRole(),
-				false
+				false,
+				this.clock
 		);
 
 		Session session = this.sessionService.saveSession(
@@ -151,16 +164,9 @@ public class AuthController {
 						Instant.now(this.clock),
 						Instant.now(this.clock).plus(Constants.TOKEN_EXPIRATION_DURATION_NORMAL),
 						token,
-						savedUser.getId()
+						savedUser
 				)
 		);
-
-		Chat globalChat = this.chatService.getByName("Global");
-		Group globalGroup = this.groupService.getGroupByName("Global");
-		Long userId = savedUser.getId();
-
-		this.userGroupService.addUserToGroup(userId, globalGroup.getId());
-		this.chatService.addUserToChat(userId, globalChat.getId());
 
 		// Make the Map of the only available chat without calling database
 		Map<String, List<Map<String, Object>>> defaultChat =
@@ -174,16 +180,15 @@ public class AuthController {
 						)
 				);
 
-		// Clear the password
-		savedUser.setPassword(null);
-		session.setSrcIp(null);
+		// Clear the source IP of the session
+		session.setSrcIp("");
 
-		HttpResponseBody responseBody = new HttpResponseBody("session", session);
-		responseBody.add("user", savedUser);
+		HttpResponseBody responseBody = new HttpResponseBody("session", this.sessionMapper.toDto(session));
+		responseBody.add("user", this.userMapper.toDto(savedUser));
 		responseBody.add("chats", defaultChat);
 
 		response.ok().send(responseBody);
-		MailSender.sendRegistrationEmail(savedUser.getEmail(), savedUser.getUsername());
+		MailSender.sendRegistrationEmailBackground(savedUser.getEmail(), savedUser.getUsername());
 	}
 
 	/**
@@ -262,7 +267,7 @@ public class AuthController {
 		this.userService.updateUser(user);
 
 		response.sendStatus(OK);
-		MailSender.resetPassword(email, code);
+		MailSender.sendResetPasswordEmailBackground(email, code);
 	}
 
 	/**

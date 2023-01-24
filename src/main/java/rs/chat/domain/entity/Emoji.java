@@ -6,13 +6,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,25 +21,35 @@ import javax.persistence.Table;
 @Setter
 @ToString
 @Entity
-@Table(name = "emojis", schema = "rs_chat")
+@Table(name = "emojis")
 public class Emoji {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", nullable = false)
 	private Long id;
-	@Basic
-	@Column(name = "name")
+
+	@Size(max = 100)
+	@NotNull
+	@Column(name = "name", nullable = false, length = 100)
 	private String name;
-	@Basic
-	@Column(name = "icon")
+
+	@Size(max = 100)
+	@NotNull
+	@Column(name = "icon", nullable = false, length = 100)
 	private String icon;
-	@Basic
-	@Column(name = "unicode")
+
+	@Size(max = 80)
+	@NotNull
+	@Column(name = "unicode", nullable = false, length = 80)
 	private String unicode;
-	@Basic
-	@Column(name = "category")
+
+	@Size(max = 30)
+	@NotNull
+	@Column(name = "category", nullable = false, length = 30)
 	private String category;
-	@Basic
-	@Column(name = "subcategory")
+
+	@Size(max = 40)
+	@NotNull
+	@Column(name = "subcategory", nullable = false, length = 40)
 	private String subcategory;
 }

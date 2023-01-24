@@ -18,8 +18,8 @@ public final class ControllerUtils {
 	 * If an error occurs, the response is sent with the error message. When an exception is caught,
 	 * it is checked if it is annotated with {@link ResponseStatus}. If it is, the response is sent
 	 * with the status code and message from the annotation. If it is not, the response is sent with the status
-	 * 502 and the exception message. In both cases, the exception is logged and rethrown, to prevent
-	 * the controller from executing more code.
+	 * {@link HttpStatus#BAD_GATEWAY} (502) and the exception message. In both cases, the exception is logged
+	 * and rethrown, to prevent the controller from executing more code.
 	 *
 	 * @param response response to send the result to.
 	 * @param action   function to perform.

@@ -20,8 +20,7 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-
-import static rs.chat.utils.Constants.ERROR_JSON_KEY;
+import java.time.Clock;
 
 /**
  * Manager that authenticates the incoming requests.
@@ -31,6 +30,7 @@ import static rs.chat.utils.Constants.ERROR_JSON_KEY;
 @RequiredArgsConstructor
 public class RSChatAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 	private final AuthenticationManager authenticationManager;
+	private final Clock clock;
 
 	/**
 	 * {@inheritDoc}
@@ -62,7 +62,7 @@ public class RSChatAuthenticationFilter extends UsernamePasswordAuthenticationFi
 		log.warn("Authentication failed", failed);
 		new HttpResponse(response)
 				.badRequest() // Since the check for the user is only done one time, the exceptional case is that the user is not registered.
-				.send(ERROR_JSON_KEY, failed.getMessage());
+				.send(failed.getMessage());
 	}
 
 	/**
@@ -83,7 +83,8 @@ public class RSChatAuthenticationFilter extends UsernamePasswordAuthenticationFi
 				    .iterator()
 				    .next() // We only have one role per user, so we take it.
 				    .getAuthority(),
-				req.body().get("remember").getAsBoolean()
+				req.body().get("remember").getAsBoolean(),
+				this.clock
 		);
 
 		req.set("USER:TOKEN", token);

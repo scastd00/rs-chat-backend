@@ -9,7 +9,7 @@ import rs.chat.domain.DomainUtils;
 import rs.chat.domain.entity.Chat;
 import rs.chat.domain.entity.User;
 import rs.chat.domain.entity.UserChat;
-import rs.chat.domain.entity.UserChatPK;
+import rs.chat.domain.entity.UserChatId;
 import rs.chat.domain.repository.ChatRepository;
 import rs.chat.domain.repository.UserChatRepository;
 import rs.chat.domain.repository.UserRepository;
@@ -76,11 +76,10 @@ public class ChatService {
 	public List<Chat> getAllChatsOfUser(Long userId) {
 		List<Chat> chatsOfUser = new ArrayList<>();
 
-		this.userChatRepository.findAllByUserChatPK_UserId(userId)
+		this.userChatRepository.findAllById_UserId(userId)
 		                       .stream()
-		                       .map(UserChat::getUserChatPK)
-		                       .map(userChatPK -> this.chatRepository.findById(userChatPK.getChatId()))
-		                       .forEach(chat -> chat.ifPresent(chatsOfUser::add));
+		                       .map(UserChat::getChat)
+		                       .forEach(chatsOfUser::add);
 
 		return chatsOfUser;
 	}
@@ -88,15 +87,14 @@ public class ChatService {
 	/**
 	 * Retrieves all the chats to which the user can access grouped by type.
 	 *
-	 * @param userId id of the user.
+	 * @param user user to which the chats belong.
 	 *
 	 * @return map of chats to which the user can access grouped by type.
 	 */
-	public Map<String, List<Map<String, Object>>> getAllChatsOfUserGroupedByType(Long userId) {
-		List<Chat> allChatsOfUser = this.getAllChatsOfUser(userId);
+	public Map<String, List<Map<String, Object>>> getAllChatsOfUserGroupedByType(User user) {
 		Map<String, List<Map<String, Object>>> groups = new HashMap<>();
 
-		allChatsOfUser.forEach(chat -> {
+		user.getChats().forEach(chat -> {
 			String chatType = chat.getType();
 			Map<String, Object> chatItem = new HashMap<>();
 			chatItem.put("name", chat.getName());
@@ -135,7 +133,12 @@ public class ChatService {
 			throw new BadRequestException("User with id=%d already belongs to chat with id=%d".formatted(userId, chatId));
 		} // todo replace controller check with ControllerUtils.performActionThatMayThrowException and leave this unchanged
 
-		this.userChatRepository.save(new UserChat(new UserChatPK(userId, chatId)));
+		User user = this.userRepository.findById(userId).orElseThrow(() -> new BadRequestException("User with id=%d does not exist".formatted(userId)));
+		Chat chat = this.chatRepository.findById(chatId).orElseThrow(() -> new BadRequestException("Chat with id=%d does not exist".formatted(chatId)));
+
+		// Todo: check if in this type of entities second and third parameters are needed
+		//  to prevent calling DB.
+		this.userChatRepository.save(new UserChat(new UserChatId(userId, chatId), user, chat));
 	}
 
 	/**
@@ -170,7 +173,7 @@ public class ChatService {
 	 * @return true if the user is a member of the chat, false otherwise.
 	 */
 	public boolean userAlreadyBelongsToChat(Long userId, Long chatId) {
-		return this.userChatRepository.existsByUserChatPK_UserIdAndUserChatPK_ChatId(userId, chatId);
+		return this.userChatRepository.existsById_UserIdAndId_ChatId(userId, chatId);
 	}
 
 	/**
@@ -183,7 +186,7 @@ public class ChatService {
 	 *
 	 * @return the key of the chat if the user can access it, null otherwise.
 	 */
-	public String connectToChat(Long userId, String chatKey) {
+	public String canConnectToChat(Long userId, String chatKey) {
 		if (chatKey.contains("_")) {
 			String key = chatKey.split("-")[1];
 			String[] userIds = key.split("_");
@@ -202,12 +205,12 @@ public class ChatService {
 			this.addUserToChat(Long.parseLong(userIds[1]), chat.getId());
 
 			return chat.getKey();
-		} else {
-			Optional<Chat> chat = this.getChatByKey(chatKey);
-			return chat.isPresent() && this.userAlreadyBelongsToChat(userId, chat.get().getId())
-			       ? chatKey
-			       : null;
 		}
+
+		Optional<Chat> chat = this.getChatByKey(chatKey);
+		return chat.isPresent() && this.userAlreadyBelongsToChat(userId, chat.get().getId())
+		       ? chatKey
+		       : null;
 	}
 
 	/**
@@ -231,13 +234,9 @@ public class ChatService {
 	 * @return list of usernames of the users that belong to the chat.
 	 */
 	public List<String> getAllUsersOfChat(Long chatId) {
-		return this.userChatRepository.findAllByUserChatPK_ChatId(chatId)
+		return this.userChatRepository.findAllById_ChatId(chatId)
 		                              .stream()
-		                              .map(UserChat::getUserChatPK)
-		                              .map(UserChatPK::getUserId)
-		                              .map(this.userRepository::findById)
-		                              .filter(Optional::isPresent)
-		                              .map(Optional::get)
+		                              .map(UserChat::getUser)
 		                              .map(User::getUsername)
 		                              .toList();
 	}
@@ -250,7 +249,7 @@ public class ChatService {
 	 */
 	public void removeUserFromChat(Long userId, String chatKey) {
 		this.getChatByKey(chatKey).ifPresent(
-				chat -> this.userChatRepository.deleteByUserChatPK_UserIdAndUserChatPK_ChatId(userId, chat.getId())
+				chat -> this.userChatRepository.deleteById_UserIdAndId_ChatId(userId, chat.getId())
 		);
 	}
 }

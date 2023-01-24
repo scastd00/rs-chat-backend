@@ -2,7 +2,7 @@ package rs.chat.storage;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
-import rs.chat.utils.Utils;
+import rs.chat.exceptions.CouldNotUploadFileException;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.core.exception.SdkException;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -25,12 +25,14 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.Map;
 
 import static rs.chat.net.ws.Message.TEXT_MESSAGE;
 import static rs.chat.utils.Constants.REMOTE_S3_ENDPOINT_URI;
 import static rs.chat.utils.Constants.S3_BUCKET_NAME;
+import static rs.chat.utils.Constants.S3_ENDPOINT_URI_FOR_FILES;
 
 /**
  * Class that provides utility methods to work with S3.
@@ -126,7 +128,7 @@ public final class S3 implements Closeable {
 			// Delete the file from the local disk after it has been uploaded to S3.
 			Files.delete(file.toPath());
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new CouldNotUploadFileException(e.getMessage());
 		}
 
 		log.debug("Uploaded file {} to S3 bucket with key {} and deleted from disk", file.getName(), s3Key);
@@ -202,7 +204,19 @@ public final class S3 implements Closeable {
 				RequestBody.fromBytes(dataBytes)
 		);
 
-		return Utils.uploadedFileURI(s3Key);
+		return uploadedFileURI(s3Key);
+	}
+
+	/**
+	 * Creates a new {@link URI} for the specified S3 key. See
+	 * {@link rs.chat.utils.Constants#S3_ENDPOINT_URI_FOR_FILES} to see the base URI.
+	 *
+	 * @param s3Key the S3 key to create the {@link URI} for.
+	 *
+	 * @return the {@link URI} for the specified S3 key.
+	 */
+	public static URI uploadedFileURI(String s3Key) {
+		return S3_ENDPOINT_URI_FOR_FILES.resolve(s3Key);
 	}
 
 	/**
@@ -231,8 +245,7 @@ public final class S3 implements Closeable {
 
 	/**
 	 * Creates the key for a file to store in S3 bucket.
-	 * Syntax is the following:
-	 * {type}/{year}/{month}/{day}/{{@link RandomStringUtils#randomAlphanumeric(int) prefix}}_{fileName}
+	 * Syntax is the following: {type}/{year}/{month}/{day}/{prefix}_{fileName}
 	 * <p>
 	 * {@code {type}} must be one of the following:
 	 * <ul>
@@ -242,12 +255,13 @@ public final class S3 implements Closeable {
 	 *     <li>audio</li>
 	 * </ul>
 	 *
+	 * Prefix is a random generated string of 15 characters (see {@link RandomStringUtils#randomAlphanumeric(int)}).
 	 * @param fileName name of the file to upload to S3 bucket.
 	 *
 	 * @return the key for the image to store in S3 bucket.
 	 */
 	private String s3Key(String type, String fileName) {
-		LocalDate date = LocalDate.now();
+		LocalDate date = LocalDate.now(Clock.systemUTC());
 
 		return "%s/%s/%s/%s/(%s)_%s".formatted(
 				type,

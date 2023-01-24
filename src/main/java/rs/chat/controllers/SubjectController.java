@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import rs.chat.domain.entity.Degree;
 import rs.chat.domain.entity.Subject;
 import rs.chat.domain.service.ChatService;
 import rs.chat.domain.service.DegreeService;
@@ -20,6 +21,7 @@ import rs.chat.net.http.HttpResponse;
 import java.io.IOException;
 import java.util.List;
 
+import static java.util.Collections.emptySet;
 import static org.springframework.http.HttpStatus.OK;
 import static rs.chat.router.Routes.DeleteRoute.DELETE_SUBJECT_URL;
 import static rs.chat.router.Routes.GetRoute.SUBJECTS_URL;
@@ -52,7 +54,7 @@ public class SubjectController {
 		           .map(this::getSubjectWithInvitationCode)
 		           .forEach(subjectsWithInvitationCode::add);
 
-		response.ok().send("subjects", subjectsWithInvitationCode.toString());
+		response.ok().send(subjectsWithInvitationCode.toString());
 	}
 
 	/**
@@ -72,7 +74,7 @@ public class SubjectController {
 		String type = body.get("type").getAsString();
 		Byte credits = body.get("credits").getAsByte();
 		Byte grade = body.get("grade").getAsByte();
-		String degree = body.get("degree").getAsString();
+		String degree = body.get("degree").getAsString(); // Degree name
 
 		if (this.subjectService.exists(name)) {
 			response.badRequest().send("Subject '%s' already exists.".formatted(name));
@@ -88,11 +90,13 @@ public class SubjectController {
 						type,
 						credits,
 						grade,
-						this.degreeService.getByName(degree).getId()
+						this.degreeService.getByName(degree),
+						emptySet(),
+						emptySet()
 				)
 		);
 
-		response.created(SUBJECT_SAVE_URL).send("subject", this.getSubjectWithInvitationCode(savedSubject).toString());
+		response.created(SUBJECT_SAVE_URL).send(this.getSubjectWithInvitationCode(savedSubject).toString());
 	}
 
 	/**
@@ -120,9 +124,10 @@ public class SubjectController {
 	@NotNull
 	private JsonObject getSubjectWithInvitationCode(Subject subject) {
 		JsonObject subjectWithInvitationCode = new JsonObject();
+		Degree degree = this.degreeService.getById(subject.getDegree().getId());
 
 		subjectWithInvitationCode.addProperty("id", subject.getId());
-		subjectWithInvitationCode.addProperty("name", subject.getName());
+		subjectWithInvitationCode.addProperty("name", "%s (%s)".formatted(subject.getName(), degree.getName()));
 		subjectWithInvitationCode.addProperty("invitationCode", this.chatService.getInvitationCodeByChatName(subject.getName()));
 
 		return subjectWithInvitationCode;

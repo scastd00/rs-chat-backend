@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 import rs.chat.domain.entity.Degree;
+import rs.chat.domain.entity.mappers.DegreeMapper;
 import rs.chat.domain.service.ChatService;
 import rs.chat.domain.service.DegreeService;
 import rs.chat.net.http.HttpRequest;
@@ -20,13 +21,13 @@ import rs.chat.net.http.HttpResponse;
 import java.io.IOException;
 import java.util.List;
 
+import static java.util.Collections.emptySet;
 import static org.springframework.http.HttpStatus.OK;
 import static rs.chat.router.Routes.DeleteRoute.DELETE_DEGREE_URL;
 import static rs.chat.router.Routes.GetRoute.DEGREES_URL;
 import static rs.chat.router.Routes.GetRoute.DEGREE_BY_NAME_URL;
 import static rs.chat.router.Routes.PostRoute.DEGREE_SAVE_URL;
 import static rs.chat.router.Routes.PutRoute.EDIT_DEGREE_NAME_URL;
-import static rs.chat.utils.Constants.DEGREE;
 
 /**
  * Controller that manages all degree-related requests.
@@ -37,6 +38,7 @@ import static rs.chat.utils.Constants.DEGREE;
 public class DegreeController {
 	private final DegreeService degreeService;
 	private final ChatService chatService;
+	private final DegreeMapper degreeMapper;
 
 	/**
 	 * Returns all degrees stored in db.
@@ -51,10 +53,10 @@ public class DegreeController {
 		JsonArray degreesWithInvitationCode = new JsonArray();
 
 		allDegrees.stream()
-		          .map(this::getDegreeWithInvitationCode)
+		          .map(this::getDegreeWithInvitationCodeToChat)
 		          .forEach(degreesWithInvitationCode::add);
 
-		response.ok().send("degrees", degreesWithInvitationCode.toString());
+		response.ok().send(degreesWithInvitationCode.toString());
 	}
 
 	/**
@@ -71,7 +73,7 @@ public class DegreeController {
 				response, () -> this.degreeService.getByName(degreeName)
 		);
 
-		response.ok().send(DEGREE, degree);
+		response.ok().send(this.degreeMapper.toDto(degree));
 	}
 
 	/**
@@ -94,11 +96,11 @@ public class DegreeController {
 
 		Degree degree = ControllerUtils.performActionThatMayThrowException(
 				response, () -> this.degreeService.saveDegree(
-						new Degree(null, degreeName)
+						new Degree(null, degreeName, emptySet())
 				)
 		);
 
-		response.created(DEGREE_SAVE_URL).send(DEGREE, this.getDegreeWithInvitationCode(degree).toString());
+		response.created(DEGREE_SAVE_URL).send(this.getDegreeWithInvitationCodeToChat(degree).toString());
 	}
 
 	/**
@@ -119,7 +121,7 @@ public class DegreeController {
 				response, () -> this.degreeService.changeDegreeName(oldName, newName)
 		);
 
-		response.ok().send(DEGREE, degree);
+		response.ok().send(this.degreeMapper.toDto(degree));
 	}
 
 	/**
@@ -151,7 +153,7 @@ public class DegreeController {
 	 * @return JsonObject containing degree's name, id and invitation code.
 	 */
 	@NotNull
-	private JsonObject getDegreeWithInvitationCode(Degree degree) {
+	private JsonObject getDegreeWithInvitationCodeToChat(Degree degree) {
 		JsonObject degreeWithInvitationCode = new JsonObject();
 
 		degreeWithInvitationCode.addProperty("id", degree.getId());
