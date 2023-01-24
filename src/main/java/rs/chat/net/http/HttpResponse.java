@@ -2,7 +2,6 @@ package rs.chat.net.http;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
@@ -128,22 +127,10 @@ public class HttpResponse extends HttpServletResponseWrapper {
 	 */
 	public void send(Object content) throws IOException {
 		if (this.status.isError()) {
-			this.send(ERROR_JSON_KEY, content);
+			this.send(new HttpResponseBody(ERROR_JSON_KEY, content));
 		} else {
-			this.send(DATA_JSON_KEY, content);
+			this.send(new HttpResponseBody(DATA_JSON_KEY, content));
 		}
-	}
-
-	/**
-	 * Sends a response with one element in its content.
-	 *
-	 * @param key   the key of the element to be sent.
-	 * @param value the value of the element to be sent.
-	 *
-	 * @throws IOException if an error occurs while sending the response.
-	 */
-	public void send(String key, Object value) throws IOException {
-		this.send(new HttpResponseBody(key, value));
 	}
 
 	/**
@@ -162,27 +149,27 @@ public class HttpResponse extends HttpServletResponseWrapper {
 		this.setContentType(APPLICATION_JSON_VALUE);
 
 		if (response == HttpResponseBody.EMPTY) {
-			this.getWriter().print(""); // Empty body
+			this.getWriter().print(response.value()); // Empty string
 			return;
 		}
 
-		if (response.data.entrySet().size() == 1) {
-			Map.Entry<String, Object> entry = response.data.entrySet().iterator().next();
-			this.objectMapper.writeValue(this.getWriter(), entry.getValue());
-			return;
+		Object responseBody = response.data;
+
+		// If the response body contains only one element, send it directly (without the key)
+		if (response.data.size() == 1) {
+			responseBody = response.value();
 		}
 
-		this.objectMapper.writeValue(this.getWriter(), response.data);
+		this.objectMapper.writeValue(this.getWriter(), responseBody);
 	}
 
 	/**
 	 * Class that represents the body of a response.
 	 * Contains a {@link Map} of elements to be sent in the response.
 	 */
-	@NoArgsConstructor
 	public static class HttpResponseBody {
 		private final Map<String, Object> data = new HashMap<>();
-		public static final HttpResponseBody EMPTY = null;
+		public static final HttpResponseBody EMPTY = new HttpResponseBody(DATA_JSON_KEY, "");
 
 		/**
 		 * Constructs a response body with the given key and value.
@@ -205,6 +192,10 @@ public class HttpResponse extends HttpServletResponseWrapper {
 		public HttpResponseBody add(String key, Object value) {
 			this.data.put(key, value);
 			return this;
+		}
+
+		public Object value() {
+			return this.data.values().iterator().next();
 		}
 	}
 }

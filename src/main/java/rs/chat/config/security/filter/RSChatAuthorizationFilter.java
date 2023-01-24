@@ -29,7 +29,6 @@ import static rs.chat.router.Routes.PostRoute.LOGIN_URL;
 import static rs.chat.router.Routes.PostRoute.REGISTER_URL;
 import static rs.chat.router.Routes.TEST_URL;
 import static rs.chat.router.Routes.WS_CHAT_ENDPOINT;
-import static rs.chat.utils.Constants.ERROR_JSON_KEY;
 import static rs.chat.utils.Constants.JWT_TOKEN_PREFIX;
 
 /**
@@ -85,7 +84,7 @@ public class RSChatAuthorizationFilter extends OncePerRequestFilter {
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
 				new HttpResponse(response).status(FORBIDDEN)
-				                          .send(ERROR_JSON_KEY, e.getMessage());
+				                          .send(e.getMessage());
 			}
 		}
 	}

@@ -30,7 +30,6 @@ import static rs.chat.router.Routes.GetRoute.USERS_URL;
 import static rs.chat.router.Routes.GetRoute.USER_ID_BY_USERNAME_URL;
 import static rs.chat.router.Routes.PostRoute.DELETE_USER_URL;
 import static rs.chat.router.Routes.PostRoute.USER_SAVE_URL;
-import static rs.chat.utils.Constants.DATA_JSON_KEY;
 
 /**
  * Controller that manages all user-related requests.
@@ -54,7 +53,7 @@ public class UserController {
 	 */
 	@GetMapping(USERS_URL)
 	public void getUsers(HttpResponse response) throws IOException {
-		response.ok().send(DATA_JSON_KEY, this.userService.getUsers());
+		response.ok().send(this.userService.getUsers());
 	}
 
 	/**
@@ -111,7 +110,7 @@ public class UserController {
 	                           @PathVariable String username) throws IOException {
 		List<String> sessionsOfUser = this.sessionService.getSrcIpOfUserSessions(username);
 
-		response.ok().send("sessions", sessionsOfUser);
+		response.ok().send(sessionsOfUser);
 	}
 
 	@GetMapping(USER_ID_BY_USERNAME_URL)
@@ -121,7 +120,7 @@ public class UserController {
 				response, () -> this.userService.getUser(username)
 		);
 
-		response.ok().send("id", user.getId());
+		response.ok().send(user.getId());
 	}
 
 	@DeleteMapping(DELETE_USER_URL)

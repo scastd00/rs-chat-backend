@@ -97,7 +97,7 @@ public class FileController {
 
 		FileDto fileDto = this.fileService.save(fileToSave);
 
-		response.ok().send("file", fileDto);
+		response.ok().send(fileDto);
 		log.info("File ({}) uploaded successfully", fileName);
 	}
 }

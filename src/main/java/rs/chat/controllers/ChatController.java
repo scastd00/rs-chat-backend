@@ -52,7 +52,7 @@ public class ChatController {
 	                                           @PathVariable String username) throws IOException {
 		User user = ControllerUtils.performActionThatMayThrowException(response, () -> this.userService.getUser(username));
 
-		response.ok().send("chats", this.chatService.getAllChatsOfUserGroupedByType(user));
+		response.ok().send(this.chatService.getAllChatsOfUserGroupedByType(user));
 	}
 
 	/**
@@ -73,7 +73,7 @@ public class ChatController {
 				                })
 		);
 
-		response.ok().send("chat", this.chatMapper.toDto(chat));
+		response.ok().send(this.chatMapper.toDto(chat));
 	}
 
 	/**
@@ -93,7 +93,7 @@ public class ChatController {
 				                })
 		);
 
-		response.ok().send("users", this.chatService.getAllUsersOfChat(chat.getId()));
+		response.ok().send(this.chatService.getAllUsersOfChat(chat.getId()));
 	}
 
 	/**
@@ -130,7 +130,7 @@ public class ChatController {
 			this.userGroupService.addUserToGroup(userId, Long.parseLong(key));
 		}
 
-		response.ok().send("name", chat.getName());
+		response.ok().send(chat.getName());
 		// Update the user's chats list in frontend.
 	}
 
@@ -138,7 +138,7 @@ public class ChatController {
 	public void connectToChat(HttpRequest request, HttpResponse response, @PathVariable String chatKey) throws IOException {
 		Long userId = request.body().get("userId").getAsLong();
 
-		response.ok().send("connect", this.chatService.canConnectToChat(userId, chatKey));
+		response.ok().send(this.chatService.canConnectToChat(userId, chatKey));
 	}
 
 	@PostMapping(LEAVE_CHAT_URL)

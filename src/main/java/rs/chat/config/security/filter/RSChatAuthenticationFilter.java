@@ -22,8 +22,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.Clock;
 
-import static rs.chat.utils.Constants.ERROR_JSON_KEY;
-
 /**
  * Manager that authenticates the incoming requests.
  */
@@ -64,7 +62,7 @@ public class RSChatAuthenticationFilter extends UsernamePasswordAuthenticationFi
 		log.warn("Authentication failed", failed);
 		new HttpResponse(response)
 				.badRequest() // Since the check for the user is only done one time, the exceptional case is that the user is not registered.
-				.send(ERROR_JSON_KEY, failed.getMessage());
+				.send(failed.getMessage());
 	}
 
 	/**
