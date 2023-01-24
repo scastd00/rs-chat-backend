@@ -9,6 +9,7 @@ public class Routes {
 	public static final String ROOT_URL = "/";
 	public static final String ALL_ROUTES = "/**";
 	public static final String ACTUATOR_URL = "/actuator/prometheus";
+	public static final String TEST_URL = V_1 + "/test";
 
 	public static final String WS_CHAT_ENDPOINT = "/ws/rschat";
 
