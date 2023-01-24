@@ -42,7 +42,7 @@ public class TeacherController {
 	}
 
 	@GetMapping(TEACHER_SUBJECTS_URL)
-	public void getSubjects(HttpResponse response, @PathVariable Long id) throws IOException {
+	public void getTeacherSubjects(HttpResponse response, @PathVariable Long id) throws IOException {
 		response.status(OK).send(this.teacherService.getSubjects(id));
 	}
 

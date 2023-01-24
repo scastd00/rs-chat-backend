@@ -3,6 +3,7 @@ package rs.chat.controllers;
 import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,9 +24,11 @@ import java.util.List;
 import java.util.Set;
 
 import static java.util.Collections.emptySet;
+import static org.springframework.http.HttpStatus.OK;
 import static rs.chat.router.Routes.GetRoute.OPENED_SESSIONS_OF_USER_URL;
 import static rs.chat.router.Routes.GetRoute.USERS_URL;
 import static rs.chat.router.Routes.GetRoute.USER_ID_BY_USERNAME_URL;
+import static rs.chat.router.Routes.PostRoute.DELETE_USER_URL;
 import static rs.chat.router.Routes.PostRoute.USER_SAVE_URL;
 import static rs.chat.utils.Constants.DATA_JSON_KEY;
 
@@ -91,7 +94,7 @@ public class UserController {
 			);
 		});
 
-		response.created(USER_SAVE_URL).send(DATA_JSON_KEY, this.userMapper.toDto(savedUser));
+		response.created(USER_SAVE_URL).send();
 		MailSender.sendRegistrationEmailBackground(savedUser.getEmail(), savedUser.getUsername());
 	}
 
@@ -112,12 +115,23 @@ public class UserController {
 	}
 
 	@GetMapping(USER_ID_BY_USERNAME_URL)
-	public void getUserIdByUsername(HttpResponse response,
-	                                @PathVariable String username) throws IOException {
+	public void getIdByUsername(HttpResponse response,
+	                            @PathVariable String username) throws IOException {
 		User user = ControllerUtils.performActionThatMayThrowException(
 				response, () -> this.userService.getUser(username)
 		);
 
 		response.ok().send("id", user.getId());
+	}
+
+	@DeleteMapping(DELETE_USER_URL)
+	public void deleteUser(HttpResponse response, @PathVariable Long id) throws IOException {
+		ControllerUtils.performActionThatMayThrowException(response, () -> {
+			this.userService.deleteUser(id);
+			log.info("User with id {} deleted.", id);
+			return null;
+		});
+
+		response.sendStatus(OK);
 	}
 }

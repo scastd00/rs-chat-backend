@@ -94,6 +94,7 @@ public class Routes {
 		public static final String DEGREE_SAVE_URL = V_1 + "/degree/save";
 		public static final String SUBJECT_SAVE_URL = V_1 + "/subject/save";
 		public static final String GROUP_SAVE_URL = V_1 + "/group/save";
+		public static final String DELETE_USER_URL = V_1 + "/user/delete/{id}";
 
 		public static final String UPLOAD_URL = V_1 + "/upload";
 
@@ -133,7 +134,7 @@ public class Routes {
 		public String[] topTierRoutes() {
 			return new String[] {
 					USER_SAVE_URL, DEGREE_SAVE_URL, SUBJECT_SAVE_URL, GROUP_SAVE_URL,
-					ADD_TEACHER_TO_SUBJECT_URL
+					ADD_TEACHER_TO_SUBJECT_URL, DELETE_USER_URL
 			};
 		}
 	}

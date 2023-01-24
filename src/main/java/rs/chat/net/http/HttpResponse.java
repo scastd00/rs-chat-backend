@@ -108,6 +108,15 @@ public class HttpResponse extends HttpServletResponseWrapper {
 	}
 
 	/**
+	 * Immediately sends a response with the given status and empty body.
+	 *
+	 * @throws IOException if an error occurs while sending the response.
+	 */
+	public void send() throws IOException {
+		this.send(HttpResponseBody.EMPTY);
+	}
+
+	/**
 	 * Sends the given body to the client.
 	 * <p>
 	 * If it is an error, the key is set to {@link Constants#ERROR_JSON_KEY}.
