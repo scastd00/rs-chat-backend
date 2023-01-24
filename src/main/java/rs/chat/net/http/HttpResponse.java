@@ -154,16 +154,16 @@ public class HttpResponse extends HttpServletResponseWrapper {
 
 		if (response == HttpResponseBody.EMPTY) {
 			this.getWriter().print(""); // Empty body
-		} else {
-			// Todo: uncomment this if you want to send the response as a single object
-//			if (response.data.entrySet().size() == 1) {
-//				Map.Entry<String, Object> entry = response.data.entrySet().iterator().next();
-//				this.objectMapper.writeValue(this.getWriter(), entry.getValue());
-//				return;
-//			}
-
-			this.objectMapper.writeValue(this.getWriter(), response.data);
+			return;
 		}
+
+		if (response.data.entrySet().size() == 1) {
+			Map.Entry<String, Object> entry = response.data.entrySet().iterator().next();
+			this.objectMapper.writeValue(this.getWriter(), entry.getValue());
+			return;
+		}
+
+		this.objectMapper.writeValue(this.getWriter(), response.data);
 	}
 
 	/**
