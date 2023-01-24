@@ -9,7 +9,10 @@ import org.mapstruct.ReportingPolicy;
 import rs.chat.domain.entity.Chat;
 import rs.chat.domain.entity.dtos.ChatDto;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
+@Mapper(
+		unmappedTargetPolicy = ReportingPolicy.IGNORE,
+		componentModel = MappingConstants.ComponentModel.SPRING
+)
 public interface ChatMapper {
 	Chat toEntity(ChatDto chatDto);
 

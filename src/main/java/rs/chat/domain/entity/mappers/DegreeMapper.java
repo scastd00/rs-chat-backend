@@ -9,7 +9,10 @@ import org.mapstruct.ReportingPolicy;
 import rs.chat.domain.entity.Degree;
 import rs.chat.domain.entity.dtos.DegreeDto;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
+@Mapper(
+		unmappedTargetPolicy = ReportingPolicy.IGNORE,
+		componentModel = MappingConstants.ComponentModel.SPRING
+)
 public interface DegreeMapper {
 	Degree toEntity(DegreeDto degreeDto);
 

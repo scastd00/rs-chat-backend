@@ -9,7 +9,10 @@ import org.mapstruct.ReportingPolicy;
 import rs.chat.domain.entity.Session;
 import rs.chat.domain.entity.dtos.SessionDto;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
+@Mapper(
+		unmappedTargetPolicy = ReportingPolicy.IGNORE,
+		componentModel = MappingConstants.ComponentModel.SPRING
+)
 public interface SessionMapper {
 	Session toEntity(SessionDto sessionDto);
 

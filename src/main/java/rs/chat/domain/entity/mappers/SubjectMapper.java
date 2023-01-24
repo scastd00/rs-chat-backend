@@ -9,7 +9,10 @@ import org.mapstruct.ReportingPolicy;
 import rs.chat.domain.entity.Subject;
 import rs.chat.domain.entity.dtos.SubjectDto;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
+@Mapper(
+		unmappedTargetPolicy = ReportingPolicy.IGNORE,
+		componentModel = MappingConstants.ComponentModel.SPRING
+)
 public interface SubjectMapper {
 	Subject toEntity(SubjectDto subjectDto);
 

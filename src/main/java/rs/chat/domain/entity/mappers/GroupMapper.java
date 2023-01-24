@@ -9,7 +9,10 @@ import org.mapstruct.ReportingPolicy;
 import rs.chat.domain.entity.Group;
 import rs.chat.domain.entity.dtos.GroupDto;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
+@Mapper(
+		unmappedTargetPolicy = ReportingPolicy.IGNORE,
+		componentModel = MappingConstants.ComponentModel.SPRING
+)
 public interface GroupMapper {
 	Group toEntity(GroupDto groupDto);
 
