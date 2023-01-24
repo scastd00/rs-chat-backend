@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 import rs.chat.domain.entity.Degree;
+import rs.chat.domain.entity.mappers.DegreeMapper;
 import rs.chat.domain.service.ChatService;
 import rs.chat.domain.service.DegreeService;
 import rs.chat.net.http.HttpRequest;
@@ -38,6 +39,7 @@ import static rs.chat.utils.Constants.DEGREE;
 public class DegreeController {
 	private final DegreeService degreeService;
 	private final ChatService chatService;
+	private final DegreeMapper degreeMapper;
 
 	/**
 	 * Returns all degrees stored in db.
@@ -52,7 +54,7 @@ public class DegreeController {
 		JsonArray degreesWithInvitationCode = new JsonArray();
 
 		allDegrees.stream()
-		          .map(this::getDegreeWithInvitationCode)
+		          .map(this::getDegreeWithInvitationCodeToChat)
 		          .forEach(degreesWithInvitationCode::add);
 
 		response.ok().send("degrees", degreesWithInvitationCode.toString());
@@ -72,7 +74,7 @@ public class DegreeController {
 				response, () -> this.degreeService.getByName(degreeName)
 		);
 
-		response.ok().send(DEGREE, degree);
+		response.ok().send(DEGREE, this.degreeMapper.toDto(degree));
 	}
 
 	/**
@@ -99,7 +101,7 @@ public class DegreeController {
 				)
 		);
 
-		response.created(DEGREE_SAVE_URL).send(DEGREE, this.getDegreeWithInvitationCode(degree).toString());
+		response.created(DEGREE_SAVE_URL).send(DEGREE, this.getDegreeWithInvitationCodeToChat(degree).toString());
 	}
 
 	/**
@@ -120,7 +122,7 @@ public class DegreeController {
 				response, () -> this.degreeService.changeDegreeName(oldName, newName)
 		);
 
-		response.ok().send(DEGREE, degree);
+		response.ok().send(DEGREE, this.degreeMapper.toDto(degree));
 	}
 
 	/**
@@ -152,7 +154,7 @@ public class DegreeController {
 	 * @return JsonObject containing degree's name, id and invitation code.
 	 */
 	@NotNull
-	private JsonObject getDegreeWithInvitationCode(Degree degree) {
+	private JsonObject getDegreeWithInvitationCodeToChat(Degree degree) {
 		JsonObject degreeWithInvitationCode = new JsonObject();
 
 		degreeWithInvitationCode.addProperty("id", degree.getId());

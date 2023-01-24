@@ -7,12 +7,12 @@ import org.springframework.util.unit.DataSize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import rs.chat.domain.entity.File;
+import rs.chat.domain.entity.dtos.FileDto;
 import rs.chat.domain.service.FileService;
 import rs.chat.domain.service.UserService;
 import rs.chat.exceptions.BadRequestException;
 import rs.chat.net.http.HttpRequest;
 import rs.chat.net.http.HttpResponse;
-import rs.chat.net.http.HttpResponse.HttpResponseBody;
 import rs.chat.storage.strategies.upload.AudioStrategy;
 import rs.chat.storage.strategies.upload.FileUploadStrategy;
 import rs.chat.storage.strategies.upload.ImageStrategy;
@@ -87,21 +87,17 @@ public class FileController {
 				fileName,
 				Instant.now(this.clock),
 				fileBytes.length,
-				null,
-				null,
+				"",
+				"",
 				mimeTypes[0],
 				this.userService.getUserById(userId)
 		);
 
 		strategy.handle(fileBytes, mimeTypes[1], fileToSave); // Modifies the fileToSave object
 
-		this.fileService.save(fileToSave);
+		FileDto fileDto = this.fileService.save(fileToSave);
 
-		HttpResponseBody responseBody = new HttpResponseBody("uri", fileToSave.getPath());
-		responseBody.add("name", fileName);
-		responseBody.add("metadata", fileToSave.getMetadata());
-
-		response.ok().send(responseBody);
+		response.ok().send("file", fileDto);
 		log.info("File ({}) uploaded successfully", fileName);
 	}
 }

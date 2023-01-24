@@ -13,10 +13,11 @@ import rs.chat.domain.entity.Chat;
 import rs.chat.domain.entity.Group;
 import rs.chat.domain.entity.Session;
 import rs.chat.domain.entity.User;
+import rs.chat.domain.entity.mappers.SessionMapper;
+import rs.chat.domain.entity.mappers.UserMapper;
 import rs.chat.domain.service.ChatService;
 import rs.chat.domain.service.GroupService;
 import rs.chat.domain.service.SessionService;
-import rs.chat.domain.service.UserGroupService;
 import rs.chat.domain.service.UserService;
 import rs.chat.net.http.HttpRequest;
 import rs.chat.net.http.HttpResponse;
@@ -56,8 +57,9 @@ public class AuthController {
 	private final SessionService sessionService;
 	private final ChatService chatService;
 	private final GroupService groupService;
-	private final UserGroupService userGroupService;
 	private final Clock clock;
+	private final SessionMapper sessionMapper;
+	private final UserMapper userMapper;
 
 	/**
 	 * Performs the login of the user.
@@ -92,14 +94,13 @@ public class AuthController {
 				)
 		);
 
-		var allChatsOfUserGroupedByType = this.chatService.getAllChatsOfUserGroupedByType(user.getId());
+		var allChatsOfUserGroupedByType = this.chatService.getAllChatsOfUserGroupedByType(user);
 
-		// Clear sensitive data
-		user.setPassword(""); // Password not visible in the response
+		// Remove the source IP from the session.
 		savedSession.setSrcIp("");
 
-		HttpResponseBody responseBody = new HttpResponseBody("session", savedSession);
-		responseBody.add("user", user);
+		HttpResponseBody responseBody = new HttpResponseBody("session", this.sessionMapper.toDto(savedSession));
+		responseBody.add("user", this.userMapper.toDto(user));
 		responseBody.add("chats", allChatsOfUserGroupedByType);
 
 		response.ok().send(responseBody);
@@ -167,13 +168,6 @@ public class AuthController {
 				)
 		);
 
-		Long userId = savedUser.getId();
-
-		// Check if the User constructor adds the user to the global group and chat
-		// If not, uncomment the following lines
-//		this.userGroupService.addUserToGroup(userId, globalGroup.getId());
-//		this.chatService.addUserToChat(userId, globalChat.getId());
-
 		// Make the Map of the only available chat without calling database
 		Map<String, List<Map<String, Object>>> defaultChat =
 				Map.of(
@@ -186,16 +180,15 @@ public class AuthController {
 						)
 				);
 
-		// Clear the password
-		savedUser.setPassword("");
+		// Clear the source IP of the session
 		session.setSrcIp("");
 
-		HttpResponseBody responseBody = new HttpResponseBody("session", session);
-		responseBody.add("user", savedUser.toString());
-		responseBody.add("chats", defaultChat.toString());
+		HttpResponseBody responseBody = new HttpResponseBody("session", this.sessionMapper.toDto(session));
+		responseBody.add("user", this.userMapper.toDto(savedUser));
+		responseBody.add("chats", defaultChat);
 
 		response.ok().send(responseBody);
-		MailSender.sendRegistrationEmail(savedUser.getEmail(), savedUser.getUsername()); // Todo: change for a Task
+		MailSender.sendRegistrationEmailBackground(savedUser.getEmail(), savedUser.getUsername());
 	}
 
 	/**
@@ -274,7 +267,7 @@ public class AuthController {
 		this.userService.updateUser(user);
 
 		response.sendStatus(OK);
-		MailSender.resetPassword(email, code);
+		MailSender.sendResetPasswordEmailBackground(email, code);
 	}
 
 	/**

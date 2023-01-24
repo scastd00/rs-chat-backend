@@ -10,6 +10,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import rs.chat.domain.entity.User;
+import rs.chat.domain.entity.dtos.UserDto;
+import rs.chat.domain.entity.mappers.UserMapper;
 import rs.chat.domain.repository.UserRepository;
 import rs.chat.exceptions.BadRequestException;
 import rs.chat.exceptions.NotFoundException;
@@ -23,6 +25,7 @@ import java.util.List;
 public class UserService implements UserDetailsService {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
+	private final UserMapper userMapper;
 
 	/**
 	 * Gets the user by username to be used by Spring Security.
@@ -49,8 +52,11 @@ public class UserService implements UserDetailsService {
 	/**
 	 * @return the list of all users in the database.
 	 */
-	public List<User> getUsers() {
-		return this.userRepository.findAll();
+	public List<UserDto> getUsers() {
+		return this.userRepository.findAll()
+		                          .stream()
+		                          .map(userMapper::toDto)
+		                          .toList();
 	}
 
 	public boolean existsByEmail(String email) {

@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import rs.chat.domain.DomainUtils;
 import rs.chat.domain.entity.Subject;
-import rs.chat.domain.entity.User;
 import rs.chat.domain.service.ChatService;
 import rs.chat.domain.service.SubjectService;
 import rs.chat.domain.service.TeacherService;
@@ -17,7 +16,6 @@ import rs.chat.net.http.HttpRequest;
 import rs.chat.net.http.HttpResponse;
 
 import java.io.IOException;
-import java.util.List;
 
 import static org.springframework.http.HttpStatus.OK;
 import static rs.chat.router.Routes.GetRoute.TEACHERS_URL;
@@ -40,14 +38,7 @@ public class TeacherController {
 
 	@GetMapping(TEACHERS_URL)
 	public void getTeachers(HttpResponse response) throws IOException {
-		List<User> teachers = this.teacherService.getTeachers()
-		                                         .stream()
-		                                         .map(user -> {
-			                                         user.setPasswordCode(null);
-			                                         return user;
-		                                         })
-		                                         .toList();
-		response.status(OK).send(teachers);
+		response.status(OK).send(this.teacherService.getTeachers());
 	}
 
 	@GetMapping(TEACHER_SUBJECTS_URL)

@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import rs.chat.domain.entity.Emoji;
+import rs.chat.domain.entity.dtos.EmojiDto;
 import rs.chat.domain.service.EmojiService;
 import rs.chat.net.http.HttpResponse;
 
@@ -38,26 +38,26 @@ public class EmojiController {
 			return; // The user has not typed anything yet
 		}
 
-		List<Emoji> emojis = this.emojiService.getEmojisStartingWith(string);
+		List<EmojiDto> emojiDTOs = this.emojiService.getEmojisStartingWith(string);
 
-		if (emojis.isEmpty()) {
+		if (emojiDTOs.isEmpty()) {
 			response.notFound().send("No emojis found");
 			return;
 		}
 
-		response.ok().send("emojis", emojis);
+		response.ok().send("emojis", emojiDTOs);
 	}
 
 	@GetMapping(EMOJI_BY_CATEGORY_URL)
 	public void getEmojisByCategory(HttpResponse response, @PathVariable String category) throws IOException {
-		List<Emoji> emojis = this.emojiService.getEmojisByCategory(category.replace("%20", " "));
+		List<EmojiDto> emojiDTOs = this.emojiService.getEmojisByCategory(category.replace("%20", " "));
 
-		if (emojis.isEmpty()) {
+		if (emojiDTOs.isEmpty()) {
 			response.notFound().send("No emojis found");
 			return;
 		}
 
-		response.ok().send("emojis", emojis);
+		response.ok().send("emojis", emojiDTOs);
 	}
 
 	@GetMapping(EMOJIS_GROUPED_BY_CATEGORY_URL)

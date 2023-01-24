@@ -12,6 +12,7 @@ import rs.chat.domain.repository.SessionRepository;
 import rs.chat.domain.repository.UserRepository;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -81,14 +82,13 @@ public class SessionService {
 	 *
 	 * @return the found sessions.
 	 */
-	public List<String> getSessionsOfUser(String username) {
-		Long userId = this.userRepository.findByUsername(username)
-		                                 .orElseThrow(() -> new UsernameNotFoundException("User %s not found".formatted(username)))
-		                                 .getId();
-		return this.sessionRepository.findAllByUserId(userId)
-		                             .stream()
-		                             .map(Session::getSrcIp)
-		                             .toList();
+	public List<String> getSrcIpOfUserSessions(String username) {
+		return this.userRepository.findByUsername(username)
+		                          .stream()
+		                          .map(User::getSessions)
+		                          .flatMap(Set::stream)
+		                          .map(Session::getSrcIp)
+		                          .toList();
 	}
 
 	/**

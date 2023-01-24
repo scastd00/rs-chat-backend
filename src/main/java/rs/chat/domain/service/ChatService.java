@@ -87,15 +87,14 @@ public class ChatService {
 	/**
 	 * Retrieves all the chats to which the user can access grouped by type.
 	 *
-	 * @param userId id of the user.
+	 * @param user user to which the chats belong.
 	 *
 	 * @return map of chats to which the user can access grouped by type.
 	 */
-	public Map<String, List<Map<String, Object>>> getAllChatsOfUserGroupedByType(Long userId) {
-		List<Chat> allChatsOfUser = this.getAllChatsOfUser(userId);
+	public Map<String, List<Map<String, Object>>> getAllChatsOfUserGroupedByType(User user) {
 		Map<String, List<Map<String, Object>>> groups = new HashMap<>();
 
-		allChatsOfUser.forEach(chat -> {
+		user.getChats().forEach(chat -> {
 			String chatType = chat.getType();
 			Map<String, Object> chatItem = new HashMap<>();
 			chatItem.put("name", chat.getName());

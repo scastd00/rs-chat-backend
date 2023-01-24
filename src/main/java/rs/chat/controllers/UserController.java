@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import rs.chat.domain.entity.User;
+import rs.chat.domain.entity.mappers.UserMapper;
 import rs.chat.domain.service.ChatService;
 import rs.chat.domain.service.GroupService;
 import rs.chat.domain.service.SessionService;
@@ -39,6 +40,7 @@ public class UserController {
 	private final SessionService sessionService;
 	private final GroupService groupService;
 	private final ChatService chatService;
+	private final UserMapper userMapper;
 
 	/**
 	 * Returns all users.
@@ -89,8 +91,8 @@ public class UserController {
 			);
 		});
 
-		response.created(USER_SAVE_URL).send(DATA_JSON_KEY, savedUser);
-		MailSender.sendRegistrationEmail(savedUser.getEmail(), savedUser.getUsername());
+		response.created(USER_SAVE_URL).send(DATA_JSON_KEY, this.userMapper.toDto(savedUser));
+		MailSender.sendRegistrationEmailBackground(savedUser.getEmail(), savedUser.getUsername());
 	}
 
 	/**
@@ -104,7 +106,7 @@ public class UserController {
 	@GetMapping(OPENED_SESSIONS_OF_USER_URL)
 	public void openedSessions(HttpResponse response,
 	                           @PathVariable String username) throws IOException {
-		List<String> sessionsOfUser = this.sessionService.getSessionsOfUser(username);
+		List<String> sessionsOfUser = this.sessionService.getSrcIpOfUserSessions(username);
 
 		response.ok().send("sessions", sessionsOfUser);
 	}
@@ -112,7 +114,10 @@ public class UserController {
 	@GetMapping(USER_ID_BY_USERNAME_URL)
 	public void getUserIdByUsername(HttpResponse response,
 	                                @PathVariable String username) throws IOException {
-		User user = ControllerUtils.performActionThatMayThrowException(response, () -> this.userService.getUser(username));
+		User user = ControllerUtils.performActionThatMayThrowException(
+				response, () -> this.userService.getUser(username)
+		);
+
 		response.ok().send("id", user.getId());
 	}
 }

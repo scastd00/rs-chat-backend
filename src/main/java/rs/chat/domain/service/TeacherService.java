@@ -8,16 +8,22 @@ import rs.chat.domain.entity.Degree;
 import rs.chat.domain.entity.Subject;
 import rs.chat.domain.entity.TeaSubj;
 import rs.chat.domain.entity.TeaSubjId;
-import rs.chat.domain.entity.User;
+import rs.chat.domain.entity.dtos.DegreeDto;
+import rs.chat.domain.entity.dtos.SubjectDto;
+import rs.chat.domain.entity.dtos.UserDto;
+import rs.chat.domain.entity.mappers.DegreeMapper;
+import rs.chat.domain.entity.mappers.SubjectMapper;
+import rs.chat.domain.entity.mappers.UserMapper;
 import rs.chat.domain.repository.DegreeRepository;
 import rs.chat.domain.repository.SubjectRepository;
 import rs.chat.domain.repository.TeacherSubjectRepository;
 import rs.chat.domain.repository.UserRepository;
 import rs.chat.exceptions.BadRequestException;
-import rs.chat.exceptions.NotFoundException;
 import rs.chat.utils.Constants;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -29,28 +35,38 @@ public class TeacherService {
 	private final UserRepository userRepository;
 	private final UserRepository teacherRepository;
 	private final DegreeRepository degreeRepository;
+	private final UserMapper userMapper;
+	private final SubjectMapper subjectMapper;
+	private final DegreeMapper degreeMapper;
 
-	public List<Subject> getSubjects(Long id) {
+	public List<SubjectDto> getSubjects(Long id) {
 		return this.teacherSubjectRepository.findAllById_TeacherId(id)
 		                                    .stream()
 		                                    .map(TeaSubj::getSubject)
+		                                    .map(this.subjectMapper::toDto)
 		                                    .toList();
 	}
 
-	public List<Degree> getDegrees(Long id) {
-		List<Long> degreeIds = this.teacherSubjectRepository.findAllById_TeacherId(id)
-		                                                    .stream()
-		                                                    .map(TeaSubj::getSubject)
-		                                                    .map(Subject::getDegree)
-		                                                    .map(Degree::getId)
-		                                                    .distinct()
-		                                                    .toList();
-		return this.degreeRepository.findAllById(degreeIds);
+	public List<DegreeDto> getDegrees(Long id) {
+		return this.teacherSubjectRepository.findAllById_TeacherId(id)
+		                                    .stream()
+		                                    .map(TeaSubj::getSubject)
+		                                    .map(Subject::getDegree)
+		                                    .map(Degree::getId)
+		                                    .distinct()
+		                                    .map(this.degreeRepository::findById)
+		                                    .filter(Optional::isPresent)
+		                                    .map(Optional::get)
+		                                    .map(this.degreeMapper::toDto)
+		                                    .toList();
 	}
 
-	public List<User> getTeachers() {
+	public List<UserDto> getTeachers() {
 		return this.userRepository.findAllByRole(Constants.TEACHER_ROLE)
-		                          .orElseThrow(() -> new NotFoundException("No teachers found"));
+		                          .orElse(Collections.emptyList())
+		                          .stream()
+		                          .map(this.userMapper::toDto)
+		                          .toList();
 	}
 
 	/**
