@@ -1,43 +1,33 @@
 package rs.chat.net.ws;
 
 import lombok.Getter;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import rs.chat.cache.CachedHistoryFile;
+import rs.chat.cache.HistoryFilesCache;
 import rs.chat.storage.S3;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Class that stores the clients in a {@link CopyOnWriteArrayList} and have
- * a {@link PrintWriter} associated to a file to store all the messages received.
+ * a {@link CachedHistoryFile} associated to a file to store all the messages received.
+ * This allows to read and write to the file faster, since the file is cached in memory.
  */
 @Getter
 @Slf4j
 public class Chat {
 	private final String chatId;
-	private final CopyOnWriteArrayList<Client> clients;
-	private final PrintWriter writer;
+	private final CopyOnWriteArrayList<Client> clients = new CopyOnWriteArrayList<>();
+	private final CachedHistoryFile historyFile;
 
 	/**
 	 * Creates the chat with the specified chatId.
 	 *
 	 * @param chatId id of the chat that is created.
 	 */
-	@SneakyThrows(IOException.class)
 	public Chat(String chatId) {
 		this.chatId = chatId;
-		this.clients = new CopyOnWriteArrayList<>();
-
-		File downloadFile = S3.getInstance().downloadHistoryFile(chatId);
-
-		FileWriter fileWriter = new FileWriter(downloadFile, true);
-		BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-		this.writer = new PrintWriter(bufferedWriter, true); // Auto-Flush enabled
+		this.historyFile = HistoryFilesCache.INSTANCE.get(chatId);
 	}
 
 	public void broadcast(String message) {
@@ -50,7 +40,7 @@ public class Chat {
 	 * @param message message to store in the file.
 	 */
 	public void saveMessageToHistoryFile(String message) {
-		this.writer.println(message); // Write a line and flush
+		this.historyFile.write(message);
 	}
 
 	public void broadcastAndSave(String message) {
@@ -63,8 +53,8 @@ public class Chat {
 	 * <p>
 	 * This method is called when the last client of the chat has left.
 	 */
-	public void finish() {
-		this.writer.close();
+	public synchronized void finish() {
+		this.historyFile.close();
 		this.saveToS3();
 	}
 
@@ -79,7 +69,7 @@ public class Chat {
 	/**
 	 * Deletes the users that are null or their connection is nonexistent, or it is closed.
 	 */
-	public synchronized void deleteUnwantedUsers() {
+	synchronized void deleteUnwantedUsers() {
 		this.clients.removeIf(client -> client == null || client.session() == null || !client.session().isOpen());
 	}
 }

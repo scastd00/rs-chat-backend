@@ -53,10 +53,10 @@ public final class Constants {
 	public static final String JWT_TOKEN_PREFIX = "Bearer ";
 
 	public static final String S3_BUCKET_NAME = System.getenv("AWS_S3_BUCKET_NAME");
-	public static final URI REMOTE_S3_ENDPOINT_URI = Optional.of(System.getenv("S3_ENDPOINT_URI"))
-	                                                         .filter(s -> !s.equals(EMPTY_ENV_VAR))
-	                                                         .map(URI::create)
-	                                                         .orElse(null);
+	public static final URI S3_ENDPOINT_URI = Optional.of(System.getenv("S3_ENDPOINT_URI"))
+	                                                  .filter(s -> !s.equals(EMPTY_ENV_VAR))
+	                                                  .map(URI::create)
+	                                                  .orElse(null);
 	public static final URI S3_ENDPOINT_URI_FOR_FILES = URI.create(System.getenv("S3_ENDPOINT_URI_FOR_FILES"));
 
 	public static final String USER = "user";
@@ -68,6 +68,6 @@ public final class Constants {
 	public static final String DEGREE = "degree";
 	public static final String DEGREE_CHAT_S3_FOLDER_PREFIX = DEGREE + "/";
 
-	public static final int MAX_CHAT_HISTORY_PER_REQUEST = 65;
+	public static final int HISTORY_PAGE_SIZE = 65;
 	public static final SecureRandom SECURE_RANDOM = new SecureRandom();
 }

@@ -33,7 +33,7 @@ public record Message(String type, String filePrefix, String extension) {
 	public static final Message COMMAND_RESPONSE = new Message("COMMAND_RESPONSE", null, null);
 
 	public static final Message ACTIVE_USERS_MESSAGE = new Message("ACTIVE_USERS", null, null);
-	public static final Message GET_HISTORY_MESSAGE = new Message("GET_HISTORY", "chat/", TEXT_MESSAGE.extension);
+	public static final Message GET_HISTORY_MESSAGE = new Message("GET_HISTORY", TEXT_MESSAGE.filePrefix, TEXT_MESSAGE.extension);
 	public static final Message INFO_MESSAGE = new Message("INFO_MESSAGE", null, null);
 	public static final Message ERROR_MESSAGE = new Message("ERROR_MESSAGE", null, null);
 	public static final Message PING_MESSAGE = new Message("PING", null, null);

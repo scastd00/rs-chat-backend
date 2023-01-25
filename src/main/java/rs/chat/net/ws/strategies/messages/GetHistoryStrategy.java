@@ -3,8 +3,9 @@ package rs.chat.net.ws.strategies.messages;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 import org.springframework.web.socket.TextMessage;
+import rs.chat.cache.CachedHistoryFile;
+import rs.chat.cache.HistoryFilesCache;
 import rs.chat.exceptions.WebSocketException;
 import rs.chat.net.ws.ChatManagement;
 import rs.chat.net.ws.ClientID;
@@ -12,18 +13,12 @@ import rs.chat.net.ws.JsonMessageWrapper;
 import rs.chat.net.ws.Message;
 import rs.chat.utils.Utils;
 
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import static rs.chat.net.ws.Message.GET_HISTORY_MESSAGE;
 import static rs.chat.net.ws.Message.USER_JOINED;
 import static rs.chat.net.ws.Message.USER_LEFT;
-import static rs.chat.utils.Constants.MAX_CHAT_HISTORY_PER_REQUEST;
 import static rs.chat.utils.Utils.createMessage;
 
 /**
@@ -34,26 +29,22 @@ public class GetHistoryStrategy implements MessageStrategy {
 	@Override
 	public void handle(JsonMessageWrapper wrappedMessage, ChatManagement chatManagement,
 	                   Map<String, Object> otherData) throws WebSocketException, IOException {
-		// Todo: receive a number of the "page" to get the history from.
-		//  Received 1: get the last 65 messages.
-		//  Received 2: get the 65 messages prior to the last 65 messages, and so on.
 		/*
-		 * Updated messages are retrieved from the file stored in disk instead of
-		 * requesting them to the S3 bucket. The file is always present here because it is
-		 * previously downloaded by S3 class.
+		 * Messages are read from the history file and sent to the client. This file is cached
+		 * in memory to speed up the process of reading the messages. The cache is updated
+		 * every time a new message is sent to the chat. The client must send the page number
+		 * of the history file that it wants to read. The default page size is {@link Constants#HISTORY_PAGE_SIZE}.
 		 */
-		File historyFile = GET_HISTORY_MESSAGE.historyFile(wrappedMessage.chatId());
-		String history = IOUtils.toString(new FileReader(historyFile));
-		String username = ((ClientID) otherData.get("clientID")).username();
 
-		JsonArray lastMessages = new JsonArray();
-		List<String> reversedHistory = Arrays.asList(history.split("\n"));
-		Collections.reverse(reversedHistory); // Reverse the history to get the latest messages first.
-		reversedHistory.stream()
-		               .limit(MAX_CHAT_HISTORY_PER_REQUEST) // First, limit the number of messages to send, to improve performance.
-		               .map(Utils::parseJson)
-		               .filter(jsonObject -> this.filterUserActivityMessages(jsonObject, username))
-		               .forEach(lastMessages::add);
+		String username = ((ClientID) otherData.get("clientID")).username();
+		int page = Integer.parseInt(wrappedMessage.content());
+		CachedHistoryFile historyFile = HistoryFilesCache.INSTANCE.get(wrappedMessage.chatId());
+
+		JsonArray lastMessages = historyFile.getPage(page)
+		                                    .stream()
+		                                    .map(Utils::parseJson)
+		                                    .filter(jsonObject -> this.filterUserActivityMessages(jsonObject, username))
+		                                    .collect(JsonArray::new, JsonArray::add, JsonArray::addAll);
 
 		getSession(otherData).sendMessage(new TextMessage(
 				createMessage(lastMessages.toString(), GET_HISTORY_MESSAGE.type(), wrappedMessage.chatId())
