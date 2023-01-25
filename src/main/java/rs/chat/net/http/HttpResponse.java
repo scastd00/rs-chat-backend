@@ -194,6 +194,9 @@ public class HttpResponse extends HttpServletResponseWrapper {
 			return this;
 		}
 
+		/**
+		 * @return the value of the first element in the body.
+		 */
 		public Object value() {
 			return this.data.values().iterator().next();
 		}
