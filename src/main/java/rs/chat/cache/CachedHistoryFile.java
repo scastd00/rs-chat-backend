@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import rs.chat.storage.S3;
+import rs.chat.utils.Constants;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -76,34 +77,31 @@ public class CachedHistoryFile {
 	}
 
 	/**
-	 * Get a page of the history file. The history file is read from the end to the beginning
-	 * and the page is returned as a list of strings.
+	 * Get the previous {@link Constants#HISTORY_PAGE_SIZE} messages from the history file before
+	 * the given offset.
 	 *
-	 * @param page {@link Integer} with the page number.
+	 * @param offset {@link Integer} with the offset from the end of the history file.
 	 *
-	 * @return {@link List} of {@link String} with the messages of the page.
+	 * @return {@link List} of {@link String} with the messages.
 	 */
-	public List<String> getPage(int page) {
-		// Begin reading from the end of the list to the beginning
+	public List<String> getMoreMessagesFromOffset(int offset) {
 		synchronized (this.lock) {
-			int size = this.history.size();
-			int begin = size - (page * HISTORY_PAGE_SIZE);
-			int end = begin + HISTORY_PAGE_SIZE;
+			int start = this.history.size() - offset - HISTORY_PAGE_SIZE;
+			int end = start + HISTORY_PAGE_SIZE;
 
-			if (begin < 0) {
-				begin = 0;
+			if (start < 0) {
+				start = 0;
 			}
 
-			if (end > size) {
-				end = size;
+			if (end > this.history.size()) {
+				end = this.history.size();
 			}
 
-			try {
-				log.info("Getting page {} from {} to {}", page, begin, end);
-				return this.history.subList(begin, end);
-			} catch (IndexOutOfBoundsException | IllegalArgumentException e) {
+			if (start >= end) {
 				return Collections.emptyList();
 			}
+
+			return this.history.subList(start, end);
 		}
 	}
 

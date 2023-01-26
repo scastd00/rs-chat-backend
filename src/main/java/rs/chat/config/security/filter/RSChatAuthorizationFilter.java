@@ -69,7 +69,7 @@ public class RSChatAuthorizationFilter extends OncePerRequestFilter {
 			throw new ServletException("Missing or invalid Authorization header.");
 		} else {
 			try {
-				DecodedJWT decodedJWT = Utils.checkAuthorizationToken(authorizationHeader);
+				DecodedJWT decodedJWT = Utils.verifyJWT(authorizationHeader);
 				String username = decodedJWT.getSubject();
 				String role = decodedJWT.getClaim("role").asString();
 
@@ -82,7 +82,7 @@ public class RSChatAuthorizationFilter extends OncePerRequestFilter {
 				SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 				chain.doFilter(request, response);
 			} catch (Exception e) {
-				log.error(e.getMessage(), e);
+				log.error(e.getMessage());
 				new HttpResponse(response).status(FORBIDDEN)
 				                          .send(e.getMessage());
 			}

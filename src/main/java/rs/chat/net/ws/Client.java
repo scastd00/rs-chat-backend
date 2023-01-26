@@ -31,7 +31,7 @@ public record Client(WebSocketSession session, ClientID clientID) {
 	/**
 	 * Close the client's connection.
 	 */
-	public synchronized void close() {
+	public void close() {
 		try {
 			if (this.session.isOpen()) {
 				this.session.close();

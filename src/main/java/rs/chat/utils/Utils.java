@@ -7,7 +7,6 @@ import com.google.gson.JsonObject;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import rs.chat.exceptions.TokenValidationException;
-import rs.chat.exceptions.WebSocketException;
 import rs.chat.net.ws.JsonMessageWrapper;
 import rs.chat.tasks.Task;
 import rs.chat.tasks.TaskExecutionException;
@@ -98,7 +97,7 @@ public final class Utils {
 	 *
 	 * @throws JWTVerificationException if the token is invalid.
 	 */
-	public static DecodedJWT checkAuthorizationToken(String token) throws JWTVerificationException {
+	public static DecodedJWT verifyJWT(String token) throws JWTVerificationException {
 		return JWT_VERIFIER.verify(token.replace(JWT_TOKEN_PREFIX, ""));
 	}
 
@@ -194,25 +193,24 @@ public final class Utils {
 	 *
 	 * @param token token to check.
 	 *
-	 * @throws WebSocketException       if token is null or empty.
 	 * @throws TokenValidationException if token is invalid.
 	 */
-	public static void checkTokenValidity(String token) throws WebSocketException, TokenValidationException {
+	public static void checkTokenValidity(String token) throws TokenValidationException {
 		if (token == null) {
-			throw new WebSocketException("Token is null");
+			throw new TokenValidationException("Token is null");
 		}
 
 		if (token.isEmpty()) {
-			throw new WebSocketException("Token is empty");
+			throw new TokenValidationException("Token is empty");
+		}
+
+		if (token.replace(JWT_TOKEN_PREFIX, "").equals("empty")) {
+			return; // Client connected to the server without a token (started the app but not connected to a chat).
 		}
 
 		try {
-			checkAuthorizationToken(token);
+			verifyJWT(token);
 		} catch (JWTVerificationException e) {
-			if (token.replace(JWT_TOKEN_PREFIX, "").equals("empty")) {
-				return; // Client connected to the server without a token (started the app but not connected to a chat).
-			}
-
 			throw new TokenValidationException(e.getMessage());
 		}
 	}
