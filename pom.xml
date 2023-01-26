@@ -13,7 +13,7 @@
 
 	<groupId>rs.chat</groupId>
 	<artifactId>rs-chat-backend</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.2</version>
 	<packaging>jar</packaging>
 	<name>rs-chat-backend</name>
 	<description>Chat application</description>
@@ -101,7 +101,7 @@
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<version>1.2.11</version> <!-- DO NOT TOUCH THIS VERSION -->
+			<version>1.4.5</version>
 		</dependency>
 
 		<dependency>
