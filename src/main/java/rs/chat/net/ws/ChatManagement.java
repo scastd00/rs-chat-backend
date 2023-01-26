@@ -29,15 +29,6 @@ public class ChatManagement {
 	private final Metrics metrics;
 
 	/**
-	 * Creates a new {@link Chat} for the specified key.
-	 *
-	 * @param chatId key of the chat to create.
-	 */
-	private synchronized void createChat(String chatId) {
-		this.chats.put(chatId, new Chat(chatId));
-	}
-
-	/**
 	 * Checks if the specified chatId is a key of the chats map.
 	 *
 	 * @param chatId chat id to check.
@@ -58,7 +49,7 @@ public class ChatManagement {
 	 * @return the required chat or an empty list.
 	 */
 	@NotNull
-	private synchronized List<Client> getClientsOf(String chatId) {
+	private List<Client> getClientsOf(String chatId) {
 		return this.chatExists(chatId) ? this.chats.get(chatId).getClients() : List.of();
 	}
 
@@ -68,7 +59,7 @@ public class ChatManagement {
 	 * @param chatId  id of the chat and the file to write to.
 	 * @param message message to write.
 	 */
-	private synchronized void saveMessage(String chatId, String message) {
+	private void saveMessage(String chatId, String message) {
 		if (this.chatExists(chatId)) {
 			this.chats.get(chatId).saveMessageToHistoryFile(message);
 		}
@@ -76,7 +67,8 @@ public class ChatManagement {
 
 	/**
 	 * Adds a client to the specified chat (id of the chat is stored in the
-	 * {@code clientID} attribute of {@link Client}).
+	 * {@code clientID} attribute of {@link Client}). If the chat does not exist,
+	 * it is created.
 	 *
 	 * @param client new client to add to the chat.
 	 */
@@ -84,7 +76,7 @@ public class ChatManagement {
 		String chatId = client.clientID().chatId();
 
 		if (!this.chatExists(chatId)) {
-			this.createChat(chatId);
+			this.chats.put(chatId, new Chat(chatId));
 		}
 
 		this.getClientsOf(chatId).add(client);
@@ -122,7 +114,7 @@ public class ChatManagement {
 	 * @param chatId  chat id to which the message should be sent.
 	 * @param message message to send.
 	 */
-	public synchronized void broadcastToSingleChat(String chatId, String message) {
+	public void broadcastToSingleChat(String chatId, String message) {
 		this.chats.get(chatId).broadcastAndSave(message);
 	}
 
@@ -133,13 +125,16 @@ public class ChatManagement {
 	 * @param clientID client to "ignore".
 	 * @param message  message to send.
 	 */
-	public synchronized void broadcastToSingleChatAndExcludeClient(ClientID clientID, String message) {
+	public void broadcastToSingleChatAndExcludeClient(ClientID clientID, String message) {
 		this.getClientsOf(clientID.chatId())
 		    .stream()
 		    .filter(client -> !client.clientID().equals(clientID))
 		    .forEach(client -> client.send(message));
 
-		this.saveMessage(clientID.chatId(), message);
+		JsonMessageWrapper jsonMessageWrapper = new JsonMessageWrapper(message);
+		if (!Message.typeBelongsToGroup(jsonMessageWrapper.type(), Message.ACTIVITY_MESSAGES)) {
+			this.saveMessage(clientID.chatId(), message);
+		}
 	}
 
 	/**

@@ -19,7 +19,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.function.Function;
 
-import static rs.chat.net.ws.Message.ERROR_MESSAGE;
 import static rs.chat.utils.Constants.ALGORITHM;
 import static rs.chat.utils.Constants.GSON;
 import static rs.chat.utils.Constants.JWT_TOKEN_PREFIX;
@@ -113,38 +112,28 @@ public final class Utils {
 	 * @return the {@link String} message containing the server message.
 	 */
 	public static String createMessage(String content, String type, String chatId) {
-		return (JsonMessageWrapper.builder()
-		                          /* Headers */
-		                          .username("Server")
-		                          .chatId(chatId)
-		                          .type(type)
-		                          .date(System.currentTimeMillis())
-		                          /* Body */
-		                          .content(content)
-		                          .build())
-				/* JsonObject */
-				.toString();
+		return serverMessage(content, type, chatId).toString();
 	}
 
 	/**
-	 * Creates a {@link String} message containing an error message.
+	 * Creates a server message to send to the clients.
 	 *
-	 * @param message the error message to send.
+	 * @param content content of the message.
+	 * @param type    type of the message.
+	 * @param chatId  chatId to send the message to.
 	 *
-	 * @return the {@link String} message containing the error message.
+	 * @return the server message.
 	 */
-	public static String createErrorMessage(String message) {
-		return (JsonMessageWrapper.builder()
-		                          /* Headers */
-		                          .username("Server")
-		                          .chatId("NONE")
-		                          .type(ERROR_MESSAGE.type())
-		                          .date(System.currentTimeMillis())
-		                          /* Body */
-		                          .content(message)
-		                          .build())
-				/* JsonObject */
-				.toString();
+	private static Object serverMessage(String content, String type, String chatId) {
+		return JsonMessageWrapper.builder()
+		                         /* Headers */
+		                         .username("Server")
+		                         .chatId(chatId)
+		                         .type(type)
+		                         .date(System.currentTimeMillis())
+		                         /* Body */
+		                         .content(content)
+		                         .build();
 	}
 
 	/**

@@ -43,7 +43,6 @@ public class GetHistoryStrategy implements MessageStrategy {
 		JsonArray lastMessages = historyFile.getPage(page)
 		                                    .stream()
 		                                    .map(Utils::parseJson)
-		                                    .filter(jsonObject -> this.filterUserActivityMessages(jsonObject, username))
 		                                    .collect(JsonArray::new, JsonArray::add, JsonArray::addAll);
 
 		getSession(otherData).sendMessage(new TextMessage(

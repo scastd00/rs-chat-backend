@@ -10,13 +10,13 @@ import java.util.Map;
 
 import static rs.chat.net.ws.Message.ACTIVE_USERS_MESSAGE;
 import static rs.chat.net.ws.Message.AUDIO_MESSAGE;
-import static rs.chat.net.ws.Message.PARSEABLE_MESSAGE;
 import static rs.chat.net.ws.Message.ERROR_MESSAGE;
 import static rs.chat.net.ws.Message.GET_HISTORY_MESSAGE;
 import static rs.chat.net.ws.Message.IMAGE_MESSAGE;
 import static rs.chat.net.ws.Message.INFO_MESSAGE;
 import static rs.chat.net.ws.Message.MAINTENANCE_MESSAGE;
 import static rs.chat.net.ws.Message.MENTION_MESSAGE;
+import static rs.chat.net.ws.Message.PARSEABLE_MESSAGE;
 import static rs.chat.net.ws.Message.PDF_MESSAGE;
 import static rs.chat.net.ws.Message.PING_MESSAGE;
 import static rs.chat.net.ws.Message.RESTART_MESSAGE;
@@ -32,6 +32,15 @@ import static rs.chat.net.ws.Message.VIDEO_MESSAGE;
 
 /**
  * Utility class for mapping {@link Message} to {@link MessageStrategy}.
+ * <p>
+ * This class is used to get the correct strategy for a given message.
+ * The mapping is done by the {@link Message#type()} method.
+ * <br>
+ * The mapping is done statically, so the mappings are created when the class is loaded.
+ * <br>
+ * This is done to avoid the overhead of creating the mappings every time a new strategy is needed. This is
+ * especially important when the application is under heavy load. The mappings are created only once, when the
+ * application is started.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MessageStrategyMappings {
