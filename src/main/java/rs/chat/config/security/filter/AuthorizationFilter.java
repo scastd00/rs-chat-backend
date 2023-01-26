@@ -36,7 +36,7 @@ import static rs.chat.utils.Constants.JWT_TOKEN_PREFIX;
  */
 @Slf4j
 @WebFilter(filterName = "AuthorizationFilter")
-public class RSChatAuthorizationFilter extends OncePerRequestFilter {
+public class AuthorizationFilter extends OncePerRequestFilter {
 	/**
 	 * Checks if the user is authorized to access the resource.
 	 *

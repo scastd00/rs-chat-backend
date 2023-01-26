@@ -28,7 +28,7 @@ import java.time.Clock;
 @Slf4j
 @WebFilter(filterName = "AuthenticationFilter")
 @RequiredArgsConstructor
-public class RSChatAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 	private final AuthenticationManager authenticationManager;
 	private final Clock clock;
 
