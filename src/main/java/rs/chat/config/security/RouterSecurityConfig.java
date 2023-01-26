@@ -32,8 +32,8 @@ public class RouterSecurityConfig {
 	 * @throws Exception if an error occurs.
 	 */
 	public RouterSecurityConfig registerRoutes(HttpMethod method, String... routes) throws Exception {
-		this.http.authorizeRequests()
-		         .antMatchers(method, routes)
+		this.http.authorizeHttpRequests()
+		         .requestMatchers(method, routes)
 		         .hasAnyAuthority(this.authorizedRoles);
 
 		return this;

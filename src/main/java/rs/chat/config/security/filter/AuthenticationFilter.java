@@ -1,6 +1,11 @@
 package rs.chat.config.security.filter;
 
 import com.google.gson.JsonObject;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebFilter;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,11 +19,6 @@ import rs.chat.net.http.HttpRequest;
 import rs.chat.net.http.HttpResponse;
 import rs.chat.utils.Utils;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebFilter;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.Clock;
 
@@ -28,7 +28,7 @@ import java.time.Clock;
 @Slf4j
 @WebFilter(filterName = "AuthenticationFilter")
 @RequiredArgsConstructor
-public class RSChatAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 	private final AuthenticationManager authenticationManager;
 	private final Clock clock;
 

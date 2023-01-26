@@ -2,6 +2,8 @@ package rs.chat.net.http;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponseWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
@@ -9,8 +11,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import rs.chat.exceptions.InternalServerException;
 import rs.chat.utils.Constants;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
