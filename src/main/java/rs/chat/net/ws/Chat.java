@@ -54,8 +54,9 @@ public class Chat {
 	 * This method is called when the last client of the chat has left.
 	 */
 	public synchronized void finish() {
-		this.historyFile.close();
 		this.saveToS3();
+		this.historyFile.close();
+		HistoryFilesCache.INSTANCE.invalidate(this.chatId);
 	}
 
 	/**

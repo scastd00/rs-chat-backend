@@ -1,6 +1,7 @@
 package rs.chat.cache;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import rs.chat.storage.S3;
 
@@ -12,6 +13,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static rs.chat.utils.Constants.HISTORY_PAGE_SIZE;
@@ -23,6 +25,7 @@ import static rs.chat.utils.Constants.HISTORY_PAGE_SIZE;
  * send it to the client faster.
  */
 @Getter
+@Slf4j
 public class CachedHistoryFile {
 	private final String chatId;
 	private final File file;
@@ -95,7 +98,12 @@ public class CachedHistoryFile {
 				end = size;
 			}
 
-			return this.history.subList(begin, end);
+			try {
+				log.info("Getting page {} from {} to {}", page, begin, end);
+				return this.history.subList(begin, end);
+			} catch (IndexOutOfBoundsException | IllegalArgumentException e) {
+				return Collections.emptyList();
+			}
 		}
 	}
 
