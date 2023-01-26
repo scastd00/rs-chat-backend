@@ -91,7 +91,8 @@ public final class Utils {
 	/**
 	 * Verifies an authorization token.
 	 *
-	 * @param token the token to verify.
+	 * @param token the token to verify. It should include the {@link Constants#JWT_TOKEN_PREFIX}
+	 *              because it is removed inside this method to do the verification.
 	 *
 	 * @return the decoded JWT token.
 	 *

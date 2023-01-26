@@ -67,25 +67,26 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 			// All routes need the JWT token except for the routes excluded above.
 			log.error("Authorization header is missing or invalid.");
 			throw new ServletException("Missing or invalid Authorization header.");
-		} else {
-			try {
-				DecodedJWT decodedJWT = Utils.verifyJWT(authorizationHeader);
-				String username = decodedJWT.getSubject();
-				String role = decodedJWT.getClaim("role").asString();
+			// Todo: see the video
+		}
 
-				SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role);
-				UsernamePasswordAuthenticationToken authenticationToken =
-						new UsernamePasswordAuthenticationToken(
-								username, null, Collections.singleton(authority)
-						);
+		try {
+			DecodedJWT decodedJWT = Utils.verifyJWT(authorizationHeader);
+			String username = decodedJWT.getSubject();
+			String role = decodedJWT.getClaim("role").asString();
 
-				SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-				chain.doFilter(request, response);
-			} catch (Exception e) {
-				log.error(e.getMessage());
-				new HttpResponse(response).status(FORBIDDEN)
-				                          .send(e.getMessage());
-			}
+			SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role);
+			UsernamePasswordAuthenticationToken authenticationToken =
+					new UsernamePasswordAuthenticationToken(
+							username, null, Collections.singleton(authority)
+					);
+
+			SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+			chain.doFilter(request, response);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			new HttpResponse(response).status(FORBIDDEN)
+			                          .send(e.getMessage());
 		}
 	}
 
