@@ -5,21 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import rs.chat.config.security.filter.AuthenticationFilter;
 import rs.chat.config.security.filter.AuthorizationFilter;
-
-import java.time.Clock;
-import java.util.List;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 import static rs.chat.router.Routes.ACTUATOR_URL;
@@ -52,10 +43,19 @@ import static rs.chat.utils.Constants.TOP_TIER_ROLES;
 @RequiredArgsConstructor
 @Slf4j
 public class WebSecurityConfig {
-	private final UserDetailsService userDetailsService;
-	private final PasswordEncoder passwordEncoder;
-	private final Clock clock;
+	private final AuthenticationFilter authenticationFilter;
+	private final AuthorizationFilter authorizationFilter;
 
+	/**
+	 * Configures the security for the application.
+	 *
+	 * @param http {@link HttpSecurity} object.
+	 *
+	 * @return {@link SecurityFilterChain} object.
+	 *
+	 * @throws Exception
+	 * @apiNote This method was introduced due to the migration from Spring Boot 2 to Spring Boot 3.
+	 */
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.cors();
@@ -65,7 +65,7 @@ public class WebSecurityConfig {
 
 		this.publicRoutes(http);
 		this.privateRoutes(http);
-		this.addFilters(http);
+		this.configureFilters(http);
 
 		return http.build();
 	}
@@ -78,15 +78,12 @@ public class WebSecurityConfig {
 	 * @throws Exception if an error occurs.
 	 */
 	private void privateRoutes(HttpSecurity http) throws Exception {
-		// Low tier
 		registerRoutesOfTier(http, LOW_TIER_ROLES.toArray(STRING_ARRAY),
 		                     GetRoute.INSTANCE.lowTierRoutes(), PostRoute.INSTANCE.lowTierRoutes(),
 		                     PutRoute.INSTANCE.lowTierRoutes(), DeleteRoute.INSTANCE.lowTierRoutes());
-		// Medium tier
 		registerRoutesOfTier(http, MEDIUM_TIER_ROLES.toArray(STRING_ARRAY),
 		                     GetRoute.INSTANCE.mediumTierRoutes(), PostRoute.INSTANCE.mediumTierRoutes(),
 		                     PutRoute.INSTANCE.mediumTierRoutes(), DeleteRoute.INSTANCE.mediumTierRoutes());
-		// Top tier
 		registerRoutesOfTier(http, TOP_TIER_ROLES.toArray(STRING_ARRAY),
 		                     GetRoute.INSTANCE.topTierRoutes(), PostRoute.INSTANCE.topTierRoutes(),
 		                     PutRoute.INSTANCE.topTierRoutes(), DeleteRoute.INSTANCE.topTierRoutes());
@@ -141,39 +138,12 @@ public class WebSecurityConfig {
 	}
 
 	/**
-	 * Adds the needed filters.
+	 * Adds the needed filters, and configures them.
 	 *
 	 * @param http {@link HttpSecurity} object.
 	 */
-	private void addFilters(HttpSecurity http) {
-		http.addFilter(this.getCustomAuthenticationFilter());
-		http.addFilterBefore(new AuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
-	}
-
-	@Bean
-	public AuthenticationManager authenticationManager() {
-		return new ProviderManager(List.of(this.authenticationProvider()));
-	}
-
-	/**
-	 * Creates the {@link AuthenticationFilter} that is used by the application.
-	 *
-	 * @return {@link AuthenticationFilter} object.
-	 */
-	private AuthenticationFilter getCustomAuthenticationFilter() {
-		AuthenticationFilter authenticationFilter = new AuthenticationFilter(
-				this.authenticationManager(),
-				this.clock
-		);
-		authenticationFilter.setFilterProcessesUrl(LOGIN_URL);
-		return authenticationFilter;
-	}
-
-	@Bean
-	public AuthenticationProvider authenticationProvider() {
-		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-		provider.setUserDetailsService(this.userDetailsService);
-		provider.setPasswordEncoder(this.passwordEncoder);
-		return provider;
+	private void configureFilters(HttpSecurity http) {
+		http.addFilter(this.authenticationFilter); // This extends UsernamePasswordAuthenticationFilter
+		http.addFilterBefore(this.authorizationFilter, UsernamePasswordAuthenticationFilter.class);
 	}
 }

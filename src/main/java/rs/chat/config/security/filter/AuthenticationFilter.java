@@ -8,19 +8,19 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import rs.chat.config.security.JWTService;
 import rs.chat.exceptions.CouldNotAuthenticateException;
 import rs.chat.net.http.HttpRequest;
 import rs.chat.net.http.HttpResponse;
-import rs.chat.utils.Utils;
 
 import java.io.IOException;
-import java.time.Clock;
 
 /**
  * Manager that authenticates the incoming requests.
@@ -30,7 +30,16 @@ import java.time.Clock;
 @RequiredArgsConstructor
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 	private final AuthenticationManager authenticationManager;
-	private final Clock clock;
+	private final JWTService jwtService;
+
+	/**
+	 * Dependency injection for the authentication manager.
+	 */
+	@Override
+	@Autowired
+	public void setAuthenticationManager(AuthenticationManager authenticationManager) {
+		super.setAuthenticationManager(authenticationManager);
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -76,15 +85,14 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 		HttpRequest req = new HttpRequest(request);
 		User user = (User) authentication.getPrincipal();
 
-		String token = Utils.generateJWTToken(
+		String token = this.jwtService.generateToken(
 				user.getUsername(),
 				request.getRequestURL().toString(),
 				user.getAuthorities()
 				    .iterator()
 				    .next() // We only have one role per user, so we take it.
 				    .getAuthority(),
-				req.body().get("remember").getAsBoolean(),
-				this.clock
+				req.body().get("remember").getAsBoolean()
 		);
 
 		req.set("USER:TOKEN", token);

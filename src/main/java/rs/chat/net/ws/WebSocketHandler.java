@@ -9,10 +9,11 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+import rs.chat.config.security.JWTService;
+import rs.chat.exceptions.TokenValidationException;
 import rs.chat.net.ws.strategies.messages.MessageStrategy;
 import rs.chat.net.ws.strategies.messages.MessageStrategyMappings;
 import rs.chat.observability.metrics.Metrics;
-import rs.chat.utils.Utils;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -20,7 +21,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
+import static rs.chat.net.ws.Message.ERROR_MESSAGE;
+import static rs.chat.net.ws.Message.PING_MESSAGE;
+import static rs.chat.net.ws.Message.USER_CONNECTED;
+import static rs.chat.utils.Constants.JWT_TOKEN_PREFIX;
 import static rs.chat.utils.Constants.SCHEDULE_STRING;
+import static rs.chat.utils.Utils.createMessage;
 
 /**
  * WebSocket handler for the application.
@@ -31,6 +37,10 @@ import static rs.chat.utils.Constants.SCHEDULE_STRING;
 public class WebSocketHandler extends TextWebSocketHandler {
 	private final ChatManagement chatManagement;
 	private final Metrics metrics;
+	private final JWTService jwtService;
+
+	private static final String EMPTY_TOKEN = JWT_TOKEN_PREFIX + "empty";
+	private static final String CONNECTION_MESSAGE_CONTENT = "Connection";
 
 	/**
 	 * Handles text messages (JSON string).
@@ -39,13 +49,33 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	 * @param message message received from the client.
 	 */
 	@Override
-	protected void handleTextMessage(@NotNull WebSocketSession session, @NotNull TextMessage message) {
+	protected void handleTextMessage(@NotNull WebSocketSession session,
+	                                 @NotNull TextMessage message) throws IOException {
 		// FIXME: A user that did not send the USER_JOINED message could send messages
 		//  but cannot receive them.
 
 		JsonMessageWrapper wrappedMessage = new JsonMessageWrapper(message.getPayload());
-		Message receivedMessageType = new Message(wrappedMessage.type(), null, null);
 
+		// The second condition is only executed once (when the user connects to the server,
+		// in a controlled situation). Then, the user will have a valid token.
+		boolean isEmptyToken = wrappedMessage.token().equals(EMPTY_TOKEN);
+		if (isEmptyToken && !isConnectionOrPingMessage(wrappedMessage)) {
+			session.sendMessage(new TextMessage(
+					createMessage(
+							"You cannot send messages without a valid token.",
+							ERROR_MESSAGE.type(),
+							wrappedMessage.chatId()
+					)
+			));
+			throw new TokenValidationException("You cannot send messages without a valid token.");
+		}
+
+		////// TOKEN STATE //////
+		// If I am here, the state is one of the following:
+		// 1. Empty token and the user is connecting to the server.
+		// 2. We have a token (valid or not) and the user is sending a message (not a connection one).
+
+		Message receivedMessageType = new Message(wrappedMessage.type(), null, null);
 		Map<String, Object> otherData = new HashMap<>();
 		otherData.put("session", session);
 		otherData.put("message", receivedMessageType);
@@ -75,12 +105,30 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		}
 
 		try {
-			Utils.checkTokenValidity(wrappedMessage.token());
+			// If the token is empty, we do not need to validate it, because the user is
+			// connecting to the server (Check the TOKEN STATE comment above).
+			if (!isEmptyToken && this.jwtService.isInvalidToken(wrappedMessage.token())) {
+				throw new TokenValidationException("Invalid token.");
+			}
 			strategy.handle(wrappedMessage, this.chatManagement, otherData);
 			this.metrics.incrementMessageCount(receivedMessageType.type());
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
+	}
+
+	/**
+	 * Checks if the message is a connection one, this is, a message that has the type
+	 * {@link Message#USER_CONNECTED}{@link Message#type() .type()} and the content
+	 * {@link WebSocketHandler#CONNECTION_MESSAGE_CONTENT}.
+	 *
+	 * @param wrappedMessage
+	 *
+	 * @return
+	 */
+	private boolean isConnectionOrPingMessage(JsonMessageWrapper wrappedMessage) {
+		return (wrappedMessage.type().equals(USER_CONNECTED.type()) || wrappedMessage.type().equals(PING_MESSAGE.type())) &&
+				wrappedMessage.content().equals(CONNECTION_MESSAGE_CONTENT);
 	}
 
 	/**

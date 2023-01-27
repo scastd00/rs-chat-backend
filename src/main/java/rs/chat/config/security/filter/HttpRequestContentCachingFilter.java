@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import rs.chat.net.http.HttpRequest;
 import rs.chat.net.http.HttpResponse;
@@ -26,7 +25,6 @@ import java.io.IOException;
  * <b>This is the first entry point of all the requests that arrive to the
  * server.</b>
  */
-@Component
 @Slf4j
 @Order(value = Ordered.HIGHEST_PRECEDENCE)
 @WebFilter(filterName = "ContentCachingFilter", urlPatterns = "/*")

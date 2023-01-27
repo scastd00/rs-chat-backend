@@ -1,8 +1,5 @@
 package rs.chat.utils;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.google.gson.Gson;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -40,7 +37,6 @@ public final class Constants {
 	public static final String[] STRING_ARRAY = new String[0];
 	public static final Duration TOKEN_EXPIRATION_DURATION_NORMAL = Duration.ofHours(4);
 	public static final Duration TOKEN_EXPIRATION_DURATION_EXTENDED = Duration.ofDays(7);
-	public static final Algorithm ALGORITHM = Algorithm.HMAC256(System.getenv("TOKEN_SECRET").getBytes());
 
 	public static final String STUDENT_ROLE = "STUDENT";
 	public static final String TEACHER_ROLE = "TEACHER";
@@ -49,7 +45,6 @@ public final class Constants {
 	public static final List<String> MEDIUM_TIER_ROLES = List.of(TEACHER_ROLE, ADMIN_ROLE);
 	public static final List<String> TOP_TIER_ROLES = List.of(ADMIN_ROLE);
 
-	public static final JWTVerifier JWT_VERIFIER = JWT.require(ALGORITHM).build();
 	public static final String JWT_TOKEN_PREFIX = "Bearer ";
 
 	public static final String S3_BUCKET_NAME = System.getenv("AWS_S3_BUCKET_NAME");

@@ -1,19 +1,19 @@
 package rs.chat.config.security.filter;
 
-import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
+import rs.chat.config.security.JWTService;
 import rs.chat.net.http.HttpResponse;
-import rs.chat.utils.Utils;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -36,7 +36,10 @@ import static rs.chat.utils.Constants.JWT_TOKEN_PREFIX;
  */
 @Slf4j
 @WebFilter(filterName = "AuthorizationFilter")
+@RequiredArgsConstructor
 public class AuthorizationFilter extends OncePerRequestFilter {
+	private final JWTService jwtService;
+
 	/**
 	 * Checks if the user is authorized to access the resource.
 	 *
@@ -61,9 +64,9 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 			return;
 		}
 
-		String authorizationHeader = request.getHeader(AUTHORIZATION);
+		String token = request.getHeader(AUTHORIZATION);
 
-		if (authorizationHeader == null || !authorizationHeader.startsWith(JWT_TOKEN_PREFIX)) {
+		if (token == null || !token.startsWith(JWT_TOKEN_PREFIX)) {
 			// All routes need the JWT token except for the routes excluded above.
 			log.error("Authorization header is missing or invalid.");
 			throw new ServletException("Missing or invalid Authorization header.");
@@ -71,9 +74,8 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 		}
 
 		try {
-			DecodedJWT decodedJWT = Utils.verifyJWT(authorizationHeader);
-			String username = decodedJWT.getSubject();
-			String role = decodedJWT.getClaim("role").asString();
+			String username = this.jwtService.getUsername(token);
+			String role = this.jwtService.getClaim(token, claims -> claims.get("role", String.class));
 
 			SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role);
 			UsernamePasswordAuthenticationToken authenticationToken =

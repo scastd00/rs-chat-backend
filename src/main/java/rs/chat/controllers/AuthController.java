@@ -1,7 +1,5 @@
 package rs.chat.controllers;
 
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +7,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import rs.chat.config.security.JWTService;
 import rs.chat.domain.entity.Chat;
 import rs.chat.domain.entity.Group;
 import rs.chat.domain.entity.Session;
@@ -25,7 +24,6 @@ import rs.chat.net.http.HttpResponse.HttpResponseBody;
 import rs.chat.net.smtp.MailSender;
 import rs.chat.policies.Policies;
 import rs.chat.utils.Constants;
-import rs.chat.utils.Utils;
 
 import java.io.IOException;
 import java.time.Clock;
@@ -43,7 +41,6 @@ import static rs.chat.router.Routes.PostRoute.LOGIN_URL;
 import static rs.chat.router.Routes.PostRoute.LOGOUT_URL;
 import static rs.chat.router.Routes.PostRoute.REGISTER_URL;
 import static rs.chat.utils.Constants.JWT_TOKEN_PREFIX;
-import static rs.chat.utils.Constants.JWT_VERIFIER;
 import static rs.chat.utils.Constants.STUDENT_ROLE;
 
 /**
@@ -58,6 +55,7 @@ public class AuthController {
 	private final ChatService chatService;
 	private final GroupService groupService;
 	private final Clock clock;
+	private final JWTService jwtService;
 	private final SessionMapper sessionMapper;
 	private final UserMapper userMapper;
 
@@ -149,12 +147,11 @@ public class AuthController {
 		});
 
 		// Generate tokens
-		String token = Utils.generateJWTToken(
+		String token = this.jwtService.generateToken(
 				savedUser.getUsername(),
 				request.getRequestURL().toString(),
 				savedUser.getRole(),
-				false,
-				this.clock
+				false
 		);
 
 		Session session = this.sessionService.saveSession(
@@ -211,19 +208,15 @@ public class AuthController {
 		}
 
 		String token = authorizationHeader.substring(JWT_TOKEN_PREFIX.length());
-		DecodedJWT decodedJWT;
 
-		try {
-			decodedJWT = JWT_VERIFIER.verify(token); //! WARNING: the token could be expired
-		} catch (JWTVerificationException e) {
-			// If the token is not valid, send error.
+		if (this.jwtService.isInvalidToken(token)) {
 			response.badRequest().send("The token is not valid");
 			log.warn("The token is not valid");
 			this.sessionService.deleteSession(token);
 			return;
 		}
 
-		String username = decodedJWT.getSubject();
+		String username = this.jwtService.getUsername(token);
 
 		// Check if we must delete all the user sessions or only one.
 		if (request.body().get("fromAllSessions").getAsBoolean()) {
