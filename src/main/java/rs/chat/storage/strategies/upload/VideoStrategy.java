@@ -22,17 +22,7 @@ public class VideoStrategy implements FileUploadStrategy {
 	public void handle(byte[] binaryData, String specificType, File file) throws IOException {
 		Map<String, String> metadata = new HashMap<>();
 
-		try (IsoFile isoFile = new IsoFile(new ByteBufferByteChannel(binaryData))) {
-			MovieHeaderBox movieHeaderBox = isoFile.getMovieBox().getMovieHeaderBox();
-			double preciseDuration = movieHeaderBox.getDuration() / (movieHeaderBox.getTimescale() / 1000d);
-			int minutes = (int) (preciseDuration / 1000 / 60);
-			int seconds = (int) (preciseDuration / 1000 % 60);
-			metadata.put("duration", String.format("%02d:%02d", minutes, seconds));
-		} catch (IOException e) {
-			log.error("Could not parse video file ({})", e.getMessage());
-			metadata.put("duration", "Unknown");
-		}
-
+		metadata.put("duration", this.getVideoDuration(binaryData));
 		metadata.put("specificType", specificType);
 		metadata.put("size", bytesToUnit(binaryData.length));
 		metadata.put("messageType", Message.VIDEO_MESSAGE.type());
@@ -41,5 +31,20 @@ public class VideoStrategy implements FileUploadStrategy {
 
 		file.setPath(uri.toString());
 		file.setMetadata(GSON.toJson(metadata));
+	}
+
+	private String getVideoDuration(byte[] binaryData) {
+		try (IsoFile isoFile = new IsoFile(new ByteBufferByteChannel(binaryData))) {
+			MovieHeaderBox movieHeaderBox = isoFile.getMovieBox().getMovieHeaderBox();
+			double preciseDuration = movieHeaderBox.getDuration() / (movieHeaderBox.getTimescale() / 1000d);
+			int minutes = (int) (preciseDuration / 1000 / 60);
+			int seconds = (int) (preciseDuration / 1000 % 60);
+
+			return String.format("%02d:%02d", minutes, seconds);
+		} catch (IOException e) {
+			log.error("Could not parse video file ({})", e.getMessage());
+		}
+
+		return "Unknown";
 	}
 }
