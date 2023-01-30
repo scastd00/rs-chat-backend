@@ -134,6 +134,10 @@ public class JsonMessageWrapper {
 		return this.parsedPayload.toString();
 	}
 
+	public static JsonMessageWrapper fromString(String rawPayload) {
+		return new JsonMessageWrapper(rawPayload);
+	}
+
 	/**
 	 * Creates a new builder to build a new message.
 	 *

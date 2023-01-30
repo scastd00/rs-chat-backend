@@ -119,12 +119,13 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
 	/**
 	 * Checks if the message is a connection one, this is, a message that has the type
-	 * {@link Message#USER_CONNECTED}{@link Message#type() .type()} and the content
+	 * {@link Message#USER_CONNECTED}{@link Message#type() .type()} or
+	 * {@link Message#PING_MESSAGE}{@link Message#type() .type()} and the content
 	 * {@link WebSocketHandler#CONNECTION_MESSAGE_CONTENT}.
 	 *
-	 * @param wrappedMessage
+	 * @param wrappedMessage message to check.
 	 *
-	 * @return
+	 * @return {@code true} if the message is a connection or a ping one, {@code false} otherwise.
 	 */
 	private boolean isConnectionOrPingMessage(JsonMessageWrapper wrappedMessage) {
 		return (wrappedMessage.type().equals(USER_CONNECTED.type()) || wrappedMessage.type().equals(PING_MESSAGE.type())) &&

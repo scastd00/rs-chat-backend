@@ -2,7 +2,6 @@ package rs.chat.net.ws;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -40,32 +39,6 @@ public class ChatManagement {
 	}
 
 	/**
-	 * Returns the clients of the chat identified by the chatId or an empty list if
-	 * it does not exist. <b>Use with caution, if the returned list is an empty one
-	 * (the chat does not exist), no elements will be stored in the real chat.</b>
-	 *
-	 * @param chatId id of the chat to get.
-	 *
-	 * @return the required chat or an empty list.
-	 */
-	@NotNull
-	private List<Client> getClientsOf(String chatId) {
-		return this.chatExists(chatId) ? this.chats.get(chatId).getClients() : List.of();
-	}
-
-	/**
-	 * Writes the message to the corresponding chat file if it exists.
-	 *
-	 * @param chatId  id of the chat and the file to write to.
-	 * @param message message to write.
-	 */
-	private void saveMessage(String chatId, String message) {
-		if (this.chatExists(chatId)) {
-			this.chats.get(chatId).saveMessageToHistoryFile(message);
-		}
-	}
-
-	/**
 	 * Adds a client to the specified chat (id of the chat is stored in the
 	 * {@code clientID} attribute of {@link Client}). If the chat does not exist,
 	 * it is created.
@@ -79,31 +52,23 @@ public class ChatManagement {
 			this.chats.put(chatId, new Chat(chatId));
 		}
 
-		this.getClientsOf(chatId).add(client);
+		this.chats.get(chatId).addClient(client);
 	}
 
 	/**
-	 * Removes the client from the specified chat (id of the chat is stored in the
-	 * {@code clientID} attribute of {@link Client}). If the resulting chat is
-	 * empty, the mapping is removed (so {@link #chatExists(String)} and
-	 * {@link Map#get(Object)} will return {@code false}) and the chat is finished {@link Chat#finish()}.
-	 * <p>
-	 * Precondition: the client is connected to the chat (so {@link #getClientsOf(String)} will
-	 * return a non-empty list).
+	 * Removes a client from the chat. After removing the user, if the chat has no more clients connected
+	 * to it, the chat is saved (see {@link Chat#finish()}) and deleted from the map.
 	 *
-	 * @param clientID id of the client to remove from the chat.
+	 * @param clientID id of the client to remove.
 	 */
 	public synchronized void removeClientFromChat(ClientID clientID) {
 		String chatId = clientID.chatId();
+		Chat chat = this.chats.get(chatId);
 
-		// Remove the user from the chat.
-		List<Client> clientsOfChat = this.getClientsOf(chatId);
-		clientsOfChat.removeIf(client -> client == null || client.clientID().equals(clientID));
-
-		// Delete the chat and its entry in the map if there are no more
-		// clients connected to it.
-		if (clientsOfChat.isEmpty()) {
-			this.chats.get(chatId).finish();
+		if (chat.removeClient(clientID) && chat.hasNoAvailableClients()) {
+			// Delete the chat and its entry in the map if there are no more
+			// clients connected to it.
+			chat.finish();
 			this.chats.remove(chatId);
 		}
 	}
@@ -122,19 +87,11 @@ public class ChatManagement {
 	 * Sends a message to all clients connected to the chat except from the
 	 * client that sent the message.
 	 *
-	 * @param clientID client to "ignore".
 	 * @param message  message to send.
+	 * @param clientID client to "ignore".
 	 */
-	public void broadcastToSingleChatAndExcludeClient(ClientID clientID, String message) {
-		this.getClientsOf(clientID.chatId())
-		    .stream()
-		    .filter(client -> !client.clientID().equals(clientID))
-		    .forEach(client -> client.send(message));
-
-		JsonMessageWrapper jsonMessageWrapper = new JsonMessageWrapper(message);
-		if (!Message.typeBelongsToGroup(jsonMessageWrapper.type(), Message.ACTIVITY_MESSAGES)) {
-			this.saveMessage(clientID.chatId(), message);
-		}
+	public void broadcastToSingleChatAndExcludeClient(String message, ClientID clientID) {
+		this.chats.get(clientID.chatId()).sendWithClientExclusionAndSave(message, clientID);
 	}
 
 	/**
@@ -157,11 +114,7 @@ public class ChatManagement {
 	 * @param message  message to send.
 	 */
 	public void mentionUser(String chatId, String username, String message) {
-		this.getClientsOf(chatId)
-		    .stream()
-		    .filter(client -> client.clientID().username().equals(username))
-		    .forEach(client -> client.send(message));
-
+		this.chats.get(chatId).mention(message, username);
 		this.metrics.incrementMentionedUsers();
 	}
 
@@ -174,11 +127,7 @@ public class ChatManagement {
 	 * @return a sorted list of usernames.
 	 */
 	public List<String> getUsernamesOfChat(String chatId) {
-		return this.getClientsOf(chatId)
-		           .stream()
-		           .map(client -> client.clientID().username())
-		           .sorted(String::compareToIgnoreCase)
-		           .toList();
+		return this.chats.get(chatId).getUsernames();
 	}
 
 	/**
@@ -202,7 +151,7 @@ public class ChatManagement {
 	 * and the instance is null for some reason.
 	 */
 	@Scheduled(fixedRate = 3, initialDelay = 3, timeUnit = MINUTES)
-	private void deleteNullUsers() {
+	private void deleteUnwantedUsers() {
 		this.chats.values().forEach(Chat::deleteUnwantedUsers);
 	}
 }

@@ -30,8 +30,8 @@ public class UserJoinedStrategy implements MessageStrategy {
 
 		chatManagement.addClientToChat(new Client(session, clientID));
 		chatManagement.broadcastToSingleChatAndExcludeClient(
-				clientID,
-				createMessage(username + " has joined the chat", USER_JOINED.type(), chatId)
+				createMessage(username + " has joined the chat", USER_JOINED.type(), chatId),
+				clientID
 		);
 
 		log.debug(username + " has joined the chat");

@@ -25,8 +25,8 @@ public class UserLeftStrategy implements MessageStrategy {
 		String username = clientID.username();
 
 		chatManagement.broadcastToSingleChatAndExcludeClient(
-				clientID,
-				createMessage(username + " has left the chat", USER_LEFT.type(), chatId)
+				createMessage(username + " has left the chat", USER_LEFT.type(), chatId),
+				clientID
 		);
 		chatManagement.removeClientFromChat(clientID);
 		// Closed from the frontend

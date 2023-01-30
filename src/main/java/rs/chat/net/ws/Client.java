@@ -41,6 +41,10 @@ public record Client(WebSocketSession session, ClientID clientID) {
 		}
 	}
 
+	public boolean canSend() {
+		return this.session != null && this.session.isOpen();
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
