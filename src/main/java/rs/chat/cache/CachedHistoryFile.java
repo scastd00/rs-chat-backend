@@ -54,9 +54,7 @@ public class CachedHistoryFile {
 
 		try (FileReader fileReader = new FileReader(this.file)) {
 			this.history.addAll(IOUtils.readLines(fileReader));
-		} catch (FileNotFoundException e) {
-			// Ignore
-		}
+		} catch (FileNotFoundException ignored) {/**/}
 
 		FileWriter fileWriter = new FileWriter(this.file, true);
 		BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
@@ -71,7 +69,7 @@ public class CachedHistoryFile {
 	public void write(String message) {
 		this.writer.println(message);
 
-		synchronized (this.lock) {
+		synchronized (lock) {
 			this.history.add(message);
 		}
 	}
@@ -85,7 +83,7 @@ public class CachedHistoryFile {
 	 * @return {@link List} of {@link String} with the messages.
 	 */
 	public List<String> getMoreMessagesFromOffset(int offset) {
-		synchronized (this.lock) {
+		synchronized (lock) {
 			int start = this.history.size() - offset - HISTORY_PAGE_SIZE;
 			int end = start + HISTORY_PAGE_SIZE;
 
@@ -115,5 +113,6 @@ public class CachedHistoryFile {
 
 		this.writer.close();
 		this.closed = true;
+		S3.getInstance().uploadHistoryFile(this.chatId, true);
 	}
 }

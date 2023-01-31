@@ -39,7 +39,7 @@ public class Chat {
 	 *
 	 * @param client client to add.
 	 */
-	public synchronized void addClient(Client client) {
+	public void addClient(Client client) {
 		this.clients.add(client);
 	}
 
@@ -71,7 +71,7 @@ public class Chat {
 	 *
 	 * @return {@code true} if the client was removed, {@code false} otherwise.
 	 */
-	public synchronized boolean removeClient(ClientID clientID) {
+	public boolean removeClient(ClientID clientID) {
 		final int ignoredIndex = -1;
 		final boolean[] removed = { false };
 
@@ -133,23 +133,23 @@ public class Chat {
 	 * This method is called when the last client of the chat has left.
 	 */
 	public synchronized void finish() {
-		this.saveToS3();
 		this.historyFile.close();
 		HistoryFilesCache.INSTANCE.invalidate(this.chatId);
+		this.clients.clear();
 	}
 
 	/**
-	 * Uploads the file to S3 bucket with all the messages stored.
+	 * Uploads the file to S3 bucket with all the messages stored. The file stored on disk
+	 * is not deleted.
 	 */
 	public void saveToS3() {
-		S3.getInstance().uploadHistoryFile(this.chatId);
-		log.debug("Uploaded file of chat with id = {}", this.chatId);
+		S3.getInstance().uploadHistoryFile(this.chatId, false);
 	}
 
 	/**
 	 * Deletes the users that are null or cannot send messages.
 	 */
-	synchronized void deleteUnwantedUsers() {
+	void deleteUnwantedUsers() {
 		this.clients.removeIf(client -> client == null || !client.canSend());
 	}
 
@@ -174,7 +174,8 @@ public class Chat {
 	}
 
 	/**
-	 * @return {@link List} of all the usernames of the available clients in the chat.
+	 * @return {@link List} of all the usernames of the available clients in the chat sorted
+	 * alphabetically.
 	 */
 	public List<String> getUsernames() {
 		return this.availableClientsStream()

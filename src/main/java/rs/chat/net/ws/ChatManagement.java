@@ -7,9 +7,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import rs.chat.observability.metrics.Metrics;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
 
@@ -24,7 +24,7 @@ public class ChatManagement {
 	/**
 	 * Map to store each chat. The mapping key is the chatId.
 	 */
-	private final Map<String, Chat> chats = new HashMap<>();
+	private final Map<String, Chat> chats = new ConcurrentHashMap<>();
 	private final Metrics metrics;
 
 	/**
@@ -34,7 +34,7 @@ public class ChatManagement {
 	 *
 	 * @return {@code true} if the chat exists, {@code false} otherwise.
 	 */
-	private synchronized boolean chatExists(String chatId) {
+	private boolean chatExists(String chatId) {
 		return this.chats.containsKey(chatId);
 	}
 
@@ -45,7 +45,7 @@ public class ChatManagement {
 	 *
 	 * @param client new client to add to the chat.
 	 */
-	public synchronized void addClientToChat(Client client) {
+	public void addClientToChat(Client client) {
 		String chatId = client.clientID().chatId();
 
 		if (!this.chatExists(chatId)) {
@@ -61,7 +61,7 @@ public class ChatManagement {
 	 *
 	 * @param clientID id of the client to remove.
 	 */
-	public synchronized void removeClientFromChat(ClientID clientID) {
+	public void removeClientFromChat(ClientID clientID) {
 		String chatId = clientID.chatId();
 		Chat chat = this.chats.get(chatId);
 

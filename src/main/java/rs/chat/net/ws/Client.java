@@ -16,11 +16,13 @@ import java.util.Objects;
 @Slf4j
 public record Client(WebSocketSession session, ClientID clientID) {
 	/**
-	 * Send a message to the client.
+	 * Send a message to the client. Since the session is thread-safe (see
+	 * {@link org.springframework.web.socket.handler.ConcurrentWebSocketSessionDecorator ConcurrentWebSocketSessionDecorator}),
+	 * messages are "enqueued" and we don't need to synchronize this method.
 	 *
 	 * @param message message to send.
 	 */
-	public synchronized void send(String message) {
+	public void send(String message) {
 		try {
 			this.session.sendMessage(new TextMessage(message));
 		} catch (IOException e) {

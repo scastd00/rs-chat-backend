@@ -3,6 +3,7 @@ package rs.chat.utils;
 import com.google.gson.Gson;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.springframework.util.unit.DataSize;
 
 import java.net.URI;
 import java.security.SecureRandom;
@@ -65,4 +66,5 @@ public final class Constants {
 
 	public static final int HISTORY_PAGE_SIZE = 65;
 	public static final SecureRandom SECURE_RANDOM = new SecureRandom();
+	public static final long MAX_FILE_BYTES = DataSize.ofMegabytes(30).toBytes();
 }

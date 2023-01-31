@@ -111,9 +111,10 @@ public final class S3 implements Closeable {
 	/**
 	 * Uploads a chat history file to S3 bucket and deletes it from the local disk.
 	 *
-	 * @param chatId the chat id of the chat history file to upload to S3 bucket.
+	 * @param chatId     the chat id of the chat history file to upload to S3 bucket.
+	 * @param removeFile whether to delete the file from the local disk after it has been uploaded to S3.
 	 */
-	public void uploadHistoryFile(String chatId) {
+	public void uploadHistoryFile(String chatId, boolean removeFile) {
 		File file = GET_HISTORY_MESSAGE.getFileInDisk(chatId);
 		String s3Key = GET_HISTORY_MESSAGE.s3Key(chatId);
 
@@ -125,14 +126,16 @@ public final class S3 implements Closeable {
 				RequestBody.fromFile(file)
 		);
 
-		try {
-			// Delete the file from the local disk after it has been uploaded to S3.
-			Files.delete(file.toPath());
-		} catch (IOException e) {
-			throw new CouldNotUploadFileException(e.getMessage());
+		if (removeFile) {
+			try {
+				// Delete the file from the local disk after it has been uploaded to S3.
+				Files.delete(file.toPath());
+			} catch (IOException e) {
+				throw new CouldNotUploadFileException(e.getMessage());
+			}
 		}
 
-		log.debug("Uploaded file {} to S3 bucket with key {} and deleted from disk", file.getName(), s3Key);
+		log.debug("Uploaded file {} to S3 bucket with key {}", file.getName(), s3Key);
 	}
 
 	/**

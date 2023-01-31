@@ -86,7 +86,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 			SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 			chain.doFilter(request, response);
 		} catch (Exception e) {
-			log.error(e.getMessage());
+			log.error(e.getMessage(), e);
 			new HttpResponse(response).status(FORBIDDEN)
 			                          .send(e.getMessage());
 		}
