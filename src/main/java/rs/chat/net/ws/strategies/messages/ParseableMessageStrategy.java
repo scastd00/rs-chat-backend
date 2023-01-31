@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import static rs.chat.net.ws.Message.ERROR_MESSAGE;
 import static rs.chat.net.ws.Message.MENTION_MESSAGE;
 import static rs.chat.utils.Utils.createMessage;
 
@@ -44,7 +45,11 @@ public class ParseableMessageStrategy extends GenericMessageStrategy {
 			             });
 		} catch (CommandUnavailableException | IllegalArgumentException e) {
 			log.error("Error while parsing message", e);
-			String errorMessage = Utils.createErrorMessage("An error occurred while parsing the message, %s".formatted(e.getMessage()));
+			String errorMessage = Utils.createMessage(
+					"An error occurred while parsing the message, %s".formatted(e.getMessage()),
+					ERROR_MESSAGE.type(),
+					"NONE"
+			);
 			getSession(otherData).sendMessage(new TextMessage(errorMessage));
 		}
 	}

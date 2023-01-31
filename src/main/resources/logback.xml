@@ -1,7 +1,7 @@
 <configuration debug="true">
 	<property name="LOG_ROOT" value="logs"/>
 	<property name="LOG_FILE_NAME" value="rs_chat"/>
-	<property name="LOG_PATTERN" value="%d %p %c{1.} [%t] %m%n"/>
+	<property name="LOG_PATTERN" value="%d %p %c [%t] %m%n"/>
 
 	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
 		<withJansi>true</withJansi>

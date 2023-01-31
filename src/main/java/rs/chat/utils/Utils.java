@@ -1,31 +1,18 @@
 package rs.chat.utils;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.gson.JsonObject;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import rs.chat.exceptions.TokenValidationException;
-import rs.chat.exceptions.WebSocketException;
 import rs.chat.net.ws.JsonMessageWrapper;
 import rs.chat.tasks.Task;
 import rs.chat.tasks.TaskExecutionException;
 
-import java.time.Clock;
-import java.time.Instant;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.function.Function;
 
-import static rs.chat.net.ws.Message.ERROR_MESSAGE;
-import static rs.chat.utils.Constants.ALGORITHM;
 import static rs.chat.utils.Constants.GSON;
-import static rs.chat.utils.Constants.JWT_TOKEN_PREFIX;
-import static rs.chat.utils.Constants.JWT_VERIFIER;
-import static rs.chat.utils.Constants.TOKEN_EXPIRATION_DURATION_EXTENDED;
-import static rs.chat.utils.Constants.TOKEN_EXPIRATION_DURATION_NORMAL;
 
 /**
  * Utility class for common operations.
@@ -66,44 +53,6 @@ public final class Utils {
 	}
 
 	/**
-	 * Creates the token that is used to authenticate the user.
-	 *
-	 * @param username             the username of the user.
-	 * @param requestURL           the URL of the request.
-	 * @param role                 the role of the user.
-	 * @param extendExpirationTime if the expiration time of the token should be extended.
-	 *
-	 * @return the tokens that are used to authenticate the user.
-	 */
-	public static String generateJWTToken(String username, String requestURL,
-	                                      String role, boolean extendExpirationTime,
-	                                      Clock clock) {
-		return JWT.create()
-		          .withSubject(username)
-		          .withExpiresAt(Instant.now(clock).plus(
-				          extendExpirationTime ?
-				          TOKEN_EXPIRATION_DURATION_EXTENDED :
-				          TOKEN_EXPIRATION_DURATION_NORMAL
-		          ))
-		          .withIssuer(requestURL) // URL of our application.
-		          .withClaim("role", role) // Only one role is in DB.
-		          .sign(ALGORITHM);
-	}
-
-	/**
-	 * Verifies an authorization token.
-	 *
-	 * @param token the token to verify.
-	 *
-	 * @return the decoded JWT token.
-	 *
-	 * @throws JWTVerificationException if the token is invalid.
-	 */
-	public static DecodedJWT checkAuthorizationToken(String token) throws JWTVerificationException {
-		return JWT_VERIFIER.verify(token.replace(JWT_TOKEN_PREFIX, ""));
-	}
-
-	/**
 	 * Creates a {@link String} message containing a server message.
 	 *
 	 * @param content the message to send.
@@ -113,38 +62,28 @@ public final class Utils {
 	 * @return the {@link String} message containing the server message.
 	 */
 	public static String createMessage(String content, String type, String chatId) {
-		return (JsonMessageWrapper.builder()
-		                          /* Headers */
-		                          .username("Server")
-		                          .chatId(chatId)
-		                          .type(type)
-		                          .date(System.currentTimeMillis())
-		                          /* Body */
-		                          .content(content)
-		                          .build())
-				/* JsonObject */
-				.toString();
+		return serverMessage(content, type, chatId).toString();
 	}
 
 	/**
-	 * Creates a {@link String} message containing an error message.
+	 * Creates a server message to send to the clients.
 	 *
-	 * @param message the error message to send.
+	 * @param content content of the message.
+	 * @param type    type of the message.
+	 * @param chatId  chatId to send the message to.
 	 *
-	 * @return the {@link String} message containing the error message.
+	 * @return the server message.
 	 */
-	public static String createErrorMessage(String message) {
-		return (JsonMessageWrapper.builder()
-		                          /* Headers */
-		                          .username("Server")
-		                          .chatId("NONE")
-		                          .type(ERROR_MESSAGE.type())
-		                          .date(System.currentTimeMillis())
-		                          /* Body */
-		                          .content(message)
-		                          .build())
-				/* JsonObject */
-				.toString();
+	private static Object serverMessage(String content, String type, String chatId) {
+		return JsonMessageWrapper.builder()
+		                         /* Headers */
+		                         .username("Server")
+		                         .chatId(chatId)
+		                         .type(type)
+		                         .date(System.currentTimeMillis())
+		                         /* Body */
+		                         .content(content)
+		                         .build();
 	}
 
 	/**
@@ -197,34 +136,6 @@ public final class Utils {
 			return String.format("%.2f", bytes / (1024d * 1024)) + " MB";
 		} else {
 			return String.format("%.2f", bytes / (1024d * 1024 * 1024)) + " GB";
-		}
-	}
-
-	/**
-	 * Checks if the token is valid before handling the message.
-	 *
-	 * @param token token to check.
-	 *
-	 * @throws WebSocketException       if token is null or empty.
-	 * @throws TokenValidationException if token is invalid.
-	 */
-	public static void checkTokenValidity(String token) throws WebSocketException, TokenValidationException {
-		if (token == null) {
-			throw new WebSocketException("Token is null");
-		}
-
-		if (token.isEmpty()) {
-			throw new WebSocketException("Token is empty");
-		}
-
-		try {
-			checkAuthorizationToken(token);
-		} catch (JWTVerificationException e) {
-			if (token.replace(JWT_TOKEN_PREFIX, "").equals("empty")) {
-				return; // Client connected to the server without a token (started the app but not connected to a chat).
-			}
-
-			throw new TokenValidationException(e.getMessage());
 		}
 	}
 }

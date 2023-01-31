@@ -1,11 +1,9 @@
 package rs.chat.utils;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.google.gson.Gson;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.springframework.util.unit.DataSize;
 
 import java.net.URI;
 import java.security.SecureRandom;
@@ -40,7 +38,6 @@ public final class Constants {
 	public static final String[] STRING_ARRAY = new String[0];
 	public static final Duration TOKEN_EXPIRATION_DURATION_NORMAL = Duration.ofHours(4);
 	public static final Duration TOKEN_EXPIRATION_DURATION_EXTENDED = Duration.ofDays(7);
-	public static final Algorithm ALGORITHM = Algorithm.HMAC256(System.getenv("TOKEN_SECRET").getBytes());
 
 	public static final String STUDENT_ROLE = "STUDENT";
 	public static final String TEACHER_ROLE = "TEACHER";
@@ -49,14 +46,13 @@ public final class Constants {
 	public static final List<String> MEDIUM_TIER_ROLES = List.of(TEACHER_ROLE, ADMIN_ROLE);
 	public static final List<String> TOP_TIER_ROLES = List.of(ADMIN_ROLE);
 
-	public static final JWTVerifier JWT_VERIFIER = JWT.require(ALGORITHM).build();
 	public static final String JWT_TOKEN_PREFIX = "Bearer ";
 
 	public static final String S3_BUCKET_NAME = System.getenv("AWS_S3_BUCKET_NAME");
-	public static final URI REMOTE_S3_ENDPOINT_URI = Optional.of(System.getenv("S3_ENDPOINT_URI"))
-	                                                         .filter(s -> !s.equals(EMPTY_ENV_VAR))
-	                                                         .map(URI::create)
-	                                                         .orElse(null);
+	public static final URI S3_ENDPOINT_URI = Optional.of(System.getenv("S3_ENDPOINT_URI"))
+	                                                  .filter(s -> !s.equals(EMPTY_ENV_VAR))
+	                                                  .map(URI::create)
+	                                                  .orElse(null);
 	public static final URI S3_ENDPOINT_URI_FOR_FILES = URI.create(System.getenv("S3_ENDPOINT_URI_FOR_FILES"));
 
 	public static final String USER = "user";
@@ -68,6 +64,7 @@ public final class Constants {
 	public static final String DEGREE = "degree";
 	public static final String DEGREE_CHAT_S3_FOLDER_PREFIX = DEGREE + "/";
 
-	public static final int MAX_CHAT_HISTORY_PER_REQUEST = 65;
+	public static final int HISTORY_PAGE_SIZE = 65;
 	public static final SecureRandom SECURE_RANDOM = new SecureRandom();
+	public static final long MAX_FILE_BYTES = DataSize.ofMegabytes(30).toBytes();
 }

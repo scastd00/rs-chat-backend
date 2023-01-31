@@ -1,19 +1,18 @@
 package rs.chat.config.security.filter;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebFilter;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import rs.chat.net.http.HttpRequest;
 import rs.chat.net.http.HttpResponse;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebFilter;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
@@ -26,7 +25,6 @@ import java.io.IOException;
  * <b>This is the first entry point of all the requests that arrive to the
  * server.</b>
  */
-@Component
 @Slf4j
 @Order(value = Ordered.HIGHEST_PRECEDENCE)
 @WebFilter(filterName = "ContentCachingFilter", urlPatterns = "/*")

@@ -29,9 +29,10 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.util.Map;
 
+import static rs.chat.net.ws.Message.GET_HISTORY_MESSAGE;
 import static rs.chat.net.ws.Message.TEXT_MESSAGE;
-import static rs.chat.utils.Constants.REMOTE_S3_ENDPOINT_URI;
 import static rs.chat.utils.Constants.S3_BUCKET_NAME;
+import static rs.chat.utils.Constants.S3_ENDPOINT_URI;
 import static rs.chat.utils.Constants.S3_ENDPOINT_URI_FOR_FILES;
 
 /**
@@ -47,7 +48,7 @@ public final class S3 implements Closeable {
 	 */
 	private S3() {
 		this.s3Client = S3Client.builder()
-		                        .endpointOverride(REMOTE_S3_ENDPOINT_URI)
+		                        .endpointOverride(S3_ENDPOINT_URI)
 		                        .credentialsProvider(this::obtainCredentials)
 		                        .region(Region.EU_WEST_3)
 		                        .build();
@@ -108,13 +109,14 @@ public final class S3 implements Closeable {
 	}
 
 	/**
-	 * Uploads a chat history file to S3 bucket.
+	 * Uploads a chat history file to S3 bucket and deletes it from the local disk.
 	 *
-	 * @param chatId the chat id of the chat history file to upload to S3 bucket.
+	 * @param chatId     the chat id of the chat history file to upload to S3 bucket.
+	 * @param removeFile whether to delete the file from the local disk after it has been uploaded to S3.
 	 */
-	public void uploadHistoryFile(String chatId) {
-		File file = TEXT_MESSAGE.getFileInDisk(chatId);
-		String s3Key = TEXT_MESSAGE.s3Key(chatId);
+	public void uploadHistoryFile(String chatId, boolean removeFile) {
+		File file = GET_HISTORY_MESSAGE.getFileInDisk(chatId);
+		String s3Key = GET_HISTORY_MESSAGE.s3Key(chatId);
 
 		this.s3Client.putObject(
 				PutObjectRequest.builder()
@@ -124,26 +126,28 @@ public final class S3 implements Closeable {
 				RequestBody.fromFile(file)
 		);
 
-		try {
-			// Delete the file from the local disk after it has been uploaded to S3.
-			Files.delete(file.toPath());
-		} catch (IOException e) {
-			throw new CouldNotUploadFileException(e.getMessage());
+		if (removeFile) {
+			try {
+				// Delete the file from the local disk after it has been uploaded to S3.
+				Files.delete(file.toPath());
+			} catch (IOException e) {
+				throw new CouldNotUploadFileException(e.getMessage());
+			}
 		}
 
-		log.debug("Uploaded file {} to S3 bucket with key {} and deleted from disk", file.getName(), s3Key);
+		log.debug("Uploaded file {} to S3 bucket with key {}", file.getName(), s3Key);
 	}
 
 	/**
-	 * Downloads a chat history file from S3 bucket.
+	 * Downloads a chat history file from S3 bucket and saves it to the local disk.
 	 *
 	 * @param chatId the chat id of the chat history file to download from S3 bucket.
 	 *
 	 * @return the downloaded chat history file.
 	 */
 	public File downloadHistoryFile(String chatId) {
-		File file = TEXT_MESSAGE.getFileInDisk(chatId);
-		String s3Key = TEXT_MESSAGE.s3Key(chatId);
+		File file = GET_HISTORY_MESSAGE.getFileInDisk(chatId);
+		String s3Key = GET_HISTORY_MESSAGE.s3Key(chatId);
 
 		if (this.existsKeyInBucket(s3Key)) {
 			this.s3Client.getObject(
@@ -254,8 +258,9 @@ public final class S3 implements Closeable {
 	 *     <li>video</li>
 	 *     <li>audio</li>
 	 * </ul>
-	 *
+	 * <p>
 	 * Prefix is a random generated string of 15 characters (see {@link RandomStringUtils#randomAlphanumeric(int)}).
+	 *
 	 * @param fileName name of the file to upload to S3 bucket.
 	 *
 	 * @return the key for the image to store in S3 bucket.

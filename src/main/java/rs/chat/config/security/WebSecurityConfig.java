@@ -5,18 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import rs.chat.config.security.filter.RSChatAuthenticationFilter;
-import rs.chat.config.security.filter.RSChatAuthorizationFilter;
-
-import java.time.Clock;
+import rs.chat.config.security.filter.AuthenticationFilter;
+import rs.chat.config.security.filter.AuthorizationFilter;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 import static rs.chat.router.Routes.ACTUATOR_URL;
@@ -48,61 +42,53 @@ import static rs.chat.utils.Constants.TOP_TIER_ROLES;
 @EnableWebSecurity
 @RequiredArgsConstructor
 @Slf4j
-@SuppressWarnings("deprecation")
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-	private final UserDetailsService userDetailsService;
-	private final BCryptPasswordEncoder passwordEncoder;
-	private final Clock clock;
+public class WebSecurityConfig {
+	private final AuthenticationFilter authenticationFilter;
+	private final AuthorizationFilter authorizationFilter;
 
 	/**
-	 * {@inheritDoc}
+	 * Configures the security for the application.
+	 *
+	 * @param http {@link HttpSecurity} object.
+	 *
+	 * @return {@link SecurityFilterChain} object.
+	 *
+	 * @throws Exception
+	 * @apiNote This method was introduced due to the migration from Spring Boot 2 to Spring Boot 3.
 	 */
-	@Override
-	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(this.userDetailsService).passwordEncoder(this.passwordEncoder);
-	}
-
-	/**
-	 * Enables CORS and disables CSRF for the whole application, configures
-	 * all the routes that are allowed for the user and adds the needed filters.
-	 * <p>
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
+	@Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.cors();
 		http.csrf().disable();
 		http.sessionManagement().sessionCreationPolicy(STATELESS);
 		http.requiresChannel(channel -> channel.anyRequest().requiresSecure());
 
-		this.authorizeRequests(http);
-		this.addFilters(http);
+		this.publicRoutes(http);
+		this.privateRoutes(http);
+		this.configureFilters(http);
+
+		return http.build();
 	}
 
 	/**
-	 * Registers all the routes that are allowed for the user.
+	 * Registers the routes that are allowed for the <b>authenticated</b> user.
 	 *
 	 * @param http {@link HttpSecurity} object.
 	 *
 	 * @throws Exception if an error occurs.
 	 */
-	private void authorizeRequests(HttpSecurity http) throws Exception {
-		this.publicRoutes(http);
-
-		// Low tier
+	private void privateRoutes(HttpSecurity http) throws Exception {
 		registerRoutesOfTier(http, LOW_TIER_ROLES.toArray(STRING_ARRAY),
 		                     GetRoute.INSTANCE.lowTierRoutes(), PostRoute.INSTANCE.lowTierRoutes(),
 		                     PutRoute.INSTANCE.lowTierRoutes(), DeleteRoute.INSTANCE.lowTierRoutes());
-		// Medium tier
 		registerRoutesOfTier(http, MEDIUM_TIER_ROLES.toArray(STRING_ARRAY),
 		                     GetRoute.INSTANCE.mediumTierRoutes(), PostRoute.INSTANCE.mediumTierRoutes(),
 		                     PutRoute.INSTANCE.mediumTierRoutes(), DeleteRoute.INSTANCE.mediumTierRoutes());
-		// Top tier
 		registerRoutesOfTier(http, TOP_TIER_ROLES.toArray(STRING_ARRAY),
 		                     GetRoute.INSTANCE.topTierRoutes(), PostRoute.INSTANCE.topTierRoutes(),
 		                     PutRoute.INSTANCE.topTierRoutes(), DeleteRoute.INSTANCE.topTierRoutes());
 
-		http.authorizeRequests()
+		http.authorizeHttpRequests()
 		    .anyRequest()
 		    .authenticated();
 	}
@@ -140,8 +126,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	 * @throws Exception if an error occurs.
 	 */
 	private void publicRoutes(HttpSecurity http) throws Exception {
-		http.authorizeRequests()
-		    .antMatchers(
+		http.authorizeHttpRequests()
+		    .requestMatchers(
 				    ROOT_URL, LOGIN_URL,
 				    LOGOUT_URL, REGISTER_URL,
 				    WS_CHAT_ENDPOINT, FORGOT_PASSWORD_URL,
@@ -152,41 +138,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	/**
-	 * Adds the needed filters.
+	 * Adds the needed filters, and configures them.
 	 *
 	 * @param http {@link HttpSecurity} object.
-	 *
-	 * @throws Exception if an error occurs.
 	 */
-	private void addFilters(HttpSecurity http) throws Exception {
-		http.addFilter(this.getRSChatCustomAuthenticationFilter());
-		http.addFilterBefore(new RSChatAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
-	}
-
-	/**
-	 * Creates the {@link AuthenticationManager} that is used by the application.
-	 *
-	 * @return {@link AuthenticationManager} object.
-	 *
-	 * @throws Exception if an error occurs.
-	 */
-	@Bean
-	@Override
-	public AuthenticationManager authenticationManagerBean() throws Exception {
-		return super.authenticationManagerBean();
-	}
-
-	/**
-	 * Creates the {@link RSChatAuthenticationFilter} that is used by the application.
-	 *
-	 * @return {@link RSChatAuthenticationFilter} object.
-	 *
-	 * @throws Exception if an error occurs.
-	 */
-	private RSChatAuthenticationFilter getRSChatCustomAuthenticationFilter() throws Exception {
-		RSChatAuthenticationFilter authenticationFilter =
-				new RSChatAuthenticationFilter(this.authenticationManagerBean(), this.clock);
-		authenticationFilter.setFilterProcessesUrl(LOGIN_URL);
-		return authenticationFilter;
+	private void configureFilters(HttpSecurity http) {
+		http.addFilter(this.authenticationFilter); // This extends UsernamePasswordAuthenticationFilter
+		http.addFilterBefore(this.authorizationFilter, UsernamePasswordAuthenticationFilter.class);
 	}
 }
