@@ -13,6 +13,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 import rs.chat.config.security.JWTService;
+import rs.chat.domain.service.SessionService;
 import rs.chat.net.http.HttpResponse;
 
 import java.io.IOException;
@@ -39,6 +40,7 @@ import static rs.chat.utils.Constants.JWT_TOKEN_PREFIX;
 @RequiredArgsConstructor
 public class AuthorizationFilter extends OncePerRequestFilter {
 	private final JWTService jwtService;
+	private final SessionService sessionService;
 
 	/**
 	 * Checks if the user is authorized to access the resource.
@@ -74,6 +76,10 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 		}
 
 		try {
+			if (!this.sessionService.tokenExists(token.substring(JWT_TOKEN_PREFIX.length()))) {
+				throw new ServletException("Session is not valid.");
+			}
+
 			String username = this.jwtService.getUsername(token);
 			String role = this.jwtService.getClaim(token, claims -> claims.get("role", String.class));
 

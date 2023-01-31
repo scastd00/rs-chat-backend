@@ -13,4 +13,6 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
 	@NotNull Optional<Session> findByUserId(Long userId);
 
 	List<Session> findAllByUserId(Long userId);
+
+	boolean existsByToken(String token);
 }

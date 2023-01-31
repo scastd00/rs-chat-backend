@@ -8,7 +8,6 @@ import rs.chat.domain.entity.Session;
 import rs.chat.domain.service.SessionService;
 
 import java.time.Clock;
-import java.time.Instant;
 import java.util.List;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
@@ -51,6 +50,6 @@ public class ScheduledTasks {
 	 * @return {@code true} if the session is expired, {@code false} otherwise.
 	 */
 	private boolean expiredSession(Session session) {
-		return session.getEndDate().isBefore(Instant.now(this.clock));
+		return session.getEndDate().isBefore(this.clock.instant());
 	}
 }

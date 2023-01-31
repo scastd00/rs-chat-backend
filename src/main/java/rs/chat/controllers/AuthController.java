@@ -77,7 +77,7 @@ public class AuthController {
 
 		// Get all data from db
 		User user = ControllerUtils.performActionThatMayThrowException(
-				response, () -> this.userService.getUser(username)
+				response, () -> this.userService.getUserByUsername(username)
 		);
 
 		Session savedSession = this.sessionService.saveSession(
@@ -198,21 +198,21 @@ public class AuthController {
 	 */
 	@PostMapping(LOGOUT_URL)
 	public void logout(HttpRequest request, HttpResponse response) throws IOException {
-		String authorizationHeader = request.getHeader(AUTHORIZATION);
+		String token = request.getHeader(AUTHORIZATION);
 
-		if (authorizationHeader == null) {
+		if (token == null) {
 			// If request does not contain authorization header, send error.
 			response.badRequest().send("You must provide the authorization token");
 			log.warn("Request does not contain authorization header");
 			return;
 		}
 
-		String token = authorizationHeader.substring(JWT_TOKEN_PREFIX.length());
+		String tokenWithoutPrefix = token.substring(JWT_TOKEN_PREFIX.length());
 
 		if (this.jwtService.isInvalidToken(token)) {
 			response.badRequest().send("The token is not valid");
 			log.warn("The token is not valid");
-			this.sessionService.deleteSession(token);
+			this.sessionService.deleteSession(tokenWithoutPrefix);
 			return;
 		}
 
@@ -224,7 +224,7 @@ public class AuthController {
 			this.sessionService.deleteAllSessionsOfUser(username);
 		} else {
 			log.info("User {} has been logged out from the session", username);
-			this.sessionService.deleteSession(token);
+			this.sessionService.deleteSession(tokenWithoutPrefix);
 		}
 
 		// Logout from Spring.

@@ -10,6 +10,7 @@ import rs.chat.domain.entity.Session;
 import rs.chat.domain.entity.User;
 import rs.chat.domain.repository.SessionRepository;
 import rs.chat.domain.repository.UserRepository;
+import rs.chat.exceptions.NotFoundException;
 
 import java.util.List;
 import java.util.Set;
@@ -70,9 +71,21 @@ public class SessionService {
 	 *
 	 * @return the found session.
 	 */
-	public Session getSession(String token) {
+	public Session getSessionByToken(String token) {
 		return this.sessionRepository.findByToken(token)
-		                             .orElse(null);
+		                             .orElseThrow(() -> new NotFoundException("Session not found. Your token may be expired."));
+	}
+
+	/**
+	 * Checks whether a session with the given token exists in the database. It is used when
+	 * authorizing a user to access resources.
+	 *
+	 * @param token the token of the session to be checked.
+	 *
+	 * @return {@code true} if the session exists, {@code false} otherwise.
+	 */
+	public boolean tokenExists(String token) {
+		return this.sessionRepository.existsByToken(token);
 	}
 
 	/**

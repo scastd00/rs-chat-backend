@@ -50,7 +50,7 @@ public class ChatController {
 	@GetMapping(ALL_CHATS_OF_USER_URL)
 	public void getAllChatsOfUserDividedByType(HttpResponse response,
 	                                           @PathVariable String username) throws IOException {
-		User user = ControllerUtils.performActionThatMayThrowException(response, () -> this.userService.getUser(username));
+		User user = ControllerUtils.performActionThatMayThrowException(response, () -> this.userService.getUserByUsername(username));
 
 		response.ok().send(this.chatService.getAllChatsOfUserGroupedByType(user));
 	}

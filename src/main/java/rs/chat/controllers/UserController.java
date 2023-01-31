@@ -117,7 +117,7 @@ public class UserController {
 	public void getIdByUsername(HttpResponse response,
 	                            @PathVariable String username) throws IOException {
 		User user = ControllerUtils.performActionThatMayThrowException(
-				response, () -> this.userService.getUser(username)
+				response, () -> this.userService.getUserByUsername(username)
 		);
 
 		response.ok().send(user.getId());

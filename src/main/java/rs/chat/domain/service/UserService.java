@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,16 +32,10 @@ public class UserService implements UserDetailsService {
 	 * @param username the username identifying the user whose data is required.
 	 *
 	 * @return the user details.
-	 *
-	 * @throws UsernameNotFoundException if the user is not found.
 	 */
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		User user = this.userRepository.findByUsername(username)
-		                               .orElseThrow(() -> {
-			                               log.error("User not found: {}", username);
-			                               return new UsernameNotFoundException("User %s not found".formatted(username));
-		                               });
+	public UserDetails loadUserByUsername(String username) {
+		User user = this.getUserByUsername(username);
 
 		return new org.springframework.security.core.userdetails.User(
 				user.getUsername(),
@@ -119,7 +112,7 @@ public class UserService implements UserDetailsService {
 	 *
 	 * @return the user.
 	 */
-	public User getUser(String username) {
+	public User getUserByUsername(String username) {
 		return this.userRepository.findByUsername(username)
 		                          .orElseThrow(() -> new NotFoundException("Username %s not found".formatted(username)));
 	}
