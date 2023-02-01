@@ -6,10 +6,8 @@ import lombok.NoArgsConstructor;
 import rs.chat.net.ws.JsonMessageWrapper;
 import rs.chat.tasks.Task;
 import rs.chat.tasks.TaskExecutionException;
+import rs.chat.tasks.TaskScheduler;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import java.util.function.Function;
 
 import static rs.chat.utils.Constants.GSON;
@@ -19,20 +17,8 @@ import static rs.chat.utils.Constants.GSON;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Utils {
-	private static final ExecutorService EXECUTOR_SERVICE;
-
-	static {
-		ThreadFactory threadFactory = r -> {
-			Thread t = new Thread(r);
-			t.setDaemon(true);
-			return t;
-		};
-
-		EXECUTOR_SERVICE = Executors.newCachedThreadPool(threadFactory);
-	}
-
 	public static void executeTask(Task task, Function<TaskExecutionException, Void> exceptionHandler) {
-		EXECUTOR_SERVICE.execute(() -> {
+		TaskScheduler.schedule(() -> {
 			try {
 				task.run();
 			} catch (TaskExecutionException e) {

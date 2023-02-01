@@ -14,6 +14,7 @@ import rs.chat.exceptions.TokenValidationException;
 import rs.chat.net.ws.strategies.messages.MessageStrategy;
 import rs.chat.net.ws.strategies.messages.MessageStrategyMappings;
 import rs.chat.observability.metrics.Metrics;
+import rs.chat.rate.RateLimit;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -38,6 +39,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	private final ChatManagement chatManagement;
 	private final Metrics metrics;
 	private final JWTService jwtService;
+	private final RateLimit rateLimit = new RateLimit(10);
 
 	private static final String EMPTY_TOKEN = JWT_TOKEN_PREFIX + "empty";
 	private static final String CONNECTION_MESSAGE_CONTENT = "Connection";
@@ -74,6 +76,20 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		// If I am here, the state is one of the following:
 		// 1. Empty token and the user is connecting to the server.
 		// 2. We have a token (valid or not) and the user is sending a message (not a connection one).
+
+		if (!this.rateLimit.isAllowed(wrappedMessage.username())) {
+			session.sendMessage(new TextMessage(
+					createMessage(
+							"You are sending messages too fast.",
+							ERROR_MESSAGE.type(),
+							wrappedMessage.chatId()
+					)
+			));
+			return;
+		}
+		// Decrease the rate limit counter for the user.
+		// We know that the user is in the map, because the rate limit added to it (only if not present).
+		this.rateLimit.decrease(wrappedMessage.username());
 
 		Message receivedMessageType = new Message(wrappedMessage.type(), null, null);
 		Map<String, Object> otherData = new HashMap<>();
