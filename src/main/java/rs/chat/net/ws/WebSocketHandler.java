@@ -24,6 +24,7 @@ import java.util.Map;
 
 import static rs.chat.net.ws.Message.ERROR_MESSAGE;
 import static rs.chat.net.ws.Message.PING_MESSAGE;
+import static rs.chat.net.ws.Message.TOO_FAST_MESSAGE;
 import static rs.chat.net.ws.Message.USER_CONNECTED;
 import static rs.chat.utils.Constants.JWT_TOKEN_PREFIX;
 import static rs.chat.utils.Constants.SCHEDULE_STRING;
@@ -56,19 +57,14 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		// FIXME: A user that did not send the USER_JOINED message could send messages
 		//  but cannot receive them.
 
+		long start = System.currentTimeMillis();
 		JsonMessageWrapper wrappedMessage = new JsonMessageWrapper(message.getPayload());
 
 		// The second condition is only executed once (when the user connects to the server,
 		// in a controlled situation). Then, the user will have a valid token.
 		boolean isEmptyToken = wrappedMessage.token().equals(EMPTY_TOKEN);
 		if (isEmptyToken && !isConnectionOrPingMessage(wrappedMessage)) {
-			session.sendMessage(new TextMessage(
-					createMessage(
-							"You cannot send messages without a valid token.",
-							ERROR_MESSAGE.type(),
-							wrappedMessage.chatId()
-					)
-			));
+			sendQuickResponse(session, "You cannot send messages without a valid token.", ERROR_MESSAGE, wrappedMessage);
 			throw new TokenValidationException("You cannot send messages without a valid token.");
 		}
 
@@ -77,19 +73,12 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		// 1. Empty token and the user is connecting to the server.
 		// 2. We have a token (valid or not) and the user is sending a message (not a connection one).
 
-		if (!this.rateLimit.isAllowed(wrappedMessage.username())) {
-			session.sendMessage(new TextMessage(
-					createMessage(
-							"You are sending messages too fast.",
-							ERROR_MESSAGE.type(),
-							wrappedMessage.chatId()
-					)
-			));
+		// Decrease the rate limit counter for the user.
+		if (Message.typeBelongsToGroup(wrappedMessage.type(), Message.NORMAL_MESSAGES) &&
+				!this.rateLimit.isAllowedAndDecrease(wrappedMessage.username())) {
+			sendQuickResponse(session, "You are sending messages too fast.", TOO_FAST_MESSAGE, wrappedMessage);
 			return;
 		}
-		// Decrease the rate limit counter for the user.
-		// We know that the user is in the map, because the rate limit added to it (only if not present).
-		this.rateLimit.decrease(wrappedMessage.username());
 
 		Message receivedMessageType = new Message(wrappedMessage.type(), null, null);
 		Map<String, Object> otherData = new HashMap<>();
@@ -111,14 +100,11 @@ public class WebSocketHandler extends TextWebSocketHandler {
 			wrappedMessage.setContent(strings[0]);
 		}
 
-		// Strategy pattern for handling messages.
-		MessageStrategy strategy;
-
-		if (hasTextBody && this.isParseableMessage(wrappedMessage.content())) {
-			strategy = MessageStrategyMappings.decideStrategy(Message.PARSEABLE_MESSAGE);
-		} else {
-			strategy = MessageStrategyMappings.decideStrategy(receivedMessageType);
+		if (hasTextBody && this.isParseable(wrappedMessage.content())) {
+			receivedMessageType = Message.PARSEABLE_MESSAGE;
 		}
+
+		MessageStrategy strategy = MessageStrategyMappings.decideStrategy(receivedMessageType);
 
 		try {
 			// If the token is empty, we do not need to validate it, because the user is
@@ -126,11 +112,25 @@ public class WebSocketHandler extends TextWebSocketHandler {
 			if (!isEmptyToken && this.jwtService.isInvalidToken(wrappedMessage.token())) {
 				throw new TokenValidationException("Invalid token.");
 			}
+
 			strategy.handle(wrappedMessage, this.chatManagement, otherData);
-			this.metrics.incrementMessageCount(receivedMessageType.type());
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
+
+		this.metrics.incrementMessageCount(receivedMessageType.type());
+		this.metrics.incrementMessageTime(receivedMessageType.type(), System.currentTimeMillis() - start);
+	}
+
+	private static void sendQuickResponse(@NotNull WebSocketSession session, String content,
+	                                      Message errorMessage, JsonMessageWrapper wrappedMessage) throws IOException {
+		session.sendMessage(new TextMessage(
+				createMessage(
+						content,
+						errorMessage.type(),
+						wrappedMessage.chatId()
+				)
+		));
 	}
 
 	/**
@@ -154,7 +154,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void handleTransportError(@NotNull WebSocketSession session, @NotNull Throwable exception) throws IOException {
+	public void handleTransportError(@NotNull WebSocketSession session,
+	                                 @NotNull Throwable exception) throws IOException {
 		log.error(exception.getMessage(), exception);
 		session.close(CloseStatus.SERVER_ERROR);
 	}
@@ -166,7 +167,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	 *
 	 * @return true if the message is a parseable message, false otherwise.
 	 */
-	private boolean isParseableMessage(String message) {
+	private boolean isParseable(String message) {
 		return message.contains("/") || message.contains("@");
 	}
 
@@ -179,7 +180,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	 * @return {@code true} if the message has a string as body, {@code false} otherwise.
 	 */
 	private boolean hasTextBody(JsonMessageWrapper wrappedMessage) {
-		return ((JsonObject) wrappedMessage.getParsedPayload().get("body"))
-				.get("content").isJsonPrimitive();
+		return wrappedMessage.body().get("content").isJsonPrimitive();
 	}
 }

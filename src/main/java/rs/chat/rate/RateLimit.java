@@ -30,7 +30,7 @@ public final class RateLimit {
 		this.rateLimitMap.values().forEach(Ref::reset);
 	}
 
-	public boolean isAllowed(String key) {
+	public boolean isAllowedAndDecrease(String key) {
 		Ref<Long> ref = this.rateLimitMap.computeIfAbsent(key, k -> new Ref<>(this.limit));
 
 		if (ref.get() > 0) {
@@ -39,14 +39,5 @@ public final class RateLimit {
 		}
 
 		return false;
-	}
-
-	public void decrease(String key) {
-		Ref<Long> ref = this.rateLimitMap.get(key);
-
-		if (ref != null) {
-			ref.set(ref.get() - 1);
-			log.debug("Decreased rate limit for key: {} (new value {})", key, ref.get());
-		}
 	}
 }
