@@ -14,7 +14,7 @@ import rs.chat.exceptions.TokenValidationException;
 import rs.chat.net.ws.strategies.messages.MessageStrategy;
 import rs.chat.net.ws.strategies.messages.MessageStrategyMappings;
 import rs.chat.observability.metrics.Metrics;
-import rs.chat.rate.RateLimit;
+import rs.chat.rate.RateLimiter;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -40,7 +40,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	private final ChatManagement chatManagement;
 	private final Metrics metrics;
 	private final JWTService jwtService;
-	private final RateLimit rateLimit = new RateLimit(10);
+	private final RateLimiter rateLimiter = new RateLimiter(10);
 
 	private static final String EMPTY_TOKEN = JWT_TOKEN_PREFIX + "empty";
 	private static final String CONNECTION_MESSAGE_CONTENT = "Connection";
@@ -75,7 +75,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
 		// Decrease the rate limit counter for the user.
 		if (Message.typeBelongsToGroup(wrappedMessage.type(), Message.NORMAL_MESSAGES) &&
-				!this.rateLimit.isAllowedAndDecrease(wrappedMessage.username())) {
+				!this.rateLimiter.isAllowedAndDecrease(wrappedMessage.username())) {
 			sendQuickResponse(session, "You are sending messages too fast.", TOO_FAST_MESSAGE, wrappedMessage);
 			return;
 		}

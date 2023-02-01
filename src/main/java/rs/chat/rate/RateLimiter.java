@@ -9,15 +9,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-public final class RateLimit {
+public final class RateLimiter {
 	private final Map<String, Ref<Long>> rateLimitMap = new ConcurrentHashMap<>();
 	private final long limit;
 
-	public RateLimit(long limit) {
+	public RateLimiter(long limit) {
 		this(limit, 3, TimeUnit.SECONDS);
 	}
 
-	public RateLimit(long limit, int resetInterval, TimeUnit timeUnit) {
+	public RateLimiter(long limit, int resetInterval, TimeUnit timeUnit) {
 		this.limit = limit;
 		TaskScheduler.schedule(this::reset, resetInterval, resetInterval, timeUnit);
 	}
