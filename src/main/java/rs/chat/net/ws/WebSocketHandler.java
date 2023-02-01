@@ -11,6 +11,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import rs.chat.config.security.JWTService;
 import rs.chat.exceptions.TokenValidationException;
+import rs.chat.net.ws.strategies.messages.MessageHandlingDTO;
 import rs.chat.net.ws.strategies.messages.MessageStrategy;
 import rs.chat.net.ws.strategies.messages.MessageStrategyMappings;
 import rs.chat.observability.metrics.Metrics;
@@ -37,10 +38,9 @@ import static rs.chat.utils.Utils.createMessage;
 @Component
 @RequiredArgsConstructor
 public class WebSocketHandler extends TextWebSocketHandler {
-	private final ChatManagement chatManagement;
 	private final Metrics metrics;
 	private final JWTService jwtService;
-	private final RateLimiter rateLimiter = new RateLimiter(10);
+	private final RateLimiter rateLimiter;
 
 	private static final String EMPTY_TOKEN = JWT_TOKEN_PREFIX + "empty";
 	private static final String CONNECTION_MESSAGE_CONTENT = "Connection";
@@ -113,7 +113,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 				throw new TokenValidationException("Invalid token.");
 			}
 
-			strategy.handle(wrappedMessage, this.chatManagement, otherData);
+			strategy.handle(new MessageHandlingDTO(wrappedMessage, otherData));
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
