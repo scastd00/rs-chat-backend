@@ -51,20 +51,24 @@ public class MailSender {
 		SESSION.setDebug(false); // Prevent printing lots of debug info to console
 	}
 
+	/**
+	 * Sends an email to the specified recipient that has registered for an account.
+	 *
+	 * @param to       the recipient's email address.
+	 * @param username the recipient's username.
+	 */
 	public static void sendRegistrationEmailBackground(String to, String username) {
 		TaskScheduler.executeTaskSecure(
 				() -> {
-					MimeMessage message = getMimeMessage(
-							to,
-							"Welcome to RSChat!",
-							"src/main/resources/templates/email/welcome/rs-chat-welcome-email.html",
-							"{{username}}",
-							username
-					);
-
 					try {
-						Transport.send(message);
-					} catch (MessagingException e) {
+						Transport.send(getMimeMessage(
+								to,
+								"Welcome to RSChat!",
+								"src/main/resources/templates/email/welcome/rs-chat-welcome-email.html",
+								"{{username}}",
+								username
+						));
+					} catch (MessagingException | IOException e) {
 						throw new TaskExecutionException(
 								new TaskStatus(TaskStatus.FAILURE, e.getMessage())
 						);
@@ -77,19 +81,24 @@ public class MailSender {
 		);
 	}
 
+	/**
+	 * Sends an email to the specified recipient that has requested a password reset.
+	 *
+	 * @param to   the recipient's email address.
+	 * @param code the password reset code.
+	 */
 	public static void sendResetPasswordEmailBackground(String to, String code) {
 		TaskScheduler.executeTaskSecure(
 				() -> {
-					MimeMessage message = getMimeMessage(
-							to,
-							"Reset your password",
-							"src/main/resources/templates/email/resetPassword/rs-chat-reset-password-email.html",
-							"{{code}}",
-							code
-					);
 					try {
-						Transport.send(message);
-					} catch (MessagingException e) {
+						Transport.send(getMimeMessage(
+								to,
+								"Reset your password",
+								"src/main/resources/templates/email/resetPassword/rs-chat-reset-password-email.html",
+								"{{code}}",
+								code
+						));
+					} catch (MessagingException | IOException e) {
 						throw new TaskExecutionException(
 								new TaskStatus(TaskStatus.FAILURE, e.getMessage())
 						);
@@ -102,23 +111,33 @@ public class MailSender {
 		);
 	}
 
-	private static MimeMessage getMimeMessage(String to, String subject, String fileName,
-	                                          String target, String value) {
-		try {
-			MimeMessage message = new MimeMessage(SESSION);
+	/**
+	 * Creates a MimeMessage object that can be used to send an email.
+	 *
+	 * @param to       the recipient's email address.
+	 * @param subject  the subject of the email.
+	 * @param fileName the name of the file that contains the email's content.
+	 * @param target   the target string to replace in the email's content.
+	 * @param value    the value to replace the target string with.
+	 *
+	 * @return a {@link MimeMessage} object that can be used to send an email.
+	 *
+	 * @throws MessagingException if an error occurs while creating the MimeMessage object.
+	 * @throws IOException        if an error occurs while reading the email's content.
+	 */
+	private static MimeMessage getMimeMessage(String to, String subject, String fileName, String target,
+	                                          String value) throws MessagingException, IOException {
+		MimeMessage message = new MimeMessage(SESSION);
 
-			message.setFrom(new InternetAddress(FROM));
-			message.addRecipient(RecipientType.TO, new InternetAddress(to));
-			message.setSubject(subject);
-			message.setText(
-					IOUtils.toString(new FileReader(fileName)).replace(target, value),
-					StandardCharsets.UTF_8.name(),
-					"html"
-			);
+		message.setFrom(new InternetAddress(FROM));
+		message.addRecipient(RecipientType.TO, new InternetAddress(to));
+		message.setSubject(subject);
+		message.setText(
+				IOUtils.toString(new FileReader(fileName)).replace(target, value),
+				StandardCharsets.UTF_8.name(),
+				"html"
+		);
 
-			return message;
-		} catch (MessagingException | IOException e) {
-			throw new RuntimeException(e);
-		}
+		return message;
 	}
 }
