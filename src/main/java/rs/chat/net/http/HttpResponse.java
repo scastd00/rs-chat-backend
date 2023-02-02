@@ -22,6 +22,8 @@ import static rs.chat.utils.Constants.ERROR_JSON_KEY;
 
 /**
  * Class that simplifies the management of the response to the client.
+ * Wraps the {@link HttpServletResponse} class, to add more functionality, such as
+ * setting the status of the response, and sending the response to the client in an easier way.
  */
 @Slf4j
 public class HttpResponse extends HttpServletResponseWrapper {
@@ -156,6 +158,7 @@ public class HttpResponse extends HttpServletResponseWrapper {
 		Object responseBody = response.data;
 
 		// If the response body contains only one element, send it directly (without the key)
+		// to simplify the json sent to the client.
 		if (response.data.size() == 1) {
 			responseBody = response.value();
 		}
