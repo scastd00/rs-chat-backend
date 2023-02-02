@@ -58,33 +58,6 @@ public final class Utils {
 	}
 
 	/**
-	 * Determines if the running environment is DEVELOPMENT or PRODUCTION.
-	 *
-	 * @return {@code true} if the environment is DEVELOPMENT, {@code false} otherwise.
-	 */
-	public static boolean isDevEnv() {
-		return System.getenv("ENV").toLowerCase().startsWith("dev");
-	}
-
-	/**
-	 * Determines if the running environment is PRODUCTION.
-	 *
-	 * @return {@code true} if the environment is PRODUCTION, {@code false} otherwise.
-	 */
-	public static boolean isProdEnv() {
-		return System.getenv("ENV").toLowerCase().startsWith("prod");
-	}
-
-	/**
-	 * Determines if the running environment is inside a Docker container.
-	 *
-	 * @return {@code true} if the environment is inside a Docker container, {@code false} otherwise.
-	 */
-	public static boolean isDockerEnv() {
-		return System.getenv("DOCKER").equals("true");
-	}
-
-	/**
 	 * Adds a {@link Number} to a {@link JsonObject} and returns the {@link String} representation.
 	 *
 	 * @param key   the key of the {@link Number} to add.
@@ -98,6 +71,13 @@ public final class Utils {
 		return json.toString();
 	}
 
+	/**
+	 * Converts bytes to a human-readable unit.
+	 *
+	 * @param bytes the bytes to convert.
+	 *
+	 * @return the human-readable unit.
+	 */
 	public static String bytesToUnit(int bytes) {
 		if (bytes < 1024) {
 			return bytes + " B";
