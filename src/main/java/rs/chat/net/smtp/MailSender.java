@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import rs.chat.tasks.TaskExecutionException;
-import rs.chat.utils.Utils;
+import rs.chat.tasks.TaskScheduler;
 
 import javax.mail.Authenticator;
 import javax.mail.Message.RecipientType;
@@ -27,20 +27,20 @@ import static rs.chat.tasks.Task.TaskStatus;
 public class MailSender {
 	private static final String FROM = System.getenv("GMAIL_ACCOUNT");
 	private static final String SMTP_HOST = "smtp.gmail.com";
-	private static final Properties PROPERTIES = System.getProperties();
 	private static final Session SESSION;
 
 	static {
 		// Setup mail server
-		PROPERTIES.put("mail.smtp.host", SMTP_HOST);
-		PROPERTIES.put("mail.smtp.port", "465");
-		PROPERTIES.put("mail.smtp.auth", "true");
-		PROPERTIES.put("mail.smtp.ssl.enable", "true");
-		PROPERTIES.put("mail.smtp.socketFactory.port", "465");
-		PROPERTIES.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+		Properties properties = System.getProperties();
+		properties.put("mail.smtp.host", SMTP_HOST);
+		properties.put("mail.smtp.port", "465");
+		properties.put("mail.smtp.auth", "true");
+		properties.put("mail.smtp.ssl.enable", "true");
+		properties.put("mail.smtp.socketFactory.port", "465");
+		properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
 
 		// Get the Session object and pass username and password
-		SESSION = Session.getInstance(PROPERTIES, new Authenticator() {
+		SESSION = Session.getInstance(properties, new Authenticator() {
 			@Override
 			protected PasswordAuthentication getPasswordAuthentication() {
 				return new PasswordAuthentication(FROM, System.getenv("GMAIL_APP_PASSWORD"));
@@ -52,7 +52,7 @@ public class MailSender {
 	}
 
 	public static void sendRegistrationEmailBackground(String to, String username) {
-		Utils.executeTask(
+		TaskScheduler.executeTaskSecure(
 				() -> {
 					MimeMessage message = getMimeMessage(
 							to,
@@ -78,7 +78,7 @@ public class MailSender {
 	}
 
 	public static void sendResetPasswordEmailBackground(String to, String code) {
-		Utils.executeTask(
+		TaskScheduler.executeTaskSecure(
 				() -> {
 					MimeMessage message = getMimeMessage(
 							to,
@@ -102,7 +102,8 @@ public class MailSender {
 		);
 	}
 
-	private static MimeMessage getMimeMessage(String to, String subject, String fileName, String target, String value) {
+	private static MimeMessage getMimeMessage(String to, String subject, String fileName,
+	                                          String target, String value) {
 		try {
 			MimeMessage message = new MimeMessage(SESSION);
 

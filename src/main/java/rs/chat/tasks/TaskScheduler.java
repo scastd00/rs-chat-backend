@@ -1,32 +1,37 @@
 package rs.chat.tasks;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 @Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TaskScheduler {
 	private static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE;
 
 	static {
-		ThreadFactory threadFactory = r -> {
-			Thread t = new Thread(r);
+		SCHEDULED_EXECUTOR_SERVICE = Executors.newScheduledThreadPool(4, runnable -> {
+			Thread t = new Thread(runnable);
 			t.setDaemon(true);
 			return t;
-		};
-
-		SCHEDULED_EXECUTOR_SERVICE = Executors.newScheduledThreadPool(4, threadFactory);
+		});
 	}
 
-	public static void schedule(Task task) {
+	public static void executeTaskInsecure(Task task) {
+		SCHEDULED_EXECUTOR_SERVICE.execute(task);
+	}
+
+	public static void executeTaskSecure(Task task, Function<TaskExecutionException, Void> exceptionHandler) {
 		SCHEDULED_EXECUTOR_SERVICE.execute(() -> {
 			try {
 				task.run();
 			} catch (TaskExecutionException e) {
-				log.error("Error executing task", e);
+				exceptionHandler.apply(e);
 			}
 		});
 	}

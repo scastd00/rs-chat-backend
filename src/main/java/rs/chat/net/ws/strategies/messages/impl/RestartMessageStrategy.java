@@ -10,6 +10,7 @@ import rs.chat.tasks.DefaultTasks;
 import rs.chat.tasks.ShutdownServerTask;
 import rs.chat.tasks.Task.TaskStatus;
 import rs.chat.tasks.TaskExecutionException;
+import rs.chat.tasks.TaskScheduler;
 import rs.chat.utils.Utils;
 
 import java.io.IOException;
@@ -47,7 +48,7 @@ public class RestartMessageStrategy extends GenericScheduledMessageStrategy {
 
 		shutdownTask.setChatManagement(chatManagement);
 
-		Utils.executeTask(shutdownTask, exception -> {
+		TaskScheduler.executeTaskSecure(shutdownTask, exception -> {
 			try {
 				handlingDTO.getSession().sendMessage(new TextMessage(
 						Utils.createMessage(

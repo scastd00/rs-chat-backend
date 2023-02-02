@@ -1,6 +1,6 @@
 package rs.chat.utils.ref;
 
-import org.jetbrains.annotations.NotNull;
+import lombok.NonNull;
 
 import java.util.function.Supplier;
 
@@ -12,7 +12,7 @@ public final class Ref<T> {
 		this(value, () -> value);
 	}
 
-	public Ref(T value, @NotNull Supplier<T> resetFn) {
+	public Ref(T value, @NonNull Supplier<T> resetFn) {
 		this.value = value;
 		this.resetFn = resetFn;
 	}

@@ -5,7 +5,7 @@ import rs.chat.exceptions.WebSocketException;
 import rs.chat.net.ws.ChatManagement;
 import rs.chat.net.ws.strategies.messages.MessageHandlingDTO;
 import rs.chat.tasks.ScheduleMessageTask;
-import rs.chat.utils.Utils;
+import rs.chat.tasks.TaskScheduler;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -38,7 +38,7 @@ public class GenericScheduledMessageStrategy extends GenericMessageStrategy {
 		ScheduleMessageTask task = new ScheduleMessageTask(handlingDTO.wrappedMessage(), schedule);
 		task.setChatManagement(chatManagement);
 
-		Utils.executeTask(task, exception -> {
+		TaskScheduler.executeTaskSecure(task, exception -> {
 			log.error("Error while scheduling message.", exception);
 			return null;
 		});

@@ -4,11 +4,6 @@ import com.google.gson.JsonObject;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import rs.chat.net.ws.JsonMessageWrapper;
-import rs.chat.tasks.Task;
-import rs.chat.tasks.TaskExecutionException;
-import rs.chat.tasks.TaskScheduler;
-
-import java.util.function.Function;
 
 import static rs.chat.utils.Constants.GSON;
 
@@ -17,16 +12,6 @@ import static rs.chat.utils.Constants.GSON;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Utils {
-	public static void executeTask(Task task, Function<TaskExecutionException, Void> exceptionHandler) {
-		TaskScheduler.schedule(() -> {
-			try {
-				task.run();
-			} catch (TaskExecutionException e) {
-				exceptionHandler.apply(e);
-			}
-		});
-	}
-
 	/**
 	 * Parses a JSON string into a {@link JsonObject}.
 	 *
