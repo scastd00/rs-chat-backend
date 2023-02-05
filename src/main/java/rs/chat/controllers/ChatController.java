@@ -12,7 +12,6 @@ import rs.chat.domain.entity.mappers.ChatMapper;
 import rs.chat.domain.service.ChatService;
 import rs.chat.domain.service.UserGroupService;
 import rs.chat.domain.service.UserService;
-import rs.chat.exceptions.BadRequestException;
 import rs.chat.net.http.HttpRequest;
 import rs.chat.net.http.HttpResponse;
 
@@ -68,9 +67,6 @@ public class ChatController {
 	public void getChatInformation(HttpResponse response, @PathVariable String chatKey) throws IOException {
 		Chat chat = ControllerUtils.performActionThatMayThrowException(response, () ->
 				this.chatService.getChatByKey(chatKey)
-				                .orElseThrow(() -> {
-					                throw new BadRequestException("Chat with key=%s does not exist.".formatted(chatKey));
-				                })
 		);
 
 		response.ok().send(this.chatMapper.toDto(chat));
@@ -88,9 +84,6 @@ public class ChatController {
 	public void getAllUsersOfChat(HttpResponse response, @PathVariable String chatKey) throws IOException {
 		Chat chat = ControllerUtils.performActionThatMayThrowException(response, () ->
 				this.chatService.getChatByKey(chatKey)
-				                .orElseThrow(() -> {
-					                throw new BadRequestException("Chat with key=%s does not exist.".formatted(chatKey));
-				                })
 		);
 
 		response.ok().send(this.chatService.getAllUsersOfChat(chat.getId()));

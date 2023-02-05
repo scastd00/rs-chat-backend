@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static rs.chat.utils.Constants.USER;
 
@@ -131,13 +130,11 @@ public class ChatService {
 	public void addUserToChat(Long userId, Long chatId) {
 		if (this.userAlreadyBelongsToChat(userId, chatId)) {
 			throw new BadRequestException("User with id=%d already belongs to chat with id=%d".formatted(userId, chatId));
-		} // todo replace controller check with ControllerUtils.performActionThatMayThrowException and leave this unchanged
+		}
 
 		User user = this.userRepository.findById(userId).orElseThrow(() -> new BadRequestException("User with id=%d does not exist".formatted(userId)));
 		Chat chat = this.chatRepository.findById(chatId).orElseThrow(() -> new BadRequestException("Chat with id=%d does not exist".formatted(chatId)));
 
-		// Todo: check if in this type of entities second and third parameters are needed
-		//  to prevent calling DB.
 		this.userChatRepository.save(new UserChat(new UserChatId(userId, chatId), user, chat));
 	}
 
@@ -159,9 +156,12 @@ public class ChatService {
 	 * @param key key of the chat.
 	 *
 	 * @return found chat.
+	 *
+	 * @throws BadRequestException if chat with given key does not exist.
 	 */
-	public Optional<Chat> getChatByKey(String key) {
-		return this.chatRepository.findByKey(key);
+	public Chat getChatByKey(String key) {
+		return this.chatRepository.findByKey(key)
+		                          .orElseThrow(() -> new BadRequestException("Chat with key=%s does not exist".formatted(key)));
 	}
 
 	/**
@@ -187,30 +187,28 @@ public class ChatService {
 	 * @return the key of the chat if the user can access it, null otherwise.
 	 */
 	public String canConnectToChat(Long userId, String chatKey) {
+		Chat chat1 = this.getChatByKey(chatKey);
+
 		if (chatKey.contains("_")) {
 			String key = chatKey.split("-")[1];
 			String[] userIds = key.split("_");
-			Optional<Chat> chat1 = this.getChatByKey(chatKey);
-			Optional<Chat> chat2 = this.getChatByKey("%s-%s_%s".formatted(USER, userIds[1], userIds[0]));
+			Chat chat2 = this.getChatByKey("%s-%s_%s".formatted(USER, userIds[1], userIds[0]));
 
-			if (chat1.isPresent() && this.userAlreadyBelongsToChat(userId, chat1.get().getId())) {
-				return chat1.get().getKey();
-			} else if (chat2.isPresent() && this.userAlreadyBelongsToChat(userId, chat2.get().getId())) {
-				return chat2.get().getKey();
+			if (this.userAlreadyBelongsToChat(userId, chat1.getId())) {
+				return chat1.getKey();
+			} else if (this.userAlreadyBelongsToChat(userId, chat2.getId())) {
+				return chat2.getKey();
 			}
 
 			// If the user does not have a private chat with the other user, create one.
-			Chat chat = this.saveChat(DomainUtils.individualChat("Chat with %s".formatted(key), key));
-			this.addUserToChat(userId, chat.getId());
-			this.addUserToChat(Long.parseLong(userIds[1]), chat.getId());
+			Chat savedChat = this.saveChat(DomainUtils.individualChat("Chat with %s".formatted(key), key));
+			this.addUserToChat(userId, savedChat.getId());
+			this.addUserToChat(Long.parseLong(userIds[1]), savedChat.getId());
 
-			return chat.getKey();
+			return savedChat.getKey();
 		}
 
-		Optional<Chat> chat = this.getChatByKey(chatKey);
-		return chat.isPresent() && this.userAlreadyBelongsToChat(userId, chat.get().getId())
-		       ? chatKey
-		       : null;
+		return this.userAlreadyBelongsToChat(userId, chat1.getId()) ? chatKey : null;
 	}
 
 	/**
@@ -248,8 +246,7 @@ public class ChatService {
 	 * @param chatKey key of the chat to remove the user from.
 	 */
 	public void removeUserFromChat(Long userId, String chatKey) {
-		this.getChatByKey(chatKey).ifPresent(
-				chat -> this.userChatRepository.deleteById_UserIdAndId_ChatId(userId, chat.getId())
-		);
+		Chat chat = this.getChatByKey(chatKey);
+		this.userChatRepository.deleteById_UserIdAndId_ChatId(userId, chat.getId());
 	}
 }
