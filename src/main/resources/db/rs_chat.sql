@@ -133,25 +133,48 @@ CREATE TABLE `groups`
 
 CREATE TABLE `emojis`
 (
-	`id`          bigint         NOT NULL AUTO_INCREMENT,
-	`name`        varchar(100)   NOT NULL,
-	`icon`        varbinary(100) NOT NULL,
-	`unicode`     varchar(80)    NOT NULL,
-	`category`    varchar(30)    NOT NULL,
-	`subcategory` varchar(40)    NOT NULL,
+    `id`          bigint         NOT NULL AUTO_INCREMENT,
+    `name`        varchar(100)   NOT NULL,
+    `icon`        varbinary(100) NOT NULL,
+    `unicode`     varchar(80)    NOT NULL,
+    `category`    varchar(30)    NOT NULL,
+    `subcategory` varchar(40)    NOT NULL,
 
-	CONSTRAINT `pk_emoji_id` PRIMARY KEY (`id`),
-	CONSTRAINT `u_name` UNIQUE (`name`),
-	CONSTRAINT `u_unicode` UNIQUE (`unicode`)
-) ENGINE InnoDB;
+    CONSTRAINT `pk_emoji_id` PRIMARY KEY (`id`),
+    CONSTRAINT `u_name` UNIQUE (`name`),
+    CONSTRAINT `u_unicode` UNIQUE (`unicode`)
+)
+    ENGINE InnoDB;
+
+CREATE TABLE `badges`
+(
+    `id`          bigint         NOT NULL AUTO_INCREMENT,
+    `title`       varchar(100)   NOT NULL,
+    `description` varchar(300)   NOT NULL,
+    `icon`        varbinary(200) NOT NULL,
+
+    CONSTRAINT `pk_badge_id` PRIMARY KEY (`id`),
+    CONSTRAINT `u_title` UNIQUE (`title`)
+)
+    ENGINE InnoDB;
+
+CREATE TABLE `user_badge`
+(
+    `user_id`  bigint NOT NULL,
+    `badge_id` bigint NOT NULL,
+
+    CONSTRAINT `pk_user_badge` PRIMARY KEY (`user_id`,
+                                            `badge_id`)
+)
+    ENGINE InnoDB;
 
 -- Alter tables
 
 ALTER TABLE `subjects`
-	ADD CONSTRAINT `fk_degree_id_subject` FOREIGN KEY (`degree_id`)
-		REFERENCES `degrees` (`id`)
-		ON UPDATE CASCADE
-		ON DELETE RESTRICT;
+    ADD CONSTRAINT `fk_degree_id_subject` FOREIGN KEY (`degree_id`)
+        REFERENCES `degrees` (`id`)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT;
 
 ALTER TABLE `sessions`
 	ADD CONSTRAINT `fk_user_id_session` FOREIGN KEY (`user_id`)
@@ -202,16 +225,28 @@ ALTER TABLE `user_chat`
 		ON DELETE RESTRICT;
 
 ALTER TABLE `user_group`
-	ADD CONSTRAINT `fk_group_id_user_group` FOREIGN KEY (`group_id`)
-		REFERENCES `groups` (`id`)
-		ON UPDATE CASCADE
-		ON DELETE RESTRICT;
+    ADD CONSTRAINT `fk_group_id_user_group` FOREIGN KEY (`group_id`)
+        REFERENCES `groups` (`id`)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT;
 
 ALTER TABLE `user_group`
-	ADD CONSTRAINT `fk_user_id_user_group` FOREIGN KEY (`user_id`)
-		REFERENCES `users` (`id`)
-		ON UPDATE CASCADE
-		ON DELETE RESTRICT;
+    ADD CONSTRAINT `fk_user_id_user_group` FOREIGN KEY (`user_id`)
+        REFERENCES `users` (`id`)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT;
+
+ALTER TABLE `user_badge`
+    ADD CONSTRAINT `fk_user_id_user_badge` FOREIGN KEY (`user_id`)
+        REFERENCES `users` (`id`)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT;
+
+ALTER TABLE `user_badge`
+    ADD CONSTRAINT `fk_badge_id_user_badge` FOREIGN KEY (`badge_id`)
+        REFERENCES `badges` (`id`)
+        ON UPDATE CASCADE
+        ON DELETE RESTRICT;
 
 INSERT INTO `groups` (`name`) VALUE ('Global');
 INSERT INTO `chats` (`name`, `type`, `s3_folder`, `metadata`, `invitation_code`, `key`) VALUE ('Global', 'group', 'group/Global',
