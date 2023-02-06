@@ -1,6 +1,8 @@
 package rs.chat.domain.entity;
 
+import com.google.gson.JsonObject;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,6 +19,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+import rs.chat.domain.entity.converters.JsonStringConverter;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -109,4 +114,13 @@ public class User {
 			inverseJoinColumns = @JoinColumn(name = "subject_id"))
 	@ToString.Exclude
 	private Set<Subject> studentSubjects = new LinkedHashSet<>();
+
+	@Convert(converter = JsonStringConverter.class)
+	@Column(name = "message_count_by_type", nullable = false)
+	@JdbcTypeCode(SqlTypes.JSON)
+	private @NotNull JsonObject messageCountByType;
+
+	@ManyToMany(mappedBy = "users")
+	@ToString.Exclude
+	private Set<Badge> badges = new LinkedHashSet<>();
 }

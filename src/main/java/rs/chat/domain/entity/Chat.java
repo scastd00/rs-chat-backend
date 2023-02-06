@@ -1,6 +1,8 @@
 package rs.chat.domain.entity;
 
+import com.google.gson.JsonObject;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,6 +18,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+import rs.chat.domain.entity.converters.JsonStringConverter;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -48,10 +53,10 @@ public class Chat {
 	@Column(name = "s3_folder", nullable = false, length = 300)
 	private String s3Folder;
 
-	@Size(max = 1073741824)
-	@NotNull
-	@Column(name = "metadata", nullable = false, length = 1073741824)
-	private String metadata;
+	@Convert(converter = JsonStringConverter.class)
+	@Column(name = "metadata", nullable = false)
+	@JdbcTypeCode(SqlTypes.JSON)
+	private @NotNull JsonObject metadata;
 
 	@Size(max = 15)
 	@NotNull
