@@ -1,5 +1,6 @@
 package rs.chat.storage.strategies.upload;
 
+import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.mp4parser.IsoFile;
 import org.mp4parser.boxes.iso14496.part12.MovieHeaderBox;
@@ -10,27 +11,23 @@ import rs.chat.storage.S3;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 
-import static rs.chat.utils.Constants.GSON;
 import static rs.chat.utils.Utils.bytesToUnit;
 
 @Slf4j
 public class VideoStrategy implements FileUploadStrategy {
 	@Override
 	public void handle(byte[] binaryData, String specificType, File file) throws IOException {
-		Map<String, String> metadata = new HashMap<>();
+		JsonObject metadata = file.getMetadata();
 
-		metadata.put("duration", this.getVideoDuration(binaryData));
-		metadata.put("specificType", specificType);
-		metadata.put("size", bytesToUnit(binaryData.length));
-		metadata.put("messageType", Message.VIDEO_MESSAGE.type());
+		metadata.addProperty("duration", this.getVideoDuration(binaryData));
+		metadata.addProperty("specificType", specificType);
+		metadata.addProperty("size", bytesToUnit(binaryData.length));
+		metadata.addProperty("messageType", Message.VIDEO_MESSAGE.type());
 
 		URI uri = S3.getInstance().uploadFile(file.getType(), file.getName(), binaryData, metadata);
 
 		file.setPath(uri.toString());
-		file.setMetadata(GSON.toJson(metadata));
 	}
 
 	private String getVideoDuration(byte[] binaryData) {

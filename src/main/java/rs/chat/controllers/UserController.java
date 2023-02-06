@@ -88,7 +88,9 @@ public class UserController {
 							emptySet(), // sessions
 							emptySet(), // files
 							Set.of(this.chatService.getByName("Global")), // chats
-							emptySet() // studentSubjects
+							emptySet(), // studentSubjects
+							new JsonObject(), // messageCountByType
+							emptySet() // badges
 					)
 			);
 		});

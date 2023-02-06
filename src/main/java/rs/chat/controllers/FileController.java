@@ -69,7 +69,7 @@ public class FileController {
 					Instant.now(this.clock),
 					fileBytes.length,
 					"",
-					"",
+					new JsonObject(),
 					mimeTypes[0].toUpperCase(),
 					this.userService.getUserById(userId)
 			);

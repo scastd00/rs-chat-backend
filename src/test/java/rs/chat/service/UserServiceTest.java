@@ -1,5 +1,6 @@
 package rs.chat.service;
 
+import com.google.gson.JsonObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -52,6 +53,8 @@ class UserServiceTest {
 				emptySet(),
 				emptySet(),
 				emptySet(),
+				emptySet(),
+				new JsonObject(),
 				emptySet()
 		);
 	}

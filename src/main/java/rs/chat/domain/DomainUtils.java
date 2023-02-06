@@ -1,11 +1,11 @@
 package rs.chat.domain;
 
+import com.google.gson.JsonObject;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
 import rs.chat.domain.entity.Chat;
-import rs.chat.utils.Utils;
 
 import java.util.LinkedHashSet;
 
@@ -33,12 +33,15 @@ public final class DomainUtils {
 	 */
 	@NotNull
 	private static Chat createChat(String name, String chatType, String s3ChatPrefix, String entityId) {
+		JsonObject metadata = new JsonObject();
+		metadata.addProperty("createdAt", System.currentTimeMillis());
+
 		return new Chat(
 				null,
 				name,
 				chatType,
 				s3ChatPrefix + name,
-				Utils.jsonOfNumber("createdAt", System.currentTimeMillis()),
+				metadata,
 				RandomStringUtils.randomAlphanumeric(15),
 				getChatKey(chatType, entityId),
 				new LinkedHashSet<>()

@@ -142,7 +142,9 @@ public class AuthController {
 					emptySet(), // sessions
 					emptySet(), // files
 					Set.of(globalChat), // chats
-					emptySet() // studentSubjects
+					emptySet(), // studentSubjects
+					new JsonObject(), // messageCountByType
+					emptySet() // badges
 			));
 		});
 
