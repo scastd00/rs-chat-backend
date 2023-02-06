@@ -1,6 +1,7 @@
 package rs.chat.net.ws.strategies.messages.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.socket.TextMessage;
 import rs.chat.exceptions.CommandFailureException;
 import rs.chat.exceptions.CommandUnavailableException;
@@ -12,6 +13,8 @@ import rs.chat.net.ws.strategies.commands.CommandMappings;
 import rs.chat.net.ws.strategies.commands.parser.MessageParser;
 import rs.chat.net.ws.strategies.commands.parser.ParsedData;
 import rs.chat.net.ws.strategies.messages.MessageHandlingDTO;
+import rs.chat.net.ws.strategies.messages.events.CommandMessageEvent;
+import rs.chat.net.ws.strategies.messages.events.MentionMessageEvent;
 import rs.chat.utils.Utils;
 
 import java.io.IOException;
@@ -27,10 +30,12 @@ import static rs.chat.utils.Utils.createMessage;
 @Slf4j
 public class ParseableMessageStrategy extends GenericMessageStrategy {
 	private final ChatManagement chatManagement;
+	private final ApplicationEventPublisher eventPublisher;
 
-	public ParseableMessageStrategy(ChatManagement chatManagement) {
+	public ParseableMessageStrategy(ChatManagement chatManagement, ApplicationEventPublisher eventPublisher) {
 		super(chatManagement);
 		this.chatManagement = chatManagement;
+		this.eventPublisher = eventPublisher;
 	}
 
 	@Override
@@ -72,7 +77,7 @@ public class ParseableMessageStrategy extends GenericMessageStrategy {
 		}
 
 		String chatId = handlingDTO.wrappedMessage().chatId();
-		chatManagement.mentionUser(
+		this.chatManagement.mentionUser(
 				chatId,
 				parsedData.data(),
 				createMessage(
@@ -81,6 +86,8 @@ public class ParseableMessageStrategy extends GenericMessageStrategy {
 						chatId
 				)
 		);
+
+		this.eventPublisher.publishEvent(new MentionMessageEvent(this, handlingDTO.getClientID().username()));
 	}
 
 	/**
@@ -94,7 +101,8 @@ public class ParseableMessageStrategy extends GenericMessageStrategy {
 		handlingDTO.otherData().put("commandParams", parsedData.params());
 
 		try {
-			command.strategy().handle(chatManagement, handlingDTO.otherData());
+			command.strategy().handle(this.chatManagement, handlingDTO.otherData());
+			this.eventPublisher.publishEvent(new CommandMessageEvent(this, command.command(), handlingDTO.getClientID().username()));
 		} catch (IOException e) {
 			throw new CommandFailureException(e.getMessage());
 		}

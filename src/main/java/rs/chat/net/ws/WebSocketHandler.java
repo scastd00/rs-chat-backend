@@ -38,12 +38,22 @@ import static rs.chat.utils.Utils.createMessage;
 @Component
 @RequiredArgsConstructor
 public class WebSocketHandler extends TextWebSocketHandler {
+	private static final String EMPTY_TOKEN = JWT_TOKEN_PREFIX + "empty";
+	private static final String CONNECTION_MESSAGE_CONTENT = "Connection";
 	private final Metrics metrics;
 	private final JWTService jwtService;
 	private final RateLimiter rateLimiter;
 
-	private static final String EMPTY_TOKEN = JWT_TOKEN_PREFIX + "empty";
-	private static final String CONNECTION_MESSAGE_CONTENT = "Connection";
+	private static void sendQuickResponse(@NotNull WebSocketSession session, String content,
+	                                      Message errorMessage, JsonMessageWrapper wrappedMessage) throws IOException {
+		session.sendMessage(new TextMessage(
+				createMessage(
+						content,
+						errorMessage.type(),
+						wrappedMessage.chatId()
+				)
+		));
+	}
 
 	/**
 	 * Handles text messages (JSON string).
@@ -114,23 +124,22 @@ public class WebSocketHandler extends TextWebSocketHandler {
 			}
 
 			strategy.handle(new MessageHandlingDTO(wrappedMessage, otherData));
+
+			this.metrics.incrementMessageCount(receivedMessageType.type());
+			this.metrics.incrementMessageTime(receivedMessageType.type(), System.currentTimeMillis() - start);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
-
-		this.metrics.incrementMessageCount(receivedMessageType.type());
-		this.metrics.incrementMessageTime(receivedMessageType.type(), System.currentTimeMillis() - start);
 	}
 
-	private static void sendQuickResponse(@NotNull WebSocketSession session, String content,
-	                                      Message errorMessage, JsonMessageWrapper wrappedMessage) throws IOException {
-		session.sendMessage(new TextMessage(
-				createMessage(
-						content,
-						errorMessage.type(),
-						wrappedMessage.chatId()
-				)
-		));
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void handleTransportError(@NotNull WebSocketSession session,
+	                                 @NotNull Throwable exception) throws IOException {
+		log.error(exception.getMessage(), exception);
+		session.close(CloseStatus.SERVER_ERROR);
 	}
 
 	/**
@@ -148,16 +157,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
 				wrappedMessage.content().equals(CONNECTION_MESSAGE_CONTENT);
 
 		return connectionMessage || wrappedMessage.type().equals(PING_MESSAGE.type());
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void handleTransportError(@NotNull WebSocketSession session,
-	                                 @NotNull Throwable exception) throws IOException {
-		log.error(exception.getMessage(), exception);
-		session.close(CloseStatus.SERVER_ERROR);
 	}
 
 	/**

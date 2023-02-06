@@ -5,7 +5,7 @@ import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 import rs.chat.utils.Utils;
 
-@Converter
+@Converter(autoApply = true)
 public class JsonStringConverter implements AttributeConverter<JsonObject, String> {
 	@Override
 	public String convertToDatabaseColumn(JsonObject attribute) {
