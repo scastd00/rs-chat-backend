@@ -25,6 +25,10 @@ public class AudioMessageStrategy extends GenericMessageStrategy {
 	@Override
 	public void handle(MessageHandlingDTO handlingDTO) throws WebSocketException, IOException {
 		super.handle(handlingDTO);
-		this.eventPublisher.publishEvent(new AudioMessageEvent(this, handlingDTO.getClientID().username()));
+
+		AudioMessageEvent event = new AudioMessageEvent(this, handlingDTO.getClientID().username());
+		event.setCallback(badgeCallback(handlingDTO));
+
+		this.eventPublisher.publishEvent(event);
 	}
 }

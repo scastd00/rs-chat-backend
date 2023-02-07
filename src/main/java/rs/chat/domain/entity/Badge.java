@@ -48,6 +48,15 @@ public class Badge {
 	@Column(name = "icon", nullable = false, length = 200)
 	private String icon;
 
+	@Size(max = 20)
+	@NotNull
+	@Column(name = "type", nullable = false, length = 20)
+	private String type;
+
+	@NotNull
+	@Column(name = "points_of_type", nullable = false)
+	private Integer pointsOfType;
+
 	@ManyToMany
 	@JoinTable(name = "user_badge",
 			joinColumns = @JoinColumn(name = "badge_id"),

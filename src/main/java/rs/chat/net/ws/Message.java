@@ -56,12 +56,14 @@ public record Message(String type, String filePrefix, String extension) {
 	public static final Message MAINTENANCE_MESSAGE = new Message("MAINTENANCE", null, null);
 	public static final Message COMMAND_RESPONSE = new Message("COMMAND_RESPONSE", null, null);
 	public static final Message TOO_FAST_MESSAGE = new Message("TOO_FAST", null, null);
+	public static final Message BADGE_EARNED_MESSAGE = new Message("BADGE_EARNED", null, null);
 	public static final List<Message> SYSTEM_MESSAGES = List.of(
 			ACTIVE_USERS_MESSAGE, GET_HISTORY_MESSAGE,
 			INFO_MESSAGE, ERROR_MESSAGE,
 			PING_MESSAGE, PONG_MESSAGE,
 			RESTART_MESSAGE, MAINTENANCE_MESSAGE,
-			COMMAND_RESPONSE, TOO_FAST_MESSAGE
+			COMMAND_RESPONSE, TOO_FAST_MESSAGE,
+			BADGE_EARNED_MESSAGE
 	);
 
 	/**

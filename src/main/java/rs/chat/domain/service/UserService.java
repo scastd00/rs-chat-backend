@@ -81,8 +81,8 @@ public class UserService implements UserDetailsService {
 	 *
 	 * @param user the user to be updated.
 	 */
-	public void updateUser(User user) {
-		this.userRepository.save(user);
+	public User updateUser(User user) {
+		return this.userRepository.save(user);
 	}
 
 	/**

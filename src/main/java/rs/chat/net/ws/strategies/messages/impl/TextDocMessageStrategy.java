@@ -25,6 +25,10 @@ public class TextDocMessageStrategy extends GenericMessageStrategy {
 	@Override
 	public void handle(MessageHandlingDTO handlingDTO) throws WebSocketException, IOException {
 		super.handle(handlingDTO);
-		this.eventPublisher.publishEvent(new TextDocMessageEvent(this, handlingDTO.getClientID().username()));
+
+		TextDocMessageEvent event = new TextDocMessageEvent(this, handlingDTO.getClientID().username());
+		event.setCallback(badgeCallback(handlingDTO));
+
+		this.eventPublisher.publishEvent(event);
 	}
 }

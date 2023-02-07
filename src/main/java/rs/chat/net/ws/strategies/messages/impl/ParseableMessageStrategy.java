@@ -87,7 +87,10 @@ public class ParseableMessageStrategy extends GenericMessageStrategy {
 				)
 		);
 
-		this.eventPublisher.publishEvent(new MentionMessageEvent(this, handlingDTO.getClientID().username()));
+		MentionMessageEvent event = new MentionMessageEvent(this, handlingDTO.getClientID().username());
+		event.setCallback(badgeCallback(handlingDTO));
+
+		this.eventPublisher.publishEvent(event);
 	}
 
 	/**
@@ -102,7 +105,11 @@ public class ParseableMessageStrategy extends GenericMessageStrategy {
 
 		try {
 			command.strategy().handle(this.chatManagement, handlingDTO.otherData());
-			this.eventPublisher.publishEvent(new CommandMessageEvent(this, command.command(), handlingDTO.getClientID().username()));
+
+			CommandMessageEvent event = new CommandMessageEvent(this, command.command(), handlingDTO.getClientID().username());
+			event.setCallback(badgeCallback(handlingDTO));
+
+			this.eventPublisher.publishEvent(event);
 		} catch (IOException e) {
 			throw new CommandFailureException(e.getMessage());
 		}

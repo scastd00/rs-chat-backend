@@ -25,6 +25,10 @@ public class VideoMessageStrategy extends GenericMessageStrategy {
 	@Override
 	public void handle(MessageHandlingDTO handlingDTO) throws WebSocketException, IOException {
 		super.handle(handlingDTO);
-		this.eventPublisher.publishEvent(new VideoMessageEvent(this, handlingDTO.getClientID().username()));
+
+		VideoMessageEvent event = new VideoMessageEvent(this, handlingDTO.getClientID().username());
+		event.setCallback(badgeCallback(handlingDTO));
+
+		this.eventPublisher.publishEvent(event);
 	}
 }

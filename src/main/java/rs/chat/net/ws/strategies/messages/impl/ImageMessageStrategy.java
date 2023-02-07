@@ -25,6 +25,10 @@ public class ImageMessageStrategy extends GenericMessageStrategy {
 	@Override
 	public void handle(MessageHandlingDTO handlingDTO) throws WebSocketException, IOException {
 		super.handle(handlingDTO);
-		this.eventPublisher.publishEvent(new ImageMessageEvent(this, handlingDTO.getClientID().username()));
+
+		ImageMessageEvent event = new ImageMessageEvent(this, handlingDTO.getClientID().username());
+		event.setCallback(badgeCallback(handlingDTO));
+
+		this.eventPublisher.publishEvent(event);
 	}
 }

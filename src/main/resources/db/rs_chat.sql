@@ -148,10 +148,12 @@ CREATE TABLE `emojis`
 
 CREATE TABLE `badges`
 (
-	`id`          bigint         NOT NULL AUTO_INCREMENT,
-	`title`       varchar(100)   NOT NULL,
-	`description` varchar(300)   NOT NULL,
-	`icon`        varbinary(200) NOT NULL,
+	`id`             bigint       NOT NULL AUTO_INCREMENT,
+	`title`          varchar(100) NOT NULL,
+	`description`    varchar(300) NOT NULL,
+	`icon`           varchar(200) NOT NULL,
+	`type`           varchar(20)  NOT NULL,
+	`points_of_type` int          NOT NULL,
 
 	CONSTRAINT `pk_badge_id` PRIMARY KEY (`id`),
 	CONSTRAINT `u_title` UNIQUE (`title`)
@@ -245,6 +247,9 @@ ALTER TABLE `user_badge`
 		ON UPDATE CASCADE
 		ON DELETE RESTRICT;
 
+INSERT INTO badges (`title`, `description`, `icon`, `type`, `points_of_type`)
+VALUES ('1st text message', 'Send your first text message', 'test', 'TEXT_MESSAGE', 1),
+	   ('10th text message', 'Send your ten first text messages', 'test', 'TEXT_MESSAGE', 10);
 INSERT INTO `groups` (`name`) VALUE ('Global');
 INSERT INTO `chats` (`name`, `type`, `s3_folder`, `metadata`, `invitation_code`, `key`) VALUE ('Global', 'group',
 																							   'group/Global',
