@@ -34,7 +34,9 @@ public class Routes {
 		public static final String EMOJI_BY_CATEGORY_URL = V_1 + "/emojis/category/{category}";
 		public static final String EMOJIS_GROUPED_BY_CATEGORY_URL = V_1 + "/emojis/grouped";
 		public static final String USER_ID_BY_USERNAME_URL = V_1 + "/user/id/{username}";
+		public static final String USER_BADGES_URL = V_1 + "/user/badges/{userId}";
 		public static final String HEALTH_URL = V_1 + "/health";
+		public static final String USER_STATS_URL = V_1 + "/user/stats/{username}";
 
 		public static final String TEACHER_DEGREES_URL = V_1 + "/teacher/degrees/{id}";
 		public static final String TEACHER_SUBJECTS_URL = V_1 + "/teacher/subjects/{id}";
@@ -50,7 +52,7 @@ public class Routes {
 					OPENED_SESSIONS_OF_USER_URL, DEGREES_URL, DEGREE_BY_NAME_URL,
 					ALL_CHATS_OF_USER_URL, CHAT_INFO_URL, ALL_USERS_OF_CHAT_URL, RANDOM_EMOJIS_URL,
 					EMOJI_STARTING_WITH_STRING_URL, EMOJI_BY_CATEGORY_URL, EMOJIS_GROUPED_BY_CATEGORY_URL,
-					USER_ID_BY_USERNAME_URL
+					USER_ID_BY_USERNAME_URL, USER_BADGES_URL, USER_STATS_URL
 			};
 		}
 

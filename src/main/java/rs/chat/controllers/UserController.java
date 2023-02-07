@@ -28,6 +28,7 @@ import static org.springframework.http.HttpStatus.OK;
 import static rs.chat.router.Routes.GetRoute.OPENED_SESSIONS_OF_USER_URL;
 import static rs.chat.router.Routes.GetRoute.USERS_URL;
 import static rs.chat.router.Routes.GetRoute.USER_ID_BY_USERNAME_URL;
+import static rs.chat.router.Routes.GetRoute.USER_STATS_URL;
 import static rs.chat.router.Routes.PostRoute.DELETE_USER_URL;
 import static rs.chat.router.Routes.PostRoute.USER_SAVE_URL;
 
@@ -83,12 +84,14 @@ public class UserController {
 							user.get("role").getAsString().trim(), // role
 							null, // blockUntil
 							null, // passwordCode
+							new JsonObject(), // messageCountByType
 							emptySet(), // teacherSubjects
 							Set.of(this.groupService.getGroupByName("Global")), // groups
 							emptySet(), // sessions
 							emptySet(), // files
 							Set.of(this.chatService.getByName("Global")), // chats
-							emptySet() // studentSubjects
+							emptySet(), // studentSubjects
+							emptySet() // badges
 					)
 			);
 		});
@@ -132,5 +135,10 @@ public class UserController {
 		});
 
 		response.sendStatus(OK);
+	}
+
+	@GetMapping(USER_STATS_URL)
+	public void getUserStats(HttpResponse response, @PathVariable String username) throws IOException {
+		response.ok().send(this.userService.getUserByUsername(username).getMessageCountByType().toString());
 	}
 }

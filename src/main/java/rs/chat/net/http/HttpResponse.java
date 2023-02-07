@@ -27,8 +27,8 @@ import static rs.chat.utils.Constants.ERROR_JSON_KEY;
  */
 @Slf4j
 public class HttpResponse extends HttpServletResponseWrapper {
-	private HttpStatus status = null;
 	private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+	private HttpStatus status = null;
 
 	/**
 	 * Constructs a response adaptor wrapping the given response.
@@ -171,8 +171,8 @@ public class HttpResponse extends HttpServletResponseWrapper {
 	 * Contains a {@link Map} of elements to be sent in the response.
 	 */
 	public static class HttpResponseBody {
-		private final Map<String, Object> data = new HashMap<>();
 		public static final HttpResponseBody EMPTY = new HttpResponseBody(DATA_JSON_KEY, "");
+		private final Map<String, Object> data = new HashMap<>();
 
 		/**
 		 * Constructs a response body with the given key and value.

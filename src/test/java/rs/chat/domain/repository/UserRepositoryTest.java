@@ -1,5 +1,6 @@
 package rs.chat.domain.repository;
 
+import com.google.gson.JsonObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,6 +39,8 @@ class UserRepositoryTest {
 				Constants.STUDENT_ROLE,
 				null,
 				passwordCode,
+				new JsonObject(),
+				emptySet(),
 				emptySet(),
 				emptySet(),
 				emptySet(),

@@ -1,6 +1,8 @@
 package rs.chat.domain.entity;
 
+import com.google.gson.JsonObject;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -16,6 +18,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+import rs.chat.domain.entity.converters.JsonStringConverter;
 
 import java.time.Instant;
 
@@ -50,10 +55,10 @@ public class File {
 	@Column(name = "path", nullable = false, length = 400)
 	private String path;
 
-	@Size(max = 1073741824)
-	@NotNull
-	@Column(name = "metadata", nullable = false, length = 1073741824)
-	private String metadata;
+	@Convert(converter = JsonStringConverter.class)
+	@Column(name = "metadata", nullable = false)
+	@JdbcTypeCode(SqlTypes.JSON)
+	private @NotNull JsonObject metadata;
 
 	@Size(max = 20)
 	@NotNull

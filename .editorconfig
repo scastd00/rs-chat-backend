@@ -306,3 +306,6 @@ indent_style = space
 [*.sh]
 indent_size = 2
 indent_style = space
+
+[*.sql]
+max_line_length = 250

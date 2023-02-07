@@ -2,6 +2,7 @@ package rs.chat.net.ws.strategies.messages;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import rs.chat.net.ws.ChatManagement;
 import rs.chat.net.ws.Message;
@@ -12,7 +13,6 @@ import rs.chat.net.ws.strategies.messages.impl.GetHistoryStrategy;
 import rs.chat.net.ws.strategies.messages.impl.ImageMessageStrategy;
 import rs.chat.net.ws.strategies.messages.impl.InfoMessageStrategy;
 import rs.chat.net.ws.strategies.messages.impl.MaintenanceMessageStrategy;
-import rs.chat.net.ws.strategies.messages.impl.MentionMessageStrategy;
 import rs.chat.net.ws.strategies.messages.impl.ParseableMessageStrategy;
 import rs.chat.net.ws.strategies.messages.impl.PdfMessageStrategy;
 import rs.chat.net.ws.strategies.messages.impl.PingStrategy;
@@ -38,7 +38,6 @@ import static rs.chat.net.ws.Message.GET_HISTORY_MESSAGE;
 import static rs.chat.net.ws.Message.IMAGE_MESSAGE;
 import static rs.chat.net.ws.Message.INFO_MESSAGE;
 import static rs.chat.net.ws.Message.MAINTENANCE_MESSAGE;
-import static rs.chat.net.ws.Message.MENTION_MESSAGE;
 import static rs.chat.net.ws.Message.PARSEABLE_MESSAGE;
 import static rs.chat.net.ws.Message.PDF_MESSAGE;
 import static rs.chat.net.ws.Message.PING_MESSAGE;
@@ -70,39 +69,14 @@ public final class MessageStrategyMappings {
 	private static final Map<String, MessageStrategy> strategies = new HashMap<>();
 	private final ChatManagement chatManagement;
 	private final RateLimiter rateLimiter;
+	private final ApplicationEventPublisher eventPublisher;
 
 	@Autowired
-	public MessageStrategyMappings(ChatManagement chatManagement, RateLimiter rateLimiter) {
+	public MessageStrategyMappings(ChatManagement chatManagement, RateLimiter rateLimiter, ApplicationEventPublisher eventPublisher) {
 		this.chatManagement = chatManagement;
 		this.rateLimiter = rateLimiter;
+		this.eventPublisher = eventPublisher;
 		this.initStrategies();
-	}
-
-	private void initStrategies() {
-		strategies.put(USER_CONNECTED.type(), new UserConnectedStrategy());
-		strategies.put(USER_DISCONNECTED.type(), new UserDisconnectedStrategy());
-		strategies.put(USER_TYPING.type(), new UserTypingStrategy());
-		strategies.put(USER_STOPPED_TYPING.type(), new UserStoppedTypingStrategy());
-
-		strategies.put(USER_JOINED.type(), new UserJoinedStrategy(this.chatManagement));
-		strategies.put(USER_LEFT.type(), new UserLeftStrategy(this.chatManagement, this.rateLimiter));
-
-		strategies.put(TEXT_MESSAGE.type(), new TextMessageStrategy(this.chatManagement));
-		strategies.put(IMAGE_MESSAGE.type(), new ImageMessageStrategy(this.chatManagement));
-		strategies.put(AUDIO_MESSAGE.type(), new AudioMessageStrategy(this.chatManagement));
-		strategies.put(VIDEO_MESSAGE.type(), new VideoMessageStrategy(this.chatManagement));
-		strategies.put(PDF_MESSAGE.type(), new PdfMessageStrategy(this.chatManagement));
-		strategies.put(TEXT_DOC_MESSAGE.type(), new TextDocMessageStrategy(this.chatManagement));
-		strategies.put(PARSEABLE_MESSAGE.type(), new ParseableMessageStrategy(this.chatManagement));
-		strategies.put(MENTION_MESSAGE.type(), new MentionMessageStrategy());
-
-		strategies.put(ACTIVE_USERS_MESSAGE.type(), new ActiveUsersStrategy(this.chatManagement));
-		strategies.put(GET_HISTORY_MESSAGE.type(), new GetHistoryStrategy());
-		strategies.put(INFO_MESSAGE.type(), new InfoMessageStrategy(this.chatManagement));
-		strategies.put(PING_MESSAGE.type(), new PingStrategy());
-		strategies.put(ERROR_MESSAGE.type(), new ErrorMessageStrategy());
-		strategies.put(RESTART_MESSAGE.type(), new RestartMessageStrategy(this.chatManagement));
-		strategies.put(MAINTENANCE_MESSAGE.type(), new MaintenanceMessageStrategy(this.chatManagement));
 	}
 
 	/**
@@ -115,5 +89,31 @@ public final class MessageStrategyMappings {
 	@NotNull
 	public static MessageStrategy decideStrategy(Message receivedMessageType) {
 		return strategies.getOrDefault(receivedMessageType.type(), strategies.get(ERROR_MESSAGE.type()));
+	}
+
+	private void initStrategies() {
+		strategies.put(USER_CONNECTED.type(), new UserConnectedStrategy());
+		strategies.put(USER_DISCONNECTED.type(), new UserDisconnectedStrategy());
+		strategies.put(USER_TYPING.type(), new UserTypingStrategy());
+		strategies.put(USER_STOPPED_TYPING.type(), new UserStoppedTypingStrategy());
+
+		strategies.put(USER_JOINED.type(), new UserJoinedStrategy(this.chatManagement));
+		strategies.put(USER_LEFT.type(), new UserLeftStrategy(this.chatManagement, this.rateLimiter));
+
+		strategies.put(TEXT_MESSAGE.type(), new TextMessageStrategy(this.chatManagement, this.eventPublisher));
+		strategies.put(IMAGE_MESSAGE.type(), new ImageMessageStrategy(this.chatManagement, this.eventPublisher));
+		strategies.put(AUDIO_MESSAGE.type(), new AudioMessageStrategy(this.chatManagement, this.eventPublisher));
+		strategies.put(VIDEO_MESSAGE.type(), new VideoMessageStrategy(this.chatManagement, this.eventPublisher));
+		strategies.put(PDF_MESSAGE.type(), new PdfMessageStrategy(this.chatManagement, this.eventPublisher));
+		strategies.put(TEXT_DOC_MESSAGE.type(), new TextDocMessageStrategy(this.chatManagement, this.eventPublisher));
+		strategies.put(PARSEABLE_MESSAGE.type(), new ParseableMessageStrategy(this.chatManagement, this.eventPublisher)); // Mentions and commands
+
+		strategies.put(ACTIVE_USERS_MESSAGE.type(), new ActiveUsersStrategy(this.chatManagement));
+		strategies.put(GET_HISTORY_MESSAGE.type(), new GetHistoryStrategy());
+		strategies.put(INFO_MESSAGE.type(), new InfoMessageStrategy(this.chatManagement));
+		strategies.put(PING_MESSAGE.type(), new PingStrategy());
+		strategies.put(ERROR_MESSAGE.type(), new ErrorMessageStrategy());
+		strategies.put(RESTART_MESSAGE.type(), new RestartMessageStrategy(this.chatManagement));
+		strategies.put(MAINTENANCE_MESSAGE.type(), new MaintenanceMessageStrategy(this.chatManagement));
 	}
 }
