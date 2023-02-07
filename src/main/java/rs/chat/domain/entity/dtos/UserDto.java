@@ -16,6 +16,6 @@ public record UserDto(
 		@Size(max = 100) @NotNull String fullName,
 		Byte age,
 		LocalDate birthdate,
-		@Size(max = 13) @NotNull String role
-) implements Serializable {
+		@Size(max = 13) @NotNull String role/*,
+		@NotNull JsonObject messageCountByType*/) implements Serializable {
 }
