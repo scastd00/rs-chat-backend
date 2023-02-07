@@ -106,7 +106,7 @@ public class ParseableMessageStrategy extends GenericMessageStrategy {
 		try {
 			command.strategy().handle(this.chatManagement, handlingDTO.otherData());
 
-			CommandMessageEvent event = new CommandMessageEvent(this, command.command(), handlingDTO.getClientID().username());
+			CommandMessageEvent event = new CommandMessageEvent(this, handlingDTO.getClientID().username());
 			event.setCallback(badgeCallback(handlingDTO));
 
 			this.eventPublisher.publishEvent(event);
