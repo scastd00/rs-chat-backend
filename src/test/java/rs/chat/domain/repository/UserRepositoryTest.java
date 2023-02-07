@@ -39,13 +39,13 @@ class UserRepositoryTest {
 				Constants.STUDENT_ROLE,
 				null,
 				passwordCode,
-				emptySet(),
-				emptySet(),
-				emptySet(),
-				emptySet(),
-				emptySet(),
-				emptySet(),
 				new JsonObject(),
+				emptySet(),
+				emptySet(),
+				emptySet(),
+				emptySet(),
+				emptySet(),
+				emptySet(),
 				emptySet()
 		);
 	}

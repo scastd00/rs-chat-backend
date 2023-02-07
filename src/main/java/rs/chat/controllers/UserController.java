@@ -83,13 +83,13 @@ public class UserController {
 							user.get("role").getAsString().trim(), // role
 							null, // blockUntil
 							null, // passwordCode
+							new JsonObject(), // messageCountByType
 							emptySet(), // teacherSubjects
 							Set.of(this.groupService.getGroupByName("Global")), // groups
 							emptySet(), // sessions
 							emptySet(), // files
 							Set.of(this.chatService.getByName("Global")), // chats
 							emptySet(), // studentSubjects
-							new JsonObject(), // messageCountByType
 							emptySet() // badges
 					)
 			);

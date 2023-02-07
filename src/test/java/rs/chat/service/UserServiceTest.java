@@ -48,13 +48,13 @@ class UserServiceTest {
 				Constants.STUDENT_ROLE,
 				null,
 				null,
-				emptySet(),
-				emptySet(),
-				emptySet(),
-				emptySet(),
-				emptySet(),
-				emptySet(),
 				new JsonObject(),
+				emptySet(),
+				emptySet(),
+				emptySet(),
+				emptySet(),
+				emptySet(),
+				emptySet(),
 				emptySet()
 		);
 	}

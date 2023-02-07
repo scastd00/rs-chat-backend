@@ -137,13 +137,13 @@ public class AuthController {
 					STUDENT_ROLE, // role
 					null, // blockUntil
 					null, // passwordCode
+					new JsonObject(), // messageCountByType
 					emptySet(), // teacherSubjects
 					Set.of(globalGroup), // groups
 					emptySet(), // sessions
 					emptySet(), // files
 					Set.of(globalChat), // chats
 					emptySet(), // studentSubjects
-					new JsonObject(), // messageCountByType
 					emptySet() // badges
 			));
 		});

@@ -79,6 +79,11 @@ public class User {
 	@Column(name = "password_code", length = 6)
 	private String passwordCode;
 
+	@Convert(converter = JsonStringConverter.class)
+	@Column(name = "message_count_by_type", nullable = false)
+	@JdbcTypeCode(SqlTypes.JSON)
+	private @NotNull JsonObject messageCountByType;
+
 	@ManyToMany
 	@JoinTable(name = "tea_subj",
 			joinColumns = @JoinColumn(name = "teacher_id"),
@@ -114,11 +119,6 @@ public class User {
 			inverseJoinColumns = @JoinColumn(name = "subject_id"))
 	@ToString.Exclude
 	private Set<Subject> studentSubjects = new LinkedHashSet<>();
-
-	@Convert(converter = JsonStringConverter.class)
-	@Column(name = "message_count_by_type", nullable = false)
-	@JdbcTypeCode(SqlTypes.JSON)
-	private @NotNull JsonObject messageCountByType;
 
 	@ManyToMany(mappedBy = "users")
 	@ToString.Exclude
