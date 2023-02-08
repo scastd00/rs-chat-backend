@@ -3,6 +3,7 @@ package rs.chat.utils;
 import com.google.gson.JsonObject;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.intellij.lang.annotations.Language;
 import rs.chat.net.ws.JsonMessageWrapper;
 
 import static rs.chat.utils.Constants.GSON;
@@ -19,7 +20,7 @@ public final class Utils {
 	 *
 	 * @return the {@link JsonObject} parsed from the JSON string.
 	 */
-	public static JsonObject parseJson(String jsonString) {
+	public static JsonObject parseJson(@Language("JSON") String jsonString) {
 		return GSON.fromJson(jsonString, JsonObject.class);
 	}
 
