@@ -1,5 +1,6 @@
 package rs.chat.controllers;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,8 +29,6 @@ import rs.chat.utils.Constants;
 import java.io.IOException;
 import java.time.Clock;
 import java.time.Instant;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import static java.util.Collections.emptySet;
@@ -167,17 +166,13 @@ public class AuthController {
 				)
 		);
 
-		// Make the Map of the only available chat without calling database
-		Map<String, List<Map<String, Object>>> defaultChat =
-				Map.of(
-						globalChat.getType(),
-						List.of(
-								Map.of(
-										"id", globalChat.getId(),
-										"name", globalChat.getName()
-								)
-						)
-				);
+		JsonObject defaultChat = new JsonObject();
+		JsonObject chatJson = new JsonObject();
+		chatJson.addProperty("id", globalChat.getId());
+		chatJson.addProperty("name", globalChat.getName());
+		JsonArray value = new JsonArray();
+		value.add(chatJson);
+		defaultChat.add(globalChat.getType(), value);
 
 		// Clear the source IP of the session
 		session.setSrcIp("");

@@ -51,7 +51,7 @@ public class GroupController {
 		      .map(this::getGroupWithInvitationCode)
 		      .forEach(groupsWithInvitationCode::add);
 
-		response.ok().send(groupsWithInvitationCode.toString());
+		response.ok().send(groupsWithInvitationCode);
 	}
 
 	/**
@@ -67,7 +67,7 @@ public class GroupController {
 		String groupName = request.body().get("name").getAsString();
 		Group savedGroup = this.groupService.saveGroup(new Group(null, groupName, emptySet()));
 
-		response.created(GROUP_SAVE_URL).send(this.getGroupWithInvitationCode(savedGroup).toString());
+		response.created(GROUP_SAVE_URL).send(this.getGroupWithInvitationCode(savedGroup));
 	}
 
 	/**

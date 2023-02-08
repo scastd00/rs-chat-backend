@@ -1,12 +1,13 @@
 package rs.chat.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.JsonObject;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.intellij.lang.annotations.Language;
 import rs.chat.net.ws.JsonMessageWrapper;
 
 import static rs.chat.utils.Constants.GSON;
+import static rs.chat.utils.Constants.OBJECT_MAPPER;
 
 /**
  * Utility class for common operations.
@@ -20,7 +21,7 @@ public final class Utils {
 	 *
 	 * @return the {@link JsonObject} parsed from the JSON string.
 	 */
-	public static JsonObject parseJson(@Language("JSON") String jsonString) {
+	public static JsonObject parseJson(String jsonString) {
 		return GSON.fromJson(jsonString, JsonObject.class);
 	}
 
@@ -34,42 +35,21 @@ public final class Utils {
 	 * @return the {@link String} message containing the server message.
 	 */
 	public static String createMessage(String content, String type, String chatId) {
-		return serverMessage(content, type, chatId).toString();
-	}
-
-	/**
-	 * Creates a server message to send to the clients.
-	 *
-	 * @param content content of the message.
-	 * @param type    type of the message.
-	 * @param chatId  chatId to send the message to.
-	 *
-	 * @return the server message.
-	 */
-	private static Object serverMessage(String content, String type, String chatId) {
-		return JsonMessageWrapper.builder()
-		                         /* Headers */
-		                         .username("Server")
-		                         .chatId(chatId)
-		                         .type(type)
-		                         .date(System.currentTimeMillis())
-		                         /* Body */
-		                         .content(content)
-		                         .build();
-	}
-
-	/**
-	 * Adds a {@link Number} to a {@link JsonObject} and returns the {@link String} representation.
-	 *
-	 * @param key   the key of the {@link Number} to add.
-	 * @param value the value of the {@link Number} to add.
-	 *
-	 * @return the {@link String} representation of the {@link JsonObject}.
-	 */
-	public static String jsonOfNumber(String key, Number value) {
-		JsonObject json = new JsonObject();
-		json.addProperty(key, value);
-		return json.toString();
+		try {
+			return OBJECT_MAPPER.writeValueAsString(
+					JsonMessageWrapper.builder()
+					                  /* Headers */
+					                  .username("Server")
+					                  .chatId(chatId)
+					                  .type(type)
+					                  .date(System.currentTimeMillis())
+					                  /* Body */
+					                  .content(content)
+					                  .build()
+			);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**

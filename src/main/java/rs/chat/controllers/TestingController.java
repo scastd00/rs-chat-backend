@@ -9,7 +9,6 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import rs.chat.net.http.HttpResponse;
-import rs.chat.utils.Utils;
 
 import java.io.IOException;
 
@@ -24,7 +23,7 @@ import static rs.chat.router.Routes.TEST_URL;
 public class TestingController {
 	@GetMapping(TEST_URL)
 	public void getDto(HttpResponse response) throws IOException {
-		response.ok().send(example2());
+		response.ok().send(example1());
 	}
 
 	@NotNull
@@ -57,32 +56,5 @@ public class TestingController {
 
 		content.add("object", other);
 		return content;
-	}
-
-	private JsonObject example2() {
-		return Utils.parseJson("""
-				                       {
-				                         "response": {
-				                           "body": {
-				                             "patients": {
-				                               "patient": [
-				                                 {
-				                                   "patientID": "ALM22346789",
-				                                   "submittedStatus": "In Progress",
-				                                   "patientType": "Inpatient",
-				                                   "submissionDate": "2020-10-15"
-				                                 }
-				                               ]
-				                             }
-				                           },
-				                           "status": {
-				                             "statusCode": "200",
-				                             "statusMessage": {
-
-				                             }
-				                           }
-				                         }
-				                       }
-				                       """);
 	}
 }

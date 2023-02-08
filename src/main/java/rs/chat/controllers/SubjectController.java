@@ -54,7 +54,7 @@ public class SubjectController {
 		           .map(this::getSubjectWithInvitationCode)
 		           .forEach(subjectsWithInvitationCode::add);
 
-		response.ok().send(subjectsWithInvitationCode.toString());
+		response.ok().send(subjectsWithInvitationCode);
 	}
 
 	/**
@@ -96,7 +96,7 @@ public class SubjectController {
 				)
 		);
 
-		response.created(SUBJECT_SAVE_URL).send(this.getSubjectWithInvitationCode(savedSubject).toString());
+		response.created(SUBJECT_SAVE_URL).send(this.getSubjectWithInvitationCode(savedSubject));
 	}
 
 	/**

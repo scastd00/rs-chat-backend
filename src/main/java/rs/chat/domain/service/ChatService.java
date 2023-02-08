@@ -1,6 +1,7 @@
 package rs.chat.domain.service;
 
-import com.google.common.collect.Lists;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,9 +18,7 @@ import rs.chat.exceptions.BadRequestException;
 import rs.chat.exceptions.NotFoundException;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static rs.chat.utils.Constants.USER;
 
@@ -88,21 +87,24 @@ public class ChatService {
 	 *
 	 * @param user user to which the chats belong.
 	 *
-	 * @return map of chats to which the user can access grouped by type.
+	 * @return JsonObject of chats to which the user can access grouped by type.
 	 */
-	public Map<String, List<Map<String, Object>>> getAllChatsOfUserGroupedByType(User user) {
-		Map<String, List<Map<String, Object>>> groups = new HashMap<>();
+	public JsonObject getAllChatsOfUserGroupedByType(User user) {
+		JsonObject groups = new JsonObject();
 
 		user.getChats().forEach(chat -> {
 			String chatType = chat.getType();
-			Map<String, Object> chatItem = new HashMap<>();
-			chatItem.put("name", chat.getName());
-			chatItem.put("key", chat.getKey());
+			JsonObject chatItem = new JsonObject();
+			chatItem.addProperty("name", chat.getName());
+			chatItem.addProperty("key", chat.getKey());
 
-			if (!groups.containsKey(chatType)) {
-				groups.put(chatType, Lists.newArrayList(chatItem));
+			if (!groups.has(chatType)) {
+				JsonArray chats = new JsonArray();
+				chats.add(chatItem);
+				groups.add(chatType, chats);
 			} else {
-				groups.get(chatType).add(chatItem);
+				// It is a non-empty JsonArray
+				groups.get(chatType).getAsJsonArray().add(chatItem);
 			}
 		});
 

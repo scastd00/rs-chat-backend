@@ -1,5 +1,6 @@
 package rs.chat.net.http;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletResponseWrapper;
@@ -154,7 +155,7 @@ public class HttpResponse extends HttpServletResponseWrapper {
 			return;
 		}
 
-		Object responseBody = response.data;
+		JsonElement responseBody = response.data;
 
 		// If the response body contains only one element, send it directly (without the key)
 		// to simplify the json sent to the client.
@@ -199,7 +200,7 @@ public class HttpResponse extends HttpServletResponseWrapper {
 		/**
 		 * @return the value of the first element in the body.
 		 */
-		public Object value() {
+		public JsonElement value() {
 			return this.data.asMap().values().iterator().next();
 		}
 	}

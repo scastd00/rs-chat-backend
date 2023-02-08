@@ -139,6 +139,6 @@ public class UserController {
 
 	@GetMapping(USER_STATS_URL)
 	public void getUserStats(HttpResponse response, @PathVariable String username) throws IOException {
-		response.ok().send(this.userService.getUserByUsername(username).getMessageCountByType().toString());
+		response.ok().send(this.userService.getUserByUsername(username).getMessageCountByType());
 	}
 }
