@@ -63,7 +63,7 @@ public class Chat {
 	}
 
 	/**
-	 * Removes the specified client from the chat (closing the connection before the removal).
+	 * Removes the specified client from the chat (<b>without</b> closing the connection).
 	 * If the client is not in the chat, {@code false} is returned and nothing is done to the
 	 * list of clients.
 	 *
@@ -80,7 +80,6 @@ public class Chat {
 			                Client client = this.clients.get(i);
 
 			                if (!removed[0] && client.clientID().equals(clientID)) {
-				                client.close();
 				                this.clients.remove(i);
 				                removed[0] = true;
 

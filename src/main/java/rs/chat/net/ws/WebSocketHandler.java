@@ -27,6 +27,7 @@ import static rs.chat.net.ws.Message.ERROR_MESSAGE;
 import static rs.chat.net.ws.Message.PING_MESSAGE;
 import static rs.chat.net.ws.Message.TOO_FAST_MESSAGE;
 import static rs.chat.net.ws.Message.USER_CONNECTED;
+import static rs.chat.net.ws.Message.USER_DISCONNECTED;
 import static rs.chat.utils.Constants.JWT_TOKEN_PREFIX;
 import static rs.chat.utils.Constants.SCHEDULE_STRING;
 import static rs.chat.utils.Utils.createMessage;
@@ -40,6 +41,8 @@ import static rs.chat.utils.Utils.createMessage;
 public class WebSocketHandler extends TextWebSocketHandler {
 	private static final String EMPTY_TOKEN = JWT_TOKEN_PREFIX + "empty";
 	private static final String CONNECTION_MESSAGE_CONTENT = "Connection";
+	private static final String PING_MESSAGE_CONTENT = "I am a ping message";
+	private static final String DISCONNECT_MESSAGE_CONTENT = "Disconnect";
 	private final Metrics metrics;
 	private final JWTService jwtService;
 	private final RateLimiter rateLimiter;
@@ -70,17 +73,19 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		long start = System.currentTimeMillis();
 		JsonMessageWrapper wrappedMessage = new JsonMessageWrapper(message.getPayload());
 
-		// The second condition is only executed once (when the user connects to the server,
-		// in a controlled situation). Then, the user will have a valid token.
+		// The method call will return true in the following situations:
+		//   - when the user connects to the server (without token).
+		//   - when the user sends a PING message, being in a chat (with token) or not (without token).
+		//   - when the user disconnects from the server (without token).
 		boolean isEmptyToken = wrappedMessage.token().equals(EMPTY_TOKEN);
-		if (isEmptyToken && !isConnectionOrPingMessage(wrappedMessage)) {
+		if (isEmptyToken && !isMessageToIgnoreTokenCheck(wrappedMessage)) {
 			sendQuickResponse(session, "You cannot send messages without a valid token.", ERROR_MESSAGE, wrappedMessage);
 			throw new TokenValidationException("You cannot send messages without a valid token.");
 		}
 
 		////// TOKEN STATE //////
 		// If I am here, the state is one of the following:
-		// 1. Empty token and the user is connecting to the server.
+		// 1. One of the conditions (of the comment) above is true.
 		// 2. We have a token (valid or not) and the user is sending a message (not a connection one).
 
 		// Decrease the rate limit counter for the user.
@@ -143,20 +148,20 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	}
 
 	/**
-	 * Checks if the message is a connection one, this is, a message that has the type
-	 * {@link Message#USER_CONNECTED}{@link Message#type() .type()} and the content
-	 * {@link WebSocketHandler#CONNECTION_MESSAGE_CONTENT} or
-	 * {@link Message#PING_MESSAGE}{@link Message#type() .type()}.
+	 * Checks if the message must contain a valid token, or it could be ignored.
 	 *
 	 * @param wrappedMessage message to check.
 	 *
-	 * @return {@code true} if the message is a connection or a ping one, {@code false} otherwise.
+	 * @return {@code true} if the message must contain a valid token, {@code false} otherwise.
 	 */
-	private boolean isConnectionOrPingMessage(JsonMessageWrapper wrappedMessage) {
-		boolean connectionMessage = wrappedMessage.type().equals(USER_CONNECTED.type()) &&
-				wrappedMessage.content().equals(CONNECTION_MESSAGE_CONTENT);
+	private boolean isMessageToIgnoreTokenCheck(JsonMessageWrapper wrappedMessage) {
+		String type = wrappedMessage.type();
+		String content = wrappedMessage.content();
+		boolean connectionMessage = type.equals(USER_CONNECTED.type()) && content.equals(CONNECTION_MESSAGE_CONTENT);
+		boolean pingMessage = type.equals(PING_MESSAGE.type()) && content.equals(PING_MESSAGE_CONTENT);
+		boolean disconnectMessage = type.equals(USER_DISCONNECTED.type()) && content.equals(DISCONNECT_MESSAGE_CONTENT);
 
-		return connectionMessage || wrappedMessage.type().equals(PING_MESSAGE.type());
+		return connectionMessage || pingMessage || disconnectMessage;
 	}
 
 	/**

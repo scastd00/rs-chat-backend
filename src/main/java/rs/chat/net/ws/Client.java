@@ -30,19 +30,6 @@ public record Client(WebSocketSession session, ClientID clientID) {
 		}
 	}
 
-	/**
-	 * Close the client's connection.
-	 */
-	public void close() {
-		try {
-			if (this.session.isOpen()) {
-				this.session.close();
-			}
-		} catch (IOException e) {
-			log.error("Could not close socket normally", e);
-		}
-	}
-
 	public boolean canSend() {
 		return this.session != null && this.session.isOpen();
 	}
