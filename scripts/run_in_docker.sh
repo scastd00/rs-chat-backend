@@ -26,7 +26,7 @@ function main() {
   ./mvnw package -DskipTests
   echo "Sleeping for 5 seconds to allow the database to start"
   sleep 5
-  java -jar -Dspring.profiles.active=prod target/rs-chat-backend-0.0.1.jar
+  java -jar -Dspring.profiles.active=prod target/rs-chat-backend-0.0.2.jar
 }
 
 main "$@"
