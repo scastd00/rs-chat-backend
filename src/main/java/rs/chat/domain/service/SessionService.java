@@ -10,7 +10,9 @@ import rs.chat.domain.entity.Session;
 import rs.chat.domain.entity.User;
 import rs.chat.domain.repository.SessionRepository;
 import rs.chat.domain.repository.UserRepository;
+import rs.chat.exceptions.NotFoundException;
 
+import java.time.Clock;
 import java.util.List;
 import java.util.Set;
 
@@ -22,6 +24,7 @@ import java.util.Set;
 public class SessionService {
 	private final SessionRepository sessionRepository;
 	private final UserRepository userRepository;
+	private final Clock clock;
 
 	public List<Session> getAll() {
 		return this.sessionRepository.findAll();
@@ -70,9 +73,20 @@ public class SessionService {
 	 *
 	 * @return the found session.
 	 */
-	public Session getSession(String token) {
+	public Session getSessionByToken(String token) {
 		return this.sessionRepository.findByToken(token)
-		                             .orElse(null);
+		                             .orElseThrow(() -> new NotFoundException("Session not found."));
+	}
+
+	/**
+	 * Checks whether a session is expired.
+	 *
+	 * @param session the session to be checked.
+	 *
+	 * @return {@code true} if the session is expired, {@code false} otherwise.
+	 */
+	public boolean isExpiredSession(Session session) {
+		return session.getEndDate().isBefore(this.clock.instant());
 	}
 
 	/**

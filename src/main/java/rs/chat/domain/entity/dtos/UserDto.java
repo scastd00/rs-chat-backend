@@ -1,5 +1,6 @@
 package rs.chat.domain.entity.dtos;
 
+import com.google.gson.JsonObject;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -16,6 +17,6 @@ public record UserDto(
 		@Size(max = 100) @NotNull String fullName,
 		Byte age,
 		LocalDate birthdate,
-		@Size(max = 13) @NotNull String role
-) implements Serializable {
+		@Size(max = 13) @NotNull String role,
+		@NotNull JsonObject messageCountByType) implements Serializable {
 }

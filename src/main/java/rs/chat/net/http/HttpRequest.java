@@ -21,6 +21,8 @@ import java.util.Map;
 /**
  * Class that wraps an {@link HttpServletRequest} and provides methods to
  * read multiple times the body of the request as a {@link JsonObject}.
+ * Also, it provides a way to store data in the request, which can be retrieved
+ * later.
  */
 public class HttpRequest extends HttpServletRequestWrapper {
 	private final byte[] cachedBody;
@@ -100,7 +102,8 @@ public class HttpRequest extends HttpServletRequestWrapper {
 	}
 
 	/**
-	 * Wrapper class for the cached body.
+	 * Wrapper class for the cached body. This class is used to provide a way to
+	 * read the body multiple times.
 	 */
 	static class CachedBodyServletInputStream extends ServletInputStream {
 		private final InputStream cachedBodyInputStream;
@@ -145,7 +148,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
 		 */
 		@Override
 		public int read() throws IOException {
-			return cachedBodyInputStream.read();
+			return this.cachedBodyInputStream.read();
 		}
 	}
 }

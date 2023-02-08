@@ -1,7 +1,7 @@
 package rs.chat.net.http;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletResponseWrapper;
 import lombok.extern.slf4j.Slf4j;
@@ -13,20 +13,22 @@ import rs.chat.utils.Constants;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static rs.chat.utils.Constants.DATA_JSON_KEY;
 import static rs.chat.utils.Constants.ERROR_JSON_KEY;
+import static rs.chat.utils.Constants.GSON;
+import static rs.chat.utils.Constants.OBJECT_MAPPER;
 
 /**
  * Class that simplifies the management of the response to the client.
+ * Wraps the {@link HttpServletResponse} class, to add more functionality, such as
+ * setting the status of the response, and sending the response to the client in an easier way.
  */
 @Slf4j
 public class HttpResponse extends HttpServletResponseWrapper {
 	private HttpStatus status = null;
-	private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
 	/**
 	 * Constructs a response adaptor wrapping the given response.
@@ -153,14 +155,15 @@ public class HttpResponse extends HttpServletResponseWrapper {
 			return;
 		}
 
-		Object responseBody = response.data;
+		JsonElement responseBody = response.data;
 
 		// If the response body contains only one element, send it directly (without the key)
+		// to simplify the json sent to the client.
 		if (response.data.size() == 1) {
 			responseBody = response.value();
 		}
 
-		this.objectMapper.writeValue(this.getWriter(), responseBody);
+		OBJECT_MAPPER.writeValue(this.getWriter(), responseBody);
 	}
 
 	/**
@@ -168,8 +171,8 @@ public class HttpResponse extends HttpServletResponseWrapper {
 	 * Contains a {@link Map} of elements to be sent in the response.
 	 */
 	public static class HttpResponseBody {
-		private final Map<String, Object> data = new HashMap<>();
 		public static final HttpResponseBody EMPTY = new HttpResponseBody(DATA_JSON_KEY, "");
+		private final JsonObject data = new JsonObject();
 
 		/**
 		 * Constructs a response body with the given key and value.
@@ -190,15 +193,15 @@ public class HttpResponse extends HttpServletResponseWrapper {
 		 * @return this response body with the element added.
 		 */
 		public HttpResponseBody add(String key, Object value) {
-			this.data.put(key, value);
+			this.data.add(key, GSON.toJsonTree(value));
 			return this;
 		}
 
 		/**
 		 * @return the value of the first element in the body.
 		 */
-		public Object value() {
-			return this.data.values().iterator().next();
+		public JsonElement value() {
+			return this.data.asMap().values().iterator().next();
 		}
 	}
 }

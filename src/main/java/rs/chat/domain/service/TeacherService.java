@@ -8,6 +8,7 @@ import rs.chat.domain.entity.Degree;
 import rs.chat.domain.entity.Subject;
 import rs.chat.domain.entity.TeaSubj;
 import rs.chat.domain.entity.TeaSubjId;
+import rs.chat.domain.entity.User;
 import rs.chat.domain.entity.dtos.DegreeDto;
 import rs.chat.domain.entity.dtos.SubjectDto;
 import rs.chat.domain.entity.dtos.UserDto;
@@ -19,6 +20,7 @@ import rs.chat.domain.repository.SubjectRepository;
 import rs.chat.domain.repository.TeacherSubjectRepository;
 import rs.chat.domain.repository.UserRepository;
 import rs.chat.exceptions.BadRequestException;
+import rs.chat.exceptions.NotFoundException;
 import rs.chat.utils.Constants;
 
 import java.util.Collections;
@@ -83,13 +85,12 @@ public class TeacherService {
 			throw new BadRequestException("Teacher already teaches this subject");
 		}
 
-//		User teacher = this.teacherRepository.findById(teacherId).orElseThrow(() -> new NotFoundException("Teacher not found"));
-//		Subject subject = this.subjectRepository.findById(subjectId).orElseThrow(() -> new NotFoundException("Subject not found"));
+		User teacher = this.teacherRepository.findById(teacherId).orElseThrow(() -> new NotFoundException("Teacher not found"));
+		Subject subject = this.subjectRepository.findById(subjectId).orElseThrow(() -> new NotFoundException("Subject not found"));
 
-		// Todo: check if in this type of entities second and third parameters are needed
-		//  to prevent calling DB.
+		// 2nd and 3rd parameters are needed. Otherwise, it will throw an exception.
 		this.teacherSubjectRepository.save(
-				new TeaSubj(new TeaSubjId(teacherId, subjectId), null, null)
+				new TeaSubj(new TeaSubjId(teacherId, subjectId), teacher, subject)
 		);
 	}
 }

@@ -11,7 +11,7 @@ import java.util.Objects;
  * @param description A description of the command.
  * @param usage       The usage of the command.
  * @param strategy    The strategy to be used to execute the command.
- * @param paramNames  The names of the parameters that the command takes.
+ * @param paramNames  The names of the parameters that the command takes, if any.
  */
 public record Command(
 		String command,

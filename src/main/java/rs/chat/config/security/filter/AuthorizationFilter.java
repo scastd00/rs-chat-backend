@@ -13,6 +13,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 import rs.chat.config.security.JWTService;
+import rs.chat.domain.entity.Session;
+import rs.chat.domain.service.SessionService;
 import rs.chat.net.http.HttpResponse;
 
 import java.io.IOException;
@@ -39,6 +41,7 @@ import static rs.chat.utils.Constants.JWT_TOKEN_PREFIX;
 @RequiredArgsConstructor
 public class AuthorizationFilter extends OncePerRequestFilter {
 	private final JWTService jwtService;
+	private final SessionService sessionService;
 
 	/**
 	 * Checks if the user is authorized to access the resource.
@@ -74,6 +77,13 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 		}
 
 		try {
+			// The session could not exist if the user has logged out from all sessions (so this
+			// method will throw an exception).
+			Session session = this.sessionService.getSessionByToken(token.substring(JWT_TOKEN_PREFIX.length()));
+			if (this.sessionService.isExpiredSession(session)) {
+				throw new ServletException("Your session is expired.");
+			}
+
 			String username = this.jwtService.getUsername(token);
 			String role = this.jwtService.getClaim(token, claims -> claims.get("role", String.class));
 

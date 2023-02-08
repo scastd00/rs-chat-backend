@@ -8,7 +8,6 @@ import rs.chat.domain.entity.Session;
 import rs.chat.domain.service.SessionService;
 
 import java.time.Clock;
-import java.time.Instant;
 import java.util.List;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
@@ -38,19 +37,8 @@ public class ScheduledTasks {
 	private List<Long> getExpiredSessions() {
 		return this.sessionService.getAll()
 		                          .stream()
-		                          .filter(this::expiredSession)
+		                          .filter(this.sessionService::isExpiredSession)
 		                          .map(Session::getId)
 		                          .toList();
-	}
-
-	/**
-	 * Checks if a session is expired.
-	 *
-	 * @param session the session to be checked.
-	 *
-	 * @return {@code true} if the session is expired, {@code false} otherwise.
-	 */
-	private boolean expiredSession(Session session) {
-		return session.getEndDate().isBefore(Instant.now(this.clock));
 	}
 }

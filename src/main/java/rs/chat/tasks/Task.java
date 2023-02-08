@@ -5,7 +5,7 @@ package rs.chat.tasks;
  * Some fields in the implementing classes may have the {@link lombok.Setter} annotation, to
  * allow adding attributes after the object has been created.
  */
-public interface Task {
+public interface Task extends Runnable {
 	void run() throws TaskExecutionException;
 
 	/**

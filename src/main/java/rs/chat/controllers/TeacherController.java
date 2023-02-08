@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import rs.chat.domain.DomainUtils;
+import rs.chat.domain.entity.Chat;
 import rs.chat.domain.entity.Subject;
 import rs.chat.domain.service.ChatService;
 import rs.chat.domain.service.SubjectService;
@@ -61,13 +62,14 @@ public class TeacherController {
 			this.teacherService.addTeacherToSubject(teacherId, subjectId);
 
 			Subject subject = this.subjectService.getById(subjectId);
-			this.chatService.getChatByKey(DomainUtils.getChatKey(SUBJECT, Long.toString(subjectId)))
-			                .ifPresent(chat -> this.chatService.addUserToChat(teacherId, chat.getId()));
+			Chat chat = this.chatService.getChatByKey(DomainUtils.getChatKey(SUBJECT, Long.toString(subjectId)));
+			this.chatService.addUserToChat(teacherId, chat.getId());
+
 
 			// If the user already belongs to the degree chat, do not add again.
 			if (!this.chatService.userAlreadyBelongsToChat(teacherId, subject.getDegree().getId())) {
-				this.chatService.getChatByKey(DomainUtils.getChatKey(DEGREE, subject.getDegree().getId().toString()))
-				                .ifPresent(chat -> this.chatService.addUserToChat(teacherId, chat.getId()));
+				chat = this.chatService.getChatByKey(DomainUtils.getChatKey(DEGREE, subject.getDegree().getId().toString()));
+				this.chatService.addUserToChat(teacherId, chat.getId());
 			}
 
 			return null;

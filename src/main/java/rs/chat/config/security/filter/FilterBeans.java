@@ -9,6 +9,7 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import rs.chat.config.security.JWTService;
+import rs.chat.domain.service.SessionService;
 import rs.chat.domain.service.UserService;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class FilterBeans {
 	private final UserService userService;
 	private final PasswordEncoder passwordEncoder;
 	private final JWTService jwtService;
+	private final SessionService sessionService;
 
 	@Bean
 	public AuthenticationProvider authenticationProvider() {
@@ -47,7 +49,7 @@ public class FilterBeans {
 
 	@Bean
 	public AuthorizationFilter authorizationFilter() {
-		return new AuthorizationFilter(this.jwtService);
+		return new AuthorizationFilter(this.jwtService, this.sessionService);
 	}
 
 	@Bean

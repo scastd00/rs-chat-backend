@@ -11,9 +11,11 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import rs.chat.config.security.JWTService;
 import rs.chat.exceptions.TokenValidationException;
+import rs.chat.net.ws.strategies.messages.MessageHandlingDTO;
 import rs.chat.net.ws.strategies.messages.MessageStrategy;
 import rs.chat.net.ws.strategies.messages.MessageStrategyMappings;
 import rs.chat.observability.metrics.Metrics;
+import rs.chat.rate.RateLimiter;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -23,7 +25,9 @@ import java.util.Map;
 
 import static rs.chat.net.ws.Message.ERROR_MESSAGE;
 import static rs.chat.net.ws.Message.PING_MESSAGE;
+import static rs.chat.net.ws.Message.TOO_FAST_MESSAGE;
 import static rs.chat.net.ws.Message.USER_CONNECTED;
+import static rs.chat.net.ws.Message.USER_DISCONNECTED;
 import static rs.chat.utils.Constants.JWT_TOKEN_PREFIX;
 import static rs.chat.utils.Constants.SCHEDULE_STRING;
 import static rs.chat.utils.Utils.createMessage;
@@ -35,12 +39,24 @@ import static rs.chat.utils.Utils.createMessage;
 @Component
 @RequiredArgsConstructor
 public class WebSocketHandler extends TextWebSocketHandler {
-	private final ChatManagement chatManagement;
-	private final Metrics metrics;
-	private final JWTService jwtService;
-
 	private static final String EMPTY_TOKEN = JWT_TOKEN_PREFIX + "empty";
 	private static final String CONNECTION_MESSAGE_CONTENT = "Connection";
+	private static final String PING_MESSAGE_CONTENT = "I am a ping message";
+	private static final String DISCONNECT_MESSAGE_CONTENT = "Disconnect";
+	private final Metrics metrics;
+	private final JWTService jwtService;
+	private final RateLimiter rateLimiter;
+
+	private static void sendQuickResponse(@NotNull WebSocketSession session, String content,
+	                                      Message errorMessage, JsonMessageWrapper wrappedMessage) throws IOException {
+		session.sendMessage(new TextMessage(
+				createMessage(
+						content,
+						errorMessage.type(),
+						wrappedMessage.chatId()
+				)
+		));
+	}
 
 	/**
 	 * Handles text messages (JSON string).
@@ -54,26 +70,30 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		// FIXME: A user that did not send the USER_JOINED message could send messages
 		//  but cannot receive them.
 
+		long start = System.currentTimeMillis();
 		JsonMessageWrapper wrappedMessage = new JsonMessageWrapper(message.getPayload());
 
-		// The second condition is only executed once (when the user connects to the server,
-		// in a controlled situation). Then, the user will have a valid token.
+		// The method call will return true in the following situations:
+		//   - when the user connects to the server (without token).
+		//   - when the user sends a PING message, being in a chat (with token) or not (without token).
+		//   - when the user disconnects from the server (without token).
 		boolean isEmptyToken = wrappedMessage.token().equals(EMPTY_TOKEN);
-		if (isEmptyToken && !isConnectionOrPingMessage(wrappedMessage)) {
-			session.sendMessage(new TextMessage(
-					createMessage(
-							"You cannot send messages without a valid token.",
-							ERROR_MESSAGE.type(),
-							wrappedMessage.chatId()
-					)
-			));
+		if (isEmptyToken && !isMessageToIgnoreTokenCheck(wrappedMessage)) {
+			sendQuickResponse(session, "You cannot send messages without a valid token.", ERROR_MESSAGE, wrappedMessage);
 			throw new TokenValidationException("You cannot send messages without a valid token.");
 		}
 
 		////// TOKEN STATE //////
 		// If I am here, the state is one of the following:
-		// 1. Empty token and the user is connecting to the server.
+		// 1. One of the conditions (of the comment) above is true.
 		// 2. We have a token (valid or not) and the user is sending a message (not a connection one).
+
+		// Decrease the rate limit counter for the user.
+		if (Message.typeBelongsToGroup(wrappedMessage.type(), Message.NORMAL_MESSAGES) &&
+				!this.rateLimiter.isAllowedAndDecrease(wrappedMessage.username())) {
+			sendQuickResponse(session, "You are sending messages too fast.", TOO_FAST_MESSAGE, wrappedMessage);
+			return;
+		}
 
 		Message receivedMessageType = new Message(wrappedMessage.type(), null, null);
 		Map<String, Object> otherData = new HashMap<>();
@@ -95,14 +115,11 @@ public class WebSocketHandler extends TextWebSocketHandler {
 			wrappedMessage.setContent(strings[0]);
 		}
 
-		// Strategy pattern for handling messages.
-		MessageStrategy strategy;
-
-		if (hasTextBody && this.isParseableMessage(wrappedMessage.content())) {
-			strategy = MessageStrategyMappings.decideStrategy(Message.PARSEABLE_MESSAGE);
-		} else {
-			strategy = MessageStrategyMappings.decideStrategy(receivedMessageType);
+		if (hasTextBody && this.isParseable(wrappedMessage.content())) {
+			receivedMessageType = Message.PARSEABLE_MESSAGE;
 		}
+
+		MessageStrategy strategy = MessageStrategyMappings.decideStrategy(receivedMessageType);
 
 		try {
 			// If the token is empty, we do not need to validate it, because the user is
@@ -110,37 +127,41 @@ public class WebSocketHandler extends TextWebSocketHandler {
 			if (!isEmptyToken && this.jwtService.isInvalidToken(wrappedMessage.token())) {
 				throw new TokenValidationException("Invalid token.");
 			}
-			strategy.handle(wrappedMessage, this.chatManagement, otherData);
+
+			strategy.handle(new MessageHandlingDTO(wrappedMessage, otherData));
+
 			this.metrics.incrementMessageCount(receivedMessageType.type());
+			this.metrics.incrementMessageTime(receivedMessageType.type(), System.currentTimeMillis() - start);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
 	}
 
 	/**
-	 * Checks if the message is a connection one, this is, a message that has the type
-	 * {@link Message#USER_CONNECTED}{@link Message#type() .type()} and the content
-	 * {@link WebSocketHandler#CONNECTION_MESSAGE_CONTENT} or
-	 * {@link Message#PING_MESSAGE}{@link Message#type() .type()}.
-	 *
-	 * @param wrappedMessage message to check.
-	 *
-	 * @return {@code true} if the message is a connection or a ping one, {@code false} otherwise.
-	 */
-	private boolean isConnectionOrPingMessage(JsonMessageWrapper wrappedMessage) {
-		boolean connectionMessage = wrappedMessage.type().equals(USER_CONNECTED.type()) &&
-				wrappedMessage.content().equals(CONNECTION_MESSAGE_CONTENT);
-
-		return connectionMessage || wrappedMessage.type().equals(PING_MESSAGE.type());
-	}
-
-	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void handleTransportError(@NotNull WebSocketSession session, @NotNull Throwable exception) throws IOException {
+	public void handleTransportError(@NotNull WebSocketSession session,
+	                                 @NotNull Throwable exception) throws IOException {
 		log.error(exception.getMessage(), exception);
 		session.close(CloseStatus.SERVER_ERROR);
+	}
+
+	/**
+	 * Checks if the message must contain a valid token, or it could be ignored.
+	 *
+	 * @param wrappedMessage message to check.
+	 *
+	 * @return {@code true} if the message must contain a valid token, {@code false} otherwise.
+	 */
+	private boolean isMessageToIgnoreTokenCheck(JsonMessageWrapper wrappedMessage) {
+		String type = wrappedMessage.type();
+		String content = wrappedMessage.content();
+		boolean connectionMessage = type.equals(USER_CONNECTED.type()) && content.equals(CONNECTION_MESSAGE_CONTENT);
+		boolean pingMessage = type.equals(PING_MESSAGE.type()) && content.equals(PING_MESSAGE_CONTENT);
+		boolean disconnectMessage = type.equals(USER_DISCONNECTED.type()) && content.equals(DISCONNECT_MESSAGE_CONTENT);
+
+		return connectionMessage || pingMessage || disconnectMessage;
 	}
 
 	/**
@@ -150,7 +171,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	 *
 	 * @return true if the message is a parseable message, false otherwise.
 	 */
-	private boolean isParseableMessage(String message) {
+	private boolean isParseable(String message) {
 		return message.contains("/") || message.contains("@");
 	}
 
@@ -163,7 +184,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	 * @return {@code true} if the message has a string as body, {@code false} otherwise.
 	 */
 	private boolean hasTextBody(JsonMessageWrapper wrappedMessage) {
-		return ((JsonObject) wrappedMessage.getParsedPayload().get("body"))
-				.get("content").isJsonPrimitive();
+		return wrappedMessage.body().get("content").isJsonPrimitive();
 	}
 }

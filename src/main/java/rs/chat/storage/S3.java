@@ -1,5 +1,6 @@
 package rs.chat.storage;
 
+import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import rs.chat.exceptions.CouldNotUploadFileException;
@@ -27,6 +28,7 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.time.Clock;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.Map;
 
 import static rs.chat.net.ws.Message.GET_HISTORY_MESSAGE;
@@ -196,14 +198,17 @@ public final class S3 implements Closeable {
 	 *
 	 * @return the URI of the file in S3 bucket.
 	 */
-	public URI uploadFile(String mediaType, String fileName, byte[] dataBytes, Map<String, String> metadata) {
+	public URI uploadFile(String mediaType, String fileName, byte[] dataBytes, JsonObject metadata) {
 		String s3Key = this.s3Key(mediaType, fileName);
+
+		Map<String, String> metadataMap = new HashMap<>();
+		metadata.asMap().forEach((key, value) -> metadataMap.put(key, value.toString()));
 
 		this.s3Client.putObject(
 				PutObjectRequest.builder()
 				                .bucket(S3_BUCKET_NAME)
 				                .key(s3Key)
-				                .metadata(metadata)
+				                .metadata(metadataMap)
 				                .build(),
 				RequestBody.fromBytes(dataBytes)
 		);

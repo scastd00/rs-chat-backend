@@ -11,6 +11,7 @@ import rs.chat.domain.repository.ChatRepository;
 import rs.chat.domain.repository.GroupRepository;
 import rs.chat.domain.repository.UserChatRepository;
 import rs.chat.domain.repository.UserGroupRepository;
+import rs.chat.exceptions.BadRequestException;
 import rs.chat.exceptions.NotFoundException;
 import rs.chat.storage.S3;
 
@@ -63,7 +64,11 @@ public class GroupService {
 	 * @return the saved group.
 	 */
 	public Group saveGroup(Group group) {
-		// Todo: check name?
+		// Todo: check name searching for sql injection??
+		if (this.groupRepository.existsById(group.getId())) {
+			throw new BadRequestException("Group with id '%s' already exists.".formatted(group.getId()));
+		}
+
 		Group savedGroup = this.groupRepository.save(group);
 
 		// When I know that the group is saved, chat is created.

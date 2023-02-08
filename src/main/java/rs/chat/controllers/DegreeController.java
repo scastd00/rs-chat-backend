@@ -56,7 +56,7 @@ public class DegreeController {
 		          .map(this::getDegreeWithInvitationCodeToChat)
 		          .forEach(degreesWithInvitationCode::add);
 
-		response.ok().send(degreesWithInvitationCode.toString());
+		response.ok().send(degreesWithInvitationCode);
 	}
 
 	/**
@@ -100,7 +100,7 @@ public class DegreeController {
 				)
 		);
 
-		response.created(DEGREE_SAVE_URL).send(this.getDegreeWithInvitationCodeToChat(degree).toString());
+		response.created(DEGREE_SAVE_URL).send(this.getDegreeWithInvitationCodeToChat(degree));
 	}
 
 	/**
