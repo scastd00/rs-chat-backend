@@ -6,6 +6,12 @@ import rs.chat.net.ws.ClientID;
 
 import java.util.Map;
 
+/**
+ * Record that holds the data needed for the {@link CommandStrategy} to work.
+ *
+ * @param chatManagement {@link ChatManagement} instance.
+ * @param otherData      Map of other data needed for the {@link CommandStrategy} to work.
+ */
 public record CommandHandlingDTO(ChatManagement chatManagement, Map<String, Object> otherData) {
 	/**
 	 * Method to ease the process of sending a message to a specific {@link WebSocketSession}.

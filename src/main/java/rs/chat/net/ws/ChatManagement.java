@@ -130,7 +130,7 @@ public class ChatManagement {
 	}
 
 	/**
-	 * Sends a message to a client that is mentioned in the message.
+	 * Sends a message to the client that is mentioned in the message.
 	 *
 	 * @param chatId   id of the chat to which the message was sent.
 	 * @param username username of the client to send the message to.

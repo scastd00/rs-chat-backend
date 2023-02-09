@@ -54,130 +54,131 @@ public final class CommandMappings {
 	static {
 		commands.put(
 				"/help",
-				new Command("/help", NORMAL, "Displays a list of all available commands.", "/help", new HelpCommandStrategy())
+				new Command("/help", NORMAL, "Displays a list of all available commands.", "/help", new HelpCommandStrategy(), false)
 		);
 		commands.put(
 				"/clear",
-				new Command("/clear", NORMAL, "Clears the chat window.", "/clear", new ClearCommandStrategy())
+				new Command("/clear", NORMAL, "Clears the chat window.", "/clear", new ClearCommandStrategy(), false)
 		);
 		commands.put(
 				"/me",
-				new Command("/me", NORMAL, "Sends an action message.", "/me <message>", new MeCommandStrategy(), "message")
+				new Command("/me", NORMAL, "Sends an action message.", "/me <message>", new MeCommandStrategy(), true, "message")
 		);
 		commands.put(
 				"/nick",
-				new Command("/nick", NORMAL, "Changes your nickname.", "/nick <nickname>", new NickCommandStrategy(), "nickname")
+				new Command("/nick", NORMAL, "Changes your nickname.", "/nick <nickname>", new NickCommandStrategy(), false, "nickname")
 		);
 		commands.put(
 				"/join",
-				new Command("/join", NORMAL, "Joins a channel.", "/join <channel>", new JoinCommandStrategy(), "channel")
+				new Command("/join", NORMAL, "Joins a channel.", "/join <channel>", new JoinCommandStrategy(), false, "channel")
 		);
 		commands.put(
 				"/leave",
-				new Command("/leave", NORMAL, "Leaves a channel.", "/leave <channel>", new LeaveCommandStrategy(), "channel")
+				new Command("/leave", NORMAL, "Leaves a channel.", "/leave <channel>", new LeaveCommandStrategy(), false, "channel")
 		);
 		commands.put(
 				"/msg",
-				new Command("/msg", NORMAL, "Sends a private message to a user.", "/msg <user> <message>", new MsgCommandStrategy(), "user", "message")
+				new Command("/msg", NORMAL, "Sends a private message to a user.", "/msg <user> <message>", new MsgCommandStrategy(), true, "user", "message")
 		);
 		commands.put(
 				"/whois",
-				new Command("/whois", NORMAL, "Displays information about a user.", "/whois <user>", new WhoIsCommandStrategy(), "user")
+				new Command("/whois", NORMAL, "Displays information about a user.", "/whois <user>", new WhoIsCommandStrategy(), false, "user")
 		);
 		commands.put(
 				"/invite",
-				new Command("/invite", NORMAL, "Invites a user to a channel.", "/invite <user> <channel>", new InviteCommandStrategy(), "user", "channel")
+				new Command("/invite", NORMAL, "Invites a user to a channel.", "/invite <user> <channel>", new InviteCommandStrategy(), true, "user", "channel")
 		);
 		commands.put(
 				"/kick",
-				new Command("/kick", TEACHER, "Kicks a user from a channel.", "/kick <user> <channel>", new KickCommandStrategy(), "user", "channel")
+				new Command("/kick", TEACHER, "Kicks a user from a channel.", "/kick <user> <channel>", new KickCommandStrategy(), true, "user", "channel")
 		);
 		commands.put(
 				"/ban",
-				new Command("/ban", TEACHER, "Bans a user from a channel.", "/ban <user> <channel>", new BanCommandStrategy(), "user", "channel")
+				new Command("/ban", TEACHER, "Bans a user from a channel.", "/ban <user> <channel>", new BanCommandStrategy(), true, "user", "channel")
 		);
 		commands.put(
 				"/unban",
-				new Command("/unban", TEACHER, "Unbans a user from a channel.", "/unban <user> <channel>", new UnbanCommandStrategy(), "user", "channel")
+				new Command("/unban", TEACHER, "Unbans a user from a channel.", "/unban <user> <channel>", new UnbanCommandStrategy(), true, "user", "channel")
 		);
 		commands.put(
 				"/topic",
-				new Command("/topic", TEACHER, "Changes the topic of a channel.", "/topic <channel> <topic>", new TopicCommandStrategy(), "channel", "topic")
+				new Command("/topic", TEACHER, "Changes the topic of a channel.", "/topic <channel> <topic>", new TopicCommandStrategy(), true, "channel", "topic")
 		);
 		commands.put(
 				"/mode",
-				new Command("/mode", TEACHER, "Changes the mode of a channel.", "/mode <channel> <mode>", new ModeCommandStrategy(), "channel", "mode")
+				new Command("/mode", TEACHER, "Changes the mode of a channel.", "/mode <channel> <mode>", new ModeCommandStrategy(), true, "channel", "mode")
 		);
 		commands.put(
 				"/op",
-				new Command("/op", ADMIN, "Gives a user operator status in a channel.", "/op <user> <channel>", new OpCommandStrategy(), "user", "channel")
+				new Command("/op", ADMIN, "Gives a user operator status in a channel.", "/op <user> <channel>", new OpCommandStrategy(), true, "user", "channel")
 		);
 		commands.put(
 				"/deop",
-				new Command("/deop", ADMIN, "Removes a user's operator status in a channel.", "/deop <user> <channel>", new DeOpCommandStrategy(), "user", "channel")
+				new Command("/deop", ADMIN, "Removes a user's operator status in a channel.", "/deop <user> <channel>", new DeOpCommandStrategy(), true, "user",
+				            "channel")
 		);
 		commands.put(
 				"/ignore",
-				new Command("/ignore", NORMAL, "Ignores a user.", "/ignore <user>", new IgnoreCommandStrategy(), "user")
+				new Command("/ignore", NORMAL, "Ignores a user.", "/ignore <user>", new IgnoreCommandStrategy(), true, "user")
 		);
 		commands.put(
 				"/unignore",
-				new Command("/unignore", NORMAL, "Unignores a user.", "/unignore <user>", new UnIgnoreCommandStrategy(), "user")
+				new Command("/unignore", NORMAL, "Unignores a user.", "/unignore <user>", new UnIgnoreCommandStrategy(), true, "user")
 		);
 		commands.put(
 				"/ignorelist",
-				new Command("/ignorelist", NORMAL, "Displays a list of ignored users.", "/ignorelist", new IgnoreListCommandStrategy())
+				new Command("/ignorelist", NORMAL, "Displays a list of ignored users.", "/ignorelist", new IgnoreListCommandStrategy(), true)
 		);
 		commands.put(
 				"/away",
-				new Command("/away", NORMAL, "Sets your status to away.", "/away <message>", new AwayCommandStrategy(), "message")
+				new Command("/away", NORMAL, "Sets your status to away.", "/away <message>", new AwayCommandStrategy(), false, "message")
 		);
 		commands.put(
 				"/back",
-				new Command("/back", NORMAL, "Sets your status to back.", "/back", new BackCommandStrategy())
+				new Command("/back", NORMAL, "Sets your status to back.", "/back", new BackCommandStrategy(), false)
 		);
 		commands.put(
 				"/who",
-				new Command("/who", NORMAL, "Displays information about you.", "/who <channel>", new WhoCommandStrategy(), "channel")
+				new Command("/who", NORMAL, "Displays information about you.", "/who <channel>", new WhoCommandStrategy(), true, "channel")
 		);
 		commands.put(
 				"/names",
-				new Command("/names", NORMAL, "Displays a list of users in a channel.", "/names <channel>", new NamesCommandStrategy(), "channel")
+				new Command("/names", NORMAL, "Displays a list of users in a channel.", "/names <channel>", new NamesCommandStrategy(), true, "channel")
 		);
 		commands.put(
 				"/list",
-				new Command("/list", NORMAL, "Displays a list of channels.", "/list", new ListCommandStrategy())
+				new Command("/list", NORMAL, "Displays a list of channels.", "/list", new ListCommandStrategy(), true)
 		);
 		commands.put(
 				"/time",
-				new Command("/time", NORMAL, "Displays the current time.", "/time", new TimeCommandStrategy())
+				new Command("/time", NORMAL, "Displays the current time.", "/time", new TimeCommandStrategy(), true)
 		);
 		commands.put(
 				"/version",
-				new Command("/version", NORMAL, "Displays the version of the server.", "/version", new VersionCommandStrategy())
+				new Command("/version", NORMAL, "Displays the version of the server.", "/version", new VersionCommandStrategy(), false)
 		);
 		commands.put(
 				"/ping",
-				new Command("/ping", NORMAL, "Pings the server.", "/ping", new PingCommandStrategy())
+				new Command("/ping", NORMAL, "Pings the server.", "/ping", new PingCommandStrategy(), false)
 		);
 		commands.put(
 				"/quit",
-				new Command("/quit", NORMAL, "Disconnects from the server.", "/quit", new QuitCommandStrategy())
+				new Command("/quit", NORMAL, "Disconnects from the server.", "/quit", new QuitCommandStrategy(), true)
 		);
 		// todo: challenge or not??
 
 		// Fun commands
 		commands.put(
 				"/dice",
-				new Command("/dice", NORMAL, "Rolls a dice (or challenges another user).", "/dice (<user>)", new DiceCommandStrategy(), "user")
+				new Command("/dice", NORMAL, "Rolls a dice (or challenges another user).", "/dice (<user>)", new DiceCommandStrategy(), true, "user")
 		);
 		commands.put(
 				"/8ball",
-				new Command("/8ball", NORMAL, "Asks the magic 8-ball a question.", "/8ball <question>", new EightBallCommandStrategy(), "question")
+				new Command("/8ball", NORMAL, "Asks the magic 8-ball a question.", "/8ball <question>", new EightBallCommandStrategy(), true, "question")
 		);
 		commands.put(
 				"/flip",
-				new Command("/flip", NORMAL, "Flips a coin.", "/flip", new FlipCommandStrategy())
+				new Command("/flip", NORMAL, "Flips a coin.", "/flip", new FlipCommandStrategy(), true)
 		);
 	}
 

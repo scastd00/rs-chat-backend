@@ -14,11 +14,11 @@ import static rs.chat.utils.Utils.createMessage;
 public class VersionCommandStrategy implements CommandStrategy {
 	@Override
 	public void handle(CommandHandlingDTO handlingDTO) throws WebSocketException, IOException {
-		getSession(handlingDTO.otherData()).sendMessage(
-				new TextMessage(createMessage(
+		handlingDTO.getSession().sendMessage(new TextMessage(
+				createMessage(
 						"Chat version: " + CHAT_VERSION,
 						COMMAND_RESPONSE.type(),
-						getClientID(handlingDTO.otherData()).chatId()
+						handlingDTO.getClientID().chatId()
 				))
 		);
 	}

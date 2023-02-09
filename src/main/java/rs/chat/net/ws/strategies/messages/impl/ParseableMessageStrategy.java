@@ -30,23 +30,19 @@ import static rs.chat.utils.Utils.createMessage;
  */
 @Slf4j
 public class ParseableMessageStrategy extends GenericMessageStrategy {
-	private final ChatManagement chatManagement;
 	private final ApplicationEventPublisher eventPublisher;
 
 	public ParseableMessageStrategy(ChatManagement chatManagement, ApplicationEventPublisher eventPublisher) {
 		super(chatManagement);
-		this.chatManagement = chatManagement;
 		this.eventPublisher = eventPublisher;
 	}
 
 	@Override
 	public void handle(MessageHandlingDTO handlingDTO) throws WebSocketException, IOException {
-		super.handle(handlingDTO); // Send the message to other clients
-
 		try {
 			MessageParser.parse(handlingDTO.wrappedMessage().content())
 			             .stream()
-			             .filter(Predicate.not(ParsedData::isMessage)) // Ignore messages
+			             .filter(Predicate.not(ParsedData::isText)) // Ignore messages
 			             .forEach(parsedData -> {
 				             switch (parsedData.type()) {
 					             case COMMAND -> runCommand(handlingDTO, parsedData);
@@ -77,6 +73,13 @@ public class ParseableMessageStrategy extends GenericMessageStrategy {
 			return;
 		}
 
+		try {
+			// Send the message to other clients
+			super.handle(handlingDTO);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
 		String chatId = handlingDTO.wrappedMessage().chatId();
 		this.chatManagement.mentionUser(
 				chatId,
@@ -105,6 +108,12 @@ public class ParseableMessageStrategy extends GenericMessageStrategy {
 		handlingDTO.otherData().put("commandParams", parsedData.params());
 
 		try {
+			// If the command message could be sent to others, send it.
+			// If it is for the user only, don't send it.
+			if (command.sendToOthers()) {
+				super.handle(handlingDTO);
+			}
+
 			command.strategy().handle(new CommandHandlingDTO(this.chatManagement, handlingDTO.otherData()));
 
 			CommandMessageEvent event = new CommandMessageEvent(this, handlingDTO.getClientID().username());

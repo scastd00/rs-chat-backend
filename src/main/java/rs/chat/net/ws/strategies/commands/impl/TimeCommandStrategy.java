@@ -15,12 +15,12 @@ import static rs.chat.utils.Utils.createMessage;
 public class TimeCommandStrategy implements CommandStrategy {
 	@Override
 	public void handle(CommandHandlingDTO handlingDTO) throws WebSocketException, IOException {
-		getSession(handlingDTO.otherData()).sendMessage(new TextMessage(
+		handlingDTO.getSession().sendMessage(new TextMessage(
 				createMessage(
 						"Current time is: " +
 								LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")),
 						COMMAND_RESPONSE.type(),
-						getClientID(handlingDTO.otherData()).chatId()
+						handlingDTO.getClientID().chatId()
 				))
 		);
 	}

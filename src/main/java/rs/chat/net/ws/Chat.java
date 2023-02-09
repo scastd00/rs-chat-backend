@@ -161,7 +161,8 @@ public class Chat {
 	public void mention(String message, String username) {
 		this.availableClientsStream()
 		    .filter(client -> client.getClientID().username().equals(username))
-		    .forEach(client -> client.send(message));
+		    .findFirst()
+		    .ifPresent(client -> client.send(message));
 	}
 
 	/**

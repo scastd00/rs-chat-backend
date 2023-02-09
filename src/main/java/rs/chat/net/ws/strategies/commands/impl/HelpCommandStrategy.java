@@ -14,11 +14,11 @@ import static rs.chat.utils.Utils.createMessage;
 public class HelpCommandStrategy implements CommandStrategy {
 	@Override
 	public void handle(CommandHandlingDTO handlingDTO) throws WebSocketException, IOException {
-		getSession(handlingDTO.otherData()).sendMessage(new TextMessage(
+		handlingDTO.getSession().sendMessage(new TextMessage(
 				createMessage(
 						"Available commands: " + CommandMappings.getAvailableCommandsWithDescriptionAndUsage(),
 						COMMAND_RESPONSE.type(),
-						getClientID(handlingDTO.otherData()).chatId()
+						handlingDTO.getClientID().chatId()
 				)
 		));
 	}

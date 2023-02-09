@@ -18,7 +18,7 @@ import static rs.chat.utils.Utils.createMessage;
 public class DiceCommandStrategy implements CommandStrategy {
 	@Override
 	public void handle(CommandHandlingDTO handlingDTO) throws WebSocketException, IOException {
-		ClientID clientID = getClientID(handlingDTO.otherData());
+		ClientID clientID = handlingDTO.getClientID();
 		String userToChallenge = Optional.ofNullable((handlingDTO.otherData().get("commandParams")))
 		                                 .map(params -> ((Params) params).get("user"))
 		                                 .orElse(null);

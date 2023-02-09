@@ -16,11 +16,8 @@ import java.time.LocalDateTime;
  */
 @Slf4j
 public class GenericScheduledMessageStrategy extends GenericMessageStrategy {
-	private final ChatManagement chatManagement;
-
 	public GenericScheduledMessageStrategy(ChatManagement chatManagement) {
 		super(chatManagement);
-		this.chatManagement = chatManagement;
 	}
 
 	@Override

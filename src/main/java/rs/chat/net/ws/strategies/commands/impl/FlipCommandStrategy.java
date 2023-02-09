@@ -13,11 +13,11 @@ import static rs.chat.utils.Utils.createMessage;
 public class FlipCommandStrategy implements CommandStrategy {
 	@Override
 	public void handle(CommandHandlingDTO handlingDTO) throws WebSocketException, IOException {
-		getSession(handlingDTO.otherData()).sendMessage(new TextMessage(
+		handlingDTO.getSession().sendMessage(new TextMessage(
 				createMessage(
 						"You flipped a coin and got: " + this.flip(),
 						COMMAND_RESPONSE.type(),
-						getClientID(handlingDTO.otherData()).chatId()
+						handlingDTO.getClientID().chatId()
 				)
 		));
 	}
