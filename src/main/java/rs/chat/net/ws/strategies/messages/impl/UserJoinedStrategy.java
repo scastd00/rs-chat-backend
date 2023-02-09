@@ -37,8 +37,8 @@ public class UserJoinedStrategy implements MessageStrategy {
 				Math.toIntExact(MAX_FILE_BYTES)
 		);
 
-		chatManagement.addClientToChat(new Client(decorator, clientID));
-		chatManagement.broadcastToSingleChatAndExcludeClient(
+		this.chatManagement.addClientToChat(new Client(decorator, clientID));
+		this.chatManagement.broadcastToSingleChatExcludeClientWithoutSaving(
 				createMessage(username + " has joined the chat", USER_JOINED.type(), chatId),
 				clientID
 		);

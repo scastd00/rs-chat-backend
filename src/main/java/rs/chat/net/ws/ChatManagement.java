@@ -46,7 +46,7 @@ public class ChatManagement {
 	 * @param client new client to add to the chat.
 	 */
 	public void addClientToChat(Client client) {
-		String chatId = client.clientID().chatId();
+		String chatId = client.getClientID().chatId();
 
 		if (!this.chatExists(chatId)) {
 			this.chats.put(chatId, new Chat(chatId));
@@ -74,24 +74,47 @@ public class ChatManagement {
 	}
 
 	/**
-	 * Sends a message to all clients connected to a chat.
+	 * Sends a message to all clients connected to a chat and <b>saves</b> the message to history
+	 * file.
 	 *
 	 * @param chatId  chat id to which the message should be sent.
 	 * @param message message to send.
 	 */
-	public void broadcastToSingleChat(String chatId, String message) {
-		this.chats.get(chatId).broadcastAndSave(message);
+	public void broadcastToSingleChatAndSave(String chatId, String message) {
+		this.chats.get(chatId).broadcast(message, true);
+	}
+
+	/**
+	 * Sends a message to all clients connected to a chat <b>without saving</b> the message to
+	 * history file.
+	 *
+	 * @param chatId  chat id to which the message should be sent.
+	 * @param message message to send.
+	 */
+	public void broadcastToSingleChatWithoutSaving(String chatId, String message) {
+		this.chats.get(chatId).broadcast(message, false);
 	}
 
 	/**
 	 * Sends a message to all clients connected to the chat except from the
-	 * client that sent the message.
+	 * client that sent the message. The message <b>is saved</b> to history file.
 	 *
 	 * @param message  message to send.
 	 * @param clientID client to "ignore".
 	 */
-	public void broadcastToSingleChatAndExcludeClient(String message, ClientID clientID) {
-		this.chats.get(clientID.chatId()).sendWithClientExclusionAndSave(message, clientID);
+	public void broadcastToSingleChatExcludeClientAndSave(String message, ClientID clientID) {
+		this.chats.get(clientID.chatId()).sendWithClientExclusion(message, clientID, true);
+	}
+
+	/**
+	 * Sends a message to all clients connected to the chat except from the
+	 * client that sent the message. The message <b>is not saved</b> to history file.
+	 *
+	 * @param message  message to send.
+	 * @param clientID client to "ignore".
+	 */
+	public void broadcastToSingleChatExcludeClientWithoutSaving(String message, ClientID clientID) {
+		this.chats.get(clientID.chatId()).sendWithClientExclusion(message, clientID, false);
 	}
 
 	/**
@@ -103,7 +126,7 @@ public class ChatManagement {
 	 * @param message message to send.
 	 */
 	public void totalBroadcast(String message) {
-		this.chats.values().forEach(chat -> chat.broadcastAndSave(message));
+		this.chats.values().forEach(chat -> chat.broadcast(message, true));
 	}
 
 	/**
@@ -119,15 +142,15 @@ public class ChatManagement {
 	}
 
 	/**
-	 * Retrieves all the usernames of the clients connected to the given chat. The usernames
-	 * are sorted.
+	 * Retrieves all the usernames of the clients connected (and active) to the given chat.
+	 * They are sorted alphabetically.
 	 *
 	 * @param chatId id of the chat to get the usernames of.
 	 *
-	 * @return a sorted list of usernames.
+	 * @return a sorted list of usernames of the active clients.
 	 */
-	public List<String> getUsernamesOfChat(String chatId) {
-		return this.chats.get(chatId).getUsernames();
+	public List<String> getActiveUsernamesOfChat(String chatId) {
+		return this.chats.get(chatId).getActiveUsernames();
 	}
 
 	/**
@@ -153,5 +176,23 @@ public class ChatManagement {
 	@Scheduled(fixedRate = 3, initialDelay = 3, timeUnit = MINUTES)
 	private void deleteUnwantedUsers() {
 		this.chats.values().forEach(Chat::deleteUnwantedUsers);
+	}
+
+	/**
+	 * Sets the client as away.
+	 *
+	 * @param clientID id of the client to set as away.
+	 */
+	public void setClientAway(ClientID clientID) {
+		this.chats.get(clientID.chatId()).setClientAway(clientID);
+	}
+
+	/**
+	 * Sets the client as active.
+	 *
+	 * @param clientID id of the client to set as active.
+	 */
+	public void setClientActive(ClientID clientID) {
+		this.chats.get(clientID.chatId()).setClientActive(clientID);
 	}
 }

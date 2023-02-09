@@ -32,7 +32,7 @@ public class GenericMessageStrategy implements MessageStrategy {
 
 		// Clear the sensitive data to send the message to other clients
 		this.clearSensitiveDataChangeDateAndBuildResponse(handlingDTO.wrappedMessage());
-		this.chatManagement.broadcastToSingleChatAndExcludeClient(
+		this.chatManagement.broadcastToSingleChatExcludeClientAndSave(
 				handlingDTO.wrappedMessage().toString(),
 				clientID
 		);

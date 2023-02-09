@@ -28,11 +28,11 @@ public class UserLeftStrategy implements MessageStrategy {
 		String chatId = clientID.chatId();
 		String username = clientID.username();
 
-		chatManagement.broadcastToSingleChatAndExcludeClient(
+		this.chatManagement.broadcastToSingleChatExcludeClientWithoutSaving(
 				createMessage(username + " has left the chat", USER_LEFT.type(), chatId),
 				clientID
 		);
-		chatManagement.removeClientFromChat(clientID);
+		this.chatManagement.removeClientFromChat(clientID);
 		// Closed from the frontend
 		this.rateLimiter.removeEntry(clientID.username());
 

@@ -31,12 +31,12 @@ public class ActiveUsersStrategy implements MessageStrategy {
 		WebSocketSession session = handlingDTO.getSession();
 		ClientID clientID = handlingDTO.getClientID();
 
-		List<String> usernamesOfChat = chatManagement.getUsernamesOfChat(clientID.chatId());
+		List<String> activeUsernamesOfChat = chatManagement.getActiveUsernamesOfChat(clientID.chatId());
 
 		// The sender username is removed from the list (because it is already connected).
-		List<String> filteredUsers = usernamesOfChat.stream()
-		                                            .filter(username -> !username.equals(clientID.username()))
-		                                            .toList();
+		List<String> filteredUsers = activeUsernamesOfChat.stream()
+		                                                  .filter(username -> !username.equals(clientID.username()))
+		                                                  .toList();
 		session.sendMessage(
 				new TextMessage(this.createActiveUsersMessage(filteredUsers))
 		);

@@ -2,7 +2,6 @@ package rs.chat.net.ws.strategies.commands;
 
 import org.springframework.web.socket.WebSocketSession;
 import rs.chat.exceptions.WebSocketException;
-import rs.chat.net.ws.ChatManagement;
 import rs.chat.net.ws.ClientID;
 
 import java.io.IOException;
@@ -12,17 +11,11 @@ public interface CommandStrategy {
 	/**
 	 * Handles command with the instantiated strategy.
 	 *
-	 * @param chatManagement map containing all available {@link rs.chat.net.ws.Chat}s.
-	 * @param otherData      additional data: <ul>
-	 *                       <li>Username related to the command.</li>
-	 *                       <li>Some message to send with the command.</li>
-	 *                       </ul>
+	 * @param handlingDTO@throws WebSocketException if error occurs during handling.
 	 *
-	 * @throws WebSocketException if error occurs during handling.
-	 * @throws IOException        if error occurs during handling.
+	 * @throws IOException if error occurs during handling.
 	 */
-	void handle(ChatManagement chatManagement, Map<String, Object> otherData)
-			throws WebSocketException, IOException;
+	void handle(CommandHandlingDTO handlingDTO) throws WebSocketException, IOException;
 
 	/**
 	 * Method to ease the process of sending a message to a specific {@link WebSocketSession}.

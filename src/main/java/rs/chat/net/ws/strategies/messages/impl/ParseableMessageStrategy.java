@@ -9,6 +9,7 @@ import rs.chat.exceptions.WebSocketException;
 import rs.chat.net.ws.ChatManagement;
 import rs.chat.net.ws.Message;
 import rs.chat.net.ws.strategies.commands.Command;
+import rs.chat.net.ws.strategies.commands.CommandHandlingDTO;
 import rs.chat.net.ws.strategies.commands.CommandMappings;
 import rs.chat.net.ws.strategies.commands.parser.MessageParser;
 import rs.chat.net.ws.strategies.commands.parser.ParsedData;
@@ -104,7 +105,7 @@ public class ParseableMessageStrategy extends GenericMessageStrategy {
 		handlingDTO.otherData().put("commandParams", parsedData.params());
 
 		try {
-			command.strategy().handle(this.chatManagement, handlingDTO.otherData());
+			command.strategy().handle(new CommandHandlingDTO(this.chatManagement, handlingDTO.otherData()));
 
 			CommandMessageEvent event = new CommandMessageEvent(this, handlingDTO.getClientID().username());
 			event.setCallback(badgeCallback(handlingDTO));

@@ -68,7 +68,7 @@ public class MessageParser {
 
 		// Check if the command has more parameters than needed
 		if (pos + parameters >= parts.length) {
-			throw new IllegalArgumentException("Not enough parameters for command " + parts[pos]);
+			throw new IllegalArgumentException("Wrong number of parameters for command " + parts[pos]);
 		}
 
 		// Save the parameters
