@@ -128,6 +128,7 @@ public class ParseableMessageStrategy extends GenericMessageStrategy {
 
 			CommandMessageEvent event = new CommandMessageEvent(this, handlingDTO.getClientID().username());
 			event.setCallback(badgeCallback(handlingDTO));
+			event.setCommand(command.command());
 
 			this.eventPublisher.publishEvent(event);
 		} catch (IOException e) {

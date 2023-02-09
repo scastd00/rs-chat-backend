@@ -28,6 +28,23 @@ public final class MessageEventListener implements ApplicationListener<MessageEv
 			messageCountByType.addProperty(event.getType(), jsonElement.getAsInt() + 1);
 		}
 
+		if (event instanceof CommandMessageEvent cme) {
+			final String key = "USED_COMMANDS";
+
+			if (!messageCountByType.has(key)) {
+				messageCountByType.add(key, new JsonObject());
+			}
+
+			JsonObject commandsCount = messageCountByType.getAsJsonObject(key); // We have it, so it's safe to cast
+			JsonElement commandCount = commandsCount.get(cme.getCommand());
+
+			if (commandCount == null) {
+				commandsCount.addProperty(cme.getCommand(), 1);
+			} else {
+				commandsCount.addProperty(cme.getCommand(), commandCount.getAsInt() + 1);
+			}
+		}
+
 		User savedUser = this.userService.updateUser(user);
 
 		String badgeTitle = this.userBadgeService.updateBadgesOfUser(savedUser, event.getType());
