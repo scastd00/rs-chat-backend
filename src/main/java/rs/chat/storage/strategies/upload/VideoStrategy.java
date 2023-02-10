@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.mp4parser.IsoFile;
 import org.mp4parser.boxes.iso14496.part12.MovieHeaderBox;
 import org.mp4parser.tools.ByteBufferByteChannel;
-import rs.chat.domain.entity.File;
 import rs.chat.net.ws.Message;
 import rs.chat.storage.S3;
 
@@ -17,17 +16,22 @@ import static rs.chat.utils.Utils.bytesToUnit;
 @Slf4j
 public class VideoStrategy implements FileUploadStrategy {
 	@Override
-	public void handle(byte[] binaryData, String specificType, File file) throws IOException {
-		JsonObject metadata = file.getMetadata();
+	public void handle(MediaUploadDTO mediaUploadDTO) throws IOException {
+		JsonObject metadata = mediaUploadDTO.file().getMetadata();
 
-		metadata.addProperty("duration", this.getVideoDuration(binaryData));
-		metadata.addProperty("specificType", specificType);
-		metadata.addProperty("size", bytesToUnit(binaryData.length));
+		metadata.addProperty("duration", this.getVideoDuration(mediaUploadDTO.binaryData()));
+		metadata.addProperty("specificType", mediaUploadDTO.specificType());
+		metadata.addProperty("size", bytesToUnit(mediaUploadDTO.binaryData().length));
 		metadata.addProperty("messageType", Message.VIDEO_MESSAGE.type());
 
-		URI uri = S3.getInstance().uploadFile(file.getType(), file.getName(), binaryData, metadata);
+		URI uri = S3.getInstance().uploadFile(
+				mediaUploadDTO.file().getType(),
+				mediaUploadDTO.file().getName(),
+				mediaUploadDTO.binaryData(),
+				metadata
+		);
 
-		file.setPath(uri.toString());
+		mediaUploadDTO.file().setPath(uri.toString());
 	}
 
 	private String getVideoDuration(byte[] binaryData) {

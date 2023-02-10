@@ -1,19 +1,19 @@
 package rs.chat.storage.strategies.upload;
 
-import rs.chat.domain.entity.File;
-
 import java.io.IOException;
 
 public interface FileUploadStrategy {
 	/**
 	 * Performs all the necessary operations to upload a file. This method should modify the next
-	 * file attributes: path and metadata.
+	 * file attributes:
+	 * <ul>
+	 *     <li>path</li>
+	 *     <li>metadata</li>
+	 * </ul>
 	 *
-	 * @param binaryData   The data of the file.
-	 * @param specificType MIME specific type of the file.
-	 * @param file         The file entity to save.
+	 * @param mediaUploadDTO DTO that contains the file's binary data, specific type and file.
 	 *
 	 * @throws IOException If an I/O error occurs.
 	 */
-	void handle(byte[] binaryData, String specificType, File file) throws IOException;
+	void handle(MediaUploadDTO mediaUploadDTO) throws IOException;
 }
