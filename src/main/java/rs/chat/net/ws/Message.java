@@ -40,7 +40,7 @@ public record Message(String type, String filePrefix, String extension) {
 	public static final Message PARSEABLE_MESSAGE = new Message("PARSEABLE_MESSAGE", null, null);
 	public static final Message MENTION_MESSAGE = new Message("MENTION_MESSAGE", null, null);
 	public static final Message COMMAND_MESSAGE = new Message("COMMAND_MESSAGE", null, null);
-	public static final List<Message> NORMAL_MESSAGES = List.of(
+	public static final List<Message> NORMAL_RECEPTION_MESSAGES = List.of(
 			TEXT_MESSAGE, IMAGE_MESSAGE,
 			AUDIO_MESSAGE, VIDEO_MESSAGE,
 			PDF_MESSAGE, TEXT_DOC_MESSAGE

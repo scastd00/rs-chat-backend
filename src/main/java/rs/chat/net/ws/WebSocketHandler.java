@@ -43,20 +43,10 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	private static final String CONNECTION_MESSAGE_CONTENT = "Connection";
 	private static final String PING_MESSAGE_CONTENT = "I am a ping message";
 	private static final String DISCONNECT_MESSAGE_CONTENT = "Disconnect";
+
 	private final Metrics metrics;
 	private final JWTService jwtService;
 	private final RateLimiter rateLimiter;
-
-	private static void sendQuickResponse(@NotNull WebSocketSession session, String content,
-	                                      Message errorMessage, JsonMessageWrapper wrappedMessage) throws IOException {
-		session.sendMessage(new TextMessage(
-				createMessage(
-						content,
-						errorMessage.type(),
-						wrappedMessage.chatId()
-				)
-		));
-	}
 
 	/**
 	 * Handles text messages (JSON string).
@@ -67,11 +57,13 @@ public class WebSocketHandler extends TextWebSocketHandler {
 	@Override
 	protected void handleTextMessage(@NotNull WebSocketSession session,
 	                                 @NotNull TextMessage message) throws IOException {
-		// FIXME: A user that did not send the USER_JOINED message could send messages
-		//  but cannot receive them.
-
 		long start = System.currentTimeMillis();
 		JsonMessageWrapper wrappedMessage = new JsonMessageWrapper(message.getPayload());
+
+		if (!wrappedMessage.correctStructure()) {
+			session.sendMessage(new TextMessage("The message is not in the correct format."));
+			return;
+		}
 
 		// The method call will return true in the following situations:
 		//   - when the user connects to the server (without token).
@@ -89,7 +81,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		// 2. We have a token (valid or not) and the user is sending a message (not a connection one).
 
 		// Decrease the rate limit counter for the user.
-		if (Message.typeBelongsToGroup(wrappedMessage.type(), Message.NORMAL_MESSAGES) &&
+		if (Message.typeBelongsToGroup(wrappedMessage.type(), Message.NORMAL_RECEPTION_MESSAGES) &&
 				!this.rateLimiter.isAllowedAndDecrease(wrappedMessage.username())) {
 			sendQuickResponse(session, "You are sending messages too fast.", TOO_FAST_MESSAGE, wrappedMessage);
 			return;
@@ -135,6 +127,27 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
+	}
+
+	/**
+	 * Sends a message directly to the client.
+	 *
+	 * @param session        remote WebSocket session of the client in the server.
+	 * @param content        content of the message.
+	 * @param errorMessage   type of the message.
+	 * @param wrappedMessage message to get the chat ID from.
+	 *
+	 * @throws IOException if an I/O error occurs while sending the message.
+	 */
+	private void sendQuickResponse(@NotNull WebSocketSession session, String content,
+	                               Message errorMessage, JsonMessageWrapper wrappedMessage) throws IOException {
+		session.sendMessage(new TextMessage(
+				createMessage(
+						content,
+						errorMessage.type(),
+						wrappedMessage.chatId()
+				)
+		));
 	}
 
 	/**
