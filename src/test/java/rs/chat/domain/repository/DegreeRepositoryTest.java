@@ -1,11 +1,12 @@
 package rs.chat.domain.repository;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import rs.chat.domain.entity.Degree;
+
+import java.util.Optional;
 
 import static java.util.Collections.emptySet;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -22,15 +23,14 @@ class DegreeRepositoryTest {
 	}
 
 	@Test
-	@Disabled
 	void itShouldFindByName() {
 		// given
 		// when
 		this.underTest.save(this.degree);
 
 		// then
-//		Degree expected = this.underTest.findByName(this.degree.getName());
-//		assertThat(expected).isNotNull();
+		Optional<Degree> expected = this.underTest.findByName(this.degree.getName());
+		assertThat(expected).isNotEmpty();
 	}
 
 	@Test
