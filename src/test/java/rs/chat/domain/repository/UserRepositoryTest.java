@@ -20,18 +20,14 @@ class UserRepositoryTest {
 
 	@Autowired
 	private UserRepository underTest;
-	private User user1;
-	private String username;
-	private String email;
-	private String passwordCode;
+	private User user;
+	private final String username = "david";
+	private final String email = "david@hello.com";
+	private final String passwordCode = "FNvb23";
 
 	@BeforeEach
 	void setUp() {
-		this.username = "david";
-		this.email = "david@hello.com";
-		this.passwordCode = "FNvb23";
-
-		this.user1 = new User(
+		this.user = new User(
 				1L, username, "12345", email,
 				"David Gar Dom", (byte) 21, null, Constants.STUDENT_ROLE,
 				null, passwordCode, new JsonObject(), emptySet(),
@@ -48,7 +44,7 @@ class UserRepositoryTest {
 	@Test
 	void itShouldFindByUsername() {
 		// Given
-		this.underTest.save(this.user1);
+		this.underTest.save(this.user);
 
 		// When
 		Optional<User> expected = this.underTest.findByUsername(this.username);
@@ -70,7 +66,7 @@ class UserRepositoryTest {
 	@Test
 	void itShouldFindByEmail() {
 		// Given
-		this.underTest.save(this.user1);
+		this.underTest.save(this.user);
 
 		// When
 		Optional<User> expected = this.underTest.findByEmail(this.email);
@@ -92,7 +88,7 @@ class UserRepositoryTest {
 	@Test
 	void itShouldFindByPasswordCode() {
 		// Given
-		this.underTest.save(this.user1);
+		this.underTest.save(this.user);
 
 		// When
 		Optional<User> expected = this.underTest.findByPasswordCode(this.passwordCode);
@@ -114,15 +110,14 @@ class UserRepositoryTest {
 	@Test
 	void itShouldFindAllByRole() {
 		// Given
-		this.underTest.save(this.user1);
-		User user2 = new User(
+		this.underTest.save(this.user);
+		this.underTest.save(new User(
 				null, "jose", "12345", "jose@hello.com",
 				"José Dom", (byte) 21, null, Constants.STUDENT_ROLE,
 				null, null, new JsonObject(), emptySet(),
 				emptySet(), emptySet(), emptySet(), emptySet(),
 				emptySet(), emptySet()
-		);
-		this.underTest.save(user2);
+		));
 
 		// When
 		List<User> expected = this.underTest.findAllByRole(Constants.STUDENT_ROLE);
@@ -140,13 +135,13 @@ class UserRepositoryTest {
 		List<User> expected = this.underTest.findAllByRole(Constants.STUDENT_ROLE);
 
 		// Then
-		assertThat(expected.toArray()).isEmpty();
+		assertThat(expected).asList().isEmpty();
 	}
 
 	@Test
 	void itShouldExistByEmail() {
 		// Given
-		this.underTest.save(this.user1);
+		this.underTest.save(this.user);
 
 		// When
 		boolean expected = this.underTest.existsByEmail(this.email);
@@ -158,7 +153,7 @@ class UserRepositoryTest {
 	@Test
 	void itShouldNotExistByEmail() {
 		// Given
-		this.underTest.save(this.user1);
+		this.underTest.save(this.user);
 
 		// When
 		boolean expected = this.underTest.existsByEmail("email");

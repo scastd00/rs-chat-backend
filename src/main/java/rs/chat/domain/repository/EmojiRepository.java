@@ -7,8 +7,6 @@ import rs.chat.domain.entity.Emoji;
 import java.util.List;
 
 public interface EmojiRepository extends JpaRepository<Emoji, Long> {
-	Emoji findByName(String name);
-
 	@Query(value = "SELECT * FROM emojis e WHERE e.name LIKE concat(?1, '%') LIMIT 15", nativeQuery = true)
 	List<Emoji> findByNameStartingWith(String s);
 
