@@ -30,7 +30,18 @@ class DegreeRepositoryTest {
 
 		// then
 		Optional<Degree> expected = this.underTest.findByName(this.degree.getName());
-		assertThat(expected).isNotEmpty();
+		assertThat(expected).isPresent();
+	}
+
+	@Test
+	void itShouldNotFindByName() {
+		// given
+		// when
+		this.underTest.save(this.degree);
+
+		// then
+		Optional<Degree> expected = this.underTest.findByName("Master");
+		assertThat(expected).isNotPresent();
 	}
 
 	@Test
@@ -42,5 +53,16 @@ class DegreeRepositoryTest {
 		// then
 		boolean expected = this.underTest.existsByName(this.degree.getName());
 		assertThat(expected).isTrue();
+	}
+
+	@Test
+	void itShouldNotExistByName() {
+		// given
+		// when
+		this.underTest.save(this.degree);
+
+		// then
+		boolean expected = this.underTest.existsByName("Master");
+		assertThat(expected).isFalse();
 	}
 }

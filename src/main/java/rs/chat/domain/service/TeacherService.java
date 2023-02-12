@@ -23,7 +23,6 @@ import rs.chat.exceptions.BadRequestException;
 import rs.chat.exceptions.NotFoundException;
 import rs.chat.utils.Constants;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -65,7 +64,6 @@ public class TeacherService {
 
 	public List<UserDto> getTeachers() {
 		return this.userRepository.findAllByRole(Constants.TEACHER_ROLE)
-		                          .orElse(Collections.emptyList())
 		                          .stream()
 		                          .map(this.userMapper::toDto)
 		                          .toList();
