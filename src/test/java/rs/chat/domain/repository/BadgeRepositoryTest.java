@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static rs.chat.Constants.RECURSIVE_COMPARISON_CONFIGURATION;
+import static rs.chat.Constants.TEST_COMPARISON_CONFIG;
 import static rs.chat.net.ws.Message.TEXT_MESSAGE;
 
 @DataJpaTest
@@ -48,7 +48,7 @@ class BadgeRepositoryTest {
 				.asList()
 				.isNotEmpty()
 				.singleElement()
-				.usingRecursiveComparison(RECURSIVE_COMPARISON_CONFIGURATION)
+				.usingRecursiveComparison(TEST_COMPARISON_CONFIG)
 				.isEqualTo(this.badge);
 	}
 

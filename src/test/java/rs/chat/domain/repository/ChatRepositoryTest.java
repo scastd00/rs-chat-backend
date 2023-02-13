@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static rs.chat.Constants.RECURSIVE_COMPARISON_CONFIGURATION;
+import static rs.chat.Constants.TEST_COMPARISON_CONFIG;
 
 @DataJpaTest
 class ChatRepositoryTest {
@@ -47,7 +47,7 @@ class ChatRepositoryTest {
 		assertThat(expected)
 				.isPresent()
 				.get()
-				.usingRecursiveComparison(RECURSIVE_COMPARISON_CONFIGURATION)
+				.usingRecursiveComparison(TEST_COMPARISON_CONFIG)
 				.isEqualTo(this.chat);
 	}
 
@@ -75,7 +75,7 @@ class ChatRepositoryTest {
 		assertThat(expected)
 				.isPresent()
 				.get()
-				.usingRecursiveComparison(RECURSIVE_COMPARISON_CONFIGURATION)
+				.usingRecursiveComparison(TEST_COMPARISON_CONFIG)
 				.isEqualTo(this.chat);
 	}
 
@@ -103,7 +103,7 @@ class ChatRepositoryTest {
 		assertThat(expected)
 				.isPresent()
 				.get()
-				.usingRecursiveComparison(RECURSIVE_COMPARISON_CONFIGURATION)
+				.usingRecursiveComparison(TEST_COMPARISON_CONFIG)
 				.isEqualTo(this.chat);
 	}
 

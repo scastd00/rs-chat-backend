@@ -10,7 +10,7 @@ import rs.chat.domain.entity.Emoji;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static rs.chat.Constants.RECURSIVE_COMPARISON_CONFIGURATION;
+import static rs.chat.Constants.TEST_COMPARISON_CONFIG;
 
 @DataJpaTest
 class EmojiRepositoryTest {
@@ -19,14 +19,11 @@ class EmojiRepositoryTest {
 	private EmojiRepository emojiRepository;
 	private Emoji emoji;
 	private final String name = "grinning_face";
-	private final String icon = "😀";
-	private final String unicode = "1F600";
 	private final String category = "face";
-	private final String subCategory = "smile";
 
 	@BeforeEach
 	void setUp() {
-		this.emoji = new Emoji(1L, name, icon, unicode, category, subCategory);
+		this.emoji = new Emoji(1L, name, "😀", "1F600", category, "smile");
 	}
 
 	@AfterEach
@@ -46,7 +43,7 @@ class EmojiRepositoryTest {
 		assertThat(expected)
 				.asList()
 				.singleElement()
-				.usingRecursiveComparison(RECURSIVE_COMPARISON_CONFIGURATION)
+				.usingRecursiveComparison(TEST_COMPARISON_CONFIG)
 				.isEqualTo(this.emoji);
 	}
 
@@ -56,7 +53,7 @@ class EmojiRepositoryTest {
 		this.emojiRepository.save(this.emoji);
 
 		// when
-		List<Emoji> expected = this.emojiRepository.findByNameStartingWith("gris");
+		List<Emoji> expected = this.emojiRepository.findByNameStartingWith("smile");
 
 		// then
 		assertThat(expected).asList().isEmpty();
@@ -74,7 +71,7 @@ class EmojiRepositoryTest {
 		assertThat(expected)
 				.asList()
 				.singleElement()
-				.usingRecursiveComparison(RECURSIVE_COMPARISON_CONFIGURATION)
+				.usingRecursiveComparison(TEST_COMPARISON_CONFIG)
 				.isEqualTo(this.emoji);
 	}
 
@@ -126,7 +123,7 @@ class EmojiRepositoryTest {
 		assertThat(expected1)
 				.asList()
 				.singleElement()
-				.usingRecursiveComparison(RECURSIVE_COMPARISON_CONFIGURATION)
+				.usingRecursiveComparison(TEST_COMPARISON_CONFIG)
 				.isEqualTo(this.emoji);
 	}
 
@@ -143,7 +140,7 @@ class EmojiRepositoryTest {
 				.asList()
 				.hasSize(1)
 				.first()
-				.usingRecursiveComparison(RECURSIVE_COMPARISON_CONFIGURATION)
+				.usingRecursiveComparison(TEST_COMPARISON_CONFIG)
 				.isEqualTo(this.emoji);
 	}
 

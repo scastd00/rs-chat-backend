@@ -4,7 +4,7 @@ import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguratio
 
 public class Constants {
 	public static final RecursiveComparisonConfiguration
-			RECURSIVE_COMPARISON_CONFIGURATION = RecursiveComparisonConfiguration.builder()
-			                                                                     .withIgnoredFields("id")
-			                                                                     .build();
+			TEST_COMPARISON_CONFIG = RecursiveComparisonConfiguration.builder()
+			                                                         .withIgnoredFields("id")
+			                                                         .build();
 }

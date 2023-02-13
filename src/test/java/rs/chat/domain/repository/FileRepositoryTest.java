@@ -14,7 +14,7 @@ import java.time.Instant;
 
 import static java.util.Collections.emptySet;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static rs.chat.Constants.RECURSIVE_COMPARISON_CONFIGURATION;
+import static rs.chat.Constants.TEST_COMPARISON_CONFIG;
 
 @DataJpaTest
 class FileRepositoryTest {
@@ -29,7 +29,7 @@ class FileRepositoryTest {
 		this.user = new User(
 				1L, "david", "12345", "david@hello.com",
 				"David Gar Dom", (byte) 21, null, Constants.STUDENT_ROLE,
-				null, "FNvb23", new JsonObject(), emptySet(),
+				null, null, new JsonObject(), emptySet(),
 				emptySet(), emptySet(), emptySet(), emptySet(),
 				emptySet(), emptySet()
 		);
@@ -59,7 +59,7 @@ class FileRepositoryTest {
 		// Then
 		assertThat(expected)
 				.isNotNull()
-				.usingRecursiveComparison(RECURSIVE_COMPARISON_CONFIGURATION)
+				.usingRecursiveComparison(TEST_COMPARISON_CONFIG)
 				.isEqualTo(this.file);
 	}
 }

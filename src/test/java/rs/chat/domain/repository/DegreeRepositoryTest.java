@@ -11,7 +11,7 @@ import java.util.Optional;
 
 import static java.util.Collections.emptySet;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static rs.chat.Constants.RECURSIVE_COMPARISON_CONFIGURATION;
+import static rs.chat.Constants.TEST_COMPARISON_CONFIG;
 
 @DataJpaTest
 class DegreeRepositoryTest {
@@ -42,7 +42,7 @@ class DegreeRepositoryTest {
 		// then
 		assertThat(expected).isPresent()
 		                    .get()
-		                    .usingRecursiveComparison(RECURSIVE_COMPARISON_CONFIGURATION)
+		                    .usingRecursiveComparison(TEST_COMPARISON_CONFIG)
 		                    .isEqualTo(this.degree);
 	}
 
