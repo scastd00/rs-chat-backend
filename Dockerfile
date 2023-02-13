@@ -8,7 +8,7 @@ RUN ./mvnw dependency:go-offline
 
 COPY src ./src
 COPY env ./env
-COPY run_in_docker.sh ./
+COPY scripts/run_in_docker.sh ./
 
 COPY --from=tarampampam/curl:7.78.0 /bin/curl /bin/curl
 

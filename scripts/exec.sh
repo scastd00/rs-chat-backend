@@ -1,5 +1,5 @@
 #!/bin/bash
-#
+
 # Runs the application in Docker
 # Copyright 2022 samuel
 
@@ -9,8 +9,10 @@
 #  None
 #######################################
 function main() {
-  docker build -t rs-chat .
-  docker-compose up -d --force-recreate
+  cd .. \
+    && docker build -t rs-chat . \
+    && docker-compose up -d --force-recreate
 }
 
+# Run the main function
 main "$@"
