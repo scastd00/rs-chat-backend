@@ -1,0 +1,9 @@
+{
+	"name": "rs-chat-backend",
+	"version": "1.0.0",
+	"dependencies": {
+		"@octokit/core": "^4.2.0",
+		"dotenv": "^16.0.3",
+		"libsodium-wrappers": "^0.7.10"
+	}
+}
