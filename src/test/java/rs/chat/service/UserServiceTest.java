@@ -103,7 +103,6 @@ class UserServiceTest {
 	}
 
 	@Test
-	@Disabled
 	void deleteUser() {
 		// given
 		// when

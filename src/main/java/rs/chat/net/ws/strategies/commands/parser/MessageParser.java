@@ -11,7 +11,7 @@ import java.util.List;
 
 import static rs.chat.net.ws.strategies.commands.parser.ParsedData.Type.COMMAND;
 import static rs.chat.net.ws.strategies.commands.parser.ParsedData.Type.MENTION;
-import static rs.chat.net.ws.strategies.commands.parser.ParsedData.Type.MESSAGE;
+import static rs.chat.net.ws.strategies.commands.parser.ParsedData.Type.TEXT;
 
 /**
  * Parser of messages containing special actions to perform.
@@ -37,7 +37,7 @@ public class MessageParser {
 			ParsedData parsedData = switch (messageParts[i].substring(0, 1)) {
 				case COMMAND_PREFIX -> parseCommand(messageParts, i);
 				case MENTION_PREFIX -> parseMention(messageParts[i]);
-				default -> parseMessage(messageParts[i]);
+				default -> parseText(messageParts[i]);
 			};
 
 			datas.add(parsedData);
@@ -63,12 +63,12 @@ public class MessageParser {
 
 		// Command without parameters
 		if (parts.length - 1 == 0) {
-			return new ParsedData(parts[pos], null, COMMAND);
+			return new ParsedData(parts[pos], Params.NONE, COMMAND);
 		}
 
 		// Check if the command has more parameters than needed
 		if (pos + parameters >= parts.length) {
-			throw new IllegalArgumentException("Not enough parameters for command " + parts[pos]);
+			throw new IllegalArgumentException("Wrong number of parameters for command " + parts[pos]);
 		}
 
 		// Save the parameters
@@ -98,7 +98,7 @@ public class MessageParser {
 	 * @return a {@link ParsedData} containing the mention.
 	 */
 	private static ParsedData parseMention(String mention) {
-		return new ParsedData(mention.split("\\W+")[1], null, MENTION);
+		return new ParsedData(mention.split("\\W+")[1], Params.NONE, MENTION);
 	}
 
 	/**
@@ -110,7 +110,7 @@ public class MessageParser {
 	 *
 	 * @return a {@link ParsedData} containing the message.
 	 */
-	private static ParsedData parseMessage(String part) {
-		return new ParsedData(part, null, MESSAGE);
+	private static ParsedData parseText(String part) {
+		return new ParsedData(part, Params.NONE, TEXT);
 	}
 }

@@ -1,7 +1,6 @@
 package rs.chat.service;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -16,6 +15,9 @@ import rs.chat.domain.repository.TeacherSubjectRepository;
 import rs.chat.domain.repository.UserChatRepository;
 import rs.chat.domain.service.DegreeService;
 import rs.chat.exceptions.BadRequestException;
+import rs.chat.exceptions.NotFoundException;
+
+import java.util.Optional;
 
 import static java.util.Collections.emptySet;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -57,9 +59,10 @@ class DegreeServiceTest {
 	}
 
 	@Test
-	@Disabled
 	void testGetByName() {
 		// given
+		given(this.degreeRepository.findByName(this.degree.getName())).willReturn(Optional.of(this.degree));
+
 		// when
 		this.underTest.getByName(this.degree.getName());
 
@@ -105,10 +108,9 @@ class DegreeServiceTest {
 	}
 
 	@Test
-	@Disabled
 	void testChangeDegreeNameOkWithUpdateInDB() {
 		// given
-//		given(this.degreeRepository.findByName(this.degree.getName())).willReturn(this.degree);
+		given(this.degreeRepository.findByName(this.degree.getName())).willReturn(Optional.of(this.degree));
 
 		// when
 		this.underTest.changeDegreeName(this.degree.getName(), "New name");
@@ -119,23 +121,21 @@ class DegreeServiceTest {
 	}
 
 	@Test
-	@Disabled
 	void testChangeDegreeNameNoDegree() {
 		// given
-		given(this.degreeRepository.findByName(this.degree.getName())).willReturn(null);
+		given(this.degreeRepository.findByName(this.degree.getName())).willReturn(Optional.empty());
 
 		// when
 		// then
 		assertThatThrownBy(() -> this.underTest.changeDegreeName(this.degree.getName(), "New name"))
-				.isInstanceOf(BadRequestException.class)
-				.hasMessageContaining("Degree does not exist: " + this.degree.getName());
+				.isInstanceOf(NotFoundException.class)
+				.hasMessageContaining("Degree with name %s not found.", this.degree.getName());
 	}
 
 	@Test
-	@Disabled
 	void testChangeDegreeNameEqualNames() {
 		// given
-//		given(this.degreeRepository.findByName(this.degree.getName())).willReturn(this.degree);
+		given(this.degreeRepository.findByName(this.degree.getName())).willReturn(Optional.of(this.degree));
 
 		// when
 		Degree result = this.underTest.changeDegreeName(this.degree.getName(), this.degree.getName());

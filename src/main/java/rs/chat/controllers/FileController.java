@@ -14,6 +14,7 @@ import rs.chat.exceptions.CouldNotUploadFileException;
 import rs.chat.net.http.HttpRequest;
 import rs.chat.net.http.HttpResponse;
 import rs.chat.storage.strategies.upload.FileUploadStrategy;
+import rs.chat.storage.strategies.upload.MediaUploadDTO;
 import rs.chat.storage.strategies.upload.UploadMappings;
 
 import java.io.IOException;
@@ -77,7 +78,7 @@ public class FileController {
 			try {
 				FileUploadStrategy strategy = UploadMappings.getStrategy(mimeType);
 				log.info("Uploading file ({}) with strategy ({})", fileName, strategy.getClass().getSimpleName());
-				strategy.handle(fileBytes, mimeTypes[1], fileToSave); // Modifies the fileToSave object
+				strategy.handle(new MediaUploadDTO(fileBytes, mimeTypes[1], fileToSave)); // Modifies the fileToSave object
 			} catch (IOException e) {
 				throw new CouldNotUploadFileException(e.getMessage());
 			}

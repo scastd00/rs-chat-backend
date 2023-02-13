@@ -63,8 +63,9 @@ public final class RateLimiter {
 	public boolean isAllowedAndDecrease(String key) {
 		Ref<Long> ref = this.rateLimitMap.computeIfAbsent(key, k -> new Ref<>(this.limit));
 
-		if (ref.get() > 0) {
-			ref.set(ref.get() - 1);
+		Long value = ref.get();
+		if (value > 0) {
+			ref.set(value - 1);
 			return true;
 		}
 

@@ -1,7 +1,6 @@
 package rs.chat.storage.strategies.upload;
 
 import com.google.gson.JsonObject;
-import rs.chat.domain.entity.File;
 import rs.chat.net.ws.Message;
 import rs.chat.storage.S3;
 
@@ -12,14 +11,19 @@ import static rs.chat.utils.Utils.bytesToUnit;
 
 public class AudioStrategy implements FileUploadStrategy {
 	@Override
-	public void handle(byte[] binaryData, String specificType, File file) throws IOException {
-		JsonObject metadata = file.getMetadata();
-		metadata.addProperty("specificType", specificType);
-		metadata.addProperty("size", bytesToUnit(binaryData.length));
+	public void handle(MediaUploadDTO mediaUploadDTO) throws IOException {
+		JsonObject metadata = mediaUploadDTO.file().getMetadata();
+		metadata.addProperty("specificType", mediaUploadDTO.specificType());
+		metadata.addProperty("size", bytesToUnit(mediaUploadDTO.binaryData().length));
 		metadata.addProperty("messageType", Message.AUDIO_MESSAGE.type());
 
-		URI uri = S3.getInstance().uploadFile(file.getType(), file.getName(), binaryData, metadata);
+		URI uri = S3.getInstance().uploadFile(
+				mediaUploadDTO.file().getType(),
+				mediaUploadDTO.file().getName(),
+				mediaUploadDTO.binaryData(),
+				metadata
+		);
 
-		file.setPath(uri.toString());
+		mediaUploadDTO.file().setPath(uri.toString());
 	}
 }

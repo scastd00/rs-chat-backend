@@ -2,7 +2,9 @@ package rs.chat.net.ws;
 
 import com.google.gson.JsonObject;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import rs.chat.utils.Builder;
 import rs.chat.utils.Utils;
 
@@ -24,6 +26,8 @@ import rs.chat.utils.Utils;
  * }
  * }</pre>
  */
+@Getter
+@Slf4j
 public class JsonMessageWrapper {
 	private final String rawPayload;
 	private final JsonObject parsedPayload;
@@ -36,20 +40,6 @@ public class JsonMessageWrapper {
 	public JsonMessageWrapper(String rawPayload) {
 		this.rawPayload = rawPayload;
 		this.parsedPayload = Utils.parseJson(rawPayload);
-	}
-
-	/**
-	 * @return the raw payload of the message.
-	 */
-	public String getRawPayload() {
-		return this.rawPayload;
-	}
-
-	/**
-	 * @return the parsed payload of the message.
-	 */
-	public JsonObject getParsedPayload() {
-		return this.parsedPayload;
 	}
 
 	/**
@@ -136,6 +126,24 @@ public class JsonMessageWrapper {
 
 	public static JsonMessageWrapper fromString(String rawPayload) {
 		return new JsonMessageWrapper(rawPayload);
+	}
+
+	public boolean correctStructure() {
+		try {
+			this.headers();
+			this.body();
+			this.username();
+			this.chatId();
+			this.sessionId();
+			this.type();
+			this.date();
+			this.token();
+			this.content();
+			return true;
+		} catch (Exception e) {
+			log.error("Error while checking message structure, ({})", e.getMessage());
+			return false;
+		}
 	}
 
 	/**

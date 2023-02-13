@@ -30,9 +30,19 @@ public class GenericMessageStrategy implements MessageStrategy {
 	public void handle(MessageHandlingDTO handlingDTO) throws WebSocketException, IOException {
 		ClientID clientID = handlingDTO.getClientID();
 
+		// If clients try to send messages through the WebSocket without using the provided frontend
+		// they will be rejected, because they will not have their username stored in any active chat.
+		// So we check if the client is connected to the chat before sending the message to
+		// avoid unwanted spam messages or other malicious actions.
+//		if (!this.chatManagement.isUserConnected(clientID.chatId(), clientID.username())) {
+//			throw new WebSocketException(("User is not connected to the chat. Message could not be sent. ClientID: %s." +
+//					"This user tried to send a message with content: %s").formatted(clientID, handlingDTO.wrappedMessage()));
+//		}
+		// We suppose that the clients are good, and we don't need to check if they are connected to the chat or not.
+
 		// Clear the sensitive data to send the message to other clients
 		this.clearSensitiveDataChangeDateAndBuildResponse(handlingDTO.wrappedMessage());
-		this.chatManagement.broadcastToSingleChatAndExcludeClient(
+		this.chatManagement.broadcastToSingleChatExcludeClientAndSave(
 				handlingDTO.wrappedMessage().toString(),
 				clientID
 		);
@@ -52,7 +62,7 @@ public class GenericMessageStrategy implements MessageStrategy {
 		message.updateDateTime();
 	}
 
-	protected static Function<String, Void> badgeCallback(MessageHandlingDTO handlingDTO) {
+	protected Function<String, Void> badgeCallback(MessageHandlingDTO handlingDTO) {
 		return badgeTitle -> {
 			try {
 				handlingDTO.getSession().sendMessage(new TextMessage(

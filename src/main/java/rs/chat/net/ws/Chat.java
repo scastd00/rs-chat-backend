@@ -8,6 +8,7 @@ import rs.chat.cache.HistoryFilesCache;
 import rs.chat.storage.S3;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -44,16 +45,6 @@ public class Chat {
 	}
 
 	/**
-	 * Sends a message to all the available clients in the chat.
-	 *
-	 * @param message message to send.
-	 */
-	public void broadcast(String message) {
-		this.availableClientsStream()
-		    .forEach(client -> client.send(message));
-	}
-
-	/**
 	 * Checks if the chat has any available clients.
 	 *
 	 * @return {@code true} if the chat has any available clients, {@code false} otherwise.
@@ -79,7 +70,7 @@ public class Chat {
 		                .map(i -> {
 			                Client client = this.clients.get(i);
 
-			                if (!removed[0] && client.clientID().equals(clientID)) {
+			                if (!removed[0] && client.getClientID().equals(clientID)) {
 				                this.clients.remove(i);
 				                removed[0] = true;
 
@@ -92,38 +83,39 @@ public class Chat {
 	}
 
 	/**
-	 * Writes the message to the file associated with this chat if it is not an activity message.
+	 * Writes the message to the file associated with this chat.
 	 *
 	 * @param message message to store in the file.
 	 */
 	public void saveMessageToHistoryFile(String message) {
-		if (!Message.typeBelongsToGroup(JsonMessageWrapper.fromString(message).type(), Message.ACTIVITY_MESSAGES)) {
-			this.historyFile.write(message);
-		}
+		this.historyFile.write(message);
 	}
 
 	/**
-	 * Broadcasts the message to all the connected clients and saves it to the history file.
+	 * Broadcasts the message to all the connected clients. It is saved to the history file
+	 * if the specified parameter is {@code true}.
 	 *
-	 * @param message message to broadcast and save.
+	 * @param message message to broadcast.
+	 * @param save    {@code true} if the message should be saved to the history file, {@code false} otherwise.
 	 */
-	public void broadcastAndSave(String message) {
-		this.broadcast(message);
-		this.saveMessageToHistoryFile(message);
+	public void broadcast(String message, boolean save) {
+		this.availableClientsStream().forEach(client -> client.send(message));
+		if (save) this.saveMessageToHistoryFile(message);
 	}
 
 	/**
-	 * Sends the message to all the clients except the one with the specified clientID
-	 * and saves it to the history file.
+	 * Sends the message to all the clients except the one with the specified clientID.
+	 * The message is saved to the history file if the specified parameter is {@code true}.
 	 *
 	 * @param message  message to send.
 	 * @param clientID id of the client to exclude.
+	 * @param save     {@code true} if the message should be saved to the history file, {@code false} otherwise.
 	 */
-	public void sendWithClientExclusionAndSave(String message, ClientID clientID) {
+	public void sendWithClientExclusion(String message, ClientID clientID, boolean save) {
 		this.availableClientsStream()
-		    .filter(client -> !client.clientID().equals(clientID))
+		    .filter(client -> !client.getClientID().equals(clientID))
 		    .forEach(client -> client.send(message));
-		this.saveMessageToHistoryFile(message);
+		if (save) this.saveMessageToHistoryFile(message);
 	}
 
 	/**
@@ -168,18 +160,51 @@ public class Chat {
 	 */
 	public void mention(String message, String username) {
 		this.availableClientsStream()
-		    .filter(client -> client.clientID().username().equals(username))
-		    .forEach(client -> client.send(message));
+		    .filter(client -> client.getClientID().username().equals(username))
+		    .findFirst()
+		    .ifPresent(client -> client.send(message));
 	}
 
 	/**
-	 * @return {@link List} of all the usernames of the available clients in the chat sorted
+	 * @return {@link List} of all the usernames of the available and active clients in the chat sorted
 	 * alphabetically.
 	 */
-	public List<String> getUsernames() {
+	public List<String> getActiveUsernames() {
 		return this.availableClientsStream()
-		           .map(client -> client.clientID().username())
+		           .filter(Client::isActive)
+		           .map(client -> client.getClientID().username())
 		           .sorted(String::compareToIgnoreCase)
 		           .toList();
+	}
+
+	/**
+	 * Sets the specified client as away.
+	 *
+	 * @param clientID id of the client to set as away.
+	 */
+	public void setClientAway(ClientID clientID) {
+		searchClient(clientID).ifPresent(client -> client.setAway(true));
+	}
+
+	/**
+	 * Sets the specified client as active.
+	 *
+	 * @param clientID id of the client to set as active.
+	 */
+	public void setClientActive(ClientID clientID) {
+		searchClient(clientID).ifPresent(client -> client.setAway(false));
+	}
+
+	/**
+	 * Searches for the client with the specified clientID.
+	 *
+	 * @param clientID id of the client to search for.
+	 *
+	 * @return {@link Optional} of the client with the specified clientID.
+	 */
+	private Optional<Client> searchClient(ClientID clientID) {
+		return this.availableClientsStream()
+		           .filter(client -> client.getClientID().equals(clientID))
+		           .findFirst();
 	}
 }

@@ -29,4 +29,5 @@ function main() {
   java -jar -Dspring.profiles.active=prod target/rs-chat-backend-0.0.2.jar
 }
 
+# Run the main function
 main "$@"
