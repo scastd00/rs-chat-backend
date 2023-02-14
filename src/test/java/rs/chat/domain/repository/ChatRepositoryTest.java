@@ -54,10 +54,8 @@ class ChatRepositoryTest {
 	@Test
 	void itShouldNotFindByName() {
 		// given
-		this.underTest.save(this.chat);
-
 		// when
-		Optional<Chat> expected = this.underTest.findByName("not-found");
+		Optional<Chat> expected = this.underTest.findByName(this.chat.getName());
 
 		// then
 		assertThat(expected).isNotPresent();
@@ -82,10 +80,8 @@ class ChatRepositoryTest {
 	@Test
 	void itShouldNotFindByInvitationCode() {
 		// given
-		this.underTest.save(this.chat);
-
 		// when
-		Optional<Chat> expected = this.underTest.findByInvitationCode("not-found");
+		Optional<Chat> expected = this.underTest.findByInvitationCode(this.chat.getInvitationCode());
 
 		// then
 		assertThat(expected).isNotPresent();
@@ -110,10 +106,8 @@ class ChatRepositoryTest {
 	@Test
 	void itShouldNotFindByKey() {
 		// given
-		this.underTest.save(this.chat);
-
 		// when
-		Optional<Chat> expected = this.underTest.findByKey("not-found");
+		Optional<Chat> expected = this.underTest.findByKey(this.chat.getKey());
 
 		// then
 		assertThat(expected).isNotPresent();

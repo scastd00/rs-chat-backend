@@ -46,7 +46,6 @@ class BadgeRepositoryTest {
 		// then
 		assertThat(expected)
 				.asList()
-				.isNotEmpty()
 				.singleElement()
 				.usingRecursiveComparison(TEST_COMPARISON_CONFIG)
 				.isEqualTo(this.badge);
@@ -55,10 +54,8 @@ class BadgeRepositoryTest {
 	@Test
 	void itShouldNotFindAllByTypeOrderByPointsOfTypeDesc() {
 		// given
-		this.underTest.save(this.badge);
-
 		// when
-		List<Badge> expected = this.underTest.findAllByTypeOrderByPointsOfTypeDesc("wrong type");
+		List<Badge> expected = this.underTest.findAllByTypeOrderByPointsOfTypeDesc(this.badge.getType());
 
 		// then
 		assertThat(expected).asList().isEmpty();

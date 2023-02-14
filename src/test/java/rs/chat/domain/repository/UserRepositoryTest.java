@@ -1,6 +1,8 @@
 package rs.chat.domain.repository;
 
 import com.google.gson.JsonObject;
+import org.assertj.core.api.AbstractListAssert;
+import org.assertj.core.api.ObjectAssert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +16,7 @@ import java.util.Optional;
 
 import static java.util.Collections.emptySet;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static rs.chat.Constants.TEST_COMPARISON_CONFIG;
 
 @DataJpaTest
 class UserRepositoryTest {
@@ -110,22 +113,33 @@ class UserRepositoryTest {
 	@Test
 	void itShouldFindAllByRole() {
 		// Given
-		this.underTest.save(this.user);
-		this.underTest.save(new User(
+		User user1 = new User(
 				null, "jose", "12345", "jose@hello.com",
 				"José Dom", (byte) 21, null, Constants.STUDENT_ROLE,
 				null, null, new JsonObject(), emptySet(),
 				emptySet(), emptySet(), emptySet(), emptySet(),
 				emptySet(), emptySet()
-		));
+		);
+
+		this.underTest.save(this.user);
+		this.underTest.save(user1);
 
 		// When
 		List<User> expected = this.underTest.findAllByRole(Constants.STUDENT_ROLE);
 
 		// Then
-		assertThat(expected.toArray(new User[0]))
-				.hasSize(2)
-				.allMatch(user -> user.getRole().equals(Constants.STUDENT_ROLE));
+		AbstractListAssert<?, List<?>, Object, ObjectAssert<Object>> listAssert =
+				assertThat(expected)
+						.asList()
+						.hasSize(2);
+		listAssert
+				.first()
+				.usingRecursiveComparison(TEST_COMPARISON_CONFIG)
+				.isEqualTo(this.user);
+		listAssert
+				.last()
+				.usingRecursiveComparison(TEST_COMPARISON_CONFIG)
+				.isEqualTo(user1);
 	}
 
 	@Test
@@ -153,10 +167,8 @@ class UserRepositoryTest {
 	@Test
 	void itShouldNotExistByEmail() {
 		// Given
-		this.underTest.save(this.user);
-
 		// When
-		boolean expected = this.underTest.existsByEmail("email");
+		boolean expected = this.underTest.existsByEmail(this.email);
 
 		// Then
 		assertThat(expected).isFalse();

@@ -23,7 +23,7 @@ class EmojiRepositoryTest {
 
 	@BeforeEach
 	void setUp() {
-		this.emoji = new Emoji(1L, name, "😀", "1F600", category, "smile");
+		this.emoji = new Emoji(null, name, "😀", "1F600", category, "smile");
 	}
 
 	@AfterEach
@@ -37,7 +37,7 @@ class EmojiRepositoryTest {
 		this.emojiRepository.save(this.emoji);
 
 		// when
-		List<Emoji> expected = this.emojiRepository.findByNameStartingWith("grin");
+		List<Emoji> expected = this.emojiRepository.findByNameStartingWith(this.name.substring(0, 4));
 
 		// then
 		assertThat(expected)
@@ -50,10 +50,8 @@ class EmojiRepositoryTest {
 	@Test
 	void itShouldNotFindByNameStartingWith() {
 		// given
-		this.emojiRepository.save(this.emoji);
-
 		// when
-		List<Emoji> expected = this.emojiRepository.findByNameStartingWith("smile");
+		List<Emoji> expected = this.emojiRepository.findByNameStartingWith(this.name.substring(0, 4));
 
 		// then
 		assertThat(expected).asList().isEmpty();
@@ -78,10 +76,8 @@ class EmojiRepositoryTest {
 	@Test
 	void itShouldNotFindEmojisByCategory() {
 		// given
-		this.emojiRepository.save(this.emoji);
-
 		// when
-		List<Emoji> expected = this.emojiRepository.findEmojisByCategory("smiles");
+		List<Emoji> expected = this.emojiRepository.findEmojisByCategory(this.category);
 
 		// then
 		assertThat(expected).asList().isEmpty();
@@ -102,10 +98,8 @@ class EmojiRepositoryTest {
 	@Test
 	void itShouldNotExistsByName() {
 		// given
-		this.emojiRepository.save(this.emoji);
-
 		// when
-		boolean expected = this.emojiRepository.existsByName("smile");
+		boolean expected = this.emojiRepository.existsByName(this.name);
 
 		// then
 		assertThat(expected).isFalse();
@@ -138,8 +132,7 @@ class EmojiRepositoryTest {
 		// then
 		assertThat(expected)
 				.asList()
-				.hasSize(1)
-				.first()
+				.singleElement()
 				.usingRecursiveComparison(TEST_COMPARISON_CONFIG)
 				.isEqualTo(this.emoji);
 	}

@@ -22,7 +22,7 @@ class GroupRepositoryTest {
 
 	@BeforeEach
 	void setUp() {
-		this.group = new Group(1L, this.name, Collections.emptySet());
+		this.group = new Group(null, this.name, Collections.emptySet());
 	}
 
 	@AfterEach
@@ -49,10 +49,8 @@ class GroupRepositoryTest {
 	@Test
 	void itShouldNotFindByName() {
 		// Given
-		this.underTest.save(this.group);
-
 		// When
-		Optional<Group> expected = this.underTest.findByName("a_name");
+		Optional<Group> expected = this.underTest.findByName(this.name);
 
 		// Then
 		assertThat(expected).isNotPresent();

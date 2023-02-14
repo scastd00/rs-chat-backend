@@ -1,6 +1,8 @@
 package rs.chat.domain.repository;
 
 import com.google.gson.JsonObject;
+import org.assertj.core.api.AbstractListAssert;
+import org.assertj.core.api.ObjectAssert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,21 +25,25 @@ class SessionRepositoryTest {
 
 	@Autowired private SessionRepository underTest;
 	@Autowired private UserRepository userRepository;
-	private Session session;
+	private Session session1;
+	private Session session2;
 	private User user;
 
 	@BeforeEach
 	void setUp() {
 		this.user = this.userRepository.save(new User(
-				1L, "david", "12345", "david@hello.com",
+				null, "david", "12345", "david@hello.com",
 				"David Gar Dom", (byte) 21, null, Constants.STUDENT_ROLE,
 				null, null, new JsonObject(), emptySet(),
 				emptySet(), emptySet(), emptySet(), emptySet(),
 				emptySet(), emptySet()
 		));
 
-		this.session = new Session(
-				1L, "127.0.0.1", Instant.now(), Instant.now().plusSeconds(20), "token", this.user
+		this.session1 = new Session(
+				null, "127.0.0.1", Instant.now(), Instant.now().plusSeconds(20), "token1", this.user
+		);
+		this.session2 = new Session(
+				null, "127.0.0.1", Instant.now(), Instant.now().plusSeconds(20), "token2", this.user
 		);
 	}
 
@@ -50,26 +56,24 @@ class SessionRepositoryTest {
 	@Test
 	void itShouldFindByToken() {
 		// Given
-		this.underTest.save(this.session);
+		this.underTest.save(this.session1);
 
 		// When
-		Optional<Session> expected = this.underTest.findByToken(this.session.getToken());
+		Optional<Session> expected = this.underTest.findByToken(this.session1.getToken());
 
 		// Then
 		assertThat(expected)
 				.isPresent()
 				.get()
 				.usingRecursiveComparison(TEST_COMPARISON_CONFIG)
-				.isEqualTo(this.session);
+				.isEqualTo(this.session1);
 	}
 
 	@Test
 	void itShouldNotFindByToken() {
 		// Given
-		this.underTest.save(this.session);
-
 		// When
-		Optional<Session> expected = this.underTest.findByToken("invalid");
+		Optional<Session> expected = this.underTest.findByToken(this.session1.getToken());
 
 		// Then
 		assertThat(expected).isNotPresent();
@@ -78,7 +82,7 @@ class SessionRepositoryTest {
 	@Test
 	void itShouldFindByUserId() {
 		// Given
-		this.underTest.save(this.session);
+		this.underTest.save(this.session1);
 
 		// When
 		Optional<Session> expected = this.underTest.findByUserId(this.user.getId());
@@ -88,16 +92,14 @@ class SessionRepositoryTest {
 				.isPresent()
 				.get()
 				.usingRecursiveComparison(TEST_COMPARISON_CONFIG)
-				.isEqualTo(this.session);
+				.isEqualTo(this.session1);
 	}
 
 	@Test
 	void itShouldNotFindByUserId() {
 		// Given
-		this.underTest.save(this.session);
-
 		// When
-		Optional<Session> expected = this.underTest.findByUserId(2L);
+		Optional<Session> expected = this.underTest.findByUserId(this.user.getId());
 
 		// Then
 		assertThat(expected).isNotPresent();
@@ -106,7 +108,7 @@ class SessionRepositoryTest {
 	@Test
 	void itShouldFindAllByUserId() {
 		// Given
-		this.underTest.save(this.session);
+		this.underTest.save(this.session1);
 
 		// When
 		List<Session> expected = this.underTest.findAllByUserId(this.user.getId());
@@ -116,16 +118,51 @@ class SessionRepositoryTest {
 				.asList()
 				.singleElement()
 				.usingRecursiveComparison(TEST_COMPARISON_CONFIG)
-				.isEqualTo(this.session);
+				.isEqualTo(this.session1);
+	}
+
+	@Test
+	void itShouldFindAllByUserIdMulti() {
+		// Given
+		this.underTest.save(this.session1);
+		this.underTest.save(this.session2);
+
+		// When
+		List<Session> expected = this.underTest.findAllByUserId(this.user.getId());
+
+		// Then
+		AbstractListAssert<?, List<?>, Object, ObjectAssert<Object>> listAssert =
+				assertThat(expected)
+						.asList()
+						.hasSize(2);
+		listAssert
+				.first()
+				.usingRecursiveComparison(TEST_COMPARISON_CONFIG)
+				.isEqualTo(this.session1);
+		listAssert
+				.last()
+				.usingRecursiveComparison(TEST_COMPARISON_CONFIG)
+				.isEqualTo(this.session2);
 	}
 
 	@Test
 	void itShouldNotFindAllByUserId() {
 		// Given
-		this.underTest.save(this.session);
+		// When
+		List<Session> expected = this.underTest.findAllByUserId(this.user.getId());
+
+		// Then
+		assertThat(expected).asList().isEmpty();
+	}
+
+	@Test
+	void itShouldNotFindAllByUserIdMulti() {
+		// Given
+		this.underTest.save(this.session1);
+		this.underTest.save(this.session2);
 
 		// When
-		List<Session> expected = this.underTest.findAllByUserId(2L);
+		List<Session> expected = this.underTest.findAllByUserId(this.user.getId() + 1);
 
 		// Then
 		assertThat(expected).asList().isEmpty();

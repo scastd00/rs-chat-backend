@@ -26,13 +26,13 @@ class FileRepositoryTest {
 
 	@BeforeEach
 	void setUp() {
-		this.user = new User(
+		this.user = this.userRepository.save(new User(
 				1L, "david", "12345", "david@hello.com",
 				"David Gar Dom", (byte) 21, null, Constants.STUDENT_ROLE,
 				null, null, new JsonObject(), emptySet(),
 				emptySet(), emptySet(), emptySet(), emptySet(),
 				emptySet(), emptySet()
-		);
+		));
 
 		this.file = new File(
 				1L, "name", Instant.now(), 1024,
@@ -47,10 +47,9 @@ class FileRepositoryTest {
 	}
 
 	@Test
-	void findByName() {
+	void itShouldFindByName() {
 		// Given
-		User save = this.userRepository.save(this.user);
-		this.file.setUser(save);
+		this.file.setUser(this.user);
 		this.underTest.save(this.file);
 
 		// When
@@ -61,5 +60,15 @@ class FileRepositoryTest {
 				.isNotNull()
 				.usingRecursiveComparison(TEST_COMPARISON_CONFIG)
 				.isEqualTo(this.file);
+	}
+
+	@Test
+	void itShouldNotFindByName() {
+		// Given
+		// When
+		File expected = this.underTest.findByName(this.file.getName());
+
+		// Then
+		assertThat(expected).isNull();
 	}
 }

@@ -13,9 +13,6 @@ import rs.chat.domain.entity.Subject;
 import rs.chat.domain.entity.User;
 import rs.chat.utils.Constants;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 import static java.util.Collections.emptySet;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static rs.chat.Constants.TEST_COMPARISON_CONFIG;
@@ -26,44 +23,46 @@ class StudentSubjectRepositoryTest {
 	@Autowired private UserRepository userRepository;
 	@Autowired private SubjectRepository subjectRepository;
 	@Autowired private DegreeRepository degreeRepository;
-	private User student;
-	private User teacher;
+	private User student1;
+	private User student2;
 	private Degree degree;
 	private Subject subject;
-	private StuSubj stuSubj;
-	private StuSubjId stuSubjId;
+	private StuSubj stuSubj1;
+	private StuSubjId stuSubjId1;
+	private StuSubj stuSubj2;
+	private StuSubjId stuSubjId2;
 
 	private void initEntities() {
-		this.student = this.userRepository.save(new User(
-				1L, "david", "12345", "david@hello.com",
+		this.student1 = this.userRepository.save(new User(
+				null, "david", "12345", "david@hello.com",
 				"David Gar Dom", (byte) 21, null, Constants.STUDENT_ROLE,
 				null, null, new JsonObject(), emptySet(),
 				emptySet(), emptySet(), emptySet(), emptySet(),
 				emptySet(), emptySet()
 		));
 
-		this.teacher = this.userRepository.save(new User(
-				2L, "theBoss", "12345", "boss@hello.com",
-				"Manuel Ferrero Gar", (byte) 37, null, Constants.TEACHER_ROLE,
+		this.student2 = this.userRepository.save(new User(
+				null, "manuel", "12345", "manu@hello.com",
+				"Manuel Gar Dom", (byte) 23, null, Constants.STUDENT_ROLE,
 				null, null, new JsonObject(), emptySet(),
 				emptySet(), emptySet(), emptySet(), emptySet(),
 				emptySet(), emptySet()
 		));
 
 		this.degree = this.degreeRepository.save(new Degree(
-				1L, "Computer Science", new LinkedHashSet<>()
+				null, "Computer Science", emptySet()
 		));
 
 		this.subject = this.subjectRepository.save(new Subject(
-				1L, "Math", "S1", "FB", (byte) 6, (byte) 1, this.degree,
-				Set.of(this.student), Set.of(this.teacher)
+				null, "Math", "S1", "FB", (byte) 6, (byte) 1, this.degree,
+				emptySet(), emptySet()
 		));
 
-		this.subject.setDegree(this.degree);
-		this.subjectRepository.save(this.subject); // Add the subject to the degree
+		this.stuSubjId1 = new StuSubjId(this.student1.getId(), this.subject.getId());
+		this.stuSubj1 = new StuSubj(this.stuSubjId1, this.student1, this.subject);
 
-		this.stuSubjId = new StuSubjId(this.student.getId(), this.subject.getId());
-		this.stuSubj = new StuSubj(this.stuSubjId, this.student, this.subject);
+		this.stuSubjId2 = new StuSubjId(this.student2.getId(), this.subject.getId());
+		this.stuSubj2 = new StuSubj(this.stuSubjId2, this.student2, this.subject);
 	}
 
 	@BeforeEach
@@ -82,34 +81,79 @@ class StudentSubjectRepositoryTest {
 	@Test
 	void itShouldDeleteAllById_SubjectId() {
 		// Given
-		this.underTest.save(this.stuSubj);
+		this.underTest.save(this.stuSubj1);
 
 		// When (here we deviate from the standard test structure)
-		assertThat(this.underTest.findById(this.stuSubjId))
+		// Test that it exists, before deleting
+		assertThat(this.underTest.findById(this.stuSubjId1))
 				.isPresent()
 				.get()
 				.usingRecursiveComparison(TEST_COMPARISON_CONFIG)
-				.isEqualTo(this.stuSubj);
+				.isEqualTo(this.stuSubj1);
 		this.underTest.deleteAllById_SubjectId(this.subject.getId());
 
 		// Then
-		assertThat(this.underTest.existsById(this.stuSubjId)).isFalse();
+		assertThat(this.underTest.existsById(this.stuSubjId1)).isFalse();
+	}
+
+	@Test
+	void itShouldDeleteAllById_SubjectIdMulti() {
+		// Given
+		this.underTest.save(this.stuSubj1);
+		this.underTest.save(this.stuSubj2);
+
+		// When (here we deviate from the standard test structure)
+		// Test that it exists, before deleting
+		assertMultipleArePresent();
+		this.underTest.deleteAllById_SubjectId(this.subject.getId());
+
+		// Then
+		assertThat(this.underTest.existsById(this.stuSubjId1)).isFalse();
+		assertThat(this.underTest.existsById(this.stuSubjId2)).isFalse();
 	}
 
 	@Test
 	void itShouldNotDeleteAllById_SubjectId() {
 		// Given
-		this.underTest.save(this.stuSubj);
+		this.underTest.save(this.stuSubj1);
 
 		// When (here we deviate from the standard test structure)
-		assertThat(this.underTest.findById(this.stuSubjId))
+		assertThat(this.underTest.findById(this.stuSubjId1))
 				.isPresent()
 				.get()
 				.usingRecursiveComparison(TEST_COMPARISON_CONFIG)
-				.isEqualTo(this.stuSubj);
+				.isEqualTo(this.stuSubj1);
 		this.underTest.deleteAllById_SubjectId(this.subject.getId() + 1);
 
 		// Then
-		assertThat(this.underTest.existsById(this.stuSubjId)).isTrue();
+		assertThat(this.underTest.existsById(this.stuSubjId1)).isTrue();
+	}
+
+	@Test
+	void itShouldNotDeleteAllById_SubjectIdMulti() {
+		// Given
+		this.underTest.save(this.stuSubj1);
+		this.underTest.save(this.stuSubj2);
+
+		// When (here we deviate from the standard test structure)
+		assertMultipleArePresent();
+		this.underTest.deleteAllById_SubjectId(this.subject.getId() + 1);
+
+		// Then
+		assertThat(this.underTest.existsById(this.stuSubjId1)).isTrue();
+		assertThat(this.underTest.existsById(this.stuSubjId2)).isTrue();
+	}
+
+	private void assertMultipleArePresent() {
+		assertThat(this.underTest.findById(this.stuSubjId1))
+				.isPresent()
+				.get()
+				.usingRecursiveComparison(TEST_COMPARISON_CONFIG)
+				.isEqualTo(this.stuSubj1);
+		assertThat(this.underTest.findById(this.stuSubjId2))
+				.isPresent()
+				.get()
+				.usingRecursiveComparison(TEST_COMPARISON_CONFIG)
+				.isEqualTo(this.stuSubj2);
 	}
 }

@@ -23,7 +23,7 @@ class DegreeRepositoryTest {
 
 	@BeforeEach
 	void setUp() {
-		this.degree = new Degree(1L, this.name, emptySet());
+		this.degree = new Degree(null, this.name, emptySet());
 	}
 
 	@AfterEach
@@ -49,10 +49,8 @@ class DegreeRepositoryTest {
 	@Test
 	void itShouldNotFindByName() {
 		// given
-		this.underTest.save(this.degree);
-
 		// when
-		Optional<Degree> expected = this.underTest.findByName("Master");
+		Optional<Degree> expected = this.underTest.findByName(this.name);
 
 		// then
 		assertThat(expected).isNotPresent();
@@ -73,10 +71,8 @@ class DegreeRepositoryTest {
 	@Test
 	void itShouldNotExistByName() {
 		// given
-		this.underTest.save(this.degree);
-
 		// when
-		boolean expected = this.underTest.existsByName("Master");
+		boolean expected = this.underTest.existsByName(this.name);
 
 		// then
 		assertThat(expected).isFalse();
