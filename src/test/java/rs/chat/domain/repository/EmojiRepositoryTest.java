@@ -111,10 +111,10 @@ class EmojiRepositoryTest {
 		this.emojiRepository.save(this.emoji);
 
 		// when
-		List<Emoji> expected1 = this.emojiRepository.selectRandomEmojis(1);
+		List<Emoji> expected = this.emojiRepository.selectRandomEmojis(1);
 
 		// then
-		assertThat(expected1)
+		assertThat(expected)
 				.asList()
 				.singleElement()
 				.usingRecursiveComparison(TEST_COMPARISON_CONFIG)
