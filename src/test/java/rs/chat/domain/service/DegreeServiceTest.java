@@ -1,4 +1,4 @@
-package rs.chat.service;
+package rs.chat.domain.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,7 +13,6 @@ import rs.chat.domain.repository.StudentSubjectRepository;
 import rs.chat.domain.repository.SubjectRepository;
 import rs.chat.domain.repository.TeacherSubjectRepository;
 import rs.chat.domain.repository.UserChatRepository;
-import rs.chat.domain.service.DegreeService;
 import rs.chat.exceptions.BadRequestException;
 import rs.chat.exceptions.NotFoundException;
 

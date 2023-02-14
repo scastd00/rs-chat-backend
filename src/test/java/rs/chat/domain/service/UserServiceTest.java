@@ -1,4 +1,4 @@
-package rs.chat.service;
+package rs.chat.domain.service;
 
 import com.google.gson.JsonObject;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,7 +12,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import rs.chat.domain.entity.User;
 import rs.chat.domain.entity.mappers.UserMapper;
 import rs.chat.domain.repository.UserRepository;
-import rs.chat.domain.service.UserService;
 import rs.chat.exceptions.BadRequestException;
 import rs.chat.utils.Constants;
 
