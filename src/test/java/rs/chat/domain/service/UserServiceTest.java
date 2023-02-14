@@ -2,7 +2,6 @@ package rs.chat.domain.service;
 
 import com.google.gson.JsonObject;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -37,29 +36,14 @@ class UserServiceTest {
 	void setUp() {
 		this.underTest = new UserService(this.userRepository, this.passwordEncoder, this.userMapper);
 		this.user = new User(
-				1L,
-				"david",
-				"12345",
-				"david@hello.com",
-				"David Gar Dom",
-				(byte) 21,
-				null,
-				Constants.STUDENT_ROLE,
-				null,
-				null,
-				new JsonObject(),
-				emptySet(),
-				emptySet(),
-				emptySet(),
-				emptySet(),
-				emptySet(),
-				emptySet(),
-				emptySet()
+				1L, "david", "12345", "david@hello.com", "David Gar Dom",
+				(byte) 21, null, Constants.STUDENT_ROLE, null, null,
+				new JsonObject(), emptySet(), emptySet(), emptySet(), emptySet(),
+				emptySet(), emptySet(), emptySet()
 		);
 	}
 
 	@Test
-	@Disabled
 	void loadUserByUsername() {
 	}
 
@@ -71,6 +55,10 @@ class UserServiceTest {
 
 		// then
 		verify(this.userRepository).findAll();
+	}
+
+	@Test
+	void existsByEmail() {
 	}
 
 	@Test
@@ -102,6 +90,14 @@ class UserServiceTest {
 	}
 
 	@Test
+	void updateUser() {
+	}
+
+	@Test
+	void changePassword() {
+	}
+
+	@Test
 	void deleteUser() {
 		// given
 		// when
@@ -112,22 +108,22 @@ class UserServiceTest {
 	}
 
 	@Test
-	@Disabled
-	void getUser() {
+	void getUserByUsername() {
 	}
 
 	@Test
-	@Disabled
 	void setRoleToUser() {
 	}
 
 	@Test
-	@Disabled
 	void getUserByEmail() {
 	}
 
 	@Test
-	@Disabled
 	void getUserByCode() {
+	}
+
+	@Test
+	void getUserById() {
 	}
 }

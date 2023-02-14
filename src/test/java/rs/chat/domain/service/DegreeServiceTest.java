@@ -58,6 +58,10 @@ class DegreeServiceTest {
 	}
 
 	@Test
+	void getById() {
+	}
+
+	@Test
 	void testGetByName() {
 		// given
 		given(this.degreeRepository.findByName(this.degree.getName())).willReturn(Optional.of(this.degree));
@@ -141,6 +145,10 @@ class DegreeServiceTest {
 
 		// then
 		assertThat(result).isSameAs(this.degree); // Same memory reference, since the object is returned without changes
+	}
+
+	@Test
+	void deleteById() {
 	}
 
 //	@Test
