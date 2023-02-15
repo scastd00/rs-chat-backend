@@ -8,6 +8,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,6 +20,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @Entity
+@Builder
 @Table(name = "user_chat")
 public class UserChat {
 	@EmbeddedId
