@@ -2,6 +2,7 @@ package rs.chat.controllers;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -43,7 +44,7 @@ public class GroupController {
 	 * @throws IOException if an error occurs.
 	 */
 	@GetMapping(GROUPS_URL)
-	public void getAllGroups(HttpResponse response) throws IOException {
+	public void getAllGroups(HttpServletResponse response) throws IOException {
 		List<Group> groups = this.groupService.getAll();
 		JsonArray groupsWithInvitationCode = new JsonArray();
 
@@ -51,7 +52,8 @@ public class GroupController {
 		      .map(this::getGroupWithInvitationCode)
 		      .forEach(groupsWithInvitationCode::add);
 
-		response.ok().send(groupsWithInvitationCode);
+		HttpResponse.ok(response);
+		HttpResponse.send(response, groupsWithInvitationCode);
 	}
 
 	/**
@@ -63,11 +65,12 @@ public class GroupController {
 	 * @throws IOException if an error occurs.
 	 */
 	@PostMapping(GROUP_SAVE_URL)
-	public void saveGroup(HttpRequest request, HttpResponse response) throws IOException {
+	public void saveGroup(HttpRequest request, HttpServletResponse response) throws IOException {
 		String groupName = request.body().get("name").getAsString();
 		Group savedGroup = this.groupService.saveGroup(new Group(null, groupName, emptySet()));
 
-		response.created(GROUP_SAVE_URL).send(this.getGroupWithInvitationCode(savedGroup));
+		HttpResponse.created(response, GROUP_SAVE_URL);
+		HttpResponse.send(response, this.getGroupWithInvitationCode(savedGroup));
 	}
 
 	/**
@@ -80,9 +83,9 @@ public class GroupController {
 	 * @throws IOException if an error occurs.
 	 */
 	@DeleteMapping(DELETE_GROUP_URL)
-	public void deleteGroup(HttpResponse response, @PathVariable Long id) throws IOException {
+	public void deleteGroup(HttpServletResponse response, @PathVariable Long id) throws IOException {
 		this.groupService.deleteById(id);
-		response.sendStatus(OK);
+		HttpResponse.sendStatus(response, OK);
 	}
 
 	/**

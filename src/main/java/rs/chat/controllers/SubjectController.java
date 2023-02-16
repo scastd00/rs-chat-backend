@@ -2,6 +2,7 @@ package rs.chat.controllers;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -46,7 +47,7 @@ public class SubjectController {
 	 * @throws IOException if an error occurs.
 	 */
 	@GetMapping(SUBJECTS_URL)
-	public void getAllSubjects(HttpResponse response) throws IOException {
+	public void getAllSubjects(HttpServletResponse response) throws IOException {
 		List<Subject> allSubjects = this.subjectService.getAll();
 		JsonArray subjectsWithInvitationCode = new JsonArray();
 
@@ -54,7 +55,8 @@ public class SubjectController {
 		           .map(this::getSubjectWithInvitationCode)
 		           .forEach(subjectsWithInvitationCode::add);
 
-		response.ok().send(subjectsWithInvitationCode);
+		HttpResponse.ok(response);
+		HttpResponse.send(response, subjectsWithInvitationCode);
 	}
 
 	/**
@@ -66,7 +68,7 @@ public class SubjectController {
 	 * @throws IOException if an error occurs.
 	 */
 	@PostMapping(SUBJECT_SAVE_URL)
-	public void saveSubject(HttpRequest request, HttpResponse response) throws IOException {
+	public void saveSubject(HttpRequest request, HttpServletResponse response) throws IOException {
 		JsonObject body = request.body();
 
 		String name = body.get("name").getAsString();
@@ -77,7 +79,8 @@ public class SubjectController {
 		String degree = body.get("degree").getAsString(); // Degree name
 
 		if (this.subjectService.exists(name)) {
-			response.badRequest().send("Subject '%s' already exists.".formatted(name));
+			HttpResponse.badRequest(response);
+			HttpResponse.send(response, "Subject '%s' already exists.".formatted(name));
 			log.warn("Subject '{}' already exists.", name);
 			return;
 		}
@@ -96,7 +99,8 @@ public class SubjectController {
 				)
 		);
 
-		response.created(SUBJECT_SAVE_URL).send(this.getSubjectWithInvitationCode(savedSubject));
+		HttpResponse.created(response, SUBJECT_SAVE_URL);
+		HttpResponse.send(response, this.getSubjectWithInvitationCode(savedSubject));
 	}
 
 	/**
@@ -109,9 +113,9 @@ public class SubjectController {
 	 * @throws IOException if an error occurs.
 	 */
 	@DeleteMapping(DELETE_SUBJECT_URL)
-	public void deleteSubject(HttpResponse response, @PathVariable Long id) throws IOException {
+	public void deleteSubject(HttpServletResponse response, @PathVariable Long id) throws IOException {
 		this.subjectService.deleteById(id);
-		response.sendStatus(OK);
+		HttpResponse.sendStatus(response, OK);
 	}
 
 	/**

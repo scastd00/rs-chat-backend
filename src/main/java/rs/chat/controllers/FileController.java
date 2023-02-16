@@ -1,6 +1,7 @@
 package rs.chat.controllers;
 
 import com.google.gson.JsonObject;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,7 +46,7 @@ public class FileController {
 	 * @throws IOException if an I/O error occurs.
 	 */
 	@PostMapping(UPLOAD_URL)
-	public void uploadFile(HttpRequest request, HttpResponse response) throws IOException {
+	public void uploadFile(HttpRequest request, HttpServletResponse response) throws IOException {
 		JsonObject body = request.body();
 
 		Long userId = body.get("userId").getAsLong();
@@ -86,7 +87,8 @@ public class FileController {
 			return this.fileService.save(fileToSave);
 		});
 
-		response.ok().send(fileDto);
+		HttpResponse.ok(response);
+		HttpResponse.send(response, fileDto);
 		log.info("File ({}) uploaded successfully", fileName);
 	}
 }

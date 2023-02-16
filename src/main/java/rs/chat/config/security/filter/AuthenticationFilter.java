@@ -69,9 +69,8 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 	                                          HttpServletResponse response,
 	                                          AuthenticationException failed) throws IOException {
 		log.warn("Authentication failed", failed);
-		new HttpResponse(response)
-				.badRequest() // Since the check for the user is only done one time, the exceptional case is that the user is not registered.
-				.send(failed.getMessage());
+		HttpResponse.badRequest(response); // Since the check for the user is only done one time, the exceptional case is that the user is not registered.
+		HttpResponse.send(response, failed.getMessage());
 	}
 
 	/**

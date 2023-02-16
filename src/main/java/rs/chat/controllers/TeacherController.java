@@ -1,6 +1,7 @@
 package rs.chat.controllers;
 
 import com.google.gson.JsonObject;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,22 +39,25 @@ public class TeacherController {
 	private final ChatService chatService;
 
 	@GetMapping(TEACHERS_URL)
-	public void getTeachers(HttpResponse response) throws IOException {
-		response.status(OK).send(this.teacherService.getTeachers());
+	public void getTeachers(HttpServletResponse response) throws IOException {
+		HttpResponse.ok(response);
+		HttpResponse.send(response, this.teacherService.getTeachers());
 	}
 
 	@GetMapping(TEACHER_SUBJECTS_URL)
-	public void getTeacherSubjects(HttpResponse response, @PathVariable Long id) throws IOException {
-		response.status(OK).send(this.teacherService.getSubjects(id));
+	public void getTeacherSubjects(HttpServletResponse response, @PathVariable Long id) throws IOException {
+		HttpResponse.ok(response);
+		HttpResponse.send(response, this.teacherService.getSubjects(id));
 	}
 
 	@GetMapping(TEACHER_DEGREES_URL)
-	public void getTeacherDegrees(HttpResponse response, @PathVariable Long id) throws IOException {
-		response.status(OK).send(this.teacherService.getDegrees(id));
+	public void getTeacherDegrees(HttpServletResponse response, @PathVariable Long id) throws IOException {
+		HttpResponse.ok(response);
+		HttpResponse.send(response, this.teacherService.getDegrees(id));
 	}
 
 	@PostMapping(ADD_TEACHER_TO_SUBJECT_URL)
-	public void addTeacherToSubject(HttpRequest request, HttpResponse response) throws IOException {
+	public void addTeacherToSubject(HttpRequest request, HttpServletResponse response) throws IOException {
 		JsonObject body = request.body();
 		long teacherId = body.get("teacherId").getAsLong();
 		long subjectId = body.get("subjectId").getAsLong();
@@ -75,6 +79,6 @@ public class TeacherController {
 			return null;
 		});
 
-		response.sendStatus(OK);
+		HttpResponse.sendStatus(response, OK);
 	}
 }

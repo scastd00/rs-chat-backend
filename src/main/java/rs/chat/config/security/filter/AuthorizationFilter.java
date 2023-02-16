@@ -58,7 +58,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 	                                @NotNull HttpServletResponse response,
 	                                @NotNull FilterChain chain) throws ServletException, IOException {
 		if (this.isUnknownPath(request.getServletPath())) {
-			new HttpResponse(response).sendStatus(NOT_FOUND);
+			HttpResponse.sendStatus(response, NOT_FOUND);
 			return;
 		}
 
@@ -97,8 +97,8 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 			chain.doFilter(request, response);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
-			new HttpResponse(response).status(FORBIDDEN)
-			                          .send(e.getMessage());
+			HttpResponse.status(response, FORBIDDEN);
+			HttpResponse.send(response, e.getMessage());
 		}
 	}
 

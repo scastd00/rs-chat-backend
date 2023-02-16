@@ -3,167 +3,91 @@ package rs.chat.net.http;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpServletResponseWrapper;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import rs.chat.exceptions.InternalServerException;
-import rs.chat.utils.Constants;
 
 import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
 
+import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static rs.chat.utils.Constants.DATA_JSON_KEY;
 import static rs.chat.utils.Constants.ERROR_JSON_KEY;
 import static rs.chat.utils.Constants.GSON;
 import static rs.chat.utils.Constants.OBJECT_MAPPER;
 
-/**
- * Class that simplifies the management of the response to the client.
- * Wraps the {@link HttpServletResponse} class, to add more functionality, such as
- * setting the status of the response, and sending the response to the client in an easier way.
- */
 @Slf4j
-public class HttpResponse extends HttpServletResponseWrapper {
-	private HttpStatus status = null;
-
-	/**
-	 * Constructs a response adaptor wrapping the given response.
-	 *
-	 * @param response the response to be wrapped.
-	 *
-	 * @throws IllegalArgumentException if the response is null.
-	 */
-	public HttpResponse(HttpServletResponse response) {
-		super(response);
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class HttpResponse {
+	public static HttpServletResponse status(HttpServletResponse response, @NotNull HttpStatus status) {
+		response.setStatus(status.value());
+		return response;
 	}
 
-	/**
-	 * Sets the status of the response.
-	 *
-	 * @param status the status to be set.
-	 *
-	 * @return this response with the status set.
-	 */
-	public HttpResponse status(@NotNull HttpStatus status) {
-		this.status = status;
-		this.setStatus(status.value());
-		return this;
+	public static HttpServletResponse ok(HttpServletResponse response) {
+		return status(response, HttpStatus.OK);
 	}
 
-	/**
-	 * Sets the status of the response to {@link HttpStatus#OK}.
-	 *
-	 * @return this response with the status set.
-	 */
-	public HttpResponse ok() {
-		return this.status(HttpStatus.OK);
-	}
-
-	/**
-	 * Sets the status of the response to {@link HttpStatus#CREATED}.
-	 * This method also sets the Location header to the location of the created resource.
-	 *
-	 * @param requestURL the URL of the request to set the Location header path.
-	 *
-	 * @return this response with the status set.
-	 */
-	public HttpResponse created(String requestURL) {
+	public static HttpServletResponse created(HttpServletResponse response, String requestURL) {
 		URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath()
 		                                                .path(requestURL)
 		                                                .toUriString());
-		this.setHeader("Location", uri.toString());
-		return this.status(HttpStatus.CREATED);
+		response.setHeader(LOCATION, uri.toString());
+		return status(response, HttpStatus.CREATED);
 	}
 
-	/**
-	 * Sets the status of the response to {@link HttpStatus#BAD_REQUEST}.
-	 *
-	 * @return this response with the status set.
-	 */
-	public HttpResponse badRequest() {
-		return this.status(HttpStatus.BAD_REQUEST);
+	public static HttpServletResponse badRequest(HttpServletResponse response) {
+		return status(response, HttpStatus.BAD_REQUEST);
 	}
 
-	/**
-	 * Sets the status of the response to {@link HttpStatus#NOT_FOUND}.
-	 *
-	 * @return this response with the status set.
-	 */
-	public HttpResponse notFound() {
-		return this.status(HttpStatus.NOT_FOUND);
+	public static HttpServletResponse notFound(HttpServletResponse response) {
+		return status(response, HttpStatus.NOT_FOUND);
 	}
 
-	/**
-	 * Immediately sends a response with the given status and empty body.
-	 *
-	 * @param status the status to be set.
-	 *
-	 * @throws IOException if an error occurs while sending the response.
-	 */
-	public void sendStatus(HttpStatus status) throws IOException {
-		this.status(status).send(HttpResponseBody.EMPTY);
+	public static void sendStatus(HttpServletResponse response, HttpStatus status) throws IOException {
+		send(status(response, status));
 	}
 
-	/**
-	 * Immediately sends a response with the given status and empty body.
-	 *
-	 * @throws IOException if an error occurs while sending the response.
-	 */
-	public void send() throws IOException {
-		this.send(HttpResponseBody.EMPTY);
+	public static void send(HttpServletResponse response) throws IOException {
+		send(response, HttpResponseBody.EMPTY);
 	}
 
-	/**
-	 * Sends the given body to the client.
-	 * <p>
-	 * If it is an error, the key is set to {@link Constants#ERROR_JSON_KEY}.
-	 * If not, the key is set to {@link Constants#DATA_JSON_KEY}.
-	 *
-	 * @param content the content to be sent.
-	 *
-	 * @throws IOException if an error occurs while sending the response.
-	 */
-	public void send(Object content) throws IOException {
-		if (this.status.isError()) {
-			this.send(new HttpResponseBody(ERROR_JSON_KEY, content));
+	public static void send(HttpServletResponse response, Object content) throws IOException {
+		if (HttpStatus.valueOf(response.getStatus()).isError()) {
+			send(response, new HttpResponseBody(ERROR_JSON_KEY, content));
 		} else {
-			this.send(new HttpResponseBody(DATA_JSON_KEY, content));
+			send(response, new HttpResponseBody(DATA_JSON_KEY, content));
 		}
 	}
 
-	/**
-	 * Sends a response with the given body.
-	 *
-	 * @param response the body of the response to be sent.
-	 *
-	 * @throws IOException if an error occurs while sending the response.
-	 */
-	public void send(HttpResponseBody response) throws IOException {
-		if (this.status == null) {
+	public static void send(HttpServletResponse response, HttpResponseBody body) throws IOException {
+		if (HttpStatus.resolve(response.getStatus()) == null) {
 			log.error("Http response status must not be null");
 			throw new InternalServerException("Please try again later.");
 		}
 
-		this.setContentType(APPLICATION_JSON_VALUE);
+		response.setContentType(APPLICATION_JSON_VALUE);
 
-		if (response == HttpResponseBody.EMPTY) {
-			this.getWriter().print(response.value()); // Empty string
+		if (body == HttpResponseBody.EMPTY) {
+			response.getWriter().print(body.value()); // Empty string
 			return;
 		}
 
-		JsonElement responseBody = response.data;
+		JsonElement responseBody = body.data;
 
 		// If the response body contains only one element, send it directly (without the key)
 		// to simplify the json sent to the client.
-		if (response.data.size() == 1) {
-			responseBody = response.value();
+		if (body.data.size() == 1) {
+			responseBody = body.value();
 		}
 
-		OBJECT_MAPPER.writeValue(this.getWriter(), responseBody);
+		OBJECT_MAPPER.writeValue(response.getWriter(), responseBody);
 	}
 
 	/**

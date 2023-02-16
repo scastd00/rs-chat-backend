@@ -1,5 +1,6 @@
 package rs.chat.controllers;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,7 +24,7 @@ public class HealthController {
 	 * Check the status of the application.
 	 */
 	@GetMapping(HEALTH_URL)
-	public void status(HttpResponse response) throws IOException {
-		response.sendStatus(OK);
+	public void status(HttpServletResponse response) throws IOException {
+		HttpResponse.sendStatus(response, OK);
 	}
 }

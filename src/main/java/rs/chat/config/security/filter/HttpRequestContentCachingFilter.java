@@ -40,6 +40,6 @@ public class HttpRequestContentCachingFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(@NotNull HttpServletRequest request,
 	                                @NotNull HttpServletResponse response,
 	                                FilterChain filterChain) throws ServletException, IOException {
-		filterChain.doFilter(new HttpRequest(request), new HttpResponse(response));
+		filterChain.doFilter(new HttpRequest(request), response);
 	}
 }
