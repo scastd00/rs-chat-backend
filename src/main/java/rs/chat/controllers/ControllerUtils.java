@@ -44,8 +44,7 @@ public final class ControllerUtils {
 			                    ? HttpStatus.BAD_GATEWAY
 			                    : annotation.value(); // If the exception has a status, set it to the response
 
-			HttpResponse.status(response, status);
-			HttpResponse.send(response, e.getMessage());
+			HttpResponse.send(response, status, e.getMessage());
 			log.error("Error while performing action", e);
 			throw e; // Exit from executing the rest of the controller method.
 		}

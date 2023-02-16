@@ -3,6 +3,7 @@ package rs.chat.controllers;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -52,8 +53,7 @@ public class ChatController {
 	                                           @PathVariable String username) throws IOException {
 		User user = ControllerUtils.performActionThatMayThrowException(response, () -> this.userService.getUserByUsername(username));
 
-		HttpResponse.ok(response);
-		HttpResponse.send(response, this.chatService.getAllChatsOfUserGroupedByType(user));
+		HttpResponse.send(response, HttpStatus.OK, this.chatService.getAllChatsOfUserGroupedByType(user));
 	}
 
 	/**
@@ -71,8 +71,7 @@ public class ChatController {
 				this.chatService.getChatByKey(chatKey)
 		);
 
-		HttpResponse.ok(response);
-		HttpResponse.send(response, this.chatMapper.toDto(chat));
+		HttpResponse.send(response, HttpStatus.OK, this.chatMapper.toDto(chat));
 	}
 
 	/**
@@ -89,8 +88,7 @@ public class ChatController {
 				this.chatService.getChatByKey(chatKey)
 		);
 
-		HttpResponse.ok(response);
-		HttpResponse.send(response, this.chatService.getAllUsersOfChat(chat.getId()));
+		HttpResponse.send(response, HttpStatus.OK, this.chatService.getAllUsersOfChat(chat.getId()));
 	}
 
 	/**
@@ -105,8 +103,7 @@ public class ChatController {
 	@PostMapping(JOIN_CHAT_URL)
 	public void joinChat(HttpRequest request, HttpServletResponse response, @PathVariable String code) throws IOException {
 		if (code.trim().isEmpty()) {
-			HttpResponse.badRequest(response);
-			HttpResponse.send(response, "Chat code cannot be empty");
+			HttpResponse.send(response, HttpStatus.BAD_REQUEST, "Chat code cannot be empty");
 			log.warn("Chat code cannot be empty");
 			return;
 		}
@@ -115,8 +112,7 @@ public class ChatController {
 		Long userId = request.body().get("userId").getAsLong();
 
 		if (this.chatService.userAlreadyBelongsToChat(userId, chat.getId())) {
-			HttpResponse.badRequest(response);
-			HttpResponse.send(response, "You are already in chat %s".formatted(chat.getName()));
+			HttpResponse.send(response, HttpStatus.BAD_REQUEST, "You are already in chat %s".formatted(chat.getName()));
 			return;
 		}
 
@@ -129,8 +125,7 @@ public class ChatController {
 			this.userGroupService.addUserToGroup(userId, Long.parseLong(key));
 		}
 
-		HttpResponse.ok(response);
-		HttpResponse.send(response, chat.getName());
+		HttpResponse.send(response, HttpStatus.OK, chat.getName());
 		// Update the user's chats list in frontend.
 	}
 
@@ -138,8 +133,7 @@ public class ChatController {
 	public void connectToChat(HttpRequest request, HttpServletResponse response, @PathVariable String chatKey) throws IOException {
 		Long userId = request.body().get("userId").getAsLong();
 
-		HttpResponse.ok(response);
-		HttpResponse.send(response, this.chatService.canConnectToChat(userId, chatKey));
+		HttpResponse.send(response, HttpStatus.OK, this.chatService.canConnectToChat(userId, chatKey));
 	}
 
 	@PostMapping(LEAVE_CHAT_URL)

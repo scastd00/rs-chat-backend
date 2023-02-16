@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,7 +22,6 @@ import java.io.IOException;
 import java.util.Collections;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static rs.chat.router.Routes.ACTUATOR_URL;
 import static rs.chat.router.Routes.GetRoute.HEALTH_URL;
@@ -97,8 +97,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 			chain.doFilter(request, response);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
-			HttpResponse.status(response, FORBIDDEN);
-			HttpResponse.send(response, e.getMessage());
+			HttpResponse.send(response, HttpStatus.FORBIDDEN, e.getMessage());
 		}
 	}
 

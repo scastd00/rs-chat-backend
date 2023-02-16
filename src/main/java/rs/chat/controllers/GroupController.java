@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +23,7 @@ import java.util.List;
 
 import static java.util.Collections.emptySet;
 import static org.springframework.http.HttpStatus.OK;
+import static rs.chat.net.http.HttpResponse.created;
 import static rs.chat.router.Routes.DeleteRoute.DELETE_GROUP_URL;
 import static rs.chat.router.Routes.GetRoute.GROUPS_URL;
 import static rs.chat.router.Routes.PostRoute.GROUP_SAVE_URL;
@@ -52,8 +54,7 @@ public class GroupController {
 		      .map(this::getGroupWithInvitationCode)
 		      .forEach(groupsWithInvitationCode::add);
 
-		HttpResponse.ok(response);
-		HttpResponse.send(response, groupsWithInvitationCode);
+		HttpResponse.send(response, HttpStatus.OK, groupsWithInvitationCode);
 	}
 
 	/**
@@ -69,8 +70,7 @@ public class GroupController {
 		String groupName = request.body().get("name").getAsString();
 		Group savedGroup = this.groupService.saveGroup(new Group(null, groupName, emptySet()));
 
-		HttpResponse.created(response, GROUP_SAVE_URL);
-		HttpResponse.send(response, this.getGroupWithInvitationCode(savedGroup));
+		HttpResponse.send(created(response, GROUP_SAVE_URL), HttpStatus.CREATED, this.getGroupWithInvitationCode(savedGroup));
 	}
 
 	/**

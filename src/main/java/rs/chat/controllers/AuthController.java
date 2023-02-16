@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -101,8 +102,7 @@ public class AuthController {
 		responseBody.add("user", this.userMapper.toDto(user));
 		responseBody.add("chats", allChatsOfUserGroupedByType);
 
-		HttpResponse.ok(response);
-		HttpResponse.send(response, responseBody);
+		HttpResponse.send(response, HttpStatus.OK, responseBody);
 	}
 
 	/**
@@ -183,8 +183,7 @@ public class AuthController {
 		responseBody.add("user", this.userMapper.toDto(savedUser));
 		responseBody.add("chats", defaultChat);
 
-		HttpResponse.ok(response);
-		HttpResponse.send(response, responseBody);
+		HttpResponse.send(response, HttpStatus.OK, responseBody);
 		MailSender.sendRegistrationEmailBackground(savedUser.getEmail(), savedUser.getUsername());
 	}
 
@@ -202,8 +201,7 @@ public class AuthController {
 
 		if (token == null) {
 			// If request does not contain authorization header, send error.
-			HttpResponse.badRequest(response);
-			HttpResponse.send(response, "You must provide the authorization token");
+			HttpResponse.send(response, HttpStatus.BAD_REQUEST, "You must provide the authorization token");
 			log.warn("Request does not contain authorization header");
 			return;
 		}
@@ -211,8 +209,7 @@ public class AuthController {
 		String tokenWithoutPrefix = token.substring(JWT_TOKEN_PREFIX.length());
 
 		if (this.jwtService.isInvalidToken(token)) {
-			HttpResponse.badRequest(response);
-			HttpResponse.send(response, "The token is not valid");
+			HttpResponse.send(response, HttpStatus.BAD_REQUEST, "The token is not valid");
 			log.warn("The token is not valid");
 			this.sessionService.deleteSession(tokenWithoutPrefix);
 			return;

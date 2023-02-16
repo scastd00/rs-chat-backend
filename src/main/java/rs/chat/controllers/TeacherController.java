@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,20 +41,17 @@ public class TeacherController {
 
 	@GetMapping(TEACHERS_URL)
 	public void getTeachers(HttpServletResponse response) throws IOException {
-		HttpResponse.ok(response);
-		HttpResponse.send(response, this.teacherService.getTeachers());
+		HttpResponse.send(response, HttpStatus.OK, this.teacherService.getTeachers());
 	}
 
 	@GetMapping(TEACHER_SUBJECTS_URL)
 	public void getTeacherSubjects(HttpServletResponse response, @PathVariable Long id) throws IOException {
-		HttpResponse.ok(response);
-		HttpResponse.send(response, this.teacherService.getSubjects(id));
+		HttpResponse.send(response, HttpStatus.OK, this.teacherService.getSubjects(id));
 	}
 
 	@GetMapping(TEACHER_DEGREES_URL)
 	public void getTeacherDegrees(HttpServletResponse response, @PathVariable Long id) throws IOException {
-		HttpResponse.ok(response);
-		HttpResponse.send(response, this.teacherService.getDegrees(id));
+		HttpResponse.send(response, HttpStatus.OK, this.teacherService.getDegrees(id));
 	}
 
 	@PostMapping(ADD_TEACHER_TO_SUBJECT_URL)

@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +25,7 @@ import java.util.List;
 
 import static java.util.Collections.emptySet;
 import static org.springframework.http.HttpStatus.OK;
+import static rs.chat.net.http.HttpResponse.created;
 import static rs.chat.router.Routes.DeleteRoute.DELETE_SUBJECT_URL;
 import static rs.chat.router.Routes.GetRoute.SUBJECTS_URL;
 import static rs.chat.router.Routes.PostRoute.SUBJECT_SAVE_URL;
@@ -55,8 +57,7 @@ public class SubjectController {
 		           .map(this::getSubjectWithInvitationCode)
 		           .forEach(subjectsWithInvitationCode::add);
 
-		HttpResponse.ok(response);
-		HttpResponse.send(response, subjectsWithInvitationCode);
+		HttpResponse.send(response, HttpStatus.OK, subjectsWithInvitationCode);
 	}
 
 	/**
@@ -79,8 +80,7 @@ public class SubjectController {
 		String degree = body.get("degree").getAsString(); // Degree name
 
 		if (this.subjectService.exists(name)) {
-			HttpResponse.badRequest(response);
-			HttpResponse.send(response, "Subject '%s' already exists.".formatted(name));
+			HttpResponse.send(response, HttpStatus.BAD_REQUEST, "Subject '%s' already exists.".formatted(name));
 			log.warn("Subject '{}' already exists.", name);
 			return;
 		}
@@ -99,8 +99,7 @@ public class SubjectController {
 				)
 		);
 
-		HttpResponse.created(response, SUBJECT_SAVE_URL);
-		HttpResponse.send(response, this.getSubjectWithInvitationCode(savedSubject));
+		HttpResponse.send(created(response, SUBJECT_SAVE_URL), HttpStatus.CREATED, this.getSubjectWithInvitationCode(savedSubject));
 	}
 
 	/**

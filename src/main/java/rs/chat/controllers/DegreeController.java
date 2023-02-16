@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +25,7 @@ import java.util.List;
 
 import static java.util.Collections.emptySet;
 import static org.springframework.http.HttpStatus.OK;
+import static rs.chat.net.http.HttpResponse.created;
 import static rs.chat.router.Routes.DeleteRoute.DELETE_DEGREE_URL;
 import static rs.chat.router.Routes.GetRoute.DEGREES_URL;
 import static rs.chat.router.Routes.GetRoute.DEGREE_BY_NAME_URL;
@@ -57,8 +59,7 @@ public class DegreeController {
 		          .map(this::getDegreeWithInvitationCodeToChat)
 		          .forEach(degreesWithInvitationCode::add);
 
-		HttpResponse.ok(response);
-		HttpResponse.send(response, degreesWithInvitationCode);
+		HttpResponse.send(response, HttpStatus.OK, degreesWithInvitationCode);
 	}
 
 	/**
@@ -75,8 +76,7 @@ public class DegreeController {
 				response, () -> this.degreeService.getByName(degreeName)
 		);
 
-		HttpResponse.ok(response);
-		HttpResponse.send(response, this.degreeMapper.toDto(degree));
+		HttpResponse.send(response, HttpStatus.OK, this.degreeMapper.toDto(degree));
 	}
 
 	/**
@@ -92,8 +92,7 @@ public class DegreeController {
 		String degreeName = request.body().get("name").getAsString();
 
 		if (this.degreeService.existsDegree(degreeName)) {
-			HttpResponse.badRequest(response);
-			HttpResponse.send(response, "Degree '%s' already exists".formatted(degreeName));
+			HttpResponse.send(response, HttpStatus.BAD_REQUEST, "Degree '%s' already exists".formatted(degreeName));
 			log.warn("Degree '{}' already exists", degreeName);
 			return;
 		}
@@ -104,8 +103,7 @@ public class DegreeController {
 				)
 		);
 
-		HttpResponse.created(response, DEGREE_SAVE_URL);
-		HttpResponse.send(response, this.getDegreeWithInvitationCodeToChat(degree));
+		HttpResponse.send(created(response, DEGREE_SAVE_URL), HttpStatus.CREATED, this.getDegreeWithInvitationCodeToChat(degree));
 	}
 
 	/**
@@ -126,8 +124,7 @@ public class DegreeController {
 				response, () -> this.degreeService.changeDegreeName(oldName, newName)
 		);
 
-		HttpResponse.ok(response);
-		HttpResponse.send(response, this.degreeMapper.toDto(degree));
+		HttpResponse.send(response, HttpStatus.OK, this.degreeMapper.toDto(degree));
 	}
 
 	/**

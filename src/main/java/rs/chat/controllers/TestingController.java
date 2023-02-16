@@ -21,7 +21,6 @@ import static rs.chat.router.Routes.TEST_URL;
 public class TestingController {
 	@GetMapping(TEST_URL)
 	public void getDto(HttpServletResponse response) throws IOException {
-		HttpResponse.status(response, HttpStatus.OK);
-		HttpResponse.send(response, "Hello world!");
+		HttpResponse.send(response, HttpStatus.OK, "Hello world!");
 	}
 }

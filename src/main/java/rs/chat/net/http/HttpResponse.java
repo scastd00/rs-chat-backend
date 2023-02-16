@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import rs.chat.exceptions.InternalServerException;
@@ -25,48 +24,28 @@ import static rs.chat.utils.Constants.OBJECT_MAPPER;
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class HttpResponse {
-	public static HttpServletResponse status(HttpServletResponse response, @NotNull HttpStatus status) {
-		response.setStatus(status.value());
-		return response;
-	}
-
-	public static HttpServletResponse ok(HttpServletResponse response) {
-		return status(response, HttpStatus.OK);
-	}
-
 	public static HttpServletResponse created(HttpServletResponse response, String requestURL) {
 		URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath()
 		                                                .path(requestURL)
 		                                                .toUriString());
 		response.setHeader(LOCATION, uri.toString());
-		return status(response, HttpStatus.CREATED);
-	}
-
-	public static HttpServletResponse badRequest(HttpServletResponse response) {
-		return status(response, HttpStatus.BAD_REQUEST);
-	}
-
-	public static HttpServletResponse notFound(HttpServletResponse response) {
-		return status(response, HttpStatus.NOT_FOUND);
+		response.setStatus(HttpStatus.CREATED.value());
+		return response;
 	}
 
 	public static void sendStatus(HttpServletResponse response, HttpStatus status) throws IOException {
-		send(status(response, status));
+		send(response, status, HttpResponseBody.EMPTY);
 	}
 
-	public static void send(HttpServletResponse response) throws IOException {
-		send(response, HttpResponseBody.EMPTY);
-	}
-
-	public static void send(HttpServletResponse response, Object content) throws IOException {
-		if (HttpStatus.valueOf(response.getStatus()).isError()) {
+	public static void send(HttpServletResponse response, HttpStatus status, Object content) throws IOException {
+		if (status.isError()) {
 			send(response, new HttpResponseBody(ERROR_JSON_KEY, content));
 		} else {
 			send(response, new HttpResponseBody(DATA_JSON_KEY, content));
 		}
 	}
 
-	public static void send(HttpServletResponse response, HttpResponseBody body) throws IOException {
+	private static void send(HttpServletResponse response, HttpResponseBody body) throws IOException {
 		if (HttpStatus.resolve(response.getStatus()) == null) {
 			log.error("Http response status must not be null");
 			throw new InternalServerException("Please try again later.");

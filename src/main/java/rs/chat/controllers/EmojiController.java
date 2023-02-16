@@ -3,6 +3,7 @@ package rs.chat.controllers;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,28 +31,24 @@ public class EmojiController {
 
 	@GetMapping(RANDOM_EMOJIS_URL)
 	public void getRandomEmojis(HttpServletResponse response, @PathVariable Long count) throws IOException {
-		HttpResponse.ok(response);
-		HttpResponse.send(response, this.emojiService.getRandomEmojis(count));
+		HttpResponse.send(response, HttpStatus.OK, this.emojiService.getRandomEmojis(count));
 	}
 
 	@GetMapping(EMOJI_STARTING_WITH_STRING_URL)
 	public void getEmojisStartingWithString(HttpServletResponse response, @PathVariable String string) throws IOException {
 		if (string.length() == 0) {
-			HttpResponse.ok(response);
-			HttpResponse.send(response, emptyList());
+			HttpResponse.send(response, HttpStatus.OK, emptyList());
 			return; // The user has not typed anything yet
 		}
 
 		List<EmojiDto> emojiDTOs = this.emojiService.getEmojisStartingWith(string);
 
 		if (emojiDTOs.isEmpty()) {
-			HttpResponse.notFound(response);
-			HttpResponse.send(response, "No emojis found");
+			HttpResponse.send(response, HttpStatus.NOT_FOUND, "No emojis found");
 			return;
 		}
 
-		HttpResponse.ok(response);
-		HttpResponse.send(response, emojiDTOs);
+		HttpResponse.send(response, HttpStatus.OK, emojiDTOs);
 	}
 
 	@GetMapping(EMOJI_BY_CATEGORY_URL)
@@ -59,18 +56,15 @@ public class EmojiController {
 		List<EmojiDto> emojiDTOs = this.emojiService.getEmojisByCategory(category.replace("%20", " "));
 
 		if (emojiDTOs.isEmpty()) {
-			HttpResponse.notFound(response);
-			HttpResponse.send(response, "No emojis found");
+			HttpResponse.send(response, HttpStatus.NOT_FOUND, "No emojis found");
 			return;
 		}
 
-		HttpResponse.ok(response);
-		HttpResponse.send(response, emojiDTOs);
+		HttpResponse.send(response, HttpStatus.OK, emojiDTOs);
 	}
 
 	@GetMapping(EMOJIS_GROUPED_BY_CATEGORY_URL)
 	public void getEmojisGroupedByCategory(HttpServletResponse response) throws IOException {
-		HttpResponse.ok(response);
-		HttpResponse.send(response, this.emojiService.getEmojisGroupedByCategory());
+		HttpResponse.send(response, HttpStatus.OK, this.emojiService.getEmojisGroupedByCategory());
 	}
 }
