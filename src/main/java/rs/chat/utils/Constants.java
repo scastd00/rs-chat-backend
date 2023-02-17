@@ -16,6 +16,9 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Constants used throughout the application.
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Constants {
 	public static final String CHAT_VERSION = "1.11.0";

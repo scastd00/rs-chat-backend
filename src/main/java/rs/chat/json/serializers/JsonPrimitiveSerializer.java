@@ -9,11 +9,18 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+/**
+ * Serializer for {@link JsonPrimitive}.
+ */
 public class JsonPrimitiveSerializer extends JsonSerializer<JsonPrimitive> {
 	@Override
 	public void serialize(JsonPrimitive value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
 		if (value.isBoolean()) {
 			gen.writeBoolean(value.getAsBoolean());
+		} else if (value.isString()) {
+			gen.writeString(value.getAsString());
+		} else if (value.isJsonNull()) {
+			gen.writeNull();
 		} else if (value.isNumber()) {
 			Number number = value.getAsNumber();
 
@@ -38,10 +45,6 @@ public class JsonPrimitiveSerializer extends JsonSerializer<JsonPrimitive> {
 				// just convert it to a long and write it out.
 				gen.writeNumber(number.longValue());
 			}
-		} else if (value.isString()) {
-			gen.writeString(value.getAsString());
-		} else if (value.isJsonNull()) {
-			gen.writeNull();
 		} else {
 			throw new IOException("Unknown JsonPrimitive type");
 		}

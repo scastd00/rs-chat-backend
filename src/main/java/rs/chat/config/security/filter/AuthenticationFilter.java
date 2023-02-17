@@ -24,7 +24,7 @@ import rs.chat.net.http.HttpResponse;
 import java.io.IOException;
 
 /**
- * Manager that authenticates the incoming requests.
+ * Filter that authenticates the incoming requests.
  */
 @Slf4j
 @WebFilter(filterName = "AuthenticationFilter")
@@ -42,9 +42,6 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 		super.setAuthenticationManager(authenticationManager);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 		try {
@@ -74,9 +71,6 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 		HttpResponse.send(response, HttpStatus.BAD_REQUEST, failed.getMessage());
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected void successfulAuthentication(HttpServletRequest request,
 	                                        HttpServletResponse response,

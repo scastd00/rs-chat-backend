@@ -11,7 +11,6 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.filter.OncePerRequestFilter;
 import rs.chat.net.http.HttpRequest;
-import rs.chat.net.http.HttpResponse;
 
 import java.io.IOException;
 
@@ -30,8 +29,7 @@ import java.io.IOException;
 @WebFilter(filterName = "ContentCachingFilter", urlPatterns = "/*")
 public class HttpRequestContentCachingFilter extends OncePerRequestFilter {
 	/**
-	 * Wraps the request and the response into an {@link HttpRequest} and
-	 * {@link HttpResponse} objects, respectively. This allows to read the body
+	 * Wraps the request into a {@link HttpRequest}. This allows to read the body
 	 * of the request multiple times.
 	 * <p>
 	 * {@inheritDoc}

@@ -43,8 +43,6 @@ public class HttpRequest extends HttpServletRequestWrapper {
 	}
 
 	/**
-	 * Gets the cached body as a {@link CachedBodyServletInputStream}.
-	 *
 	 * @return the cached body as a {@link CachedBodyServletInputStream}.
 	 */
 	@Override
@@ -53,9 +51,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
 	}
 
 	/**
-	 * Creates a new {@link BufferedReader} for the cached body byte array.
-	 *
-	 * @return a new {@link BufferedReader} for the cached body.
+	 * @return a new {@link BufferedReader} for the cached body byte array.
 	 */
 	@Override
 	public BufferedReader getReader() {
@@ -64,8 +60,6 @@ public class HttpRequest extends HttpServletRequestWrapper {
 	}
 
 	/**
-	 * Gets the body of the request as a {@link JsonObject}.
-	 *
 	 * @return the body of the request as a {@link JsonObject}.
 	 */
 	public JsonObject body() {

@@ -44,7 +44,8 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 	private final SessionService sessionService;
 
 	/**
-	 * Checks if the user is authorized to access the resource.
+	 * Checks if the user is authorized to access the resource, sets the authentication
+	 * and passes the request to the next filter.
 	 *
 	 * @param request  HTTP request.
 	 * @param response HTTP response.
@@ -115,6 +116,13 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 				path.equals(ACTUATOR_URL) || path.equals(TEST_URL);
 	}
 
+	/**
+	 * Checks if the path is unknown.
+	 *
+	 * @param path the path to check.
+	 *
+	 * @return {@code true} if the path is unknown, {@code false} otherwise.
+	 */
 	private boolean isUnknownPath(String path) {
 		return path.equals("/favicon.ico");
 	}
