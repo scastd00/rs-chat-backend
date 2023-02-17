@@ -2,9 +2,11 @@ package rs.chat.controllers;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +25,7 @@ import java.util.List;
 
 import static java.util.Collections.emptySet;
 import static org.springframework.http.HttpStatus.OK;
+import static rs.chat.net.http.HttpResponse.created;
 import static rs.chat.router.Routes.DeleteRoute.DELETE_SUBJECT_URL;
 import static rs.chat.router.Routes.GetRoute.SUBJECTS_URL;
 import static rs.chat.router.Routes.PostRoute.SUBJECT_SAVE_URL;
@@ -46,7 +49,7 @@ public class SubjectController {
 	 * @throws IOException if an error occurs.
 	 */
 	@GetMapping(SUBJECTS_URL)
-	public void getAllSubjects(HttpResponse response) throws IOException {
+	public void getAllSubjects(HttpServletResponse response) throws IOException {
 		List<Subject> allSubjects = this.subjectService.getAll();
 		JsonArray subjectsWithInvitationCode = new JsonArray();
 
@@ -54,7 +57,7 @@ public class SubjectController {
 		           .map(this::getSubjectWithInvitationCode)
 		           .forEach(subjectsWithInvitationCode::add);
 
-		response.ok().send(subjectsWithInvitationCode);
+		HttpResponse.send(response, HttpStatus.OK, subjectsWithInvitationCode);
 	}
 
 	/**
@@ -66,7 +69,7 @@ public class SubjectController {
 	 * @throws IOException if an error occurs.
 	 */
 	@PostMapping(SUBJECT_SAVE_URL)
-	public void saveSubject(HttpRequest request, HttpResponse response) throws IOException {
+	public void saveSubject(HttpRequest request, HttpServletResponse response) throws IOException {
 		JsonObject body = request.body();
 
 		String name = body.get("name").getAsString();
@@ -77,7 +80,7 @@ public class SubjectController {
 		String degree = body.get("degree").getAsString(); // Degree name
 
 		if (this.subjectService.exists(name)) {
-			response.badRequest().send("Subject '%s' already exists.".formatted(name));
+			HttpResponse.send(response, HttpStatus.BAD_REQUEST, "Subject '%s' already exists.".formatted(name));
 			log.warn("Subject '{}' already exists.", name);
 			return;
 		}
@@ -96,7 +99,7 @@ public class SubjectController {
 				)
 		);
 
-		response.created(SUBJECT_SAVE_URL).send(this.getSubjectWithInvitationCode(savedSubject));
+		HttpResponse.send(created(response, SUBJECT_SAVE_URL), HttpStatus.CREATED, this.getSubjectWithInvitationCode(savedSubject));
 	}
 
 	/**
@@ -109,9 +112,9 @@ public class SubjectController {
 	 * @throws IOException if an error occurs.
 	 */
 	@DeleteMapping(DELETE_SUBJECT_URL)
-	public void deleteSubject(HttpResponse response, @PathVariable Long id) throws IOException {
+	public void deleteSubject(HttpServletResponse response, @PathVariable Long id) throws IOException {
 		this.subjectService.deleteById(id);
-		response.sendStatus(OK);
+		HttpResponse.sendStatus(response, OK);
 	}
 
 	/**

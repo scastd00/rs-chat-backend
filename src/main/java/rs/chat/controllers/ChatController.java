@@ -1,7 +1,9 @@
 package rs.chat.controllers;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -47,11 +49,11 @@ public class ChatController {
 	 * @throws IOException if an error occurs while sending the response back to the client.
 	 */
 	@GetMapping(ALL_CHATS_OF_USER_URL)
-	public void getAllChatsOfUserDividedByType(HttpResponse response,
+	public void getAllChatsOfUserDividedByType(HttpServletResponse response,
 	                                           @PathVariable String username) throws IOException {
 		User user = ControllerUtils.performActionThatMayThrowException(response, () -> this.userService.getUserByUsername(username));
 
-		response.ok().send(this.chatService.getAllChatsOfUserGroupedByType(user));
+		HttpResponse.send(response, HttpStatus.OK, this.chatService.getAllChatsOfUserGroupedByType(user));
 	}
 
 	/**
@@ -64,12 +66,12 @@ public class ChatController {
 	 * @throws IOException if an error occurs while sending the response back to the client.
 	 */
 	@GetMapping(CHAT_INFO_URL)
-	public void getChatInformation(HttpResponse response, @PathVariable String chatKey) throws IOException {
+	public void getChatInformation(HttpServletResponse response, @PathVariable String chatKey) throws IOException {
 		Chat chat = ControllerUtils.performActionThatMayThrowException(response, () ->
 				this.chatService.getChatByKey(chatKey)
 		);
 
-		response.ok().send(this.chatMapper.toDto(chat));
+		HttpResponse.send(response, HttpStatus.OK, this.chatMapper.toDto(chat));
 	}
 
 	/**
@@ -81,12 +83,12 @@ public class ChatController {
 	 * @throws IOException if an error occurs while sending the response back to the client.
 	 */
 	@GetMapping(ALL_USERS_OF_CHAT_URL)
-	public void getAllUsersOfChat(HttpResponse response, @PathVariable String chatKey) throws IOException {
+	public void getAllUsersOfChat(HttpServletResponse response, @PathVariable String chatKey) throws IOException {
 		Chat chat = ControllerUtils.performActionThatMayThrowException(response, () ->
 				this.chatService.getChatByKey(chatKey)
 		);
 
-		response.ok().send(this.chatService.getAllUsersOfChat(chat.getId()));
+		HttpResponse.send(response, HttpStatus.OK, this.chatService.getAllUsersOfChat(chat.getId()));
 	}
 
 	/**
@@ -99,9 +101,9 @@ public class ChatController {
 	 * @throws IOException if an error occurs while sending the response back to the client.
 	 */
 	@PostMapping(JOIN_CHAT_URL)
-	public void joinChat(HttpRequest request, HttpResponse response, @PathVariable String code) throws IOException {
+	public void joinChat(HttpRequest request, HttpServletResponse response, @PathVariable String code) throws IOException {
 		if (code.trim().isEmpty()) {
-			response.badRequest().send("Chat code cannot be empty");
+			HttpResponse.send(response, HttpStatus.BAD_REQUEST, "Chat code cannot be empty");
 			log.warn("Chat code cannot be empty");
 			return;
 		}
@@ -110,7 +112,7 @@ public class ChatController {
 		Long userId = request.body().get("userId").getAsLong();
 
 		if (this.chatService.userAlreadyBelongsToChat(userId, chat.getId())) {
-			response.badRequest().send("You are already in chat %s".formatted(chat.getName()));
+			HttpResponse.send(response, HttpStatus.BAD_REQUEST, "You are already in chat %s".formatted(chat.getName()));
 			return;
 		}
 
@@ -123,23 +125,23 @@ public class ChatController {
 			this.userGroupService.addUserToGroup(userId, Long.parseLong(key));
 		}
 
-		response.ok().send(chat.getName());
+		HttpResponse.send(response, HttpStatus.OK, chat.getName());
 		// Update the user's chats list in frontend.
 	}
 
 	@PostMapping(CONNECT_TO_CHAT_URL)
-	public void connectToChat(HttpRequest request, HttpResponse response, @PathVariable String chatKey) throws IOException {
+	public void connectToChat(HttpRequest request, HttpServletResponse response, @PathVariable String chatKey) throws IOException {
 		Long userId = request.body().get("userId").getAsLong();
 
-		response.ok().send(this.chatService.canConnectToChat(userId, chatKey));
+		HttpResponse.send(response, HttpStatus.OK, this.chatService.canConnectToChat(userId, chatKey));
 	}
 
 	@PostMapping(LEAVE_CHAT_URL)
-	public void leaveChat(HttpRequest request, HttpResponse response, @PathVariable String chatKey) throws IOException {
+	public void leaveChat(HttpRequest request, HttpServletResponse response, @PathVariable String chatKey) throws IOException {
 		Long userId = request.body().get("userId").getAsLong();
 
 		this.chatService.removeUserFromChat(userId, chatKey);
 
-		response.sendStatus(OK);
+		HttpResponse.sendStatus(response, OK);
 	}
 }

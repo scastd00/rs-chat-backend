@@ -2,9 +2,11 @@ package rs.chat.controllers;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +25,7 @@ import java.util.List;
 
 import static java.util.Collections.emptySet;
 import static org.springframework.http.HttpStatus.OK;
+import static rs.chat.net.http.HttpResponse.created;
 import static rs.chat.router.Routes.DeleteRoute.DELETE_DEGREE_URL;
 import static rs.chat.router.Routes.GetRoute.DEGREES_URL;
 import static rs.chat.router.Routes.GetRoute.DEGREE_BY_NAME_URL;
@@ -48,7 +51,7 @@ public class DegreeController {
 	 * @throws IOException if an error occurs.
 	 */
 	@GetMapping(DEGREES_URL)
-	public void getAllDegrees(HttpResponse response) throws IOException {
+	public void getAllDegrees(HttpServletResponse response) throws IOException {
 		List<Degree> allDegrees = this.degreeService.getDegrees();
 		JsonArray degreesWithInvitationCode = new JsonArray();
 
@@ -56,7 +59,7 @@ public class DegreeController {
 		          .map(this::getDegreeWithInvitationCodeToChat)
 		          .forEach(degreesWithInvitationCode::add);
 
-		response.ok().send(degreesWithInvitationCode);
+		HttpResponse.send(response, HttpStatus.OK, degreesWithInvitationCode);
 	}
 
 	/**
@@ -68,12 +71,12 @@ public class DegreeController {
 	 * @throws IOException if an error occurs.
 	 */
 	@GetMapping(DEGREE_BY_NAME_URL)
-	public void getDegreeByName(HttpResponse response, @PathVariable String degreeName) throws IOException {
+	public void getDegreeByName(HttpServletResponse response, @PathVariable String degreeName) throws IOException {
 		Degree degree = ControllerUtils.performActionThatMayThrowException(
 				response, () -> this.degreeService.getByName(degreeName)
 		);
 
-		response.ok().send(this.degreeMapper.toDto(degree));
+		HttpResponse.send(response, HttpStatus.OK, this.degreeMapper.toDto(degree));
 	}
 
 	/**
@@ -85,11 +88,11 @@ public class DegreeController {
 	 * @throws IOException if an error occurs.
 	 */
 	@PostMapping(DEGREE_SAVE_URL)
-	public void saveDegree(HttpRequest request, HttpResponse response) throws IOException {
+	public void saveDegree(HttpRequest request, HttpServletResponse response) throws IOException {
 		String degreeName = request.body().get("name").getAsString();
 
 		if (this.degreeService.existsDegree(degreeName)) {
-			response.badRequest().send("Degree '%s' already exists".formatted(degreeName));
+			HttpResponse.send(response, HttpStatus.BAD_REQUEST, "Degree '%s' already exists".formatted(degreeName));
 			log.warn("Degree '{}' already exists", degreeName);
 			return;
 		}
@@ -100,7 +103,7 @@ public class DegreeController {
 				)
 		);
 
-		response.created(DEGREE_SAVE_URL).send(this.getDegreeWithInvitationCodeToChat(degree));
+		HttpResponse.send(created(response, DEGREE_SAVE_URL), HttpStatus.CREATED, this.getDegreeWithInvitationCodeToChat(degree));
 	}
 
 	/**
@@ -112,7 +115,7 @@ public class DegreeController {
 	 * @throws IOException if an error occurs.
 	 */
 	@PutMapping(EDIT_DEGREE_NAME_URL)
-	public void changeDegreeName(HttpRequest request, HttpResponse response) throws IOException {
+	public void changeDegreeName(HttpRequest request, HttpServletResponse response) throws IOException {
 		JsonObject body = request.body();
 		String oldName = body.get("oldName").getAsString();
 		String newName = body.get("newName").getAsString();
@@ -121,7 +124,7 @@ public class DegreeController {
 				response, () -> this.degreeService.changeDegreeName(oldName, newName)
 		);
 
-		response.ok().send(this.degreeMapper.toDto(degree));
+		HttpResponse.send(response, HttpStatus.OK, this.degreeMapper.toDto(degree));
 	}
 
 	/**
@@ -134,7 +137,7 @@ public class DegreeController {
 	 * @throws IOException if an error occurs.
 	 */
 	@DeleteMapping(DELETE_DEGREE_URL)
-	public void deleteDegree(HttpResponse response, @PathVariable Long id) throws IOException {
+	public void deleteDegree(HttpServletResponse response, @PathVariable Long id) throws IOException {
 		ControllerUtils.performActionThatMayThrowException(
 				response, () -> {
 					this.degreeService.deleteById(id);
@@ -142,7 +145,7 @@ public class DegreeController {
 				}
 		);
 
-		response.sendStatus(OK);
+		HttpResponse.sendStatus(response, OK);
 	}
 
 	/**

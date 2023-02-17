@@ -2,9 +2,11 @@ package rs.chat.controllers;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -68,7 +70,7 @@ public class AuthController {
 	 * @throws IOException if an error occurs.
 	 */
 	@PostMapping(LOGIN_URL)
-	public void login(HttpRequest request, HttpResponse response) throws IOException {
+	public void login(HttpRequest request, HttpServletResponse response) throws IOException {
 		String token = request.get("USER:TOKEN").toString();
 		String username = request.get("USER:USERNAME").toString();
 
@@ -100,7 +102,7 @@ public class AuthController {
 		responseBody.add("user", this.userMapper.toDto(user));
 		responseBody.add("chats", allChatsOfUserGroupedByType);
 
-		response.ok().send(responseBody);
+		HttpResponse.send(response, HttpStatus.OK, responseBody);
 	}
 
 	/**
@@ -114,7 +116,7 @@ public class AuthController {
 	 * @throws IOException if an error occurs.
 	 */
 	@PostMapping(REGISTER_URL)
-	public void register(HttpRequest request, HttpResponse response) throws IOException {
+	public void register(HttpRequest request, HttpServletResponse response) throws IOException {
 		JsonObject body = request.body();
 
 		Chat globalChat = this.chatService.getByName("Global");
@@ -181,7 +183,7 @@ public class AuthController {
 		responseBody.add("user", this.userMapper.toDto(savedUser));
 		responseBody.add("chats", defaultChat);
 
-		response.ok().send(responseBody);
+		HttpResponse.send(response, HttpStatus.OK, responseBody);
 		MailSender.sendRegistrationEmailBackground(savedUser.getEmail(), savedUser.getUsername());
 	}
 
@@ -194,12 +196,12 @@ public class AuthController {
 	 * @throws IOException if an error occurs.
 	 */
 	@PostMapping(LOGOUT_URL)
-	public void logout(HttpRequest request, HttpResponse response) throws IOException {
+	public void logout(HttpRequest request, HttpServletResponse response) throws IOException {
 		String token = request.getHeader(AUTHORIZATION);
 
 		if (token == null) {
 			// If request does not contain authorization header, send error.
-			response.badRequest().send("You must provide the authorization token");
+			HttpResponse.send(response, HttpStatus.BAD_REQUEST, "You must provide the authorization token");
 			log.warn("Request does not contain authorization header");
 			return;
 		}
@@ -207,7 +209,7 @@ public class AuthController {
 		String tokenWithoutPrefix = token.substring(JWT_TOKEN_PREFIX.length());
 
 		if (this.jwtService.isInvalidToken(token)) {
-			response.badRequest().send("The token is not valid");
+			HttpResponse.send(response, HttpStatus.BAD_REQUEST, "The token is not valid");
 			log.warn("The token is not valid");
 			this.sessionService.deleteSession(tokenWithoutPrefix);
 			return;
@@ -226,7 +228,7 @@ public class AuthController {
 
 		// Logout from Spring.
 		new SecurityContextLogoutHandler().logout(request, null, null);
-		response.sendStatus(OK);
+		HttpResponse.sendStatus(response, OK);
 	}
 
 	/**
@@ -240,7 +242,7 @@ public class AuthController {
 	 * @throws IOException if an error occurs.
 	 */
 	@PostMapping(FORGOT_PASSWORD_URL)
-	public void forgotPassword(HttpRequest request, HttpResponse response) throws IOException {
+	public void forgotPassword(HttpRequest request, HttpServletResponse response) throws IOException {
 		JsonObject body = request.body();
 
 		// Check if the email is correct.
@@ -256,7 +258,7 @@ public class AuthController {
 		user.setPasswordCode(code);
 		this.userService.updateUser(user);
 
-		response.sendStatus(OK);
+		HttpResponse.sendStatus(response, OK);
 		MailSender.sendResetPasswordEmailBackground(email, code);
 	}
 
@@ -269,7 +271,7 @@ public class AuthController {
 	 * @throws IOException if an error occurs.
 	 */
 	@PostMapping(CREATE_PASSWORD_URL)
-	public void createPassword(HttpRequest request, HttpResponse response) throws IOException {
+	public void createPassword(HttpRequest request, HttpServletResponse response) throws IOException {
 		JsonObject body = request.body();
 		String code = body.get("code").getAsString();
 
@@ -285,6 +287,6 @@ public class AuthController {
 		user.setPasswordCode(null); // Remove the password code.
 		this.userService.changePassword(user);
 
-		response.sendStatus(OK);
+		HttpResponse.sendStatus(response, OK);
 	}
 }

@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -69,9 +70,8 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 	                                          HttpServletResponse response,
 	                                          AuthenticationException failed) throws IOException {
 		log.warn("Authentication failed", failed);
-		new HttpResponse(response)
-				.badRequest() // Since the check for the user is only done one time, the exceptional case is that the user is not registered.
-				.send(failed.getMessage());
+		// Since the check for the user is only done one time, the exceptional case is that the user is not registered.
+		HttpResponse.send(response, HttpStatus.BAD_REQUEST, failed.getMessage());
 	}
 
 	/**

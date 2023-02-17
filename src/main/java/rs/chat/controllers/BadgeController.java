@@ -1,7 +1,9 @@
 package rs.chat.controllers;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +21,7 @@ public class BadgeController {
 	private final BadgeService badgeService;
 
 	@GetMapping(USER_BADGES_URL)
-	public void getBadgesOfUser(HttpResponse response, @PathVariable Long userId) throws IOException {
-		response.ok().send(this.badgeService.getBadgesOfUser(userId));
+	public void getBadgesOfUser(HttpServletResponse response, @PathVariable Long userId) throws IOException {
+		HttpResponse.send(response, HttpStatus.OK, this.badgeService.getBadgesOfUser(userId));
 	}
 }
