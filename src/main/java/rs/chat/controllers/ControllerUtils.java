@@ -22,15 +22,15 @@ public final class ControllerUtils {
 	 * {@link HttpStatus#BAD_GATEWAY} (502) and the exception message. In both cases, the exception is logged
 	 * and rethrown, to prevent the controller from executing more code.
 	 *
-	 * @param response response to send the result to.
-	 * @param action   function to perform.
-	 * @param <R>      type of the result.
+	 * @param res    response to send the result to.
+	 * @param action function to perform.
+	 * @param <R>    type of the result.
 	 *
 	 * @return the result of the function.
 	 *
 	 * @throws IOException if an error occurs.
 	 */
-	public static <R> R performActionThatMayThrowException(HttpServletResponse response, Function0<R> action)
+	public static <R> R performActionThatMayThrowException(HttpServletResponse res, Function0<R> action)
 			throws IOException {
 		try {
 			return action.apply();
@@ -44,7 +44,7 @@ public final class ControllerUtils {
 			                    ? HttpStatus.BAD_GATEWAY
 			                    : annotation.value(); // If the exception has a status, set it to the response
 
-			HttpResponse.send(response, status, e.getMessage());
+			new HttpResponse(res).status(status).send(e.getMessage());
 			log.error("Error while performing action", e);
 			throw e; // Exit from executing the rest of the controller method.
 		}

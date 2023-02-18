@@ -3,7 +3,6 @@ package rs.chat.controllers;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import rs.chat.net.http.HttpResponse;
@@ -19,8 +18,15 @@ import static rs.chat.router.Routes.TEST_URL;
 @RestController
 @RequiredArgsConstructor
 public class TestingController {
+	/**
+	 * Returns a simple string.
+	 *
+	 * @param res The response object.
+	 *
+	 * @throws IOException If an I/O error occurs.
+	 */
 	@GetMapping(TEST_URL)
-	public void getDto(HttpServletResponse response) throws IOException {
-		HttpResponse.send(response, HttpStatus.OK, "Hello world!");
+	public void test(HttpServletResponse res) throws IOException {
+		new HttpResponse(res).ok().send("Hello world!");
 	}
 }

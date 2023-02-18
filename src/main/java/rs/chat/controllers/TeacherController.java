@@ -1,6 +1,7 @@
 package rs.chat.controllers;
 
 import com.google.gson.JsonObject;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,22 +41,24 @@ public class TeacherController {
 	private final ChatService chatService;
 
 	@GetMapping(TEACHERS_URL)
-	public void getTeachers(HttpServletResponse response) throws IOException {
-		HttpResponse.send(response, HttpStatus.OK, this.teacherService.getTeachers());
+	public void getTeachers(HttpServletResponse res) throws IOException {
+		new HttpResponse(res).status(HttpStatus.OK).send(this.teacherService.getTeachers());
 	}
 
 	@GetMapping(TEACHER_SUBJECTS_URL)
-	public void getTeacherSubjects(HttpServletResponse response, @PathVariable Long id) throws IOException {
-		HttpResponse.send(response, HttpStatus.OK, this.teacherService.getSubjects(id));
+	public void getTeacherSubjects(HttpServletResponse res, @PathVariable Long id) throws IOException {
+		new HttpResponse(res).status(HttpStatus.OK).send(this.teacherService.getSubjects(id));
 	}
 
 	@GetMapping(TEACHER_DEGREES_URL)
-	public void getTeacherDegrees(HttpServletResponse response, @PathVariable Long id) throws IOException {
-		HttpResponse.send(response, HttpStatus.OK, this.teacherService.getDegrees(id));
+	public void getTeacherDegrees(HttpServletResponse res, @PathVariable Long id) throws IOException {
+		new HttpResponse(res).status(HttpStatus.OK).send(this.teacherService.getDegrees(id));
 	}
 
 	@PostMapping(ADD_TEACHER_TO_SUBJECT_URL)
-	public void addTeacherToSubject(HttpRequest request, HttpServletResponse response) throws IOException {
+	public void addTeacherToSubject(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		HttpRequest request = new HttpRequest(req);
+		HttpResponse response = new HttpResponse(res);
 		JsonObject body = request.body();
 		long teacherId = body.get("teacherId").getAsLong();
 		long subjectId = body.get("subjectId").getAsLong();
@@ -77,6 +80,6 @@ public class TeacherController {
 			return null;
 		});
 
-		HttpResponse.sendStatus(response, OK);
+		response.sendStatus(OK);
 	}
 }

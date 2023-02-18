@@ -2,11 +2,11 @@ package rs.chat.controllers;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,7 +25,6 @@ import java.util.List;
 
 import static java.util.Collections.emptySet;
 import static org.springframework.http.HttpStatus.OK;
-import static rs.chat.net.http.HttpResponse.created;
 import static rs.chat.router.Routes.DeleteRoute.DELETE_DEGREE_URL;
 import static rs.chat.router.Routes.GetRoute.DEGREES_URL;
 import static rs.chat.router.Routes.GetRoute.DEGREE_BY_NAME_URL;
@@ -46,12 +45,12 @@ public class DegreeController {
 	/**
 	 * Returns all degrees stored in db.
 	 *
-	 * @param response response containing all degrees.
+	 * @param res response containing all degrees.
 	 *
 	 * @throws IOException if an error occurs.
 	 */
 	@GetMapping(DEGREES_URL)
-	public void getAllDegrees(HttpServletResponse response) throws IOException {
+	public void getAllDegrees(HttpServletResponse res) throws IOException {
 		List<Degree> allDegrees = this.degreeService.getDegrees();
 		JsonArray degreesWithInvitationCode = new JsonArray();
 
@@ -59,40 +58,44 @@ public class DegreeController {
 		          .map(this::getDegreeWithInvitationCodeToChat)
 		          .forEach(degreesWithInvitationCode::add);
 
-		HttpResponse.send(response, HttpStatus.OK, degreesWithInvitationCode);
+		new HttpResponse(res).ok().send(degreesWithInvitationCode);
 	}
 
 	/**
 	 * Returns degree with given name.
 	 *
-	 * @param response   response containing the degree with given name.
+	 * @param res        response containing the degree with given name.
 	 * @param degreeName name of the degree to be returned.
 	 *
 	 * @throws IOException if an error occurs.
 	 */
 	@GetMapping(DEGREE_BY_NAME_URL)
-	public void getDegreeByName(HttpServletResponse response, @PathVariable String degreeName) throws IOException {
+	public void getDegreeByName(HttpServletResponse res, @PathVariable String degreeName) throws IOException {
+		HttpResponse response = new HttpResponse(res);
+
 		Degree degree = ControllerUtils.performActionThatMayThrowException(
 				response, () -> this.degreeService.getByName(degreeName)
 		);
 
-		HttpResponse.send(response, HttpStatus.OK, this.degreeMapper.toDto(degree));
+		response.ok().send(this.degreeMapper.toDto(degree));
 	}
 
 	/**
 	 * Saves given degree to db.
 	 *
-	 * @param request  request containing degree to be saved.
-	 * @param response response containing saved degree.
+	 * @param req request containing degree to be saved.
+	 * @param res response containing saved degree.
 	 *
 	 * @throws IOException if an error occurs.
 	 */
 	@PostMapping(DEGREE_SAVE_URL)
-	public void saveDegree(HttpRequest request, HttpServletResponse response) throws IOException {
+	public void saveDegree(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		HttpRequest request = new HttpRequest(req);
+		HttpResponse response = new HttpResponse(res);
 		String degreeName = request.body().get("name").getAsString();
 
 		if (this.degreeService.existsDegree(degreeName)) {
-			HttpResponse.send(response, HttpStatus.BAD_REQUEST, "Degree '%s' already exists".formatted(degreeName));
+			response.badRequest().send("Degree '%s' already exists".formatted(degreeName));
 			log.warn("Degree '{}' already exists", degreeName);
 			return;
 		}
@@ -103,19 +106,21 @@ public class DegreeController {
 				)
 		);
 
-		HttpResponse.send(created(response, DEGREE_SAVE_URL), HttpStatus.CREATED, this.getDegreeWithInvitationCodeToChat(degree));
+		response.created(DEGREE_SAVE_URL).send(this.getDegreeWithInvitationCodeToChat(degree));
 	}
 
 	/**
 	 * Updates name of the given degree in db.
 	 *
-	 * @param request  request containing degree to be updated.
-	 * @param response response containing updated degree.
+	 * @param req request containing degree to be updated.
+	 * @param res response containing updated degree.
 	 *
 	 * @throws IOException if an error occurs.
 	 */
 	@PutMapping(EDIT_DEGREE_NAME_URL)
-	public void changeDegreeName(HttpRequest request, HttpServletResponse response) throws IOException {
+	public void changeDegreeName(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		HttpRequest request = new HttpRequest(req);
+		HttpResponse response = new HttpResponse(res);
 		JsonObject body = request.body();
 		String oldName = body.get("oldName").getAsString();
 		String newName = body.get("newName").getAsString();
@@ -124,20 +129,22 @@ public class DegreeController {
 				response, () -> this.degreeService.changeDegreeName(oldName, newName)
 		);
 
-		HttpResponse.send(response, HttpStatus.OK, this.degreeMapper.toDto(degree));
+		response.ok().send(this.degreeMapper.toDto(degree));
 	}
 
 	/**
 	 * Deletes given degree from db.
 	 *
-	 * @param response response (does not contain the deleted degree, only status code
-	 *                 is returned to user).
-	 * @param id       id of the degree to be deleted.
+	 * @param res response (does not contain the deleted degree, only status code
+	 *            is returned to user).
+	 * @param id  id of the degree to be deleted.
 	 *
 	 * @throws IOException if an error occurs.
 	 */
 	@DeleteMapping(DELETE_DEGREE_URL)
-	public void deleteDegree(HttpServletResponse response, @PathVariable Long id) throws IOException {
+	public void deleteDegree(HttpServletResponse res, @PathVariable Long id) throws IOException {
+		HttpResponse response = new HttpResponse(res);
+
 		ControllerUtils.performActionThatMayThrowException(
 				response, () -> {
 					this.degreeService.deleteById(id);
@@ -145,7 +152,7 @@ public class DegreeController {
 				}
 		);
 
-		HttpResponse.sendStatus(response, OK);
+		response.sendStatus(OK);
 	}
 
 	/**
