@@ -93,7 +93,7 @@ public class AuthController {
 				)
 		);
 
-		var allChatsOfUserGroupedByType = this.chatService.getAllChatsOfUserGroupedByType(user);
+		JsonObject allChatsOfUserGroupedByType = this.chatService.getAllChatsOfUserGroupedByType(user);
 
 		// Remove the source IP from the session.
 		savedSession.setSrcIp("");

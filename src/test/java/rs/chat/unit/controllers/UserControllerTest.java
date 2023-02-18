@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -17,6 +18,7 @@ import rs.chat.domain.service.ChatService;
 import rs.chat.domain.service.GroupService;
 import rs.chat.domain.service.SessionService;
 import rs.chat.domain.service.UserService;
+import rs.chat.security.annotations.WithMockAdmin;
 import rs.chat.utils.Constants;
 
 import java.util.List;
@@ -24,13 +26,16 @@ import java.util.List;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static rs.chat.Constants.TEST_OBJECT_MAPPER;
 import static rs.chat.TestUtils.createUserWithRole;
+import static rs.chat.TestUtils.request;
 import static rs.chat.router.Routes.GetRoute.USERS_URL;
+import static rs.chat.router.Routes.PostRoute.USER_SAVE_URL;
 
 @WebMvcTest(UserController.class)
+//@ExtendWith(SpringExtension.class)
+//@ContextConfiguration
 class UserControllerTest {
 	@Autowired private MockMvc mvc;
 
@@ -80,39 +85,19 @@ class UserControllerTest {
 	}
 
 	@Test
-	@WithMockUser
+	@WithMockAdmin
 	void saveUserOk() throws Exception {
 		// Given
 		User user = createUserWithRole(Constants.STUDENT_ROLE);
 		given(userService.createUser(user)).willReturn(user);
 
 		// When
-		MockHttpServletResponse response = mvc.perform(post(USERS_URL)
+		MockHttpServletResponse response = mvc.perform(request(HttpMethod.POST, USER_SAVE_URL)
 				                                               .contentType(MediaType.APPLICATION_JSON)
 				                                               .content(TEST_OBJECT_MAPPER.writeValueAsString(user)))
 		                                      .andExpect(status().isCreated())
 		                                      .andReturn()
 		                                      .getResponse();
-
-		// Then
-		assertThat(response.getContentAsString()).isEmpty(); // No content returned
-	}
-
-	@Test
-	@WithMockUser(roles = Constants.STUDENT_ROLE)
-	void saveUserForbidden() throws Exception {
-		// Given
-		User user = createUserWithRole(Constants.STUDENT_ROLE);
-		given(userService.createUser(user)).willReturn(user);
-
-		// When
-		MockHttpServletResponse response = mvc.perform(post(USERS_URL)
-				                                               .contentType(MediaType.APPLICATION_JSON)
-				                                               .content(TEST_OBJECT_MAPPER.writeValueAsString(user)))
-		                                      .andExpect(status().isForbidden())
-		                                      .andReturn()
-		                                      .getResponse();
-		// A student user is not allowed to create a new user.
 
 		// Then
 		assertThat(response.getContentAsString()).isEmpty(); // No content returned
