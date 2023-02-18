@@ -3,16 +3,16 @@ package rs.chat.net.http;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import jakarta.servlet.http.HttpServletResponseWrapper;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import rs.chat.exceptions.InternalServerException;
+import rs.chat.utils.Constants;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Map;
 
 import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -22,76 +22,137 @@ import static rs.chat.utils.Constants.GSON;
 import static rs.chat.utils.Constants.OBJECT_MAPPER;
 
 /**
- * Class that contains methods for sending responses to the client.
+ * Class that simplifies the management of the response to the client.
+ * Wraps the {@link HttpServletResponse} class, to add more functionality, such as
+ * setting the status of the response, and sending the response to the client in an easier way.
  */
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class HttpResponse {
+public class HttpResponse extends HttpServletResponseWrapper {
+	private HttpStatus status = null;
+
 	/**
-	 * Method that assigns to a response the status code 201 (Created) and the location of the created resource.
+	 * Constructs a response adaptor wrapping the given response.
 	 *
-	 * @param response   The response to send.
-	 * @param requestURL The URL of the created resource.
+	 * @param response the response to be wrapped.
 	 *
-	 * @return The response with the status code 201 and the location of the created resource.
+	 * @throws IllegalArgumentException if the response is null.
 	 */
-	public static HttpServletResponse created(HttpServletResponse response, String requestURL) {
+	public HttpResponse(HttpServletResponse response) {
+		super(response);
+	}
+
+	/**
+	 * Sets the status of the response.
+	 *
+	 * @param status the status to be set.
+	 *
+	 * @return this response with the status set.
+	 */
+	public HttpResponse status(@NotNull HttpStatus status) {
+		this.status = status;
+		this.setStatus(status.value());
+		return this;
+	}
+
+	/**
+	 * Sets the status of the response to {@link HttpStatus#OK}.
+	 *
+	 * @return this response with the status set.
+	 */
+	public HttpResponse ok() {
+		return this.status(HttpStatus.OK);
+	}
+
+	/**
+	 * Sets the status of the response to {@link HttpStatus#CREATED}.
+	 * This method also sets the Location header to the location of the created resource.
+	 *
+	 * @param requestURL the URL of the request to set the Location header path.
+	 *
+	 * @return this response with the status set.
+	 */
+	public HttpResponse created(String requestURL) {
 		URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath()
 		                                                .path(requestURL)
 		                                                .toUriString());
-		response.setHeader(LOCATION, uri.toString());
-		response.setStatus(HttpStatus.CREATED.value());
-		return response;
+		this.setHeader(LOCATION, uri.toString());
+		return this.status(HttpStatus.CREATED);
 	}
 
 	/**
-	 * Method that sends a response with the specified status code and an empty body.
+	 * Sets the status of the response to {@link HttpStatus#BAD_REQUEST}.
 	 *
-	 * @param response The response to send.
-	 * @param status   The status code of the response.
-	 *
-	 * @throws IOException If an I/O error occurs.
+	 * @return this response with the status set.
 	 */
-	public static void sendStatus(HttpServletResponse response, HttpStatus status) throws IOException {
-		send(response, status, HttpResponseBody.EMPTY);
+	public HttpResponse badRequest() {
+		return this.status(HttpStatus.BAD_REQUEST);
 	}
 
 	/**
-	 * Method that sends a response with the specified status code and body.
+	 * Sets the status of the response to {@link HttpStatus#NOT_FOUND}.
 	 *
-	 * @param response The response to send.
-	 * @param status   The status code of the response.
-	 * @param content  The body of the response.
-	 *
-	 * @throws IOException If an I/O error occurs.
+	 * @return this response with the status set.
 	 */
-	public static void send(HttpServletResponse response, HttpStatus status, Object content) throws IOException {
-		if (status.isError()) {
-			send(response, new HttpResponseBody(ERROR_JSON_KEY, content));
+	public HttpResponse notFound() {
+		return this.status(HttpStatus.NOT_FOUND);
+	}
+
+	/**
+	 * Immediately sends a response with the given status and empty body.
+	 *
+	 * @param status the status to be set.
+	 *
+	 * @throws IOException if an error occurs while sending the response.
+	 */
+	public void sendStatus(HttpStatus status) throws IOException {
+		this.status(status).send(HttpResponseBody.EMPTY);
+	}
+
+	/**
+	 * Immediately sends a response with the given status and empty body.
+	 *
+	 * @throws IOException if an error occurs while sending the response.
+	 */
+	public void send() throws IOException {
+		this.send(HttpResponseBody.EMPTY);
+	}
+
+	/**
+	 * Sends the given body to the client.
+	 * <p>
+	 * If it is an error, the key is set to {@link Constants#ERROR_JSON_KEY}.
+	 * If not, the key is set to {@link Constants#DATA_JSON_KEY}.
+	 *
+	 * @param content the content to be sent.
+	 *
+	 * @throws IOException if an error occurs while sending the response.
+	 */
+	public void send(Object content) throws IOException {
+		if (this.status.isError()) {
+			this.send(new HttpResponseBody(ERROR_JSON_KEY, content));
 		} else {
-			send(response, new HttpResponseBody(DATA_JSON_KEY, content));
+			this.send(new HttpResponseBody(DATA_JSON_KEY, content));
 		}
 	}
 
 	/**
-	 * Method that sends a response with the specified status code and body.
+	 * Sends a response with the given body.
 	 *
-	 * @param response The response to send.
-	 * @param body     The body of the response.
+	 * @param body the body of the response to be sent.
 	 *
-	 * @throws IOException If an I/O error occurs.
+	 * @throws IOException if an error occurs while sending the response.
 	 */
-	private static void send(HttpServletResponse response, HttpResponseBody body) throws IOException {
-		if (HttpStatus.resolve(response.getStatus()) == null) {
+	public void send(HttpResponseBody body) throws IOException {
+		if (this.status == null) {
 			log.error("Http response status must not be null");
 			throw new InternalServerException("Please try again later.");
 		}
 
-		response.setContentType(APPLICATION_JSON_VALUE);
+		this.setContentType(APPLICATION_JSON_VALUE);
 
 		if (body == HttpResponseBody.EMPTY) {
 			// This is done like this to send a completely empty response body.
-			response.getWriter().print(body.value()); // Empty string
+			this.getWriter().print(body.value()); // Empty string
 			return;
 		}
 
@@ -104,14 +165,17 @@ public class HttpResponse {
 		}
 
 		// Serialize the response body to json and send it to the client.
-		OBJECT_MAPPER.writeValue(response.getWriter(), responseBody);
+		OBJECT_MAPPER.writeValue(this.getWriter(), responseBody);
 	}
 
 	/**
 	 * Class that represents the body of a response.
-	 * Contains a {@link Map} of elements to be sent in the response.
+	 * Contains a {@link JsonObject} of elements to be sent in the response.
 	 */
 	public static class HttpResponseBody {
+		/**
+		 * An empty response body.
+		 */
 		public static final HttpResponseBody EMPTY = new HttpResponseBody(DATA_JSON_KEY, "");
 		private final JsonObject data = new JsonObject();
 

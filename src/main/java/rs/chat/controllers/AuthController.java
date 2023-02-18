@@ -2,11 +2,11 @@ package rs.chat.controllers;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -63,14 +63,16 @@ public class AuthController {
 	/**
 	 * Performs the login of the user.
 	 *
-	 * @param request  the request containing the credentials of the user.
-	 * @param response the response with the user, the session (with JWT token)
-	 *                 and the chats that the user can access.
+	 * @param req the request containing the credentials of the user.
+	 * @param res the response with the user, the session (with JWT token)
+	 *            and the chats that the user can access.
 	 *
 	 * @throws IOException if an error occurs.
 	 */
 	@PostMapping(LOGIN_URL)
-	public void login(HttpRequest request, HttpServletResponse response) throws IOException {
+	public void login(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		HttpRequest request = new HttpRequest(req);
+		HttpResponse response = new HttpResponse(res);
 		String token = request.get("USER:TOKEN").toString();
 		String username = request.get("USER:USERNAME").toString();
 
@@ -102,21 +104,23 @@ public class AuthController {
 		responseBody.add("user", this.userMapper.toDto(user));
 		responseBody.add("chats", allChatsOfUserGroupedByType);
 
-		HttpResponse.send(response, HttpStatus.OK, responseBody);
+		response.ok().send(responseBody);
 	}
 
 	/**
 	 * Registers a new user to the application.
 	 *
-	 * @param request  the request containing the credentials of the user.
-	 * @param response the response with the user, the session (with JWT token)
-	 *                 and the chats that the user can access by registering to the application
-	 *                 (global group chat by default).
+	 * @param req the request containing the credentials of the user.
+	 * @param res the response with the user, the session (with JWT token)
+	 *            and the chats that the user can access by registering to the application
+	 *            (global group chat by default).
 	 *
 	 * @throws IOException if an error occurs.
 	 */
 	@PostMapping(REGISTER_URL)
-	public void register(HttpRequest request, HttpServletResponse response) throws IOException {
+	public void register(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		HttpRequest request = new HttpRequest(req);
+		HttpResponse response = new HttpResponse(res);
 		JsonObject body = request.body();
 
 		Chat globalChat = this.chatService.getByName("Global");
@@ -183,25 +187,27 @@ public class AuthController {
 		responseBody.add("user", this.userMapper.toDto(savedUser));
 		responseBody.add("chats", defaultChat);
 
-		HttpResponse.send(response, HttpStatus.OK, responseBody);
+		response.ok().send(responseBody);
 		MailSender.sendRegistrationEmailBackground(savedUser.getEmail(), savedUser.getUsername());
 	}
 
 	/**
 	 * Performs the logout of the user.
 	 *
-	 * @param request  the request containing the token to be deleted.
-	 * @param response OK response if the token is deleted.
+	 * @param req the request containing the token to be deleted.
+	 * @param res OK response if the token is deleted.
 	 *
 	 * @throws IOException if an error occurs.
 	 */
 	@PostMapping(LOGOUT_URL)
-	public void logout(HttpRequest request, HttpServletResponse response) throws IOException {
+	public void logout(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		HttpRequest request = new HttpRequest(req);
+		HttpResponse response = new HttpResponse(res);
 		String token = request.getHeader(AUTHORIZATION);
 
 		if (token == null) {
 			// If request does not contain authorization header, send error.
-			HttpResponse.send(response, HttpStatus.BAD_REQUEST, "You must provide the authorization token");
+			response.badRequest().send("You must provide the authorization token");
 			log.warn("Request does not contain authorization header");
 			return;
 		}
@@ -209,7 +215,7 @@ public class AuthController {
 		String tokenWithoutPrefix = token.substring(JWT_TOKEN_PREFIX.length());
 
 		if (this.jwtService.isInvalidToken(token)) {
-			HttpResponse.send(response, HttpStatus.BAD_REQUEST, "The token is not valid");
+			response.badRequest().send("The token is not valid");
 			log.warn("The token is not valid");
 			this.sessionService.deleteSession(tokenWithoutPrefix);
 			return;
@@ -228,7 +234,7 @@ public class AuthController {
 
 		// Logout from Spring.
 		new SecurityContextLogoutHandler().logout(request, null, null);
-		HttpResponse.sendStatus(response, OK);
+		response.sendStatus(OK);
 	}
 
 	/**
@@ -236,13 +242,15 @@ public class AuthController {
 	 * This method can be used when a user wants to change the password inside
 	 * the profile (first forget password, then create password).
 	 *
-	 * @param request  the request with the email of the user.
-	 * @param response the response (only status code is sent if successful).
+	 * @param req the request with the email of the user.
+	 * @param res the response (only status code is sent if successful).
 	 *
 	 * @throws IOException if an error occurs.
 	 */
 	@PostMapping(FORGOT_PASSWORD_URL)
-	public void forgotPassword(HttpRequest request, HttpServletResponse response) throws IOException {
+	public void forgotPassword(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		HttpRequest request = new HttpRequest(req);
+		HttpResponse response = new HttpResponse(res);
 		JsonObject body = request.body();
 
 		// Check if the email is correct.
@@ -258,20 +266,22 @@ public class AuthController {
 		user.setPasswordCode(code);
 		this.userService.updateUser(user);
 
-		HttpResponse.sendStatus(response, OK);
+		response.sendStatus(OK);
 		MailSender.sendResetPasswordEmailBackground(email, code);
 	}
 
 	/**
 	 * Creates a new password for the user.
 	 *
-	 * @param request  the request with the new password.
-	 * @param response the response (only status code is sent if successful).
+	 * @param req the request with the new password.
+	 * @param res the response (only status code is sent if successful).
 	 *
 	 * @throws IOException if an error occurs.
 	 */
 	@PostMapping(CREATE_PASSWORD_URL)
-	public void createPassword(HttpRequest request, HttpServletResponse response) throws IOException {
+	public void createPassword(HttpServletRequest req, HttpServletResponse res) throws IOException {
+		HttpRequest request = new HttpRequest(req);
+		HttpResponse response = new HttpResponse(res);
 		JsonObject body = request.body();
 		String code = body.get("code").getAsString();
 
@@ -287,6 +297,6 @@ public class AuthController {
 		user.setPasswordCode(null); // Remove the password code.
 		this.userService.changePassword(user);
 
-		HttpResponse.sendStatus(response, OK);
+		response.sendStatus(OK);
 	}
 }
