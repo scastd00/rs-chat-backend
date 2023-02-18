@@ -11,7 +11,7 @@ import rs.chat.domain.repository.EmojiRepository;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static rs.chat.Constants.TEST_COMPARISON_CONFIG;
+import static rs.chat.utils.TestConstants.TEST_COMPARISON_CONFIG;
 
 @DataJpaTest
 class EmojiRepositoryTest {

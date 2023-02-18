@@ -1,4 +1,4 @@
-package rs.chat;
+package rs.chat.utils;
 
 import com.google.gson.JsonObject;
 import lombok.AccessLevel;
@@ -12,16 +12,17 @@ import rs.chat.domain.entity.User;
 import static java.util.Collections.emptySet;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.testSecurityContext;
-import static rs.chat.Constants.FAKER;
+import static rs.chat.utils.TestConstants.FAKER;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TestUtils {
 	public static User createUserWithRole(String role) {
-		String fullName = FAKER.name().fullName();
-		String username = fullName.split(" ")[0].toLowerCase();
+		String name = FAKER.name().username();
+		String fullName = name.replace(".", "");
+		String username = name.split("\\.")[0] + RandomStringUtils.randomAlphanumeric(4);
 		String email = username + "@hello.com";
 		String code = RandomStringUtils.randomAlphanumeric(6);
-		String password = RandomStringUtils.randomAlphanumeric(30);
+		String password = "!PasswordSpecialChars_123$";
 
 		return new User(
 				null, username, password, email,

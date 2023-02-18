@@ -1,4 +1,4 @@
-package rs.chat;
+package rs.chat.utils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,7 +7,7 @@ import net.datafaker.Faker;
 import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration;
 import rs.chat.json.modules.GsonModule;
 
-public class Constants {
+public class TestConstants {
 	public static final RecursiveComparisonConfiguration
 			TEST_COMPARISON_CONFIG = RecursiveComparisonConfiguration.builder()
 			                                                         .withIgnoredFields("id")

@@ -1,4 +1,4 @@
-package rs.chat.security.annotations;
+package rs.chat.utils.security.annotations;
 
 import rs.chat.utils.Constants;
 

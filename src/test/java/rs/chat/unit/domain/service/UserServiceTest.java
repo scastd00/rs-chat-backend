@@ -20,7 +20,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static rs.chat.TestUtils.createUserWithRole;
+import static rs.chat.utils.TestUtils.createUserWithRole;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {

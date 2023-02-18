@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import rs.chat.controllers.BadgeController;
 import rs.chat.domain.entity.Badge;
@@ -13,6 +12,7 @@ import rs.chat.domain.entity.dtos.BadgeDto;
 import rs.chat.domain.entity.mappers.BadgeMapper;
 import rs.chat.domain.entity.mappers.BadgeMapperImpl;
 import rs.chat.domain.service.BadgeService;
+import rs.chat.utils.security.annotations.WithMockStudent;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,9 +21,9 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static rs.chat.Constants.TEST_OBJECT_MAPPER;
 import static rs.chat.net.ws.Message.TEXT_MESSAGE;
 import static rs.chat.router.Routes.GetRoute.USER_BADGES_URL;
+import static rs.chat.utils.TestConstants.TEST_OBJECT_MAPPER;
 
 @WebMvcTest(BadgeController.class)
 class BadgeControllerTest {
@@ -34,7 +34,7 @@ class BadgeControllerTest {
 	private final BadgeMapper badgeMapper = new BadgeMapperImpl();
 
 	@Test
-	@WithMockUser
+	@WithMockStudent
 		// This annotation saves putting .with(user(USER_DETAILS)) inside the parameter of perform call
 	void itShouldGetBadgesOfUser() throws Exception {
 		// Given
@@ -63,7 +63,7 @@ class BadgeControllerTest {
 	}
 
 	@Test
-	@WithMockUser
+	@WithMockStudent
 	void itShouldGetBadgesOfUserWithNoBadges() throws Exception {
 		// Given
 		List<BadgeDto> dtoList = List.of();

@@ -21,8 +21,8 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static rs.chat.Constants.TEST_COMPARISON_CONFIG;
-import static rs.chat.TestUtils.createUserWithRole;
+import static rs.chat.utils.TestConstants.TEST_COMPARISON_CONFIG;
+import static rs.chat.utils.TestUtils.createUserWithRole;
 
 @DataJpaTest
 class UserChatRepositoryTest {

@@ -1,7 +1,7 @@
-package rs.chat.security.annotations;
+package rs.chat.utils.security.annotations;
 
 import org.springframework.security.test.context.support.WithSecurityContext;
-import rs.chat.security.WithMockCustomUserSecurityContextFactory;
+import rs.chat.utils.security.WithMockCustomUserSecurityContextFactory;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

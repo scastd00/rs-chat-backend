@@ -1,4 +1,4 @@
-package rs.chat.security;
+package rs.chat.utils.security;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -8,7 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithSecurityContextFactory;
-import rs.chat.security.annotations.WithMockCustomUser;
+import rs.chat.utils.security.annotations.WithMockCustomUser;
 
 import java.util.Arrays;
 
