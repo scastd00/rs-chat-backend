@@ -20,9 +20,9 @@ import rs.chat.utils.Constants;
 import java.util.Collections;
 import java.util.List;
 
-import static java.util.Collections.emptySet;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static rs.chat.Constants.TEST_COMPARISON_CONFIG;
+import static rs.chat.TestUtils.createUserWithRole;
 
 @DataJpaTest
 class UserChatRepositoryTest {
@@ -39,21 +39,9 @@ class UserChatRepositoryTest {
 
 	@BeforeEach
 	void setUp() {
-		this.user1 = this.userRepository.save(new User(
-				null, "david", "12345", "david@hello.com",
-				"David Gar Dom", (byte) 21, null, Constants.STUDENT_ROLE,
-				null, "FNvb23", new JsonObject(), emptySet(),
-				emptySet(), emptySet(), emptySet(), emptySet(),
-				emptySet(), emptySet()
-		));
+		this.user1 = this.userRepository.save(createUserWithRole(Constants.STUDENT_ROLE));
 
-		this.user2 = this.userRepository.save(new User(
-				null, "manuel", "12345", "manu@hello.com",
-				"Manuel Gar Dom", (byte) 21, null, Constants.STUDENT_ROLE,
-				null, "FNvb23", new JsonObject(), emptySet(),
-				emptySet(), emptySet(), emptySet(), emptySet(),
-				emptySet(), emptySet()
-		));
+		this.user2 = this.userRepository.save(createUserWithRole(Constants.STUDENT_ROLE));
 
 		this.chat = this.chatRepository.save(new Chat(
 				null, "name", "group", "folder",

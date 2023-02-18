@@ -1,6 +1,5 @@
 package rs.chat.unit.domain.repository;
 
-import com.google.gson.JsonObject;
 import org.assertj.core.api.AbstractListAssert;
 import org.assertj.core.api.ObjectAssert;
 import org.junit.jupiter.api.AfterEach;
@@ -18,9 +17,9 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.Collections.emptySet;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static rs.chat.Constants.TEST_COMPARISON_CONFIG;
+import static rs.chat.TestUtils.createUserWithRole;
 
 @DataJpaTest
 class SessionRepositoryTest {
@@ -33,13 +32,7 @@ class SessionRepositoryTest {
 
 	@BeforeEach
 	void setUp() {
-		this.user = this.userRepository.save(new User(
-				null, "david", "12345", "david@hello.com",
-				"David Gar Dom", (byte) 21, null, Constants.STUDENT_ROLE,
-				null, null, new JsonObject(), emptySet(),
-				emptySet(), emptySet(), emptySet(), emptySet(),
-				emptySet(), emptySet()
-		));
+		this.user = this.userRepository.save(createUserWithRole(Constants.STUDENT_ROLE));
 
 		this.session1 = new Session(
 				null, "127.0.0.1", Instant.now(), Instant.now().plusSeconds(20), "token1", this.user

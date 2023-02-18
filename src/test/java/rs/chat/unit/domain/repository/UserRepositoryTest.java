@@ -1,6 +1,5 @@
 package rs.chat.unit.domain.repository;
 
-import com.google.gson.JsonObject;
 import org.assertj.core.api.AbstractListAssert;
 import org.assertj.core.api.ObjectAssert;
 import org.junit.jupiter.api.AfterEach;
@@ -15,9 +14,9 @@ import rs.chat.utils.Constants;
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.Collections.emptySet;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static rs.chat.Constants.TEST_COMPARISON_CONFIG;
+import static rs.chat.TestUtils.createUserWithRole;
 
 @DataJpaTest
 class UserRepositoryTest {
@@ -31,13 +30,7 @@ class UserRepositoryTest {
 
 	@BeforeEach
 	void setUp() {
-		this.user = new User(
-				1L, username, "12345", email,
-				"David Gar Dom", (byte) 21, null, Constants.STUDENT_ROLE,
-				null, passwordCode, new JsonObject(), emptySet(),
-				emptySet(), emptySet(), emptySet(), emptySet(),
-				emptySet(), emptySet()
-		);
+		this.user = createUserWithRole(Constants.STUDENT_ROLE);
 	}
 
 	@AfterEach
@@ -51,7 +44,7 @@ class UserRepositoryTest {
 		this.underTest.save(this.user);
 
 		// When
-		Optional<User> expected = this.underTest.findByUsername(this.username);
+		Optional<User> expected = this.underTest.findByUsername(this.user.getUsername());
 
 		// Then
 		assertThat(expected).isPresent();
@@ -73,7 +66,7 @@ class UserRepositoryTest {
 		this.underTest.save(this.user);
 
 		// When
-		Optional<User> expected = this.underTest.findByEmail(this.email);
+		Optional<User> expected = this.underTest.findByEmail(this.user.getEmail());
 
 		// Then
 		assertThat(expected).isPresent();
@@ -95,7 +88,7 @@ class UserRepositoryTest {
 		this.underTest.save(this.user);
 
 		// When
-		Optional<User> expected = this.underTest.findByPasswordCode(this.passwordCode);
+		Optional<User> expected = this.underTest.findByPasswordCode(this.user.getPasswordCode());
 
 		// Then
 		assertThat(expected).isPresent();
@@ -114,13 +107,7 @@ class UserRepositoryTest {
 	@Test
 	void itShouldFindAllByRole() {
 		// Given
-		User user1 = new User(
-				null, "jose", "12345", "jose@hello.com",
-				"José Dom", (byte) 21, null, Constants.STUDENT_ROLE,
-				null, null, new JsonObject(), emptySet(),
-				emptySet(), emptySet(), emptySet(), emptySet(),
-				emptySet(), emptySet()
-		);
+		User user1 = createUserWithRole(Constants.STUDENT_ROLE);
 
 		this.underTest.save(this.user);
 		this.underTest.save(user1);
@@ -159,7 +146,7 @@ class UserRepositoryTest {
 		this.underTest.save(this.user);
 
 		// When
-		boolean expected = this.underTest.existsByEmail(this.email);
+		boolean expected = this.underTest.existsByEmail(this.user.getEmail());
 
 		// Then
 		assertThat(expected).isTrue();

@@ -14,9 +14,9 @@ import rs.chat.utils.Constants;
 
 import java.time.Instant;
 
-import static java.util.Collections.emptySet;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static rs.chat.Constants.TEST_COMPARISON_CONFIG;
+import static rs.chat.TestUtils.createUserWithRole;
 
 @DataJpaTest
 class FileRepositoryTest {
@@ -28,16 +28,10 @@ class FileRepositoryTest {
 
 	@BeforeEach
 	void setUp() {
-		this.user = this.userRepository.save(new User(
-				1L, "david", "12345", "david@hello.com",
-				"David Gar Dom", (byte) 21, null, Constants.STUDENT_ROLE,
-				null, null, new JsonObject(), emptySet(),
-				emptySet(), emptySet(), emptySet(), emptySet(),
-				emptySet(), emptySet()
-		));
+		this.user = this.userRepository.save(createUserWithRole(Constants.STUDENT_ROLE));
 
 		this.file = new File(
-				1L, "name", Instant.now(), 1024,
+				null, "name", Instant.now(), 1024,
 				"/path/to/file", new JsonObject(), "IMAGE", null // set later
 		);
 	}

@@ -1,6 +1,5 @@
 package rs.chat.unit.domain.service;
 
-import com.google.gson.JsonObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,13 +14,13 @@ import rs.chat.domain.service.UserService;
 import rs.chat.exceptions.BadRequestException;
 import rs.chat.utils.Constants;
 
-import static java.util.Collections.emptySet;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static rs.chat.TestUtils.createUserWithRole;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -36,12 +35,7 @@ class UserServiceTest {
 	@BeforeEach
 	void setUp() {
 		this.underTest = new UserService(this.userRepository, this.passwordEncoder, this.userMapper);
-		this.user = new User(
-				1L, "david", "12345", "david@hello.com", "David Gar Dom",
-				(byte) 21, null, Constants.STUDENT_ROLE, null, null,
-				new JsonObject(), emptySet(), emptySet(), emptySet(), emptySet(),
-				emptySet(), emptySet(), emptySet()
-		);
+		this.user = createUserWithRole(Constants.STUDENT_ROLE);
 	}
 
 	@Test

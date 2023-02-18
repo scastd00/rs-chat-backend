@@ -1,5 +1,6 @@
 package rs.chat.utils;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fatboyindustrial.gsonjavatime.Converters;
@@ -36,7 +37,9 @@ public final class Constants {
 
 	private static final String EMPTY_ENV_VAR = "None";
 
-	public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper().registerModules(new JavaTimeModule(), new GsonModule());
+	public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
+			.setSerializationInclusion(JsonInclude.Include.NON_NULL) // Don't serialize null values
+			.registerModules(new JavaTimeModule(), new GsonModule());
 	public static final Gson GSON = Converters.registerAll(new GsonBuilder()).create();
 	public static final String ERROR_JSON_KEY = "error";
 	public static final String DATA_JSON_KEY = "data";

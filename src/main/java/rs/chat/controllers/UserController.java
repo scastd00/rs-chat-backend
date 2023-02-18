@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import rs.chat.domain.entity.User;
-import rs.chat.domain.entity.mappers.UserMapper;
 import rs.chat.domain.service.ChatService;
 import rs.chat.domain.service.GroupService;
 import rs.chat.domain.service.SessionService;
@@ -47,7 +46,6 @@ public class UserController {
 	private final SessionService sessionService;
 	private final GroupService groupService;
 	private final ChatService chatService;
-	private final UserMapper userMapper;
 
 	/**
 	 * Returns all users.

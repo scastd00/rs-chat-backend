@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import rs.chat.domain.entity.UserBadge;
 import rs.chat.domain.entity.dtos.BadgeDto;
 import rs.chat.domain.entity.mappers.BadgeMapper;
-import rs.chat.domain.repository.BadgeRepository;
 import rs.chat.domain.repository.UserBadgeRepository;
 
 import java.util.List;
@@ -17,7 +16,6 @@ import java.util.List;
 @Transactional
 @Slf4j
 public class BadgeService {
-	private final BadgeRepository badgeRepository;
 	private final UserBadgeRepository userBadgeRepository;
 	private final BadgeMapper badgeMapper;
 

@@ -25,7 +25,7 @@ class ChatRepositoryTest {
 	@BeforeEach
 	void setUp() {
 		this.chat = new Chat(
-				1L, "name", "group", "folder",
+				null, "name", "group", "folder",
 				new JsonObject(), "25wcv9A", "group-1",
 				Collections.emptySet()
 		);

@@ -1,6 +1,5 @@
 package rs.chat.unit.domain.repository;
 
-import com.google.gson.JsonObject;
 import org.assertj.core.api.AbstractListAssert;
 import org.assertj.core.api.ObjectAssert;
 import org.junit.jupiter.api.AfterEach;
@@ -25,6 +24,7 @@ import java.util.List;
 import static java.util.Collections.emptySet;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static rs.chat.Constants.TEST_COMPARISON_CONFIG;
+import static rs.chat.TestUtils.createUserWithRole;
 
 @DataJpaTest
 class TeacherSubjectRepositoryTest {
@@ -43,21 +43,9 @@ class TeacherSubjectRepositoryTest {
 	private TeaSubjId teaSubjId2;
 
 	private void initEntities() {
-		this.teacher1 = this.userRepository.save(new User(
-				null, "theBoss", "12345", "boss@hello.com",
-				"Manuel Ferrero Gar", (byte) 37, null, Constants.TEACHER_ROLE,
-				null, null, new JsonObject(), emptySet(),
-				emptySet(), emptySet(), emptySet(), emptySet(),
-				emptySet(), emptySet()
-		));
+		this.teacher1 = this.userRepository.save(createUserWithRole(Constants.TEACHER_ROLE));
 
-		this.teacher2 = this.userRepository.save(new User(
-				null, "theBoss2", "12345", "boss2@hello.com",
-				"David Ferrero Gar", (byte) 34, null, Constants.TEACHER_ROLE,
-				null, null, new JsonObject(), emptySet(),
-				emptySet(), emptySet(), emptySet(), emptySet(),
-				emptySet(), emptySet()
-		));
+		this.teacher2 = this.userRepository.save(createUserWithRole(Constants.TEACHER_ROLE));
 
 		this.degree = this.degreeRepository.save(new Degree(
 				null, "Computer Science", new LinkedHashSet<>()

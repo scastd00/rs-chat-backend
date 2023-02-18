@@ -1,6 +1,5 @@
 package rs.chat.unit.domain.repository;
 
-import com.google.gson.JsonObject;
 import org.assertj.core.api.AbstractListAssert;
 import org.assertj.core.api.ObjectAssert;
 import org.junit.jupiter.api.AfterEach;
@@ -22,6 +21,7 @@ import java.util.List;
 import static java.util.Collections.emptySet;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static rs.chat.Constants.TEST_COMPARISON_CONFIG;
+import static rs.chat.TestUtils.createUserWithRole;
 import static rs.chat.net.ws.Message.TEXT_MESSAGE;
 
 @DataJpaTest
@@ -39,13 +39,7 @@ class UserBadgeRepositoryTest {
 
 	@BeforeEach
 	void setUp() {
-		this.user = this.userRepository.save(new User(
-				null, "david", "12345", "david@hello.com",
-				"David Gar Dom", (byte) 21, null, Constants.STUDENT_ROLE,
-				null, "FNvb23", new JsonObject(), emptySet(),
-				emptySet(), emptySet(), emptySet(), emptySet(),
-				emptySet(), emptySet()
-		));
+		this.user = this.userRepository.save(createUserWithRole(Constants.STUDENT_ROLE));
 
 		this.badge1 = this.badgeRepository.save(new Badge(
 				null, "1st message", "First message",

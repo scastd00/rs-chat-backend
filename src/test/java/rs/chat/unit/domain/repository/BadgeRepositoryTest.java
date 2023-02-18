@@ -25,7 +25,7 @@ class BadgeRepositoryTest {
 	@BeforeEach
 	void setUp() {
 		this.badge = new Badge(
-				1L, "1st message", "First message",
+				null, "1st message", "First message",
 				"/images/badges/1st-message.png", TEXT_MESSAGE.type(), 1,
 				Collections.emptySet()
 		);
