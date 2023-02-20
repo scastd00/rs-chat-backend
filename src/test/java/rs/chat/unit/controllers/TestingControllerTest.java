@@ -8,7 +8,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import rs.chat.controllers.TestingController;
 import rs.chat.utils.security.annotations.WithMockStudent;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static rs.chat.router.Routes.TEST_URL;

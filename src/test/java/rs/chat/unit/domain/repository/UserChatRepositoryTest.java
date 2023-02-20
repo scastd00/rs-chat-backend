@@ -21,7 +21,7 @@ import rs.chat.utils.factories.DefaultFactory;
 import java.util.Collections;
 import java.util.List;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static rs.chat.utils.TestConstants.TEST_COMPARISON_CONFIG;
 
 @DataJpaTest
