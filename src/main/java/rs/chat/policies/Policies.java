@@ -80,7 +80,7 @@ public final class Policies {
 			return;
 		}
 
-		String name = violations.get(0).name();
+		String name = violations.get(0).name(); // Since we are using failFast, we only need to check the first violation.
 
 		if (name.equals(PASSWORD_KEY) || name.equals(CONFIRM_PASSWORD_KEY) || name.equals(EQUAL_PASSWORDS_KEY)) {
 			throw new InvalidPasswordException(violations.get(0).message());
