@@ -15,14 +15,12 @@ import rs.chat.domain.repository.BadgeRepository;
 import rs.chat.domain.repository.UserBadgeRepository;
 import rs.chat.domain.repository.UserRepository;
 import rs.chat.utils.Constants;
+import rs.chat.utils.factories.DefaultFactory;
 
 import java.util.List;
 
-import static java.util.Collections.emptySet;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static rs.chat.net.ws.Message.TEXT_MESSAGE;
 import static rs.chat.utils.TestConstants.TEST_COMPARISON_CONFIG;
-import static rs.chat.utils.TestUtils.createUserWithRole;
 
 @DataJpaTest
 class UserBadgeRepositoryTest {
@@ -39,20 +37,9 @@ class UserBadgeRepositoryTest {
 
 	@BeforeEach
 	void setUp() {
-		this.user = this.userRepository.save(createUserWithRole(Constants.STUDENT_ROLE));
-
-		this.badge1 = this.badgeRepository.save(new Badge(
-				null, "1st message", "First message",
-				"/images/badges/1st-message.png", TEXT_MESSAGE.type(), 1,
-				emptySet()
-		));
-
-		this.badge2 = this.badgeRepository.save(new Badge(
-				null, "2nd message", "Second message",
-				"/images/badges/2nd-message.png", TEXT_MESSAGE.type(), 2,
-				emptySet()
-		));
-
+		this.user = this.userRepository.save(DefaultFactory.INSTANCE.createUser(null, Constants.STUDENT_ROLE));
+		this.badge1 = this.badgeRepository.save(DefaultFactory.INSTANCE.createBadge(null, "1st message", "First message", 1));
+		this.badge2 = this.badgeRepository.save(DefaultFactory.INSTANCE.createBadge(null, "2nd message", "Second message", 2));
 		this.userBadgeId1 = new UserBadgeId(this.user.getId(), this.badge1.getId());
 		this.userBadgeId2 = new UserBadgeId(this.user.getId(), this.badge2.getId());
 		this.userBadge1 = new UserBadge(this.userBadgeId1, this.user, this.badge1);

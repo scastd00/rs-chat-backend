@@ -53,7 +53,7 @@ public class WebSecurityConfig {
 	 *
 	 * @return {@link SecurityFilterChain} object.
 	 *
-	 * @throws Exception
+	 * @throws Exception if an error occurs.
 	 * @apiNote This method was introduced due to the migration from Spring Boot 2 to Spring Boot 3.
 	 */
 	@Bean

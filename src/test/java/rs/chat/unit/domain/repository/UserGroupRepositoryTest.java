@@ -15,13 +15,13 @@ import rs.chat.domain.repository.GroupRepository;
 import rs.chat.domain.repository.UserGroupRepository;
 import rs.chat.domain.repository.UserRepository;
 import rs.chat.utils.Constants;
+import rs.chat.utils.factories.DefaultFactory;
 
 import java.util.List;
 
 import static java.util.Collections.emptySet;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static rs.chat.utils.TestConstants.TEST_COMPARISON_CONFIG;
-import static rs.chat.utils.TestUtils.createUserWithRole;
 
 @DataJpaTest
 class UserGroupRepositoryTest {
@@ -38,12 +38,9 @@ class UserGroupRepositoryTest {
 
 	@BeforeEach
 	void setUp() {
-		this.user1 = this.userRepository.save(createUserWithRole(Constants.STUDENT_ROLE));
-
-		this.user2 = this.userRepository.save(createUserWithRole(Constants.STUDENT_ROLE));
-
+		this.user1 = this.userRepository.save(DefaultFactory.INSTANCE.createUser(null, Constants.STUDENT_ROLE));
+		this.user2 = this.userRepository.save(DefaultFactory.INSTANCE.createUser(null, Constants.STUDENT_ROLE));
 		this.group = this.groupRepository.save(new Group(null, "group-1", emptySet()));
-
 		this.userGroupId1 = new UserGroupId(this.user1.getId(), this.group.getId());
 		this.userGroupId2 = new UserGroupId(this.user2.getId(), this.group.getId());
 		this.userGroup1 = new UserGroup(this.userGroupId1, this.user1, this.group);

@@ -13,6 +13,7 @@ import rs.chat.domain.repository.UserRepository;
 import rs.chat.domain.service.UserService;
 import rs.chat.exceptions.BadRequestException;
 import rs.chat.utils.Constants;
+import rs.chat.utils.factories.DefaultFactory;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -20,7 +21,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static rs.chat.utils.TestUtils.createUserWithRole;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -35,7 +35,7 @@ class UserServiceTest {
 	@BeforeEach
 	void setUp() {
 		this.underTest = new UserService(this.userRepository, this.passwordEncoder, this.userMapper);
-		this.user = createUserWithRole(Constants.STUDENT_ROLE);
+		this.user = DefaultFactory.INSTANCE.createUser(null, Constants.STUDENT_ROLE);
 	}
 
 	@Test

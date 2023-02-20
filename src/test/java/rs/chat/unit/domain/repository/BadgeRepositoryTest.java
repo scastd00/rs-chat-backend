@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import rs.chat.domain.entity.Badge;
 import rs.chat.domain.repository.BadgeRepository;
+import rs.chat.utils.factories.DefaultFactory;
 
-import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -24,11 +24,7 @@ class BadgeRepositoryTest {
 
 	@BeforeEach
 	void setUp() {
-		this.badge = new Badge(
-				null, "1st message", "First message",
-				"/images/badges/1st-message.png", TEXT_MESSAGE.type(), 1,
-				Collections.emptySet()
-		);
+		this.badge = DefaultFactory.INSTANCE.createBadge(null, "1st message", "First message", 1);
 	}
 
 	@AfterEach

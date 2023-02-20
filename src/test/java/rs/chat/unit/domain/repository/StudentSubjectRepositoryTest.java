@@ -15,11 +15,10 @@ import rs.chat.domain.repository.StudentSubjectRepository;
 import rs.chat.domain.repository.SubjectRepository;
 import rs.chat.domain.repository.UserRepository;
 import rs.chat.utils.Constants;
+import rs.chat.utils.factories.DefaultFactory;
 
-import static java.util.Collections.emptySet;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static rs.chat.utils.TestConstants.TEST_COMPARISON_CONFIG;
-import static rs.chat.utils.TestUtils.createUserWithRole;
 
 @DataJpaTest
 class StudentSubjectRepositoryTest {
@@ -37,18 +36,10 @@ class StudentSubjectRepositoryTest {
 	private StuSubjId stuSubjId2;
 
 	private void initEntities() {
-		this.student1 = this.userRepository.save(createUserWithRole(Constants.STUDENT_ROLE));
-
-		this.student2 = this.userRepository.save(createUserWithRole(Constants.STUDENT_ROLE));
-
-		this.degree = this.degreeRepository.save(new Degree(
-				null, "Computer Science", emptySet()
-		));
-
-		this.subject = this.subjectRepository.save(new Subject(
-				null, "Math", "S1", "FB", (byte) 6, (byte) 1, this.degree,
-				emptySet(), emptySet()
-		));
+		this.student1 = this.userRepository.save(DefaultFactory.INSTANCE.createUser(null, Constants.STUDENT_ROLE));
+		this.student2 = this.userRepository.save(DefaultFactory.INSTANCE.createUser(null, Constants.STUDENT_ROLE));
+		this.degree = this.degreeRepository.save(DefaultFactory.INSTANCE.createDegree(null, "Computer Science"));
+		this.subject = this.subjectRepository.save(DefaultFactory.INSTANCE.createSubject(null, "Math", "S1", "FB", this.degree));
 
 		this.stuSubjId1 = new StuSubjId(this.student1.getId(), this.subject.getId());
 		this.stuSubj1 = new StuSubj(this.stuSubjId1, this.student1, this.subject);

@@ -17,6 +17,7 @@ import rs.chat.domain.repository.SubjectRepository;
 import rs.chat.domain.repository.TeacherSubjectRepository;
 import rs.chat.domain.repository.UserRepository;
 import rs.chat.utils.Constants;
+import rs.chat.utils.factories.DefaultFactory;
 
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -24,7 +25,6 @@ import java.util.List;
 import static java.util.Collections.emptySet;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static rs.chat.utils.TestConstants.TEST_COMPARISON_CONFIG;
-import static rs.chat.utils.TestUtils.createUserWithRole;
 
 @DataJpaTest
 class TeacherSubjectRepositoryTest {
@@ -43,9 +43,9 @@ class TeacherSubjectRepositoryTest {
 	private TeaSubjId teaSubjId2;
 
 	private void initEntities() {
-		this.teacher1 = this.userRepository.save(createUserWithRole(Constants.TEACHER_ROLE));
+		this.teacher1 = this.userRepository.save(DefaultFactory.INSTANCE.createUser(null, Constants.TEACHER_ROLE));
 
-		this.teacher2 = this.userRepository.save(createUserWithRole(Constants.TEACHER_ROLE));
+		this.teacher2 = this.userRepository.save(DefaultFactory.INSTANCE.createUser(null, Constants.TEACHER_ROLE));
 
 		this.degree = this.degreeRepository.save(new Degree(
 				null, "Computer Science", new LinkedHashSet<>()

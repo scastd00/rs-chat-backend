@@ -109,7 +109,7 @@ public class HttpResponse extends HttpServletResponseWrapper {
 	}
 
 	/**
-	 * Immediately sends a response with the given status and empty body.
+	 * Immediately sends a response with the current status and empty body.
 	 *
 	 * @throws IOException if an error occurs while sending the response.
 	 */
@@ -128,11 +128,15 @@ public class HttpResponse extends HttpServletResponseWrapper {
 	 * @throws IOException if an error occurs while sending the response.
 	 */
 	public void send(Object content) throws IOException {
+		HttpResponseBody body;
+
 		if (this.status.isError()) {
-			this.send(new HttpResponseBody(ERROR_JSON_KEY, content));
+			body = new HttpResponseBody(ERROR_JSON_KEY, content);
 		} else {
-			this.send(new HttpResponseBody(DATA_JSON_KEY, content));
+			body = new HttpResponseBody(DATA_JSON_KEY, content);
 		}
+
+		this.send(body);
 	}
 
 	/**
@@ -140,7 +144,8 @@ public class HttpResponse extends HttpServletResponseWrapper {
 	 *
 	 * @param body the body of the response to be sent.
 	 *
-	 * @throws IOException if an error occurs while sending the response.
+	 * @throws IOException             if an error occurs while sending the response.
+	 * @throws InternalServerException if the status of the response is not set.
 	 */
 	public void send(HttpResponseBody body) throws IOException {
 		if (this.status == null) {

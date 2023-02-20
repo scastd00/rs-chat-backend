@@ -10,13 +10,13 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import rs.chat.domain.entity.User;
 import rs.chat.domain.repository.UserRepository;
 import rs.chat.utils.Constants;
+import rs.chat.utils.factories.DefaultFactory;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static rs.chat.utils.TestConstants.TEST_COMPARISON_CONFIG;
-import static rs.chat.utils.TestUtils.createUserWithRole;
 
 @DataJpaTest
 class UserRepositoryTest {
@@ -30,7 +30,7 @@ class UserRepositoryTest {
 
 	@BeforeEach
 	void setUp() {
-		this.user = createUserWithRole(Constants.STUDENT_ROLE);
+		this.user = DefaultFactory.INSTANCE.createUser(null, Constants.STUDENT_ROLE);
 	}
 
 	@AfterEach
@@ -107,7 +107,7 @@ class UserRepositoryTest {
 	@Test
 	void itShouldFindAllByRole() {
 		// Given
-		User user1 = createUserWithRole(Constants.STUDENT_ROLE);
+		User user1 = DefaultFactory.INSTANCE.createUser(null, Constants.STUDENT_ROLE);
 
 		this.underTest.save(this.user);
 		this.underTest.save(user1);

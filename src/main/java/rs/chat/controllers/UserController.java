@@ -144,6 +144,11 @@ public class UserController {
 
 	@GetMapping(USER_STATS_URL)
 	public void getUserStats(HttpServletResponse res, @PathVariable String username) throws IOException {
-		new HttpResponse(res).ok().send(this.userService.getUserByUsername(username).getMessageCountByType());
+		HttpResponse response = new HttpResponse(res);
+
+		// If not executed with this utility method, the exception is not caught in the test.
+		JsonObject stats = ControllerUtils.performActionThatMayThrowException(response, () -> this.userService.getUserStats(username));
+
+		response.ok().send(stats);
 	}
 }

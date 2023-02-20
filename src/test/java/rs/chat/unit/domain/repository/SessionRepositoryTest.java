@@ -12,14 +12,13 @@ import rs.chat.domain.entity.User;
 import rs.chat.domain.repository.SessionRepository;
 import rs.chat.domain.repository.UserRepository;
 import rs.chat.utils.Constants;
+import rs.chat.utils.factories.DefaultFactory;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static rs.chat.utils.TestConstants.TEST_COMPARISON_CONFIG;
-import static rs.chat.utils.TestUtils.createUserWithRole;
 
 @DataJpaTest
 class SessionRepositoryTest {
@@ -32,14 +31,9 @@ class SessionRepositoryTest {
 
 	@BeforeEach
 	void setUp() {
-		this.user = this.userRepository.save(createUserWithRole(Constants.STUDENT_ROLE));
-
-		this.session1 = new Session(
-				null, "127.0.0.1", Instant.now(), Instant.now().plusSeconds(20), "token1", this.user
-		);
-		this.session2 = new Session(
-				null, "127.0.0.1", Instant.now(), Instant.now().plusSeconds(20), "token2", this.user
-		);
+		this.user = this.userRepository.save(DefaultFactory.INSTANCE.createUser(null, Constants.STUDENT_ROLE));
+		this.session1 = DefaultFactory.INSTANCE.createSession(null, this.user);
+		this.session2 = DefaultFactory.INSTANCE.createSession(null, this.user);
 	}
 
 	@AfterEach

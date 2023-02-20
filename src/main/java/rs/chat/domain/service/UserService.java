@@ -1,5 +1,6 @@
 package rs.chat.domain.service;
 
+import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -143,5 +144,9 @@ public class UserService implements UserDetailsService {
 	public User getUserById(Long userId) {
 		return this.userRepository.findById(userId)
 		                          .orElseThrow(() -> new NotFoundException("User with id %d not found".formatted(userId)));
+	}
+
+	public JsonObject getUserStats(String username) {
+		return this.getUserByUsername(username).getMessageCountByType();
 	}
 }
