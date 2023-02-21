@@ -1,65 +1,108 @@
 package rs.chat.integration;
 
-import org.junit.jupiter.api.BeforeAll;
+import com.google.gson.JsonObject;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import rs.chat.config.security.JWTService;
-import rs.chat.config.security.filter.AuthenticationFilter;
-import rs.chat.config.security.filter.AuthorizationFilter;
-import rs.chat.controllers.BadgeController;
-import rs.chat.domain.entity.mappers.BadgeMapper;
-import rs.chat.domain.entity.mappers.BadgeMapperImpl;
-import rs.chat.domain.service.BadgeService;
-import rs.chat.domain.service.SessionService;
+import rs.chat.domain.entity.Session;
+import rs.chat.domain.entity.User;
+import rs.chat.domain.repository.ChatRepository;
+import rs.chat.domain.repository.GroupRepository;
+import rs.chat.domain.repository.SessionRepository;
+import rs.chat.domain.repository.UserRepository;
+import rs.chat.utils.Constants;
+import rs.chat.utils.SaveDefaultsToDB;
+import rs.chat.utils.TestUtils;
+import rs.chat.utils.factories.DefaultFactory;
 
-@WebMvcTest(BadgeController.class)
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static rs.chat.router.Routes.PostRoute.REGISTER_URL;
+import static rs.chat.utils.TestConstants.TEST_OBJECT_MAPPER;
+import static rs.chat.utils.TestUtils.request;
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureMockMvc
 class IntegrationTest {
-	private MockMvc mvc;
-	@MockBean private BadgeService badgeService;
-	private static BadgeMapper badgeMapper;
-	@MockBean private JWTService jwtService;
-	@MockBean private SessionService sessionService;
-	@MockBean private AuthenticationManager authenticationManager;
+	@Autowired private MockMvc mockMvc;
 
-	@BeforeAll
-	static void setUp() {
-		badgeMapper = new BadgeMapperImpl();
-	}
+	@Autowired private UserRepository userRepository;
+	@Autowired private SessionRepository sessionRepository;
+	@Autowired private ChatRepository chatRepository;
+	@Autowired private GroupRepository groupRepository;
+
+	private Session studentSession;
+	private Session teacherSession;
+	private Session adminSession;
 
 	@BeforeEach
-	void setUpEach() {
-		AuthorizationFilter authorizationFilter = new AuthorizationFilter(jwtService, sessionService);
-		AuthenticationFilter authenticationFilter = new AuthenticationFilter(authenticationManager, jwtService);
+	void setUp() {
+		Map<String, Session> sessionMap = SaveDefaultsToDB.saveDefaults(
+				userRepository, groupRepository, chatRepository,
+				null, null, sessionRepository
+		);
 
-		this.mvc = MockMvcBuilders.standaloneSetup(new BadgeController(badgeService))
-		                          .addFilters(authorizationFilter, authenticationFilter)
-		                          .build();
+		studentSession = sessionMap.get(Constants.STUDENT_ROLE);
+		teacherSession = sessionMap.get(Constants.TEACHER_ROLE);
+		adminSession = sessionMap.get(Constants.ADMIN_ROLE);
+	}
+
+	@AfterEach
+	void tearDown() {
+		sessionRepository.deleteAll();
+		chatRepository.deleteAll();
+		groupRepository.deleteAll();
+		userRepository.deleteAll();
 	}
 
 	@Test
-	void getBadgesOfUser() throws Exception {
-//		// Given
-//		given(badgeService.getBadgesOfUser(1L))
-//				.willReturn(Stream.of(
-//						Badge.builder().id(1L).title("Badge 1").build(),
-//						Badge.builder().id(2L).title("Badge 2").build()
-//				).map(badgeMapper::toDto).toList());
-//
-//		// When
-//		MockHttpServletResponse response = mvc.perform(get(USER_BADGES_URL, 1L))
-//		                                      .andExpect(status().isOk())
-//		                                      .andReturn()
-//		                                      .getResponse();
-//
-//		// Then
-//		assertThat(response.getContentAsString()).isEqualTo(
-//				objectMapper.writeValueAsString(Badge.builder().id(1L).title("Badge 1").build())
-//						+ objectMapper.writeValueAsString(Badge.builder().id(2L).title("Badge 2").build())
-//		);
+	void testRegister() throws Exception {
+		// Given
+		User user = DefaultFactory.INSTANCE.createUser(null, Constants.STUDENT_ROLE);
+		Map<String, Object> userBody = Map.of(
+				"email", user.getEmail(),
+				"username", user.getUsername(),
+				"fullName", user.getFullName(),
+				"password", user.getPassword(),
+				"confirmPassword", user.getPassword(),
+				"agreeTerms", Boolean.TRUE
+		);
+
+		// When
+		String response = mockMvc.perform(request(HttpMethod.POST, REGISTER_URL)
+				                                  .contentType(MediaType.APPLICATION_JSON)
+				                                  .content(TEST_OBJECT_MAPPER.writeValueAsString(userBody)))
+		                         .andReturn()
+		                         .getResponse()
+		                         .getContentAsString();
+
+		// Then
+		// Check that the user saved in DB is the same as the one we sent
+		assertThat(userRepository.findByUsername(user.getUsername()))
+				.isPresent()
+				.get()
+				.hasFieldOrPropertyWithValue("email", user.getEmail())
+				.hasFieldOrPropertyWithValue("username", user.getUsername());
+
+		// Check the response content if it matches with the data stored in DB for the user.
+		JsonObject jsonResponse = TestUtils.parseJson(response);
+
+		String responseToken = jsonResponse.get("session").getAsJsonObject()
+		                                   .get("token").getAsString();
+		assertThat(sessionRepository.findByToken(responseToken)).isPresent();
+
+		JsonObject responseUser = jsonResponse.get("user").getAsJsonObject();
+		assertThat(userRepository.findByUsername(responseUser.get("username").getAsString()))
+				.isPresent()
+				.get()
+				.hasFieldOrPropertyWithValue("email", responseUser.get("email").getAsString())
+				.hasFieldOrPropertyWithValue("fullName", responseUser.get("fullName").getAsString());
 	}
 }

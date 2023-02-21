@@ -1,7 +1,6 @@
 package rs.chat.controllers;
 
 import com.google.gson.JsonObject;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,8 +55,7 @@ public class TeacherController {
 	}
 
 	@PostMapping(ADD_TEACHER_TO_SUBJECT_URL)
-	public void addTeacherToSubject(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		HttpRequest request = new HttpRequest(req);
+	public void addTeacherToSubject(HttpRequest request, HttpServletResponse res) throws IOException {
 		HttpResponse response = new HttpResponse(res);
 		JsonObject body = request.body();
 		long teacherId = body.get("teacherId").getAsLong();

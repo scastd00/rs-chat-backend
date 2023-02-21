@@ -2,7 +2,6 @@ package rs.chat.controllers;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -62,14 +61,13 @@ public class SubjectController {
 	/**
 	 * Saves a new subject to db.
 	 *
-	 * @param req request containing parameters of the new subject.
-	 * @param res response containing saved subject.
+	 * @param request request containing parameters of the new subject.
+	 * @param res     response containing saved subject.
 	 *
 	 * @throws IOException if an error occurs.
 	 */
 	@PostMapping(SUBJECT_SAVE_URL)
-	public void saveSubject(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		HttpRequest request = new HttpRequest(req);
+	public void saveSubject(HttpRequest request, HttpServletResponse res) throws IOException {
 		HttpResponse response = new HttpResponse(res);
 		JsonObject body = request.body();
 

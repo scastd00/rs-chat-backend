@@ -3,6 +3,7 @@ package rs.chat.utils.factories;
 import com.google.gson.JsonObject;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import rs.chat.config.security.JWTService;
 import rs.chat.domain.entity.Badge;
 import rs.chat.domain.entity.Chat;
 import rs.chat.domain.entity.Degree;
@@ -120,8 +121,8 @@ public final class DefaultFactory {
 
 	public Session createSession(Long id, User user) {
 		return new Session(
-				id, FAKER.internet().ipV4Address(), Instant.now(),
-				Instant.now().plusSeconds(60), randomAlphanumeric(20), user
+				id, FAKER.internet().ipV4Address(), Instant.now(), Instant.now().plusSeconds(60),
+				JWTService.generateTmpToken(user.getUsername(), user.getRole()), user
 		);
 	}
 

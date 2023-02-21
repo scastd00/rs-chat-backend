@@ -2,7 +2,6 @@ package rs.chat.controllers;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -63,15 +62,14 @@ public class AuthController {
 	/**
 	 * Performs the login of the user.
 	 *
-	 * @param req the request containing the credentials of the user.
-	 * @param res the response with the user, the session (with JWT token)
-	 *            and the chats that the user can access.
+	 * @param request the request containing the credentials of the user.
+	 * @param res     the response with the user, the session (with JWT token)
+	 *                and the chats that the user can access.
 	 *
 	 * @throws IOException if an error occurs.
 	 */
 	@PostMapping(LOGIN_URL)
-	public void login(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		HttpRequest request = new HttpRequest(req);
+	public void login(HttpRequest request, HttpServletResponse res) throws IOException {
 		HttpResponse response = new HttpResponse(res);
 		String token = request.get("USER:TOKEN").toString();
 		String username = request.get("USER:USERNAME").toString();
@@ -110,16 +108,15 @@ public class AuthController {
 	/**
 	 * Registers a new user to the application.
 	 *
-	 * @param req the request containing the credentials of the user.
-	 * @param res the response with the user, the session (with JWT token)
-	 *            and the chats that the user can access by registering to the application
-	 *            (global group chat by default).
+	 * @param request the request containing the credentials of the user.
+	 * @param res     the response with the user, the session (with JWT token)
+	 *                and the chats that the user can access by registering to the application
+	 *                (global group chat by default).
 	 *
 	 * @throws IOException if an error occurs.
 	 */
 	@PostMapping(REGISTER_URL)
-	public void register(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		HttpRequest request = new HttpRequest(req);
+	public void register(HttpRequest request, HttpServletResponse res) throws IOException {
 		HttpResponse response = new HttpResponse(res);
 		JsonObject body = request.body();
 
@@ -194,14 +191,13 @@ public class AuthController {
 	/**
 	 * Performs the logout of the user.
 	 *
-	 * @param req the request containing the token to be deleted.
-	 * @param res OK response if the token is deleted.
+	 * @param request the request containing the token to be deleted.
+	 * @param res     OK response if the token is deleted.
 	 *
 	 * @throws IOException if an error occurs.
 	 */
 	@PostMapping(LOGOUT_URL)
-	public void logout(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		HttpRequest request = new HttpRequest(req);
+	public void logout(HttpRequest request, HttpServletResponse res) throws IOException {
 		HttpResponse response = new HttpResponse(res);
 		String token = request.getHeader(AUTHORIZATION);
 
@@ -242,14 +238,13 @@ public class AuthController {
 	 * This method can be used when a user wants to change the password inside
 	 * the profile (first forget password, then create password).
 	 *
-	 * @param req the request with the email of the user.
-	 * @param res the response (only status code is sent if successful).
+	 * @param request the request with the email of the user.
+	 * @param res     the response (only status code is sent if successful).
 	 *
 	 * @throws IOException if an error occurs.
 	 */
 	@PostMapping(FORGOT_PASSWORD_URL)
-	public void forgotPassword(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		HttpRequest request = new HttpRequest(req);
+	public void forgotPassword(HttpRequest request, HttpServletResponse res) throws IOException {
 		HttpResponse response = new HttpResponse(res);
 		JsonObject body = request.body();
 
@@ -273,14 +268,13 @@ public class AuthController {
 	/**
 	 * Creates a new password for the user.
 	 *
-	 * @param req the request with the new password.
-	 * @param res the response (only status code is sent if successful).
+	 * @param request the request with the new password.
+	 * @param res     the response (only status code is sent if successful).
 	 *
 	 * @throws IOException if an error occurs.
 	 */
 	@PostMapping(CREATE_PASSWORD_URL)
-	public void createPassword(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		HttpRequest request = new HttpRequest(req);
+	public void createPassword(HttpRequest request, HttpServletResponse res) throws IOException {
 		HttpResponse response = new HttpResponse(res);
 		JsonObject body = request.body();
 		String code = body.get("code").getAsString();

@@ -1,7 +1,6 @@
 package rs.chat.controllers;
 
 import com.google.gson.JsonObject;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,14 +40,13 @@ public class FileController {
 	/**
 	 * Uploads a file to the server.
 	 *
-	 * @param req request that contains the file.
-	 * @param res response that will be sent to the client.
+	 * @param request request that contains the file.
+	 * @param res     response that will be sent to the client.
 	 *
 	 * @throws IOException if an I/O error occurs.
 	 */
 	@PostMapping(UPLOAD_URL)
-	public void uploadFile(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		HttpRequest request = new HttpRequest(req);
+	public void uploadFile(HttpRequest request, HttpServletResponse res) throws IOException {
 		HttpResponse response = new HttpResponse(res);
 		JsonObject body = request.body();
 

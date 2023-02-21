@@ -58,12 +58,16 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(@NotNull HttpServletRequest request,
 	                                @NotNull HttpServletResponse response,
 	                                @NotNull FilterChain chain) throws ServletException, IOException {
-		if (this.isUnknownPath(request.getServletPath())) {
+		// Get the URI of the request (done like this due to the fact that the requestURI works
+		// with the tests, but the getServletPath() does not).
+		String requestURI = request.getRequestURI();
+
+		if (this.isUnknownPath(requestURI)) {
 			new HttpResponse(response).sendStatus(NOT_FOUND);
 			return;
 		}
 
-		if (this.isExcludedPath(request.getServletPath())) {
+		if (this.isExcludedPath(requestURI)) {
 			chain.doFilter(request, response);
 			return;
 		}

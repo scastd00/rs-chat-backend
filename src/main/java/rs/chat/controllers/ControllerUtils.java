@@ -1,6 +1,5 @@
 package rs.chat.controllers;
 
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +29,7 @@ public final class ControllerUtils {
 	 *
 	 * @throws IOException if an error occurs.
 	 */
-	public static <R> R performActionThatMayThrowException(HttpServletResponse res, Function0<R> action)
+	public static <R> R performActionThatMayThrowException(HttpResponse res, Function0<R> action)
 			throws IOException {
 		try {
 			return action.apply();
@@ -44,7 +43,7 @@ public final class ControllerUtils {
 			                    ? HttpStatus.BAD_GATEWAY
 			                    : annotation.value(); // If the exception has a status, set it to the response
 
-			new HttpResponse(res).status(status).send(e.getMessage());
+			res.status(status).send(e.getMessage());
 			log.error("Error while performing action", e);
 			throw e; // Exit from executing the rest of the controller method.
 		}

@@ -1,6 +1,5 @@
 package rs.chat.controllers;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -100,15 +99,14 @@ public class ChatController {
 	/**
 	 * Allows a user to join a chat with a code that is provided by the chat owner.
 	 *
-	 * @param req  request object that contains the username of the user that wants to join the chat.
-	 * @param res  response object that contains the name of the chat to which the user has joined.
-	 * @param code code of the chat to which the user wants to join.
+	 * @param request request object that contains the username of the user that wants to join the chat.
+	 * @param res     response object that contains the name of the chat to which the user has joined.
+	 * @param code    code of the chat to which the user wants to join.
 	 *
 	 * @throws IOException if an error occurs while sending the response back to the client.
 	 */
 	@PostMapping(JOIN_CHAT_URL)
-	public void joinChat(HttpServletRequest req, HttpServletResponse res, @PathVariable String code) throws IOException {
-		HttpRequest request = new HttpRequest(req);
+	public void joinChat(HttpRequest request, HttpServletResponse res, @PathVariable String code) throws IOException {
 		HttpResponse response = new HttpResponse(res);
 
 		if (code.trim().isEmpty()) {
@@ -139,8 +137,7 @@ public class ChatController {
 	}
 
 	@PostMapping(CONNECT_TO_CHAT_URL)
-	public void connectToChat(HttpServletRequest req, HttpServletResponse res, @PathVariable String chatKey) throws IOException {
-		HttpRequest request = new HttpRequest(req);
+	public void connectToChat(HttpRequest request, HttpServletResponse res, @PathVariable String chatKey) throws IOException {
 		HttpResponse response = new HttpResponse(res);
 		Long userId = request.body().get("userId").getAsLong();
 
@@ -148,8 +145,7 @@ public class ChatController {
 	}
 
 	@PostMapping(LEAVE_CHAT_URL)
-	public void leaveChat(HttpServletRequest req, HttpServletResponse res, @PathVariable String chatKey) throws IOException {
-		HttpRequest request = new HttpRequest(req);
+	public void leaveChat(HttpRequest request, HttpServletResponse res, @PathVariable String chatKey) throws IOException {
 		HttpResponse response = new HttpResponse(res);
 		Long userId = request.body().get("userId").getAsLong();
 

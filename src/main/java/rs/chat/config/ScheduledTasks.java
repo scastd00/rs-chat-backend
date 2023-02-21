@@ -7,7 +7,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import rs.chat.domain.entity.Session;
 import rs.chat.domain.service.SessionService;
 
-import java.time.Clock;
 import java.util.List;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
@@ -17,7 +16,6 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 @RequiredArgsConstructor
 public class ScheduledTasks {
 	private final SessionService sessionService;
-	private final Clock clock;
 
 	/**
 	 * Deletes all expired sessions from the database every 15 minutes.

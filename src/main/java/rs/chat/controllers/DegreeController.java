@@ -2,7 +2,6 @@ package rs.chat.controllers;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -83,14 +82,13 @@ public class DegreeController {
 	/**
 	 * Saves given degree to db.
 	 *
-	 * @param req request containing degree to be saved.
-	 * @param res response containing saved degree.
+	 * @param request request containing degree to be saved.
+	 * @param res     response containing saved degree.
 	 *
 	 * @throws IOException if an error occurs.
 	 */
 	@PostMapping(DEGREE_SAVE_URL)
-	public void saveDegree(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		HttpRequest request = new HttpRequest(req);
+	public void saveDegree(HttpRequest request, HttpServletResponse res) throws IOException {
 		HttpResponse response = new HttpResponse(res);
 		String degreeName = request.body().get("name").getAsString();
 
@@ -112,14 +110,13 @@ public class DegreeController {
 	/**
 	 * Updates name of the given degree in db.
 	 *
-	 * @param req request containing degree to be updated.
-	 * @param res response containing updated degree.
+	 * @param request request containing degree to be updated.
+	 * @param res     response containing updated degree.
 	 *
 	 * @throws IOException if an error occurs.
 	 */
 	@PutMapping(EDIT_DEGREE_NAME_URL)
-	public void changeDegreeName(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		HttpRequest request = new HttpRequest(req);
+	public void changeDegreeName(HttpRequest request, HttpServletResponse res) throws IOException {
 		HttpResponse response = new HttpResponse(res);
 		JsonObject body = request.body();
 		String oldName = body.get("oldName").getAsString();

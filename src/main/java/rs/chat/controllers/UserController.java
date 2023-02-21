@@ -1,7 +1,6 @@
 package rs.chat.controllers;
 
 import com.google.gson.JsonObject;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -60,17 +59,15 @@ public class UserController {
 	/**
 	 * Saves a new user.
 	 *
-	 * @param req request containing the user to be saved.
-	 * @param res response containing the saved user.
+	 * @param request request containing the user to be saved.
+	 * @param res     response containing the saved user.
 	 *
 	 * @throws IOException if an error occurs.
 	 */
 	@PostMapping(USER_SAVE_URL)
-	public void saveUser(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		HttpRequest request = new HttpRequest(req);
+	public void saveUser(HttpRequest request, HttpServletResponse res) throws IOException {
 		HttpResponse response = new HttpResponse(res);
-		HttpRequest httpRequest = new HttpRequest(request);
-		JsonObject user = (JsonObject) httpRequest.body().get("user");
+		JsonObject user = (JsonObject) request.body().get("user");
 
 		User savedUser = ControllerUtils.performActionThatMayThrowException(response, () -> {
 			Policies.checkRegister(user);

@@ -2,7 +2,6 @@ package rs.chat.controllers;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -59,14 +58,13 @@ public class GroupController {
 	/**
 	 * Saves a new group to db.
 	 *
-	 * @param req request containing new group's name.
-	 * @param res response containing saved group.
+	 * @param request request containing new group's name.
+	 * @param res     response containing saved group.
 	 *
 	 * @throws IOException if an error occurs.
 	 */
 	@PostMapping(GROUP_SAVE_URL)
-	public void saveGroup(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		HttpRequest request = new HttpRequest(req);
+	public void saveGroup(HttpRequest request, HttpServletResponse res) throws IOException {
 		String groupName = request.body().get("name").getAsString();
 		Group savedGroup = this.groupService.saveGroup(new Group(null, groupName, emptySet()));
 
