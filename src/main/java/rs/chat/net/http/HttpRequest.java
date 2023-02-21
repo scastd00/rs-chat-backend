@@ -12,7 +12,6 @@ import rs.chat.utils.Utils;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -39,11 +38,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
 	 */
 	public HttpRequest(HttpServletRequest request) throws IOException {
 		super(request);
-		ByteArrayOutputStream cached = new ByteArrayOutputStream();
-
-		StreamUtils.copy(request.getInputStream(), cached);
-
-		this.cachedBody = cached.toByteArray();
+		this.cachedBody = StreamUtils.copyToByteArray(request.getInputStream());
 		this.parsedBody = Utils.parseJson(IOUtils.toString(this.getReader()));
 	}
 
