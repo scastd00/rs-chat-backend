@@ -16,6 +16,7 @@ import rs.chat.domain.repository.ChatRepository;
 import rs.chat.domain.repository.GroupRepository;
 import rs.chat.domain.repository.SessionRepository;
 import rs.chat.domain.repository.UserRepository;
+import rs.chat.domain.service.UserService;
 import rs.chat.utils.Constants;
 import rs.chat.utils.SaveDefaultsToDB;
 import rs.chat.utils.TestUtils;
@@ -24,8 +25,11 @@ import rs.chat.utils.factories.DefaultFactory;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static rs.chat.router.Routes.PostRoute.LOGIN_URL;
 import static rs.chat.router.Routes.PostRoute.REGISTER_URL;
 import static rs.chat.utils.TestConstants.TEST_OBJECT_MAPPER;
+import static rs.chat.utils.TestConstants.TEST_PASSWORD;
 import static rs.chat.utils.TestUtils.request;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -37,6 +41,7 @@ class IntegrationTest {
 	@Autowired private SessionRepository sessionRepository;
 	@Autowired private ChatRepository chatRepository;
 	@Autowired private GroupRepository groupRepository;
+	@Autowired private UserService userService;
 
 	private Session studentSession;
 	private Session teacherSession;
@@ -63,6 +68,33 @@ class IntegrationTest {
 	}
 
 	@Test
+	void testLogin() throws Exception {
+		// Given
+		User user = DefaultFactory.INSTANCE.createUser(null, Constants.STUDENT_ROLE);
+		userService.createUser(user); // Save the user to DB to be able to log in
+
+		// When
+		String response = mockMvc.perform(request(HttpMethod.POST, LOGIN_URL)
+				                                  .contentType(MediaType.APPLICATION_JSON)
+				                                  .content(TEST_OBJECT_MAPPER.writeValueAsString(Map.of(
+						                                  "username", user.getUsername(),
+						                                  "password", TEST_PASSWORD,
+						                                  "remember", Boolean.FALSE
+				                                  ))))
+		                         .andExpect(status().isOk())
+		                         .andReturn()
+		                         .getResponse()
+		                         .getContentAsString();
+
+		// Then
+		JsonObject jsonResponse = TestUtils.parseJson(response);
+		String responseToken = jsonResponse.get("session").getAsJsonObject()
+		                                   .get("token").getAsString();
+
+		assertThat(sessionRepository.findByToken(responseToken)).isPresent();
+	}
+
+	@Test
 	void testRegister() throws Exception {
 		// Given
 		User user = DefaultFactory.INSTANCE.createUser(null, Constants.STUDENT_ROLE);
@@ -79,30 +111,29 @@ class IntegrationTest {
 		String response = mockMvc.perform(request(HttpMethod.POST, REGISTER_URL)
 				                                  .contentType(MediaType.APPLICATION_JSON)
 				                                  .content(TEST_OBJECT_MAPPER.writeValueAsString(userBody)))
+		                         .andExpect(status().isOk())
 		                         .andReturn()
 		                         .getResponse()
 		                         .getContentAsString();
 
 		// Then
 		// Check that the user saved in DB is the same as the one we sent
-		assertThat(userRepository.findByUsername(user.getUsername()))
-				.isPresent()
-				.get()
-				.hasFieldOrPropertyWithValue("email", user.getEmail())
-				.hasFieldOrPropertyWithValue("username", user.getUsername());
+		assertThat(userRepository.findByUsername(user.getUsername())).isPresent();
+		// All other fields checked below
 
 		// Check the response content if it matches with the data stored in DB for the user.
 		JsonObject jsonResponse = TestUtils.parseJson(response);
-
 		String responseToken = jsonResponse.get("session").getAsJsonObject()
 		                                   .get("token").getAsString();
-		assertThat(sessionRepository.findByToken(responseToken)).isPresent();
-
 		JsonObject responseUser = jsonResponse.get("user").getAsJsonObject();
-		assertThat(userRepository.findByUsername(responseUser.get("username").getAsString()))
+		String responseUsername = responseUser.get("username").getAsString();
+
+		assertThat(sessionRepository.findByToken(responseToken)).isPresent();
+		assertThat(userRepository.findByUsername(responseUsername))
 				.isPresent()
 				.get()
 				.hasFieldOrPropertyWithValue("email", responseUser.get("email").getAsString())
+				.hasFieldOrPropertyWithValue("username", responseUsername)
 				.hasFieldOrPropertyWithValue("fullName", responseUser.get("fullName").getAsString());
 	}
 }

@@ -48,6 +48,7 @@ import static java.util.Collections.emptySet;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric;
 import static rs.chat.net.ws.Message.TEXT_MESSAGE;
 import static rs.chat.utils.TestConstants.FAKER;
+import static rs.chat.utils.TestConstants.TEST_PASSWORD;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DefaultFactory {
@@ -147,11 +148,10 @@ public final class DefaultFactory {
 		String username = name.split("\\.")[0] + randomAlphanumeric(4);
 		String email = username + "@hello.com";
 		String code = randomAlphanumeric(6);
-		String password = "!PasswordSpecialChars_123$";
 		byte age = (byte) FAKER.number().numberBetween(18, 100);
 
 		return new User(
-				id, username, password, email,
+				id, username, TEST_PASSWORD, email,
 				fullName, age, null, role,
 				null, code, new JsonObject(), emptySet(),
 				emptySet(), emptySet(), emptySet(), emptySet(),

@@ -22,4 +22,5 @@ public class TestConstants {
 	public static final Gson TEST_GSON = Converters.registerAll(new GsonBuilder()).create();
 
 	public static final Faker FAKER = new Faker();
+	public static final String TEST_PASSWORD = "!PasswordSpecialChars_123$";
 }
