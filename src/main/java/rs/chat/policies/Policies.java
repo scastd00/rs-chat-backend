@@ -67,7 +67,7 @@ public final class Policies {
 				               .lessThanOrEqual(100)
 				               .predicate(
 						               Predicate.not(Policies::containsSQLKeywords),
-						               ViolationMessage.of(FULL_NAME_KEY, "\"{0}\" contains malicious code"))
+						               ViolationMessage.of(FULL_NAME_KEY, "\"{0}\" contains malicious code."))
 				               .message("The full name can only contain letters, numbers and underscores. " +
 						                        "Must have less than 100 characters."))
 				.nest(o -> o, "passwords", passwordValidator())
