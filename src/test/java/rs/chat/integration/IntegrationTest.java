@@ -28,9 +28,12 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static rs.chat.router.Routes.PostRoute.LOGIN_URL;
+import static rs.chat.router.Routes.PostRoute.LOGOUT_URL;
 import static rs.chat.router.Routes.PostRoute.REGISTER_URL;
+import static rs.chat.utils.Constants.JWT_TOKEN_PREFIX;
 import static rs.chat.utils.TestConstants.TEST_OBJECT_MAPPER;
 import static rs.chat.utils.TestConstants.TEST_PASSWORD;
 import static rs.chat.utils.TestUtils.request;
@@ -167,6 +170,32 @@ class IntegrationTest {
 	}
 
 	@Test
+	void testRegisterEmptyEmail() {
+		// Given
+		User user = DefaultFactory.INSTANCE.createUser(null, Constants.STUDENT_ROLE);
+		Map<String, Object> userBody = Map.of(
+				"email", "",
+				"username", user.getUsername(),
+				"fullName", user.getFullName(),
+				"password", user.getPassword(),
+				"confirmPassword", user.getPassword(),
+				"agreeTerms", Boolean.TRUE
+		);
+
+		// When
+		assertThatThrownBy(() -> mockMvc.perform(request(HttpMethod.POST, REGISTER_URL)
+				                                         .contentType(MediaType.APPLICATION_JSON)
+				                                         .content(TEST_OBJECT_MAPPER.writeValueAsString(userBody)))
+		                                .andExpect(status().isBadRequest())
+		                                .andReturn()
+		                                .getResponse()
+		                                .getContentAsString())
+				.cause()
+				.isInstanceOf(MinimumRequirementsNotMetException.class)
+				.hasMessage("The email cannot be blank.");
+	}
+
+	@Test
 	void testRegisterWrongEmail() {
 		// Given
 		User user = DefaultFactory.INSTANCE.createUser(null, Constants.STUDENT_ROLE);
@@ -193,6 +222,32 @@ class IntegrationTest {
 	}
 
 	@Test
+	void testRegisterWrongUsernameEmpty() {
+		// Given
+		User user = DefaultFactory.INSTANCE.createUser(null, Constants.STUDENT_ROLE);
+		Map<String, Object> userBody = Map.of(
+				"email", user.getEmail(),
+				"username", "",
+				"fullName", user.getFullName(),
+				"password", user.getPassword(),
+				"confirmPassword", user.getPassword(),
+				"agreeTerms", Boolean.TRUE
+		);
+
+		// When
+		assertThatThrownBy(() -> mockMvc.perform(request(HttpMethod.POST, REGISTER_URL)
+				                                         .contentType(MediaType.APPLICATION_JSON)
+				                                         .content(TEST_OBJECT_MAPPER.writeValueAsString(userBody)))
+		                                .andExpect(status().isBadRequest())
+		                                .andReturn()
+		                                .getResponse()
+		                                .getContentAsString())
+				.cause()
+				.isInstanceOf(MinimumRequirementsNotMetException.class)
+				.hasMessage("The username cannot be blank.");
+	}
+
+	@Test
 	void testRegisterWrongUsernameLessThanLength() {
 		// Given
 		User user = DefaultFactory.INSTANCE.createUser(null, Constants.STUDENT_ROLE);
@@ -215,7 +270,7 @@ class IntegrationTest {
 		                                .getContentAsString())
 				.cause()
 				.isInstanceOf(MinimumRequirementsNotMetException.class)
-				.hasMessage("The size of \"username\" must be greater than or equal to 5. The given size is 1");
+				.hasMessage("The username must be between 5 and 15 characters long.");
 	}
 
 	@Test
@@ -241,7 +296,59 @@ class IntegrationTest {
 		                                .getContentAsString())
 				.cause()
 				.isInstanceOf(MinimumRequirementsNotMetException.class)
-				.hasMessage("The size of \"username\" must be less than or equal to 15. The given size is 16");
+				.hasMessage("The username must be between 5 and 15 characters long.");
+	}
+
+	@Test
+	void testRegisterWrongUsernameNotMatchingPattern() {
+		// Given
+		User user = DefaultFactory.INSTANCE.createUser(null, Constants.STUDENT_ROLE);
+		Map<String, Object> userBody = Map.of(
+				"email", user.getEmail(),
+				"username", user.getUsername() + "!",
+				"fullName", user.getFullName(),
+				"password", user.getPassword(),
+				"confirmPassword", user.getPassword(),
+				"agreeTerms", Boolean.TRUE
+		);
+
+		// When
+		assertThatThrownBy(() -> mockMvc.perform(request(HttpMethod.POST, REGISTER_URL)
+				                                         .contentType(MediaType.APPLICATION_JSON)
+				                                         .content(TEST_OBJECT_MAPPER.writeValueAsString(userBody)))
+		                                .andExpect(status().isBadRequest())
+		                                .andReturn()
+		                                .getResponse()
+		                                .getContentAsString())
+				.cause()
+				.isInstanceOf(MinimumRequirementsNotMetException.class)
+				.hasMessage("The username can only contain letters, numbers and underscores.");
+	}
+
+	@Test
+	void testRegisterWrongFullNameEmpty() {
+		// Given
+		User user = DefaultFactory.INSTANCE.createUser(null, Constants.STUDENT_ROLE);
+		Map<String, Object> userBody = Map.of(
+				"email", user.getEmail(),
+				"username", user.getUsername(),
+				"fullName", "",
+				"password", user.getPassword(),
+				"confirmPassword", user.getPassword(),
+				"agreeTerms", Boolean.TRUE
+		);
+
+		// When
+		assertThatThrownBy(() -> mockMvc.perform(request(HttpMethod.POST, REGISTER_URL)
+				                                         .contentType(MediaType.APPLICATION_JSON)
+				                                         .content(TEST_OBJECT_MAPPER.writeValueAsString(userBody)))
+		                                .andExpect(status().isBadRequest())
+		                                .andReturn()
+		                                .getResponse()
+		                                .getContentAsString())
+				.cause()
+				.isInstanceOf(MinimumRequirementsNotMetException.class)
+				.hasMessage("The full name cannot be blank.");
 	}
 
 	@Test
@@ -267,7 +374,7 @@ class IntegrationTest {
 		                                .getContentAsString())
 				.cause()
 				.isInstanceOf(MinimumRequirementsNotMetException.class)
-				.hasMessage("The size of \"fullName\" must be less than or equal to 100. The given size is 101");
+				.hasMessage("The full name must be less than or equal to 100 characters long.");
 	}
 
 	@Test
@@ -293,6 +400,253 @@ class IntegrationTest {
 		                                .getContentAsString())
 				.cause()
 				.isInstanceOf(MinimumRequirementsNotMetException.class)
-				.hasMessage("The \"fullName\" contains malicious code."); //? Is this message correct?
+				.hasMessage("The full name cannot contain SQL keywords.");
+	}
+
+	@Test
+	void testRegisterWrongPasswordEmpty() {
+		// Given
+		User user = DefaultFactory.INSTANCE.createUser(null, Constants.STUDENT_ROLE);
+		Map<String, Object> userBody = Map.of(
+				"email", user.getEmail(),
+				"username", user.getUsername(),
+				"fullName", user.getFullName(),
+				"password", "",
+				"confirmPassword", user.getPassword(),
+				"agreeTerms", Boolean.TRUE
+		);
+
+		// When
+		assertThatThrownBy(() -> mockMvc.perform(request(HttpMethod.POST, REGISTER_URL)
+				                                         .contentType(MediaType.APPLICATION_JSON)
+				                                         .content(TEST_OBJECT_MAPPER.writeValueAsString(userBody)))
+		                                .andExpect(status().isBadRequest())
+		                                .andReturn()
+		                                .getResponse()
+		                                .getContentAsString())
+				.cause()
+				.isInstanceOf(MinimumRequirementsNotMetException.class)
+				.hasMessage("The password cannot be blank.");
+	}
+
+	@Test
+	void testRegisterWrongPasswordLessThanLowerLimit() {
+		// Given
+		User user = DefaultFactory.INSTANCE.createUser(null, Constants.STUDENT_ROLE);
+		Map<String, Object> userBody = Map.of(
+				"email", user.getEmail(),
+				"username", user.getUsername(),
+				"fullName", user.getFullName(),
+				"password", "abc",
+				"confirmPassword", user.getPassword(),
+				"agreeTerms", Boolean.TRUE
+		);
+
+		// When
+		assertThatThrownBy(() -> mockMvc.perform(request(HttpMethod.POST, REGISTER_URL)
+				                                         .contentType(MediaType.APPLICATION_JSON)
+				                                         .content(TEST_OBJECT_MAPPER.writeValueAsString(userBody)))
+		                                .andExpect(status().isBadRequest())
+		                                .andReturn()
+		                                .getResponse()
+		                                .getContentAsString())
+				.cause()
+				.isInstanceOf(MinimumRequirementsNotMetException.class)
+				.hasMessage("The password must be between 8 and 28 characters long.");
+	}
+
+	@Test
+	void testRegisterWrongPasswordMoreThanUpperLimit() {
+		// Given
+		User user = DefaultFactory.INSTANCE.createUser(null, Constants.STUDENT_ROLE);
+		Map<String, Object> userBody = Map.of(
+				"email", user.getEmail(),
+				"username", user.getUsername(),
+				"fullName", user.getFullName(),
+				"password", RandomStringUtils.randomAlphabetic(29),
+				"confirmPassword", user.getPassword(),
+				"agreeTerms", Boolean.TRUE
+		);
+
+		// When
+		assertThatThrownBy(() -> mockMvc.perform(request(HttpMethod.POST, REGISTER_URL)
+				                                         .contentType(MediaType.APPLICATION_JSON)
+				                                         .content(TEST_OBJECT_MAPPER.writeValueAsString(userBody)))
+		                                .andExpect(status().isBadRequest())
+		                                .andReturn()
+		                                .getResponse()
+		                                .getContentAsString())
+				.cause()
+				.isInstanceOf(MinimumRequirementsNotMetException.class)
+				.hasMessage("The password must be between 8 and 28 characters long.");
+	}
+
+	@Test
+	void testRegisterWrongPasswordWeak() {
+		// Given
+		User user = DefaultFactory.INSTANCE.createUser(null, Constants.STUDENT_ROLE);
+		Map<String, Object> userBody = Map.of(
+				"email", user.getEmail(),
+				"username", user.getUsername(),
+				"fullName", user.getFullName(),
+				"password", "AbcAbcAbc_!", // No numbers
+				"confirmPassword", user.getPassword(),
+				"agreeTerms", Boolean.TRUE
+		);
+
+		// When
+		assertThatThrownBy(() -> mockMvc.perform(request(HttpMethod.POST, REGISTER_URL)
+				                                         .contentType(MediaType.APPLICATION_JSON)
+				                                         .content(TEST_OBJECT_MAPPER.writeValueAsString(userBody)))
+		                                .andExpect(status().isBadRequest())
+		                                .andReturn()
+		                                .getResponse()
+		                                .getContentAsString())
+				.cause()
+				.isInstanceOf(MinimumRequirementsNotMetException.class)
+				.hasMessage("The password must be a strong one.");
+	}
+
+	@Test
+	void testRegisterWrongPasswordSQL() {
+		// Given
+		User user = DefaultFactory.INSTANCE.createUser(null, Constants.STUDENT_ROLE);
+		Map<String, Object> userBody = Map.of(
+				"email", user.getEmail(),
+				"username", user.getUsername(),
+				"fullName", user.getFullName(),
+				"password", "Abc_!1; OR 1=1 --",
+				"confirmPassword", user.getPassword(),
+				"agreeTerms", Boolean.TRUE
+		);
+
+		// When
+		assertThatThrownBy(() -> mockMvc.perform(request(HttpMethod.POST, REGISTER_URL)
+				                                         .contentType(MediaType.APPLICATION_JSON)
+				                                         .content(TEST_OBJECT_MAPPER.writeValueAsString(userBody)))
+		                                .andExpect(status().isBadRequest())
+		                                .andReturn()
+		                                .getResponse()
+		                                .getContentAsString())
+				.cause()
+				.isInstanceOf(MinimumRequirementsNotMetException.class)
+				.hasMessage("The password contains malicious code.");
+	}
+
+	@Test
+	void testRegisterWrongConfirmationPasswordEmpty() {
+		// Given
+		User user = DefaultFactory.INSTANCE.createUser(null, Constants.STUDENT_ROLE);
+		Map<String, Object> userBody = Map.of(
+				"email", user.getEmail(),
+				"username", user.getUsername(),
+				"fullName", user.getFullName(),
+				"password", user.getPassword(),
+				"confirmPassword", "",
+				"agreeTerms", Boolean.TRUE
+		);
+
+		// When
+		assertThatThrownBy(() -> mockMvc.perform(request(HttpMethod.POST, REGISTER_URL)
+				                                         .contentType(MediaType.APPLICATION_JSON)
+				                                         .content(TEST_OBJECT_MAPPER.writeValueAsString(userBody)))
+		                                .andExpect(status().isBadRequest())
+		                                .andReturn()
+		                                .getResponse()
+		                                .getContentAsString())
+				.cause()
+				.isInstanceOf(MinimumRequirementsNotMetException.class)
+				.hasMessage("Confirmation password cannot be blank.");
+	}
+
+	@Test
+	void testRegisterWrongConfirmationPasswordLessThanLowerLimit() {
+		// Given
+		User user = DefaultFactory.INSTANCE.createUser(null, Constants.STUDENT_ROLE);
+		Map<String, Object> userBody = Map.of(
+				"email", user.getEmail(),
+				"username", user.getUsername(),
+				"fullName", user.getFullName(),
+				"password", user.getPassword(),
+				"confirmPassword", "a",
+				"agreeTerms", Boolean.TRUE
+		);
+
+		// When
+		assertThatThrownBy(() -> mockMvc.perform(request(HttpMethod.POST, REGISTER_URL)
+				                                         .contentType(MediaType.APPLICATION_JSON)
+				                                         .content(TEST_OBJECT_MAPPER.writeValueAsString(userBody)))
+		                                .andExpect(status().isBadRequest())
+		                                .andReturn()
+		                                .getResponse()
+		                                .getContentAsString())
+				.cause()
+				.isInstanceOf(MinimumRequirementsNotMetException.class)
+				.hasMessage("Confirmation password must have between 8 and 28 characters.");
+	}
+
+	@Test
+	void testRegisterWrongConfirmationPasswordMoreThanUpperLimit() {
+		// Given
+		User user = DefaultFactory.INSTANCE.createUser(null, Constants.STUDENT_ROLE);
+		Map<String, Object> userBody = Map.of(
+				"email", user.getEmail(),
+				"username", user.getUsername(),
+				"fullName", user.getFullName(),
+				"password", user.getPassword(),
+				"confirmPassword", RandomStringUtils.randomAlphanumeric(29),
+				"agreeTerms", Boolean.TRUE
+		);
+
+		// When
+		assertThatThrownBy(() -> mockMvc.perform(request(HttpMethod.POST, REGISTER_URL)
+				                                         .contentType(MediaType.APPLICATION_JSON)
+				                                         .content(TEST_OBJECT_MAPPER.writeValueAsString(userBody)))
+		                                .andExpect(status().isBadRequest())
+		                                .andReturn()
+		                                .getResponse()
+		                                .getContentAsString())
+				.cause()
+				.isInstanceOf(MinimumRequirementsNotMetException.class)
+				.hasMessage("Confirmation password must have between 8 and 28 characters.");
+	}
+
+	@Test
+	void testRegisterWrongPasswordNotMatching() {
+		// Given
+		User user = DefaultFactory.INSTANCE.createUser(null, Constants.STUDENT_ROLE);
+		Map<String, Object> userBody = Map.of(
+				"email", user.getEmail(),
+				"username", user.getUsername(),
+				"fullName", user.getFullName(),
+				"password", user.getPassword(),
+				"confirmPassword", user.getPassword() + "a",
+				"agreeTerms", Boolean.TRUE
+		);
+
+		// When
+		assertThatThrownBy(() -> mockMvc.perform(request(HttpMethod.POST, REGISTER_URL)
+				                                         .contentType(MediaType.APPLICATION_JSON)
+				                                         .content(TEST_OBJECT_MAPPER.writeValueAsString(userBody)))
+		                                .andExpect(status().isBadRequest())
+		                                .andReturn()
+		                                .getResponse()
+		                                .getContentAsString())
+				.cause()
+				.isInstanceOf(MinimumRequirementsNotMetException.class)
+				.hasMessage("Passwords do not match.");
+	}
+
+	@Test
+	void testLogout() throws Exception {
+		// Given
+		// When
+		mockMvc.perform(request(HttpMethod.POST, LOGOUT_URL)
+				                .contentType(MediaType.APPLICATION_JSON)
+				                .header(AUTHORIZATION, JWT_TOKEN_PREFIX + studentSession.getToken()))
+		       .andExpect(status().isOk());
+
+		// Then
+		assertThat(sessionRepository.findByToken(studentSession.getToken())).isNotPresent();
 	}
 }
