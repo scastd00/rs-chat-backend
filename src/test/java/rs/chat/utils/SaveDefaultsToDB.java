@@ -81,6 +81,11 @@ public final class SaveDefaultsToDB {
 		User admin = userRepository.save(DefaultFactory.INSTANCE.createUser(null, Constants.ADMIN_ROLE));
 		Session adminSession = sessionRepository.save(DefaultFactory.INSTANCE.createSession(null, admin));
 
+		// Create more sessions to test the logout functionality (and others)
+		sessionRepository.save(DefaultFactory.INSTANCE.createSession(null, student));
+		sessionRepository.save(DefaultFactory.INSTANCE.createSession(null, teacher));
+		sessionRepository.save(DefaultFactory.INSTANCE.createSession(null, admin));
+
 		return Map.of(
 				Constants.STUDENT_ROLE, studentSession,
 				Constants.TEACHER_ROLE, teacherSession,

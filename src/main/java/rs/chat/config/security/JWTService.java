@@ -7,6 +7,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 import rs.chat.utils.Constants;
 
@@ -83,6 +84,8 @@ public class JWTService {
 		return Jwts.builder()
 		           .setSubject(username)
 		           .claim("role", role)
+		           .claim("tmp", true)
+		           .claim("random", RandomStringUtils.randomPrint(20))
 		           .setIssuedAt(Date.from(instant))
 		           .setExpiration(Date.from(instant.plus(1, ChronoUnit.HOURS)))
 		           .signWith(getSecretKey(), SignatureAlgorithm.HS256)
