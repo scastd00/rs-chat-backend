@@ -9,9 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import rs.chat.net.http.HttpRequest;
-import rs.chat.net.http.HttpResponse;
 
 import java.io.IOException;
 
@@ -28,10 +28,10 @@ import java.io.IOException;
 @Slf4j
 @Order(value = Ordered.HIGHEST_PRECEDENCE)
 @WebFilter(filterName = "ContentCachingFilter", urlPatterns = "/*")
+@Component
 public class HttpRequestContentCachingFilter extends OncePerRequestFilter {
 	/**
-	 * Wraps the request and the response into an {@link HttpRequest} and
-	 * {@link HttpResponse} objects, respectively. This allows to read the body
+	 * Wraps the request into a {@link HttpRequest}. This allows to read the body
 	 * of the request multiple times.
 	 * <p>
 	 * {@inheritDoc}
@@ -40,6 +40,6 @@ public class HttpRequestContentCachingFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(@NotNull HttpServletRequest request,
 	                                @NotNull HttpServletResponse response,
 	                                FilterChain filterChain) throws ServletException, IOException {
-		filterChain.doFilter(new HttpRequest(request), new HttpResponse(response));
+		filterChain.doFilter(new HttpRequest(request), response);
 	}
 }

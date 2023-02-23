@@ -1,6 +1,7 @@
 package rs.chat.controllers;
 
 import com.google.gson.JsonObject;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,13 +40,14 @@ public class FileController {
 	/**
 	 * Uploads a file to the server.
 	 *
-	 * @param request  request that contains the file.
-	 * @param response response that will be sent to the client.
+	 * @param request request that contains the file.
+	 * @param res     response that will be sent to the client.
 	 *
 	 * @throws IOException if an I/O error occurs.
 	 */
 	@PostMapping(UPLOAD_URL)
-	public void uploadFile(HttpRequest request, HttpResponse response) throws IOException {
+	public void uploadFile(HttpRequest request, HttpServletResponse res) throws IOException {
+		HttpResponse response = new HttpResponse(res);
 		JsonObject body = request.body();
 
 		Long userId = body.get("userId").getAsLong();

@@ -7,6 +7,9 @@ import com.google.gson.JsonObject;
 
 import java.io.IOException;
 
+/**
+ * Serializer for {@link JsonObject}.
+ */
 public class JsonObjectSerializer extends JsonSerializer<JsonObject> {
 	@Override
 	public void serialize(JsonObject value, JsonGenerator gen, SerializerProvider serializers) throws IOException {

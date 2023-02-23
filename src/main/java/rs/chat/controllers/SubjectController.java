@@ -2,6 +2,7 @@ package rs.chat.controllers;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -41,12 +42,12 @@ public class SubjectController {
 	/**
 	 * Returns all subjects stored in db.
 	 *
-	 * @param response response containing all subjects as a List (Array in JSON).
+	 * @param res response containing all subjects as a List (Array in JSON).
 	 *
 	 * @throws IOException if an error occurs.
 	 */
 	@GetMapping(SUBJECTS_URL)
-	public void getAllSubjects(HttpResponse response) throws IOException {
+	public void getAllSubjects(HttpServletResponse res) throws IOException {
 		List<Subject> allSubjects = this.subjectService.getAll();
 		JsonArray subjectsWithInvitationCode = new JsonArray();
 
@@ -54,19 +55,20 @@ public class SubjectController {
 		           .map(this::getSubjectWithInvitationCode)
 		           .forEach(subjectsWithInvitationCode::add);
 
-		response.ok().send(subjectsWithInvitationCode);
+		new HttpResponse(res).ok().send(subjectsWithInvitationCode);
 	}
 
 	/**
 	 * Saves a new subject to db.
 	 *
-	 * @param request  request containing parameters of the new subject.
-	 * @param response response containing saved subject.
+	 * @param request request containing parameters of the new subject.
+	 * @param res     response containing saved subject.
 	 *
 	 * @throws IOException if an error occurs.
 	 */
 	@PostMapping(SUBJECT_SAVE_URL)
-	public void saveSubject(HttpRequest request, HttpResponse response) throws IOException {
+	public void saveSubject(HttpRequest request, HttpServletResponse res) throws IOException {
+		HttpResponse response = new HttpResponse(res);
 		JsonObject body = request.body();
 
 		String name = body.get("name").getAsString();
@@ -102,16 +104,16 @@ public class SubjectController {
 	/**
 	 * Deletes a subject from db.
 	 *
-	 * @param response response (does not contain the deleted subject, only status code
-	 *                 is returned to user).
-	 * @param id       id of the subject to be deleted.
+	 * @param res response (does not contain the deleted subject, only status code
+	 *            is returned to user).
+	 * @param id  id of the subject to be deleted.
 	 *
 	 * @throws IOException if an error occurs.
 	 */
 	@DeleteMapping(DELETE_SUBJECT_URL)
-	public void deleteSubject(HttpResponse response, @PathVariable Long id) throws IOException {
+	public void deleteSubject(HttpServletResponse res, @PathVariable Long id) throws IOException {
 		this.subjectService.deleteById(id);
-		response.sendStatus(OK);
+		new HttpResponse(res).sendStatus(OK);
 	}
 
 	/**

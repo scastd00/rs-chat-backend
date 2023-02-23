@@ -7,12 +7,14 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 import rs.chat.utils.Constants;
 
 import java.security.Key;
 import java.time.Clock;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.function.Function;
 
@@ -64,7 +66,29 @@ public class JWTService {
 						           TOKEN_EXPIRATION_DURATION_NORMAL
 				           )
 		           ))
-		           .signWith(this.getSecretKey(), SignatureAlgorithm.HS256)
+		           .signWith(getSecretKey(), SignatureAlgorithm.HS256)
+		           .compact();
+	}
+
+	/**
+	 * Creates a new JWT token for temporary access.
+	 *
+	 * @param username username to be added to the token.
+	 * @param role     role of the user.
+	 *
+	 * @return the JWT token as a {@link String}.
+	 */
+	public static String generateTmpToken(String username, String role) {
+		Instant instant = Clock.systemUTC().instant();
+
+		return Jwts.builder()
+		           .setSubject(username)
+		           .claim("role", role)
+		           .claim("tmp", true)
+		           .claim("random", RandomStringUtils.randomPrint(20))
+		           .setIssuedAt(Date.from(instant))
+		           .setExpiration(Date.from(instant.plus(1, ChronoUnit.HOURS)))
+		           .signWith(getSecretKey(), SignatureAlgorithm.HS256)
 		           .compact();
 	}
 
@@ -126,7 +150,7 @@ public class JWTService {
 	/**
 	 * @return the secret key that is used to sign the JWT token.
 	 */
-	private Key getSecretKey() {
+	private static Key getSecretKey() {
 		byte[] keyBytes = Decoders.BASE64.decode(System.getenv("TOKEN_SECRET"));
 		return Keys.hmacShaKeyFor(keyBytes);
 	}

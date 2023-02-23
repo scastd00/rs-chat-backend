@@ -23,7 +23,7 @@ import rs.chat.net.http.HttpResponse;
 import java.io.IOException;
 
 /**
- * Manager that authenticates the incoming requests.
+ * Filter that authenticates the incoming requests.
  */
 @Slf4j
 @WebFilter(filterName = "AuthenticationFilter")
@@ -41,9 +41,6 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 		super.setAuthenticationManager(authenticationManager);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 		try {
@@ -74,9 +71,6 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 				.send(failed.getMessage());
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected void successfulAuthentication(HttpServletRequest request,
 	                                        HttpServletResponse response,
@@ -95,11 +89,11 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 				req.body().get("remember").getAsBoolean()
 		);
 
+		// In order to use the token in the controller, we need to add it to a request attribute.
 		req.set("USER:TOKEN", token);
 		req.set("USER:USERNAME", user.getUsername());
 
 		//! IMPORTANT: this enables calling a Controller after the token is created.
-		//! In order to call the controller, we need to add the token to a request attribute.
 		chain.doFilter(req, response);
 	}
 }

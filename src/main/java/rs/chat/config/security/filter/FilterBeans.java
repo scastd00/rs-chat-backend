@@ -51,9 +51,4 @@ public class FilterBeans {
 	public AuthorizationFilter authorizationFilter() {
 		return new AuthorizationFilter(this.jwtService, this.sessionService);
 	}
-
-	@Bean
-	public HttpRequestContentCachingFilter httpRequestContentCachingFilter() {
-		return new HttpRequestContentCachingFilter();
-	}
 }

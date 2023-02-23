@@ -44,7 +44,8 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 	private final SessionService sessionService;
 
 	/**
-	 * Checks if the user is authorized to access the resource.
+	 * Checks if the user is authorized to access the resource, sets the authentication
+	 * and passes the request to the next filter.
 	 *
 	 * @param request  HTTP request.
 	 * @param response HTTP response.
@@ -57,12 +58,16 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(@NotNull HttpServletRequest request,
 	                                @NotNull HttpServletResponse response,
 	                                @NotNull FilterChain chain) throws ServletException, IOException {
-		if (this.isUnknownPath(request.getServletPath())) {
+		// Get the URI of the request (done like this due to the fact that the requestURI works
+		// with the tests, but the getServletPath() does not).
+		String requestURI = request.getRequestURI();
+
+		if (this.isUnknownPath(requestURI)) {
 			new HttpResponse(response).sendStatus(NOT_FOUND);
 			return;
 		}
 
-		if (this.isExcludedPath(request.getServletPath())) {
+		if (this.isExcludedPath(requestURI)) {
 			chain.doFilter(request, response);
 			return;
 		}
@@ -81,6 +86,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 			// method will throw an exception).
 			Session session = this.sessionService.getSessionByToken(token.substring(JWT_TOKEN_PREFIX.length()));
 			if (this.sessionService.isExpiredSession(session)) {
+				// Todo: remove the session from the database
 				throw new ServletException("Your session is expired.");
 			}
 
@@ -116,6 +122,13 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 				path.equals(ACTUATOR_URL) || path.equals(TEST_URL);
 	}
 
+	/**
+	 * Checks if the path is unknown.
+	 *
+	 * @param path the path to check.
+	 *
+	 * @return {@code true} if the path is unknown, {@code false} otherwise.
+	 */
 	private boolean isUnknownPath(String path) {
 		return path.equals("/favicon.ico");
 	}

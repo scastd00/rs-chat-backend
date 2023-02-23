@@ -1,6 +1,7 @@
 package rs.chat.controllers;
 
 import com.google.gson.JsonObject;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -9,7 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import rs.chat.domain.entity.User;
-import rs.chat.domain.entity.mappers.UserMapper;
 import rs.chat.domain.service.ChatService;
 import rs.chat.domain.service.GroupService;
 import rs.chat.domain.service.SessionService;
@@ -43,30 +43,30 @@ public class UserController {
 	private final SessionService sessionService;
 	private final GroupService groupService;
 	private final ChatService chatService;
-	private final UserMapper userMapper;
 
 	/**
 	 * Returns all users.
 	 *
-	 * @param response response containing all users.
+	 * @param res response containing all users.
 	 *
 	 * @throws IOException if an error occurs.
 	 */
 	@GetMapping(USERS_URL)
-	public void getUsers(HttpResponse response) throws IOException {
-		response.ok().send(this.userService.getUsers());
+	public void getUsers(HttpServletResponse res) throws IOException {
+		new HttpResponse(res).ok().send(this.userService.getUsers());
 	}
 
 	/**
 	 * Saves a new user.
 	 *
-	 * @param request  request containing the user to be saved.
-	 * @param response response containing the saved user.
+	 * @param request request containing the user to be saved.
+	 * @param res     response containing the saved user.
 	 *
 	 * @throws IOException if an error occurs.
 	 */
 	@PostMapping(USER_SAVE_URL)
-	public void saveUser(HttpRequest request, HttpResponse response) throws IOException {
+	public void saveUser(HttpRequest request, HttpServletResponse res) throws IOException {
+		HttpResponse response = new HttpResponse(res);
 		JsonObject user = (JsonObject) request.body().get("user");
 
 		User savedUser = ControllerUtils.performActionThatMayThrowException(response, () -> {
@@ -103,22 +103,22 @@ public class UserController {
 	/**
 	 * Returns all opened sessions of user with given username.
 	 *
-	 * @param response response containing all opened sessions of user with given username.
+	 * @param res      response containing all opened sessions of user with given username.
 	 * @param username username of user.
 	 *
 	 * @throws IOException if an error occurs.
 	 */
 	@GetMapping(OPENED_SESSIONS_OF_USER_URL)
-	public void openedSessions(HttpResponse response,
-	                           @PathVariable String username) throws IOException {
+	public void openedSessions(HttpServletResponse res, @PathVariable String username) throws IOException {
 		List<String> sessionsOfUser = this.sessionService.getSrcIpOfUserSessions(username);
 
-		response.ok().send(sessionsOfUser);
+		new HttpResponse(res).ok().send(sessionsOfUser);
 	}
 
 	@GetMapping(USER_ID_BY_USERNAME_URL)
-	public void getIdByUsername(HttpResponse response,
-	                            @PathVariable String username) throws IOException {
+	public void getIdByUsername(HttpServletResponse res, @PathVariable String username) throws IOException {
+		HttpResponse response = new HttpResponse(res);
+
 		User user = ControllerUtils.performActionThatMayThrowException(
 				response, () -> this.userService.getUserByUsername(username)
 		);
@@ -127,7 +127,9 @@ public class UserController {
 	}
 
 	@DeleteMapping(DELETE_USER_URL)
-	public void deleteUser(HttpResponse response, @PathVariable Long id) throws IOException {
+	public void deleteUser(HttpServletResponse res, @PathVariable Long id) throws IOException {
+		HttpResponse response = new HttpResponse(res);
+
 		ControllerUtils.performActionThatMayThrowException(response, () -> {
 			this.userService.deleteUser(id);
 			log.info("User with id {} deleted.", id);
@@ -138,7 +140,12 @@ public class UserController {
 	}
 
 	@GetMapping(USER_STATS_URL)
-	public void getUserStats(HttpResponse response, @PathVariable String username) throws IOException {
-		response.ok().send(this.userService.getUserByUsername(username).getMessageCountByType());
+	public void getUserStats(HttpServletResponse res, @PathVariable String username) throws IOException {
+		HttpResponse response = new HttpResponse(res);
+
+		// If not executed with this utility method, the exception is not caught in the test.
+		JsonObject stats = ControllerUtils.performActionThatMayThrowException(response, () -> this.userService.getUserStats(username));
+
+		response.ok().send(stats);
 	}
 }

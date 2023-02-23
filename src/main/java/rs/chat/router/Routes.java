@@ -3,6 +3,9 @@ package rs.chat.router;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+/**
+ * Class containing all routes for the application.
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Routes {
 	private static final String V_1 = "/api/v1";
@@ -43,8 +46,6 @@ public class Routes {
 		public static final String TEACHERS_URL = V_1 + "/teachers";
 
 		/**
-		 * Generate an array containing all GET routes allowed to low tier users.
-		 *
 		 * @return an array containing all GET routes allowed to low tier users.
 		 */
 		public String[] lowTierRoutes() {
@@ -57,8 +58,6 @@ public class Routes {
 		}
 
 		/**
-		 * Generate an array containing all GET routes allowed to medium tier users.
-		 *
 		 * @return an array containing all GET routes allowed to medium tier users.
 		 */
 		public String[] mediumTierRoutes() {
@@ -68,8 +67,6 @@ public class Routes {
 		}
 
 		/**
-		 * Generate an array containing all GET routes allowed to top tier users.
-		 *
 		 * @return an array containing all GET routes allowed to top tier users.
 		 */
 		public String[] topTierRoutes() {
@@ -107,8 +104,6 @@ public class Routes {
 		public static final String ADD_TEACHER_TO_SUBJECT_URL = V_1 + "/teacher/subject/add";
 
 		/**
-		 * Generate an array containing all POST routes allowed to low tier users.
-		 *
 		 * @return an array containing all POST routes allowed to low tier users.
 		 */
 		public String[] lowTierRoutes() {
@@ -118,8 +113,6 @@ public class Routes {
 		}
 
 		/**
-		 * Generate an array containing all POST routes allowed to medium tier users.
-		 *
 		 * @return an array containing all POST routes allowed to medium tier users.
 		 */
 		public String[] mediumTierRoutes() {
@@ -129,8 +122,6 @@ public class Routes {
 		}
 
 		/**
-		 * Generate an array containing all POST routes allowed to top tier users.
-		 *
 		 * @return an array containing all POST routes allowed to top tier users.
 		 */
 		public String[] topTierRoutes() {
@@ -151,8 +142,6 @@ public class Routes {
 		public static final String EDIT_DEGREE_NAME_URL = V_1 + "/degree/editName";
 
 		/**
-		 * Generate an array containing all PUT routes allowed to low tier users.
-		 *
 		 * @return an array containing all PUT routes allowed to low tier users.
 		 */
 		public String[] lowTierRoutes() {
@@ -162,8 +151,6 @@ public class Routes {
 		}
 
 		/**
-		 * Generate an array containing all PUT routes allowed to medium tier users.
-		 *
 		 * @return an array containing all PUT routes allowed to medium tier users.
 		 */
 		public String[] mediumTierRoutes() {
@@ -173,8 +160,6 @@ public class Routes {
 		}
 
 		/**
-		 * Generate an array containing all PUT routes allowed to top tier users.
-		 *
 		 * @return an array containing all PUT routes allowed to top tier users.
 		 */
 		public String[] topTierRoutes() {
@@ -196,8 +181,6 @@ public class Routes {
 		public static final String DELETE_GROUP_URL = V_1 + "/group/delete/{id}";
 
 		/**
-		 * Generate an array containing all DELETE routes allowed to low tier users.
-		 *
 		 * @return an array containing all DELETE routes allowed to low tier users.
 		 */
 		public String[] lowTierRoutes() {
@@ -207,8 +190,6 @@ public class Routes {
 		}
 
 		/**
-		 * Generate an array containing all DELETE routes allowed to medium tier users.
-		 *
 		 * @return an array containing all DELETE routes allowed to medium tier users.
 		 */
 		public String[] mediumTierRoutes() {
@@ -218,8 +199,6 @@ public class Routes {
 		}
 
 		/**
-		 * Generate an array containing all DELETE routes allowed to top tier users.
-		 *
 		 * @return an array containing all DELETE routes allowed to top tier users.
 		 */
 		public String[] topTierRoutes() {

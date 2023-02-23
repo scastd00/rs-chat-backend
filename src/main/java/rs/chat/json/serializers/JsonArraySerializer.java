@@ -7,6 +7,9 @@ import com.google.gson.JsonArray;
 
 import java.io.IOException;
 
+/**
+ * Serializer for {@link JsonArray}.
+ */
 public class JsonArraySerializer extends JsonSerializer<JsonArray> {
 	@Override
 	public void serialize(JsonArray value, JsonGenerator gen, SerializerProvider serializers) throws IOException {

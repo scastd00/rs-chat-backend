@@ -14,5 +14,6 @@ public record BadgeDto(
 		@Size(max = 300) @NotNull String description,
 		@Size(max = 200) @NotNull String icon,
 		@Size(max = 20) @NotNull String type,
-		@NotNull Integer pointsOfType) implements Serializable {
+		@NotNull Integer pointsOfType
+) implements Serializable {
 }

@@ -5,7 +5,6 @@ import am.ik.yavi.constraint.CharSequenceConstraint;
 import am.ik.yavi.constraint.password.CharSequencePasswordPoliciesBuilder;
 import am.ik.yavi.core.ConstraintViolations;
 import am.ik.yavi.core.Validator;
-import am.ik.yavi.core.ViolationMessage;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.AccessLevel;
@@ -26,6 +25,7 @@ public final class Policies {
 		excludedCharacters.add("'");
 		excludedCharacters.add("--");
 		excludedCharacters.add("=");
+		excludedCharacters.add(";");
 	}
 
 	private static final String EMAIL_KEY = "email";
@@ -50,26 +50,19 @@ public final class Policies {
 				.<JsonObject>of()
 				._boolean(o -> get(o, AGREE_TERMS_KEY).getAsBoolean(),
 				          AGREE_TERMS_KEY,
-				          c -> c.isTrue()
-				                .message("You must agree to the terms and conditions."))
+				          c -> c.isTrue().message("You must agree to the terms and conditions."))
 				.nest(o -> o, EMAIL_KEY, emailValidator())
 				._string(o -> get(o, USERNAME_KEY).getAsString().trim(),
 				         USERNAME_KEY,
-				         c -> c.notBlank()
-				               .greaterThanOrEqual(5)
-				               .lessThanOrEqual(15)
-				               .pattern("^[a-zA-Z0-9_]+$")
-				               .message("The username can only contain letters, numbers and underscores. Must be " +
-						                        "between 5 and 15 characters."))
+				         c -> c.notBlank().message("The username cannot be blank.")
+				               .greaterThanOrEqual(5).message("The username must be between 5 and 15 characters long.")
+				               .lessThanOrEqual(15).message("The username must be between 5 and 15 characters long.")
+				               .pattern("^[a-zA-Z0-9_]+$").message("The username can only contain letters, numbers and underscores."))
 				._string(o -> get(o, FULL_NAME_KEY).getAsString().trim(),
 				         FULL_NAME_KEY,
-				         c -> c.notBlank()
-				               .lessThanOrEqual(100)
-				               .predicate(
-						               Predicate.not(Policies::containsSQLKeywords),
-						               ViolationMessage.of(FULL_NAME_KEY, "\"{0}\" contains malicious code"))
-				               .message("The full name can only contain letters, numbers and underscores. " +
-						                        "Must have less than 100 characters."))
+				         c -> c.notBlank().message("The full name cannot be blank.")
+				               .lessThanOrEqual(100).message("The full name must be less than or equal to 100 characters long.")
+				               .predicate(Predicate.not(Policies::containsSQLKeywords), FULL_NAME_KEY + "_sql", "The full name cannot contain SQL keywords."))
 				.nest(o -> o, "passwords", passwordValidator())
 				.failFast(true)
 				.build();
@@ -80,7 +73,7 @@ public final class Policies {
 			return;
 		}
 
-		String name = violations.get(0).name();
+		String name = violations.get(0).name(); // Since we are using failFast, we only need to check the first violation.
 
 		if (name.equals(PASSWORD_KEY) || name.equals(CONFIRM_PASSWORD_KEY) || name.equals(EQUAL_PASSWORDS_KEY)) {
 			throw new InvalidPasswordException(violations.get(0).message());
@@ -171,30 +164,23 @@ public final class Policies {
 				.<JsonObject>of()
 				._string(o -> get(o, PASSWORD_KEY).getAsString().trim(),
 				         PASSWORD_KEY,
-				         c -> c.notBlank()
-				               .password(CharSequencePasswordPoliciesBuilder::strong)
-				               .greaterThanOrEqual(8)
-				               .lessThanOrEqual(28)
-				               .predicate(
-						               Predicate.not(Policies::containsSQLKeywords),
-						               ViolationMessage.of(PASSWORD_KEY, "\"{0}\" contains malicious code"))
-				               .message("The password must contain at least one uppercase letter, one lowercase " +
-						                        "letter, one number and one special character. It must be " +
-						                        "between 8 and 28 characters."))
+				         c -> c.notBlank().message("The password cannot be blank.")
+				               .greaterThanOrEqual(8).message("The password must be between 8 and 28 characters long.")
+				               .lessThanOrEqual(28).message("The password must be between 8 and 28 characters long.")
+				               .password(builder -> builder.strong().stream().map(p -> p.overrideMessage("The password must be a strong one.")).toList())
+				               .predicate(Predicate.not(Policies::containsSQLKeywords), PASSWORD_KEY + "_sql", "The password contains malicious code."))
 				._string(o -> get(o, CONFIRM_PASSWORD_KEY).getAsString().trim(),
 				         CONFIRM_PASSWORD_KEY,
-				         c -> c.notBlank()
-				               .greaterThanOrEqual(8)
-				               .lessThanOrEqual(28)
-				               .message("Confirmation password must have between 8 and 28 characters."))
+				         c -> c.notBlank().message("Confirmation password cannot be blank.")
+				               .greaterThanOrEqual(8).message("Confirmation password must have between 8 and 28 characters.")
+				               .lessThanOrEqual(28).message("Confirmation password must have between 8 and 28 characters."))
 				._boolean(o -> {
 					          String password = get(o, PASSWORD_KEY).getAsString().trim();
 					          String confirmPassword = get(o, CONFIRM_PASSWORD_KEY).getAsString().trim();
 					          return password.equals(confirmPassword);
 				          },
 				          EQUAL_PASSWORDS_KEY,
-				          c -> c.isTrue()
-				                .message("Passwords do not match."))
+				          c -> c.isTrue().message("Passwords do not match."))
 				.build();
 	}
 
@@ -205,10 +191,10 @@ public final class Policies {
 	private static Validator<JsonObject> emailValidator() {
 		return ValidatorBuilder
 				.<JsonObject>of()
-				._string(o -> get(o, EMAIL_KEY).getAsString().trim(), EMAIL_KEY,
-				         c -> c.notBlank()
-				               .email()
-				               .message("The email is invalid."))
+				._string(o -> get(o, EMAIL_KEY).getAsString().trim(),
+				         EMAIL_KEY,
+				         c -> c.notBlank().message("The email cannot be blank.")
+				               .email().message("The email is invalid."))
 				.build();
 	}
 }
