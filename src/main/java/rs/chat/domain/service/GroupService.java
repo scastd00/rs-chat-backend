@@ -65,7 +65,7 @@ public class GroupService {
 	 */
 	public Group saveGroup(Group group) {
 		// Todo: check name searching for sql injection??
-		if (this.groupRepository.existsById(group.getId())) {
+		if (group.getId() != null && this.groupRepository.existsById(group.getId())) {
 			throw new BadRequestException("Group with id '%s' already exists.".formatted(group.getId()));
 		}
 
