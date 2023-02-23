@@ -48,9 +48,7 @@ public class ChatService {
 	 * @throws BadRequestException if chat with given id does not exist.
 	 */
 	public Chat getChatById(Long id) {
-		return this.chatRepository.findById(id).orElseThrow(() -> {
-			throw new BadRequestException("Chat with id=%d does not exist".formatted(id));
-		});
+		return this.chatRepository.findById(id).orElseThrow(() -> new BadRequestException("Chat with id=%d does not exist".formatted(id)));
 	}
 
 	/**
