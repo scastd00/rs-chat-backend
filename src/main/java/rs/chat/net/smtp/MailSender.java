@@ -1,20 +1,17 @@
 package rs.chat.net.smtp;
 
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import rs.chat.tasks.TaskExecutionException;
 import rs.chat.tasks.TaskScheduler;
 
-import javax.mail.Authenticator;
-import javax.mail.Message.RecipientType;
-import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -27,28 +24,23 @@ import static rs.chat.tasks.Task.TaskStatus;
 public class MailSender {
 	private static final String FROM = System.getenv("GMAIL_ACCOUNT");
 	private static final String SMTP_HOST = "smtp.gmail.com";
-	private static final Session SESSION;
+	private static final JavaMailSenderImpl SENDER = new JavaMailSenderImpl();
 
 	static {
-		// Setup mail server
-		Properties properties = System.getProperties();
-		properties.put("mail.smtp.host", SMTP_HOST);
-		properties.put("mail.smtp.port", "465");
-		properties.put("mail.smtp.auth", "true");
-		properties.put("mail.smtp.ssl.enable", "true");
-		properties.put("mail.smtp.socketFactory.port", "465");
-		properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+		SENDER.setHost(SMTP_HOST);
+		SENDER.setPort(587);
 
-		// Get the Session object and pass username and password
-		SESSION = Session.getInstance(properties, new Authenticator() {
-			@Override
-			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(FROM, System.getenv("GMAIL_APP_PASSWORD"));
-			}
-		});
+		SENDER.setUsername(FROM);
+		SENDER.setPassword(System.getenv("GMAIL_APP_PASSWORD"));
 
-		// Used to debug SMTP issues
-		SESSION.setDebug(false); // Prevent printing lots of debug info to console
+		Properties props = SENDER.getJavaMailProperties();
+		props.setProperty("mail.transport.protocol", "smtp");
+		props.setProperty("mail.smtp.auth", "true");
+		props.setProperty("mail.smtp.ssl.enable", "true");
+		props.setProperty("mail.smtp.starttls.enable", "true");
+		props.setProperty("mail.smtp.socketFactory.port", "465");
+		props.setProperty("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+		props.setProperty("mail.debug", "false");
 	}
 
 	/**
@@ -61,7 +53,7 @@ public class MailSender {
 		TaskScheduler.executeTaskSecure(
 				() -> {
 					try {
-						Transport.send(getMimeMessage(
+						SENDER.send(getMimeMessage(
 								to,
 								"Welcome to RSChat!",
 								"src/main/resources/templates/email/welcome/rs-chat-welcome-email.html",
@@ -91,7 +83,7 @@ public class MailSender {
 		TaskScheduler.executeTaskSecure(
 				() -> {
 					try {
-						Transport.send(getMimeMessage(
+						SENDER.send(getMimeMessage(
 								to,
 								"Reset your password",
 								"src/main/resources/templates/email/resetPassword/rs-chat-reset-password-email.html",
@@ -127,10 +119,10 @@ public class MailSender {
 	 */
 	private static MimeMessage getMimeMessage(String to, String subject, String fileName, String target,
 	                                          String value) throws MessagingException, IOException {
-		MimeMessage message = new MimeMessage(SESSION);
+		MimeMessage message = SENDER.createMimeMessage();
 
-		message.setFrom(new InternetAddress(FROM));
-		message.addRecipient(RecipientType.TO, new InternetAddress(to));
+		message.setFrom(FROM);
+		message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
 		message.setSubject(subject);
 		message.setText(
 				IOUtils.toString(new FileReader(fileName)).replace(target, value),
