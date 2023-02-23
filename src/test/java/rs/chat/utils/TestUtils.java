@@ -30,6 +30,15 @@ public class TestUtils {
 		                             .secure(true);
 	}
 
+	/**
+	 * Parses the given JSON string into a {@link JsonObject}.
+	 *
+	 * @param jsonString the JSON string to parse.
+	 *
+	 * @return the parsed {@link JsonObject}.
+	 *
+	 * @apiNote Same as the production one, but used inside tests.
+	 */
 	public static JsonObject parseJson(String jsonString) {
 		return TEST_GSON.fromJson(jsonString, JsonObject.class);
 	}

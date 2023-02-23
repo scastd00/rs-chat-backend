@@ -201,12 +201,15 @@ public class AuthController {
 		HttpResponse response = new HttpResponse(res);
 		String token = request.getHeader(AUTHORIZATION);
 
-		if (token == null) {
-			// If request does not contain authorization header, send error.
-			response.badRequest().send("You must provide the authorization token");
-			log.warn("Request does not contain authorization header");
-			return;
-		}
+		// Todo: this is not reached, since the filter is executed before this method, and it throws an exception.
+		//  Check if the token ignoring the prefix is ok.
+		//! From here
+//		if (token == null) {
+//			// If request does not contain authorization header, send error.
+//			response.badRequest().send("You must provide the authorization token");
+//			log.warn("Request does not contain authorization header");
+//			return;
+//		}
 
 		String tokenWithoutPrefix = token.substring(JWT_TOKEN_PREFIX.length());
 
@@ -216,6 +219,7 @@ public class AuthController {
 			this.sessionService.deleteSession(tokenWithoutPrefix);
 			return;
 		}
+		//! Up to here, the code is not reached. Because the filter checks if the token is valid.
 
 		String username = this.jwtService.getUsername(token);
 

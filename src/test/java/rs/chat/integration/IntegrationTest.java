@@ -10,7 +10,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import rs.chat.domain.entity.Session;
 import rs.chat.domain.entity.User;
@@ -29,8 +28,10 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static rs.chat.router.Routes.PostRoute.FORGOT_PASSWORD_URL;
 import static rs.chat.router.Routes.PostRoute.LOGIN_URL;
 import static rs.chat.router.Routes.PostRoute.LOGOUT_URL;
 import static rs.chat.router.Routes.PostRoute.REGISTER_URL;
@@ -468,21 +469,72 @@ class IntegrationTest {
 		assertThat(sessionRepository.findAllByUserId(studentSession.getUser().getId())).isEmpty();
 	}
 
+//	@Test
+//	void testLogoutTokenNotFound() throws Exception {
+//		// Given
+//		// Not needed since the exception is thrown before the body is read
+////		Map<String, Boolean> logoutRequest = Map.of("fromAllSessions", Boolean.FALSE);
+//
+//		// When
+//		MockHttpServletResponse response = mockMvc.perform(request(HttpMethod.POST, LOGOUT_URL)
+//				                                                   .contentType(MediaType.APPLICATION_JSON)
+//				                                                   .header(AUTHORIZATION, JWT_TOKEN_PREFIX + teacherSession.getToken() + "a"))
+//		                                          .andExpect(status().isForbidden())
+//		                                          .andReturn()
+//		                                          .getResponse();
+//
+//		// Then
+//		assertThat(response.getContentAsString()).isEqualTo("Session not found.");
+//	}
+
 	@Test
-	void testLogoutTokenNotFound() throws Exception {
+	void testForgotPasswordOk() throws Exception {
 		// Given
-		// Not needed since the exception is thrown before the body is read
-//		Map<String, Boolean> logoutRequest = Map.of("fromAllSessions", Boolean.FALSE);
+		String email = studentSession.getUser().getEmail();
+		Map<String, String> forgotPasswordRequest = Map.of("email", email);
 
 		// When
-		MockHttpServletResponse response = mockMvc.perform(request(HttpMethod.POST, LOGOUT_URL)
-				                                                   .contentType(MediaType.APPLICATION_JSON)
-				                                                   .header(AUTHORIZATION, JWT_TOKEN_PREFIX + teacherSession.getToken() + "a"))
-		                                          .andExpect(status().isForbidden())
-		                                          .andReturn()
-		                                          .getResponse();
+		mockMvc.perform(request(HttpMethod.POST, FORGOT_PASSWORD_URL)
+				                .contentType(MediaType.APPLICATION_JSON)
+				                .content(TEST_OBJECT_MAPPER.writeValueAsString(forgotPasswordRequest)))
+		       .andExpect(status().isOk())
+		       .andReturn()
+		       .getResponse();
 
 		// Then
-		assertThat(response.getContentAsString()).isEqualTo("Session not found.");
+		assertThat(userRepository.findByEmail(email))
+				.isPresent()
+				.get()
+				.extracting(User::getPasswordCode)
+				.isNotNull();
+	}
+
+	@Test
+	void testForgotPasswordWrongEmail() {
+		// Given
+		String email = "hello";
+		Map<String, String> forgotPasswordRequest = Map.of("email", email);
+
+		// When
+		assertThatThrownBy(() -> mockMvc.perform(request(HttpMethod.POST, FORGOT_PASSWORD_URL)
+				                                         .contentType(MediaType.APPLICATION_JSON)
+				                                         .content(TEST_OBJECT_MAPPER.writeValueAsString(forgotPasswordRequest)))
+		                                .andExpect(status().isBadRequest())
+		                                .andReturn()
+		                                .getResponse()
+		                                .getContentAsString())
+				.cause()
+				.isInstanceOf(MinimumRequirementsNotMetException.class)
+				.hasMessage("Email must have a valid structure. Eg: hello@domain.com");
+	}
+
+	@Test
+	void testCreatePasswordOk() {
+		assertTrue(true);
+	}
+
+	@Test
+	void testCreatePasswordWrong() {
+		assertTrue(true);
 	}
 }

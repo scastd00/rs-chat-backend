@@ -86,6 +86,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 			// method will throw an exception).
 			Session session = this.sessionService.getSessionByToken(token.substring(JWT_TOKEN_PREFIX.length()));
 			if (this.sessionService.isExpiredSession(session)) {
+				// Todo: remove the session from the database
 				throw new ServletException("Your session is expired.");
 			}
 
