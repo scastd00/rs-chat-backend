@@ -19,18 +19,20 @@ import rs.chat.domain.repository.SessionRepository;
 import rs.chat.domain.repository.UserRepository;
 import rs.chat.domain.service.UserService;
 import rs.chat.exceptions.MinimumRequirementsNotMetException;
+import rs.chat.exceptions.NotFoundException;
 import rs.chat.utils.Constants;
 import rs.chat.utils.SaveDefaultsToDB;
 import rs.chat.utils.TestUtils;
 import rs.chat.utils.factories.DefaultFactory;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static rs.chat.router.Routes.PostRoute.CREATE_PASSWORD_URL;
 import static rs.chat.router.Routes.PostRoute.FORGOT_PASSWORD_URL;
 import static rs.chat.router.Routes.PostRoute.LOGIN_URL;
 import static rs.chat.router.Routes.PostRoute.LOGOUT_URL;
@@ -529,12 +531,65 @@ class IntegrationTest {
 	}
 
 	@Test
-	void testCreatePasswordOk() {
-		assertTrue(true);
+	void testCreatePasswordOk() throws Exception {
+		// Given
+		Map<String, String> createPasswordRequest = Map.of(
+				"code", studentSession.getUser().getPasswordCode(),
+				"password", "!SecurePass00",
+				"confirmPassword", "!SecurePass00"
+		);
+		String oldEncryptedPassword = studentSession.getUser().getPassword();
+
+		// When
+		mockMvc.perform(request(HttpMethod.POST, CREATE_PASSWORD_URL)
+				                .contentType(MediaType.APPLICATION_JSON)
+				                .content(TEST_OBJECT_MAPPER.writeValueAsString(createPasswordRequest)))
+		       .andExpect(status().isOk());
+
+		// Then
+		Optional<User> user = userRepository.findByEmail(studentSession.getUser().getEmail());
+		assertThat(user)
+				.isPresent()
+				.get()
+				.extracting(User::getPasswordCode)
+				.isNull();
+		assertThat(user)
+				.isPresent()
+				.get()
+				.extracting(User::getPassword)
+				.isNotEqualTo(oldEncryptedPassword);
 	}
 
 	@Test
 	void testCreatePasswordWrong() {
-		assertTrue(true);
+		// Given
+		Map<String, String> createPasswordRequest = Map.of(
+				"code", "_" + studentSession.getUser().getPasswordCode().substring(1),
+				"password", "!SecurePass00",
+				"confirmPassword", "!SecurePass00"
+		);
+		String oldPassword = studentSession.getUser().getPassword();
+
+		// When
+		// Then
+		assertThatThrownBy(() -> mockMvc.perform(request(HttpMethod.POST, CREATE_PASSWORD_URL)
+				                                         .contentType(MediaType.APPLICATION_JSON)
+				                                         .content(TEST_OBJECT_MAPPER.writeValueAsString(createPasswordRequest)))
+		                                .andExpect(status().isNotFound()))
+				.cause()
+				.isInstanceOf(NotFoundException.class)
+				.hasMessage("Code %s not found", createPasswordRequest.get("code"));
+
+		Optional<User> user = userRepository.findByEmail(studentSession.getUser().getEmail());
+		assertThat(user)
+				.isPresent()
+				.get()
+				.extracting(User::getPasswordCode)
+				.isNotNull();
+		assertThat(user)
+				.isPresent()
+				.get()
+				.extracting(User::getPassword)
+				.isEqualTo(oldPassword);
 	}
 }
