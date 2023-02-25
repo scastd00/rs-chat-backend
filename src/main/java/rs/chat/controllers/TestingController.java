@@ -4,11 +4,15 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import rs.chat.ai.eightball.EightBall;
+import rs.chat.net.http.HttpRequest;
 import rs.chat.net.http.HttpResponse;
 
 import java.io.IOException;
 
+import static rs.chat.router.Routes.PostRoute.EIGHT_BALL_URL;
 import static rs.chat.router.Routes.TEST_URL;
 
 /**
@@ -28,5 +32,13 @@ public class TestingController {
 	@GetMapping(TEST_URL)
 	public void test(HttpServletResponse res) throws IOException {
 		new HttpResponse(res).ok().send("Hello world!");
+	}
+
+	@PostMapping(EIGHT_BALL_URL)
+	public void eightBall(HttpRequest request, HttpServletResponse response) throws IOException {
+		String question = request.body().get("question").getAsString();
+
+		String reply = EightBall.getReply(question);
+		new HttpResponse(response).ok().send(reply);
 	}
 }

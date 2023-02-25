@@ -210,6 +210,33 @@
 			<artifactId>datafaker</artifactId>
 			<version>1.8.0</version>
 		</dependency>
+
+		<!-- Language processing -->
+		<dependency>
+			<groupId>edu.stanford.nlp</groupId>
+			<artifactId>stanford-corenlp</artifactId>
+			<version>4.5.2</version>
+		</dependency>
+
+		<!-- Language processing models (only English) -->
+		<dependency>
+			<groupId>edu.stanford.nlp</groupId>
+			<artifactId>stanford-corenlp</artifactId>
+			<classifier>models</classifier>
+			<version>4.5.2</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.stanford.nlp</groupId>
+			<artifactId>stanford-corenlp</artifactId>
+			<classifier>models-english</classifier>
+			<version>4.5.2</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.stanford.nlp</groupId>
+			<artifactId>stanford-corenlp</artifactId>
+			<classifier>models-english-kbp</classifier>
+			<version>4.5.2</version>
+		</dependency>
 	</dependencies>
 
 	<dependencyManagement>
