@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import rs.chat.ai.nsfw.NSFW;
 import rs.chat.domain.entity.File;
 import rs.chat.domain.entity.dtos.FileDto;
 import rs.chat.domain.service.FileService;
@@ -64,6 +65,10 @@ public class FileController {
 				throw new BadRequestException("File is empty");
 			} else if (fileBytes.length > MAX_FILE_BYTES) {
 				throw new BadRequestException("File is too big");
+			}
+
+			if (NSFW.isNSFW(fileName, fileBytes)) {
+				throw new BadRequestException("File is NSFW");
 			}
 
 			File fileToSave = new File(
