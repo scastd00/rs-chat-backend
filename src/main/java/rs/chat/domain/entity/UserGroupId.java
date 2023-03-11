@@ -23,6 +23,7 @@ import java.util.Objects;
 public class UserGroupId implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 2792758443585331286L;
+
 	@NotNull
 	@Column(name = "user_id", nullable = false)
 	private Long userId;

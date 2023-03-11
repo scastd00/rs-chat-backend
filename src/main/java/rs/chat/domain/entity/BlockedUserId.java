@@ -20,29 +20,29 @@ import java.util.Objects;
 @Setter
 @ToString
 @Embeddable
-public class StuSubjId implements Serializable {
+public class BlockedUserId implements Serializable {
 	@Serial
-	private static final long serialVersionUID = 1171143602156298652L;
+	private static final long serialVersionUID = -7094438063374331412L;
 
 	@NotNull
-	@Column(name = "student_id", nullable = false)
-	private Long studentId;
+	@Column(name = "user_id", nullable = false)
+	private Long userId;
 
 	@NotNull
-	@Column(name = "subject_id", nullable = false)
-	private Long subjectId;
+	@Column(name = "blocked_id", nullable = false)
+	private Long blockedId;
 
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-		StuSubjId entity = (StuSubjId) o;
-		return Objects.equals(this.studentId, entity.studentId) &&
-		       Objects.equals(this.subjectId, entity.subjectId);
+		BlockedUserId entity = (BlockedUserId) o;
+		return Objects.equals(this.userId, entity.userId) &&
+		       Objects.equals(this.blockedId, entity.blockedId);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(studentId, subjectId);
+		return Objects.hash(userId, blockedId);
 	}
 }

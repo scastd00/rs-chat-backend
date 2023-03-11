@@ -23,6 +23,7 @@ import java.util.Objects;
 public class UserChatId implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 8795209564542282605L;
+
 	@NotNull
 	@Column(name = "user_id", nullable = false)
 	private Long userId;

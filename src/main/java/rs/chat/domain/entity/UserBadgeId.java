@@ -23,6 +23,7 @@ import java.util.Objects;
 public class UserBadgeId implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 4296324599905157599L;
+
 	@NotNull
 	@Column(name = "user_id", nullable = false)
 	private Long userId;

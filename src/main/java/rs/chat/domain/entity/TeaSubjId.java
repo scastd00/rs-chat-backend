@@ -23,6 +23,7 @@ import java.util.Objects;
 public class TeaSubjId implements Serializable {
 	@Serial
 	private static final long serialVersionUID = 3664791734179899894L;
+
 	@NotNull
 	@Column(name = "teacher_id", nullable = false)
 	private Long teacherId;
