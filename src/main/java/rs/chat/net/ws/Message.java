@@ -45,6 +45,11 @@ public record Message(String type, String filePrefix, String extension) {
 			AUDIO_MESSAGE, VIDEO_MESSAGE,
 			PDF_MESSAGE, TEXT_DOC_MESSAGE
 	);
+	public static final List<Message> MEDIA_MESSAGES = List.of(
+			IMAGE_MESSAGE, AUDIO_MESSAGE,
+			VIDEO_MESSAGE, PDF_MESSAGE,
+			TEXT_DOC_MESSAGE
+	);
 
 	public static final Message ACTIVE_USERS_MESSAGE = new Message("ACTIVE_USERS", null, null);
 	public static final Message GET_HISTORY_MESSAGE = new Message("GET_HISTORY", TEXT_MESSAGE.filePrefix, TEXT_MESSAGE.extension);

@@ -1,5 +1,6 @@
 package rs.chat.net.ws;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -7,6 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import rs.chat.utils.Builder;
 import rs.chat.utils.Utils;
+
+import static rs.chat.net.ws.Message.MEDIA_MESSAGES;
 
 /**
  * Class that wraps the received JSON messages. They follow the next structure:
@@ -67,7 +70,7 @@ public class JsonMessageWrapper {
 	 * @return the chat id of the message sender.
 	 */
 	public String chatId() {
-		return this.headers().get("chatId").getAsString(); // Fixme: Maybe get as Long and change related problems??
+		return this.headers().get("chatId").getAsString();
 	}
 
 	/**
@@ -135,10 +138,20 @@ public class JsonMessageWrapper {
 			this.username();
 			this.chatId();
 			this.sessionId();
-			this.type();
+			String type = this.type();
 			this.date();
 			this.token();
-			this.content();
+
+			JsonElement content = this.body().get("content");
+			boolean isMediaMessage = MEDIA_MESSAGES.stream()
+			                                       .map(Message::type)
+			                                       .anyMatch(t -> t.equals(type));
+			if (isMediaMessage) {
+				content.getAsJsonObject(); // A JSON Object
+			} else {
+				content.getAsString(); // A JSON String
+			}
+
 			return true;
 		} catch (Exception e) {
 			log.error("Error while checking message structure, ({})", e.getMessage());
