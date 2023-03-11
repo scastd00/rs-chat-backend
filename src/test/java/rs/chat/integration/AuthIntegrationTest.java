@@ -44,7 +44,7 @@ import static rs.chat.utils.TestUtils.request;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-class IntegrationTest {
+class AuthIntegrationTest {
 	@Autowired private MockMvc mockMvc;
 
 	@Autowired private UserRepository userRepository;
@@ -165,10 +165,7 @@ class IntegrationTest {
 		assertThatThrownBy(() -> mockMvc.perform(request(HttpMethod.POST, REGISTER_URL)
 				                                         .contentType(MediaType.APPLICATION_JSON)
 				                                         .content(TEST_OBJECT_MAPPER.writeValueAsString(userBody)))
-		                                .andExpect(status().isBadRequest())
-		                                .andReturn()
-		                                .getResponse()
-		                                .getContentAsString())
+		                                .andExpect(status().isBadRequest()))
 				.cause()
 				.isInstanceOf(MinimumRequirementsNotMetException.class)
 				.hasMessage("You must agree to the terms and conditions.");
@@ -191,10 +188,7 @@ class IntegrationTest {
 		assertThatThrownBy(() -> mockMvc.perform(request(HttpMethod.POST, REGISTER_URL)
 				                                         .contentType(MediaType.APPLICATION_JSON)
 				                                         .content(TEST_OBJECT_MAPPER.writeValueAsString(userBody)))
-		                                .andExpect(status().isBadRequest())
-		                                .andReturn()
-		                                .getResponse()
-		                                .getContentAsString())
+		                                .andExpect(status().isBadRequest()))
 				.cause()
 				.isInstanceOf(MinimumRequirementsNotMetException.class)
 				.hasMessage(exceptionMessage);
@@ -227,10 +221,7 @@ class IntegrationTest {
 		assertThatThrownBy(() -> mockMvc.perform(request(HttpMethod.POST, REGISTER_URL)
 				                                         .contentType(MediaType.APPLICATION_JSON)
 				                                         .content(TEST_OBJECT_MAPPER.writeValueAsString(userBody)))
-		                                .andExpect(status().isBadRequest())
-		                                .andReturn()
-		                                .getResponse()
-		                                .getContentAsString())
+		                                .andExpect(status().isBadRequest()))
 				.cause()
 				.isInstanceOf(MinimumRequirementsNotMetException.class)
 				.hasMessage(exceptionMessage);
@@ -269,10 +260,7 @@ class IntegrationTest {
 		assertThatThrownBy(() -> mockMvc.perform(request(HttpMethod.POST, REGISTER_URL)
 				                                         .contentType(MediaType.APPLICATION_JSON)
 				                                         .content(TEST_OBJECT_MAPPER.writeValueAsString(userBody)))
-		                                .andExpect(status().isBadRequest())
-		                                .andReturn()
-		                                .getResponse()
-		                                .getContentAsString())
+		                                .andExpect(status().isBadRequest()))
 				.cause()
 				.isInstanceOf(MinimumRequirementsNotMetException.class)
 				.hasMessage("The username can only contain letters, numbers and underscores.");
@@ -295,10 +283,7 @@ class IntegrationTest {
 		assertThatThrownBy(() -> mockMvc.perform(request(HttpMethod.POST, REGISTER_URL)
 				                                         .contentType(MediaType.APPLICATION_JSON)
 				                                         .content(TEST_OBJECT_MAPPER.writeValueAsString(userBody)))
-		                                .andExpect(status().isBadRequest())
-		                                .andReturn()
-		                                .getResponse()
-		                                .getContentAsString())
+		                                .andExpect(status().isBadRequest()))
 				.cause()
 				.isInstanceOf(MinimumRequirementsNotMetException.class)
 				.hasMessage(exceptionMessage);
@@ -336,10 +321,7 @@ class IntegrationTest {
 		assertThatThrownBy(() -> mockMvc.perform(request(HttpMethod.POST, REGISTER_URL)
 				                                         .contentType(MediaType.APPLICATION_JSON)
 				                                         .content(TEST_OBJECT_MAPPER.writeValueAsString(userBody)))
-		                                .andExpect(status().isBadRequest())
-		                                .andReturn()
-		                                .getResponse()
-		                                .getContentAsString())
+		                                .andExpect(status().isBadRequest()))
 				.cause()
 				.isInstanceOf(MinimumRequirementsNotMetException.class)
 				.hasMessage(exceptionMessage);
@@ -387,10 +369,7 @@ class IntegrationTest {
 		assertThatThrownBy(() -> mockMvc.perform(request(HttpMethod.POST, REGISTER_URL)
 				                                         .contentType(MediaType.APPLICATION_JSON)
 				                                         .content(TEST_OBJECT_MAPPER.writeValueAsString(userBody)))
-		                                .andExpect(status().isBadRequest())
-		                                .andReturn()
-		                                .getResponse()
-		                                .getContentAsString())
+		                                .andExpect(status().isBadRequest()))
 				.cause()
 				.isInstanceOf(MinimumRequirementsNotMetException.class)
 				.hasMessage(exceptionMessage);
@@ -428,10 +407,7 @@ class IntegrationTest {
 		assertThatThrownBy(() -> mockMvc.perform(request(HttpMethod.POST, REGISTER_URL)
 				                                         .contentType(MediaType.APPLICATION_JSON)
 				                                         .content(TEST_OBJECT_MAPPER.writeValueAsString(userBody)))
-		                                .andExpect(status().isBadRequest())
-		                                .andReturn()
-		                                .getResponse()
-		                                .getContentAsString())
+		                                .andExpect(status().isBadRequest()))
 				.cause()
 				.isInstanceOf(MinimumRequirementsNotMetException.class)
 				.hasMessage("Passwords do not match.");
@@ -499,9 +475,7 @@ class IntegrationTest {
 		mockMvc.perform(request(HttpMethod.POST, FORGOT_PASSWORD_URL)
 				                .contentType(MediaType.APPLICATION_JSON)
 				                .content(TEST_OBJECT_MAPPER.writeValueAsString(forgotPasswordRequest)))
-		       .andExpect(status().isOk())
-		       .andReturn()
-		       .getResponse();
+		       .andExpect(status().isOk());
 
 		// Then
 		assertThat(userRepository.findByEmail(email))
@@ -521,10 +495,7 @@ class IntegrationTest {
 		assertThatThrownBy(() -> mockMvc.perform(request(HttpMethod.POST, FORGOT_PASSWORD_URL)
 				                                         .contentType(MediaType.APPLICATION_JSON)
 				                                         .content(TEST_OBJECT_MAPPER.writeValueAsString(forgotPasswordRequest)))
-		                                .andExpect(status().isBadRequest())
-		                                .andReturn()
-		                                .getResponse()
-		                                .getContentAsString())
+		                                .andExpect(status().isBadRequest()))
 				.cause()
 				.isInstanceOf(MinimumRequirementsNotMetException.class)
 				.hasMessage("Email must have a valid structure. Eg: hello@domain.com");
