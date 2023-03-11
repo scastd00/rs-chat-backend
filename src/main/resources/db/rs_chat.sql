@@ -167,6 +167,24 @@ CREATE TABLE `user_badge`
 	CONSTRAINT `pk_user_badge` PRIMARY KEY (`user_id`, `badge_id`)
 ) ENGINE InnoDB;
 
+create table `friends`
+(
+	`user_id`   bigint   NOT NULL,
+	`friend_id` bigint   NOT NULL,
+	`since`     datetime NOT NULL,
+
+	CONSTRAINT `pk_friends` PRIMARY KEY (`user_id`, `friend_id`)
+) ENGINE InnoDB;
+
+create table `blocked_users`
+(
+	`user_id`    bigint   NOT NULL,
+	`blocked_id` bigint   NOT NULL,
+	`since`      datetime NOT NULL,
+
+	CONSTRAINT `pk_blocked_users` PRIMARY KEY (`user_id`, `blocked_id`)
+) ENGINE InnoDB;
+
 -- Alter tables
 
 ALTER TABLE `subjects`
@@ -246,3 +264,27 @@ ALTER TABLE `user_badge`
 		REFERENCES `badges` (`id`)
 		ON UPDATE CASCADE
 		ON DELETE RESTRICT;
+
+ALTER TABLE `friends`
+	ADD CONSTRAINT `fk_user_id_friends` FOREIGN KEY (`user_id`)
+		REFERENCES `users` (`id`)
+		ON UPDATE CASCADE
+		ON DELETE CASCADE; -- If a user is deleted, all his friends are deleted
+
+ALTER TABLE `friends`
+	ADD CONSTRAINT `fk_friend_id_friends` FOREIGN KEY (`friend_id`)
+		REFERENCES `users` (`id`)
+		ON UPDATE CASCADE
+		ON DELETE CASCADE;
+
+ALTER TABLE `blocked_users`
+	ADD CONSTRAINT `fk_user_id_blocked_users` FOREIGN KEY (`user_id`)
+		REFERENCES `users` (`id`)
+		ON UPDATE CASCADE
+		ON DELETE CASCADE; -- If a user is deleted, all his blocked users are deleted
+
+ALTER TABLE `blocked_users`
+	ADD CONSTRAINT `fk_blocked_id_blocked_users` FOREIGN KEY (`blocked_id`)
+		REFERENCES `users` (`id`)
+		ON UPDATE CASCADE
+		ON DELETE CASCADE;

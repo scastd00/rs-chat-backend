@@ -4,14 +4,17 @@ import com.google.gson.JsonObject;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import rs.chat.ai.nsfw.NSFW;
 import rs.chat.domain.entity.File;
 import rs.chat.domain.entity.dtos.FileDto;
 import rs.chat.domain.service.FileService;
 import rs.chat.domain.service.UserService;
 import rs.chat.exceptions.BadRequestException;
 import rs.chat.exceptions.CouldNotUploadFileException;
+import rs.chat.exceptions.NSFWContentException;
 import rs.chat.net.http.HttpRequest;
 import rs.chat.net.http.HttpResponse;
 import rs.chat.storage.strategies.upload.FileUploadStrategy;
@@ -22,6 +25,7 @@ import java.io.IOException;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.Base64;
+import java.util.regex.Pattern;
 
 import static rs.chat.router.Routes.PostRoute.UPLOAD_URL;
 import static rs.chat.utils.Constants.MAX_FILE_BYTES;
@@ -66,6 +70,8 @@ public class FileController {
 				throw new BadRequestException("File is too big");
 			}
 
+			checkForNSFWOfImageOrGif(fileName, fileBytes, mimeTypes[1]);
+
 			File fileToSave = new File(
 					null,
 					fileName,
@@ -90,5 +96,21 @@ public class FileController {
 
 		response.ok().send(fileDto);
 		log.info("File ({}) uploaded successfully", fileName);
+	}
+
+	private static void checkForNSFWOfImageOrGif(String fileName, byte[] fileBytes, @NotNull String mimeType) {
+		String serviceEndpoint;
+
+		if (Pattern.matches("^(jp(e)?g|png)$", mimeType)) {
+			serviceEndpoint = "image";
+		} else if (Pattern.matches("^(gif)$", mimeType)) {
+			serviceEndpoint = "gif";
+		} else {
+			return;
+		}
+
+		if (NSFW.isNSFW(fileName, fileBytes, serviceEndpoint)) {
+			throw new NSFWContentException("File %s is NSFW".formatted(fileName));
+		}
 	}
 }

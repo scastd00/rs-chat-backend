@@ -61,7 +61,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
 		JsonMessageWrapper wrappedMessage = new JsonMessageWrapper(message.getPayload());
 
 		if (!wrappedMessage.correctStructure()) {
-			session.sendMessage(new TextMessage("The message is not in the correct format."));
+			log.debug("The message is not in the correct format");
+			sendQuickResponse(session, "The message is not in the correct format.", ERROR_MESSAGE, wrappedMessage);
 			return;
 		}
 
