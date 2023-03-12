@@ -48,6 +48,7 @@ services:
     logging: *default-logging
 
   prometheus:
+    # Grafana config -> URL = http://prometheus:9090, other settings are default
     image: prom/prometheus:v2.40.5
     container_name: prometheus
     hostname: prometheus
@@ -82,6 +83,7 @@ services:
     logging: *default-logging
 
   loki:
+    # Grafana config -> URL = http://loki:3100, other settings are default
     image: grafana/loki:2.7.0
     container_name: loki
     restart: unless-stopped
