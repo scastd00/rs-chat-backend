@@ -115,16 +115,17 @@ services:
       - rschat-net
     logging: *default-logging
 
-  rschat-utilities:
-    image: rs-chat-utilities:latest
-    container_name: rschat-utilities
+  # Utilities
+  nsfwpy:
+    image: nsfwpy:latest
+    container_name: nsfwpy
     ports:
       - "4042:4042"
     networks:
       - rschat-net
     logging: *default-logging
     healthcheck:
-      test: curl -f https://localhost:4042/api/v1/health --insecure -s > /dev/null || exit 1
+      test: curl -f http://localhost:4042/api/v1/health -s > /dev/null || exit 1
       interval: 2m
       timeout: 10s
       retries: 3
