@@ -1,37 +1,43 @@
 package rs.chat.ai.nsfw;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-public record NSFWResponse(JsonArray predictionsSortedByProbability) {
+/**
+ * Represents the response from the NSFW API.
+ *
+ * @param predictions The predictions from the NSFW API.
+ */
+public record NSFWResponse(JsonObject predictions) {
+	/**
+	 * Represents the classification classes returned by the NSFW API.
+	 */
 	public enum ClassificationClass {
 		NEUTRAL,
-		DRAWING,
+		DRAWINGS,
 		SEXY,
 		HENTAI,
 		PORN
 	}
 
-	private JsonObject predictionAtPos(int pos) {
-		return this.predictionsSortedByProbability.get(pos).getAsJsonObject();
-	}
-
-	private String classNameAtPos(int pos) {
-		return this.predictionAtPos(pos).get("className").getAsString();
-	}
-
-	private double probabilityAtPos(int pos) {
-		return this.predictionAtPos(pos).get("probability").getAsDouble();
-	}
-
-	private ClassificationClass classAtPos(int pos) {
-		return ClassificationClass.valueOf(this.classNameAtPos(pos).toUpperCase());
-	}
-
+	/**
+	 * Returns the probability of the given classification class. If the given
+	 * classification class is not found, 0.0 is returned.
+	 *
+	 * @param classificationClass The classification class to get the probability of.
+	 *
+	 * @return The probability of the given classification class.
+	 *
+	 * @implNote The NSFW API returns all the responses in lowercase, and all the
+	 * enum values are contained in it, so we can just convert the enum
+	 * value to lowercase and use it as a key.
+	 */
 	public double probabilityOfClass(ClassificationClass classificationClass) {
-		for (int i = 0; i < this.predictionsSortedByProbability.size(); i++) {
-			if (this.classAtPos(i).equals(classificationClass)) {
-				return this.probabilityAtPos(i);
+		for (ClassificationClass value : ClassificationClass.values()) {
+			String predictionName = value.name().toLowerCase();
+			double probability = this.predictions.get(predictionName).getAsDouble();
+
+			if (value.equals(classificationClass)) {
+				return probability;
 			}
 		}
 

@@ -70,7 +70,7 @@ public class FileController {
 				throw new BadRequestException("File is too big");
 			}
 
-			checkForNSFWOfImageOrGif(fileName, fileBytes, mimeTypes[1]);
+			checkForNSFWOfImageOrGif(fileName, encodedData, mimeTypes[1]);
 
 			File fileToSave = new File(
 					null,
@@ -98,7 +98,7 @@ public class FileController {
 		log.info("File ({}) uploaded successfully", fileName);
 	}
 
-	private static void checkForNSFWOfImageOrGif(String fileName, byte[] fileBytes, @NotNull String mimeType) {
+	private static void checkForNSFWOfImageOrGif(String fileName, String base64File, @NotNull String mimeType) {
 		String serviceEndpoint;
 
 		if (Pattern.matches("^(jp(e)?g|png)$", mimeType)) {
@@ -109,7 +109,7 @@ public class FileController {
 			return;
 		}
 
-		if (NSFW.isNSFW(fileName, fileBytes, serviceEndpoint)) {
+		if (NSFW.isNSFW(base64File, serviceEndpoint)) {
 			throw new NSFWContentException("File %s is NSFW".formatted(fileName));
 		}
 	}
