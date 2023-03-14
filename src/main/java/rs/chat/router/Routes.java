@@ -103,14 +103,17 @@ public class Routes {
 
 		public static final String ADD_TEACHER_TO_SUBJECT_URL = V_1 + "/teacher/subject/add";
 
-		public static final String EIGHT_BALL_URL = V_1 + "/8ball";
+		public static final String FRIEND_SWITCH_URL = V_1 + "/user/friend";
+
+		public static final String EIGHT_BALL_URL = V_1 + "/8ball"; //? REMOVE THIS
 
 		/**
 		 * @return an array containing all POST routes allowed to low tier users.
 		 */
 		public String[] lowTierRoutes() {
 			return new String[] {
-					UPLOAD_URL, JOIN_CHAT_URL, CONNECT_TO_CHAT_URL, LEAVE_CHAT_URL
+					UPLOAD_URL, JOIN_CHAT_URL, CONNECT_TO_CHAT_URL, LEAVE_CHAT_URL,
+					FRIEND_SWITCH_URL
 			};
 		}
 

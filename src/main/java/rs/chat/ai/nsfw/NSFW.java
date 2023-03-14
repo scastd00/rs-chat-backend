@@ -1,42 +1,31 @@
 package rs.chat.ai.nsfw;
 
-import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import rs.chat.ai.nsfw.NSFWResponse.ClassificationClass;
 
-import java.io.File;
-
 import static rs.chat.utils.Constants.GSON;
+import static rs.chat.utils.Constants.NSFW_API_URL;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public class NSFW {
 	private static final RestTemplate restTemplate = new RestTemplate();
 
-	public static boolean isNSFW(String filename, byte[] fileBytes, String endpoint) {
-		String tmpDir = System.getProperty("java.io.tmpdir");
-		String filePath = tmpDir + File.separator + filename;
-		File file = new File(filePath);
-
+	public static boolean isNSFW(String base64File, String endpoint) {
 		try {
-			// Write the file to the temp directory. This is necessary because the NSFW
-			// service only accepts files on the local file system.
-			FileUtils.writeByteArrayToFile(file, fileBytes);
 			ResponseEntity<String> response = restTemplate.postForEntity(
-					"http://localhost:4042/api/v1/nsfw/" + endpoint,
-					new ReqImage(filePath),
+					NSFW_API_URL.resolve("/api/v1/nsfw/" + endpoint),
+					new ReqImage(base64File),
 					String.class
 			);
 
-			JsonArray responseArray = GSON.fromJson(response.getBody(), JsonArray.class);
-			NSFWResponse nsfwResponse = new NSFWResponse(responseArray);
-
-			FileUtils.deleteQuietly(file); // Delete the file from the temp directory.
+			JsonObject responseObject = GSON.fromJson(response.getBody(), JsonObject.class);
+			NSFWResponse nsfwResponse = new NSFWResponse(responseObject);
 
 			return isVerySexyOrHentaiOrPorn(nsfwResponse);
 		} catch (Exception e) {

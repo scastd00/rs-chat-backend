@@ -24,4 +24,5 @@ jobs:
           SHOW_SQL: ${{ secrets.SHOW_SQL }}
           S3_ENDPOINT_URI: ${{ secrets.S3_ENDPOINT_URI }}
           S3_ENDPOINT_URI_FOR_FILES: ${{ secrets.S3_ENDPOINT_URI_FOR_FILES }}
+          NSFW_API_URL: ${{ secrets.NSFW_API_URL }}
         run: mvn -B test --file pom.xml

@@ -66,6 +66,7 @@ public final class Constants {
 	                                                  .map(URI::create)
 	                                                  .orElse(null);
 	public static final URI S3_ENDPOINT_URI_FOR_FILES = URI.create(System.getenv("S3_ENDPOINT_URI_FOR_FILES"));
+	public static final URI NSFW_API_URL = URI.create(System.getenv("NSFW_API_URL"));
 
 	public static final String USER = "user";
 	public static final String USER_CHAT_S3_FOLDER_PREFIX = USER + "/";
