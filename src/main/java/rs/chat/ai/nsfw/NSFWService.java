@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import rs.chat.ai.nsfw.NSFWResponse.ClassificationClass;
 
@@ -13,10 +14,11 @@ import static rs.chat.utils.Constants.NSFW_API_URL;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
-public class NSFW {
+@Component
+public class NSFWService {
 	private static final RestTemplate restTemplate = new RestTemplate();
 
-	public static boolean isNSFW(String base64File, String endpoint) {
+	public boolean isNSFW(String base64File, String endpoint) {
 		try {
 			ResponseEntity<String> response = restTemplate.postForEntity(
 					NSFW_API_URL.resolve("/api/v1/nsfw/" + endpoint),
@@ -34,7 +36,7 @@ public class NSFW {
 		}
 	}
 
-	private static boolean isVerySexyOrHentaiOrPorn(NSFWResponse nsfwResponse) {
+	private boolean isVerySexyOrHentaiOrPorn(NSFWResponse nsfwResponse) {
 		return nsfwResponse.probabilityOfClass(ClassificationClass.SEXY) >= 0.75 ||
 				nsfwResponse.probabilityOfClass(ClassificationClass.PORN) >= 0.6 ||
 				nsfwResponse.probabilityOfClass(ClassificationClass.HENTAI) >= 0.6;

@@ -45,7 +45,7 @@ public final class MessageEventListener implements ApplicationListener<MessageEv
 			}
 		}
 
-		User savedUser = this.userService.updateUser(user);
+		User savedUser = this.userService.saveUser(user);
 
 		String badgeTitle = this.userBadgeService.updateBadgesOfUser(savedUser, event.getType());
 		if (badgeTitle != null) {

@@ -91,7 +91,10 @@ public class UserController {
 							emptySet(), // files
 							Set.of(this.chatService.getByName("Global")), // chats
 							emptySet(), // studentSubjects
-							emptySet() // badges
+							emptySet(), // badges
+							emptySet(), // friends
+							emptySet(), // blockedUsers
+							(byte) 0 // nsfwCount
 					)
 			);
 		});

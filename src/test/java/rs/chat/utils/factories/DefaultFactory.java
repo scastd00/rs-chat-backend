@@ -155,7 +155,8 @@ public final class DefaultFactory {
 				fullName, age, null, role,
 				null, code, new JsonObject(), emptySet(),
 				emptySet(), emptySet(), emptySet(), emptySet(),
-				emptySet(), emptySet()
+				emptySet(), emptySet(), emptySet(), emptySet(),
+				(byte) 0
 		);
 	}
 

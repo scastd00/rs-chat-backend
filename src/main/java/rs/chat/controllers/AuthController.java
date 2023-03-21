@@ -146,7 +146,10 @@ public class AuthController {
 					emptySet(), // files
 					Set.of(globalChat), // chats
 					emptySet(), // studentSubjects
-					emptySet() // badges
+					emptySet(), // badges
+					emptySet(), // friends
+					emptySet(), // blockedUsers
+					(byte) 0 // nsfwCount
 			));
 		});
 
@@ -263,7 +266,7 @@ public class AuthController {
 
 		String code = RandomStringUtils.randomAlphanumeric(6);
 		user.setPasswordCode(code);
-		this.userService.updateUser(user);
+		this.userService.saveUser(user);
 
 		response.sendStatus(OK);
 		MailSender.sendResetPasswordEmailBackground(email, code);
