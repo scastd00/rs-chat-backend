@@ -7,8 +7,15 @@ on:
     branches: [ "main" ]
 
 jobs:
-  clean:
+  integration:
     runs-on: ubuntu-latest
+    env:
+      TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
+      AWS_S3_BUCKET_NAME: ${{ secrets.AWS_S3_BUCKET_NAME }}
+      SHOW_SQL: ${{ secrets.SHOW_SQL }}
+      S3_ENDPOINT_URI: ${{ secrets.S3_ENDPOINT_URI }}
+      S3_ENDPOINT_URI_FOR_FILES: ${{ secrets.S3_ENDPOINT_URI_FOR_FILES }}
+      NSFW_API_URL: ${{ secrets.NSFW_API_URL }}
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 17
@@ -19,56 +26,9 @@ jobs:
           cache: maven
       - name: Clean
         run: mvn -B clean --file pom.xml
-
-  compile:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-          cache: maven
       - name: Compile
         run: mvn -B compile --file pom.xml
-
-  unit-test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-          cache: maven
       - name: Perform unit tests
-        env:
-          TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
-          AWS_S3_BUCKET_NAME: ${{ secrets.AWS_S3_BUCKET_NAME }}
-          SHOW_SQL: ${{ secrets.SHOW_SQL }}
-          S3_ENDPOINT_URI: ${{ secrets.S3_ENDPOINT_URI }}
-          S3_ENDPOINT_URI_FOR_FILES: ${{ secrets.S3_ENDPOINT_URI_FOR_FILES }}
-          NSFW_API_URL: ${{ secrets.NSFW_API_URL }}
         run: mvn -B test --file pom.xml -Dtest="rs.chat.unit.**"
-
-  integration-test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-          cache: maven
       - name: Perform integration tests
-        env:
-          TOKEN_SECRET: ${{ secrets.TOKEN_SECRET }}
-          AWS_S3_BUCKET_NAME: ${{ secrets.AWS_S3_BUCKET_NAME }}
-          SHOW_SQL: ${{ secrets.SHOW_SQL }}
-          S3_ENDPOINT_URI: ${{ secrets.S3_ENDPOINT_URI }}
-          S3_ENDPOINT_URI_FOR_FILES: ${{ secrets.S3_ENDPOINT_URI_FOR_FILES }}
-          NSFW_API_URL: ${{ secrets.NSFW_API_URL }}
         run: mvn -B test --file pom.xml -Dtest="rs.chat.integration.**"
