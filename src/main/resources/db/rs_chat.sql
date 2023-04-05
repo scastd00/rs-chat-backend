@@ -70,6 +70,7 @@ CREATE TABLE `users`
 	`block_until`           datetime     NULL     DEFAULT NULL, -- If null, user can login. If date is stored, user cannot login until it has expired.
 	`password_code`         varchar(6)   NULL     DEFAULT NULL, -- Code used to reset password.
 	`message_count_by_type` json         NOT NULL,
+	`nsfw_count`            tinyint      NOT NULL DEFAULT 0,    -- Number of times the user has uploaded NSFW content.
 
 	CONSTRAINT `pk_user_id` PRIMARY KEY (`id`),
 	CONSTRAINT `u_username` UNIQUE (`username`),

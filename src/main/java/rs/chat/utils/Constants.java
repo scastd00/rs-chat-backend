@@ -80,4 +80,10 @@ public final class Constants {
 	public static final int HISTORY_PAGE_SIZE = 65;
 	public static final SecureRandom SECURE_RANDOM = new SecureRandom();
 	public static final long MAX_FILE_BYTES = DataSize.ofMegabytes(30).toBytes();
+
+	public static final long MINIMUM_NSFW_TO_BLOCK = 5;
+	public static final Duration DEFAULT_BLOCK_DURATION_MILLIS = Duration.ofHours(4);
+
+	// In the client the chatId is ignored, so we minimize the size of the message with an empty string.
+	public static final String SERVER_CHAT_ID = "";
 }

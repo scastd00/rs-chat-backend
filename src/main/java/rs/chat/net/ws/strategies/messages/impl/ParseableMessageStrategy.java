@@ -24,6 +24,7 @@ import java.util.function.Predicate;
 
 import static rs.chat.net.ws.Message.ERROR_MESSAGE;
 import static rs.chat.net.ws.Message.MENTION_MESSAGE;
+import static rs.chat.utils.Constants.SERVER_CHAT_ID;
 import static rs.chat.utils.Utils.createMessage;
 
 /**
@@ -60,7 +61,7 @@ public class ParseableMessageStrategy extends GenericMessageStrategy {
 					Utils.createMessage(
 							"An error occurred while parsing the message, %s".formatted(e.getMessage()),
 							ERROR_MESSAGE.type(),
-							"NONE"
+							SERVER_CHAT_ID
 					)
 			));
 		}

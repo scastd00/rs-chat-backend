@@ -10,6 +10,7 @@ import rs.chat.net.ws.strategies.messages.MessageStrategy;
 import java.io.IOException;
 
 import static rs.chat.net.ws.Message.USER_CONNECTED;
+import static rs.chat.utils.Constants.SERVER_CHAT_ID;
 import static rs.chat.utils.Utils.createMessage;
 
 /**
@@ -23,7 +24,7 @@ public class UserConnectedStrategy implements MessageStrategy {
 				createMessage(
 						"Connected to server",
 						USER_CONNECTED.type(),
-						""
+						SERVER_CHAT_ID
 				)
 		));
 	}

@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static rs.chat.net.ws.Message.ACTIVE_USERS_MESSAGE;
+import static rs.chat.utils.Constants.SERVER_CHAT_ID;
 
 /**
  * Strategy for handling {@link Message#ACTIVE_USERS_MESSAGE} messages.
@@ -53,7 +54,6 @@ public class ActiveUsersStrategy implements MessageStrategy {
 	private String createActiveUsersMessage(List<String> usernames) {
 		JsonArray usersArray = new JsonArray();
 		usernames.forEach(usersArray::add);
-		return Utils.createMessage(usersArray.toString(), ACTIVE_USERS_MESSAGE.type(), "");
-		// In the client the chatId is ignored, so we minimize the size of the message with an empty string.
+		return Utils.createMessage(usersArray.toString(), ACTIVE_USERS_MESSAGE.type(), SERVER_CHAT_ID);
 	}
 }
