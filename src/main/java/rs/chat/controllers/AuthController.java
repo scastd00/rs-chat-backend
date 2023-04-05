@@ -30,6 +30,7 @@ import rs.chat.utils.Constants;
 import java.io.IOException;
 import java.time.Clock;
 import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.Set;
 
 import static java.util.Collections.emptySet;
@@ -80,6 +81,13 @@ public class AuthController {
 		User user = ControllerUtils.performActionThatMayThrowException(
 				response, () -> this.userService.getUserByUsername(username)
 		);
+
+		if (user.getBlockUntil() != null && user.getBlockUntil().isAfter(this.clock.instant())) {
+			response.badRequest().send("You are blocked until " + user.getBlockUntil()
+			                                                          .atZone(this.clock.getZone())
+			                                                          .format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")));
+			return;
+		}
 
 		Session savedSession = this.sessionService.saveSession(
 				new Session(
@@ -263,6 +271,13 @@ public class AuthController {
 
 		String email = body.get("email").getAsString();
 		User user = ControllerUtils.performActionThatMayThrowException(response, () -> this.userService.getUserByEmail(email));
+
+		if (user.getBlockUntil() != null && user.getBlockUntil().isAfter(Instant.now(this.clock))) {
+			response.badRequest().send("You are blocked until " + user.getBlockUntil()
+			                                                          .atZone(this.clock.getZone())
+			                                                          .format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")));
+			return;
+		}
 
 		String code = RandomStringUtils.randomAlphanumeric(6);
 		user.setPasswordCode(code);
