@@ -125,4 +125,16 @@ public class User {
 	@ManyToMany(mappedBy = "users")
 	@ToString.Exclude
 	private Set<Badge> badges = new LinkedHashSet<>();
+
+	@OneToMany(mappedBy = "user")
+	@ToString.Exclude
+	private Set<Friend> friends = new LinkedHashSet<>();
+
+	@OneToMany(mappedBy = "user")
+	@ToString.Exclude
+	private Set<BlockedUser> blockedUsers = new LinkedHashSet<>();
+
+	@NotNull
+	@Column(name = "nsfw_count", nullable = false)
+	private Byte nsfwCount;
 }

@@ -5,9 +5,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
-import rs.chat.ai.nsfw.NSFW;
+import rs.chat.ai.events.NSFWUploadEvent;
+import rs.chat.ai.nsfw.NSFWService;
 import rs.chat.domain.entity.File;
 import rs.chat.domain.entity.dtos.FileDto;
 import rs.chat.domain.service.FileService;
@@ -25,7 +27,6 @@ import java.io.IOException;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.Base64;
-import java.util.regex.Pattern;
 
 import static rs.chat.router.Routes.PostRoute.UPLOAD_URL;
 import static rs.chat.utils.Constants.MAX_FILE_BYTES;
@@ -39,7 +40,9 @@ import static rs.chat.utils.Constants.MAX_FILE_BYTES;
 public class FileController {
 	private final FileService fileService;
 	private final UserService userService;
+	private final NSFWService nsfwService;
 	private final Clock clock;
+	private final ApplicationEventPublisher eventPublisher;
 
 	/**
 	 * Uploads a file to the server.
@@ -70,7 +73,12 @@ public class FileController {
 				throw new BadRequestException("File is too big");
 			}
 
-			checkForNSFWOfImageOrGif(fileName, encodedData, mimeTypes[1]);
+			try {
+				checkForNSFWOfImageOrGif(fileName, encodedData, mimeTypes[1]);
+			} catch (NSFWContentException e) {
+				this.eventPublisher.publishEvent(new NSFWUploadEvent(this, userId));
+				throw e; // Throw the exception so that the file is not uploaded
+			}
 
 			File fileToSave = new File(
 					null,
@@ -98,18 +106,18 @@ public class FileController {
 		log.info("File ({}) uploaded successfully", fileName);
 	}
 
-	private static void checkForNSFWOfImageOrGif(String fileName, String base64File, @NotNull String mimeType) {
+	private void checkForNSFWOfImageOrGif(String fileName, String base64File, @NotNull String mimeType) {
 		String serviceEndpoint;
 
-		if (Pattern.matches("^(jp(e)?g|png)$", mimeType)) {
+		if (mimeType.matches("^(jp(e)?g|png)$")) {
 			serviceEndpoint = "image";
-		} else if (Pattern.matches("^(gif)$", mimeType)) {
+		} else if (mimeType.matches("^(gif)$")) {
 			serviceEndpoint = "gif";
 		} else {
 			return;
 		}
 
-		if (NSFW.isNSFW(base64File, serviceEndpoint)) {
+		if (this.nsfwService.isNSFW(base64File, serviceEndpoint)) {
 			throw new NSFWContentException("File %s is NSFW".formatted(fileName));
 		}
 	}

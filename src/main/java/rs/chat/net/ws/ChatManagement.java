@@ -195,4 +195,19 @@ public class ChatManagement {
 	public void setClientActive(ClientID clientID) {
 		this.chats.get(clientID.chatId()).setClientActive(clientID);
 	}
+
+	/**
+	 * Sends a notification to the client with the given username. If the user is connected
+	 * to multiple chats, the notification will be sent to all of them (in some cases to
+	 * kick (or other special reason) the user from all the chats).
+	 *
+	 * @param username username of the client to send the notification to.
+	 * @param message  message to send.
+	 */
+	public void sendNotificationTo(String username, String message) {
+		this.chats.values()
+		          .stream()
+		          .filter(chat -> chat.hasClientWithUsername(username))
+		          .forEach(chat -> chat.sendNotificationTo(username, message));
+	}
 }

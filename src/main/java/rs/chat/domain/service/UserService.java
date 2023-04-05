@@ -78,11 +78,11 @@ public class UserService implements UserDetailsService {
 	}
 
 	/**
-	 * Updates a user in the database.
+	 * Saves a user to the database.
 	 *
 	 * @param user the user to be updated.
 	 */
-	public User updateUser(User user) {
+	public User saveUser(User user) {
 		return this.userRepository.save(user);
 	}
 

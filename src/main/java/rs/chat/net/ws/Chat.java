@@ -207,4 +207,29 @@ public class Chat {
 		           .filter(client -> client.getClientID().equals(clientID))
 		           .findFirst();
 	}
+
+	/**
+	 * Checks if the chat has a client with the specified username.
+	 *
+	 * @param username username to check.
+	 *
+	 * @return {@code true} if the chat has a client with the specified username, {@code false} otherwise.
+	 */
+	public boolean hasClientWithUsername(String username) {
+		return this.availableClientsStream()
+		           .anyMatch(client -> client.getClientID().username().equals(username));
+	}
+
+	/**
+	 * Sends a notification to the specified user.
+	 *
+	 * @param username username of the user to send the notification to.
+	 * @param message message to send.
+	 */
+	public void sendNotificationTo(String username, String message) {
+		this.availableClientsStream()
+		    .filter(client -> client.getClientID().username().equals(username))
+		    .findFirst()
+		    .ifPresent(client -> client.send(message));
+	}
 }
