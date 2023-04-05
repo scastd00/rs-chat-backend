@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.Base64;
-import java.util.regex.Pattern;
 
 import static rs.chat.router.Routes.PostRoute.UPLOAD_URL;
 import static rs.chat.utils.Constants.MAX_FILE_BYTES;
@@ -78,7 +77,7 @@ public class FileController {
 				checkForNSFWOfImageOrGif(fileName, encodedData, mimeTypes[1]);
 			} catch (NSFWContentException e) {
 				this.eventPublisher.publishEvent(new NSFWUploadEvent(this, userId));
-				throw e;
+				throw e; // Throw the exception so that the file is not uploaded
 			}
 
 			File fileToSave = new File(
