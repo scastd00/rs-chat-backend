@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import rs.chat.net.ws.ChatManagement;
 import rs.chat.utils.Utils;
 
+import static rs.chat.utils.Constants.SERVER_CHAT_ID;
+
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -22,7 +24,7 @@ public class NotificationEventListener implements ApplicationListener<Notificati
 		log.info("Sending notification to user with username={}, message={}", username, message);
 
 		this.chatManagement.sendNotificationTo(username, Utils.createMessage(
-				message, event.getNotificationType(), "SERVER"
+				message, event.getNotificationType(), SERVER_CHAT_ID
 		));
 	}
 }

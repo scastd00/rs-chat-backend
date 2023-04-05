@@ -9,6 +9,7 @@ import rs.chat.net.ws.ChatManagement;
 import java.util.concurrent.TimeUnit;
 
 import static rs.chat.net.ws.Message.RESTART_MESSAGE;
+import static rs.chat.utils.Constants.SERVER_CHAT_ID;
 import static rs.chat.utils.Utils.createMessage;
 
 /**
@@ -48,7 +49,7 @@ public class ShutdownServerTask implements Task {
 					createMessage(
 							"Server is shutting down in %d %s.".formatted(this.delay, this.timeUnit.name().toLowerCase()),
 							RESTART_MESSAGE.type(),
-							""
+							SERVER_CHAT_ID
 					)
 			);
 
