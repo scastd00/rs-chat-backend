@@ -25,6 +25,9 @@ import rs.chat.utils.SaveDefaultsToDB;
 import rs.chat.utils.TestUtils;
 import rs.chat.utils.factories.DefaultFactory;
 
+import java.time.Clock;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.Optional;
 
@@ -52,6 +55,7 @@ class AuthIntegrationTest {
 	@Autowired private ChatRepository chatRepository;
 	@Autowired private GroupRepository groupRepository;
 	@Autowired private UserService userService;
+	@Autowired private Clock clock;
 
 	private Session studentSession;
 	private Session teacherSession;
@@ -102,6 +106,34 @@ class AuthIntegrationTest {
 		                                   .get("token").getAsString();
 
 		assertThat(sessionRepository.findByToken(responseToken)).isPresent();
+	}
+
+	@Test
+	void testLoginUserBlocked() throws Exception {
+		// Given
+		User user = DefaultFactory.INSTANCE.createUser(null, Constants.STUDENT_ROLE);
+		user.setBlockUntil(this.clock.instant().plus(10, ChronoUnit.MINUTES));
+		userService.createUser(user); // Save the user to DB to be able to log in
+
+		// When
+		String response = mockMvc.perform(request(HttpMethod.POST, LOGIN_URL)
+				                                  .contentType(MediaType.APPLICATION_JSON)
+				                                  .content(TEST_OBJECT_MAPPER.writeValueAsString(Map.of(
+						                                  "username", user.getUsername(),
+						                                  "password", TEST_PASSWORD,
+						                                  "remember", Boolean.FALSE
+				                                  ))))
+		                         .andExpect(status().isBadRequest())
+		                         .andReturn()
+		                         .getResponse()
+		                         .getContentAsString();
+
+		// Then
+		String errorMessage = "\"You are blocked until " + user.getBlockUntil()
+		                                                       .atZone(this.clock.getZone())
+		                                                       .format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")) + "\"";
+		assertThat(response).isEqualTo(errorMessage);
+		assertThat(sessionRepository.findAllByUserId(user.getId())).isEmpty();
 	}
 
 	@Test
@@ -499,6 +531,38 @@ class AuthIntegrationTest {
 				.cause()
 				.isInstanceOf(MinimumRequirementsNotMetException.class)
 				.hasMessage("Email must have a valid structure. Eg: hello@domain.com");
+	}
+
+	@Test
+	void testForgotPasswordBlockedUser() throws Exception {
+		// Given
+		studentSession.getUser().setBlockUntil(this.clock.instant().plus(10, ChronoUnit.MINUTES));
+		studentSession.getUser().setPasswordCode(null); // Clear the code set in the factory (this emulates the user requesting a new code)
+		userRepository.save(studentSession.getUser());
+
+		String email = studentSession.getUser().getEmail();
+		Map<String, String> forgotPasswordRequest = Map.of("email", email);
+
+		// When
+		String response = mockMvc.perform(request(HttpMethod.POST, FORGOT_PASSWORD_URL)
+				                                  .contentType(MediaType.APPLICATION_JSON)
+				                                  .content(TEST_OBJECT_MAPPER.writeValueAsString(forgotPasswordRequest)))
+		                         .andExpect(status().isBadRequest())
+		                         .andReturn()
+		                         .getResponse()
+		                         .getContentAsString();
+
+		// Then
+		String errorMessage = "\"You are blocked until " + studentSession.getUser()
+		                                                                 .getBlockUntil()
+		                                                                 .atZone(this.clock.getZone())
+		                                                                 .format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")) + "\"";
+		assertThat(response).isEqualTo(errorMessage);
+		assertThat(userRepository.findByEmail(email))
+				.isPresent()
+				.get()
+				.extracting(User::getPasswordCode)
+				.isNull();
 	}
 
 	@Test

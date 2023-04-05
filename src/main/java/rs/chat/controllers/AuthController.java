@@ -262,15 +262,14 @@ public class AuthController {
 	public void forgotPassword(HttpRequest request, HttpServletResponse res) throws IOException {
 		HttpResponse response = new HttpResponse(res);
 		JsonObject body = request.body();
-
-		// Check if the email is correct.
-		ControllerUtils.performActionThatMayThrowException(response, () -> {
-			Policies.checkEmail(body);
-			return null;
-		});
-
 		String email = body.get("email").getAsString();
-		User user = ControllerUtils.performActionThatMayThrowException(response, () -> this.userService.getUserByEmail(email));
+
+		User user = ControllerUtils.performActionThatMayThrowException(response, () -> {
+			// Check if the email is correct.
+			Policies.checkEmail(body);
+
+			return this.userService.getUserByEmail(email);
+		});
 
 		if (user.getBlockUntil() != null && user.getBlockUntil().isAfter(Instant.now(this.clock))) {
 			response.badRequest().send("You are blocked until " + user.getBlockUntil()
