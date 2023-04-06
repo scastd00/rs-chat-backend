@@ -54,7 +54,7 @@ CREATE TABLE `files`
 	`user_id`       bigint       NOT NULL,
 
 	CONSTRAINT `pk_file_id` PRIMARY KEY (`id`),
-	CONSTRAINT `ck_file_type` CHECK (`type` IN ('TEXT', 'IMAGE', 'AUDIO', 'VIDEO', 'APPLICATION'))
+	CONSTRAINT `ck_file_type` CHECK (`type` IN ('text', 'image', 'audio', 'video', 'application')) # The MIME type
 ) ENGINE InnoDB;
 
 CREATE TABLE `users`
