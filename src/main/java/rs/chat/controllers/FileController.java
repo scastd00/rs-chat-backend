@@ -87,7 +87,7 @@ public class FileController {
 					fileBytes.length,
 					"",
 					new JsonObject(),
-					mimeTypes[0].toUpperCase(),
+					mimeTypes[0],
 					this.userService.getUserById(userId)
 			);
 
