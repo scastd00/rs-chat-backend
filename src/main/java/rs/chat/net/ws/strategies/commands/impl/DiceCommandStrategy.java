@@ -5,7 +5,6 @@ import rs.chat.exceptions.WebSocketException;
 import rs.chat.net.ws.ClientID;
 import rs.chat.net.ws.strategies.commands.CommandHandlingDTO;
 import rs.chat.net.ws.strategies.commands.CommandStrategy;
-import rs.chat.net.ws.strategies.commands.parser.Params;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -19,10 +18,10 @@ public class DiceCommandStrategy implements CommandStrategy {
 	@Override
 	public void handle(CommandHandlingDTO handlingDTO) throws WebSocketException, IOException {
 		ClientID clientID = handlingDTO.getClientID();
-		String userToChallenge = Optional.ofNullable((handlingDTO.otherData().get("commandParams")))
-		                                 .map(params -> ((Params) params).get("user"))
-		                                 .orElse(null);
 		String messageContent;
+		String userToChallenge = Optional.ofNullable(handlingDTO.getParams())
+		                                 .map(params -> params.get("user"))
+		                                 .orElse(null);
 
 		if (userToChallenge != null) {
 			messageContent = String.format("@%s has challenged @%s to a dice game!", clientID.username(), userToChallenge);

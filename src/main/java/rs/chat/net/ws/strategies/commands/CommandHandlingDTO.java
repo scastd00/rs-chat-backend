@@ -3,6 +3,7 @@ package rs.chat.net.ws.strategies.commands;
 import org.springframework.web.socket.WebSocketSession;
 import rs.chat.net.ws.ChatManagement;
 import rs.chat.net.ws.ClientID;
+import rs.chat.net.ws.strategies.commands.parser.Params;
 
 import java.util.Map;
 
@@ -29,5 +30,15 @@ public record CommandHandlingDTO(ChatManagement chatManagement, Map<String, Obje
 	 */
 	public ClientID getClientID() {
 		return (ClientID) otherData.get("clientID");
+	}
+
+	/**
+	 * Method to ease the process of getting the {@link Params} of a specific message
+	 * received from a {@link WebSocketSession}.
+	 *
+	 * @return {@link Params} of the session.
+	 */
+	public Params getParams() {
+		return (Params) otherData.get(Params.class.getSimpleName());
 	}
 }

@@ -25,7 +25,6 @@ public class ChatManagement {
 	 * Map to store each chat. The mapping key is the chatId.
 	 */
 	private final Map<String, Chat> chats = new ConcurrentHashMap<>();
-	private final Metrics metrics;
 
 	/**
 	 * Checks if the specified chatId is a key of the chats map.
@@ -138,7 +137,6 @@ public class ChatManagement {
 	 */
 	public void mentionUser(String chatId, String username, String message) {
 		this.chats.get(chatId).mention(message, username);
-		this.metrics.incrementMentionedUsers();
 	}
 
 	/**

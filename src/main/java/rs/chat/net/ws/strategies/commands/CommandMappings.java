@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static rs.chat.net.ws.strategies.commands.Command.$NOOP;
 import static rs.chat.net.ws.strategies.commands.Command.ALL_COMMANDS;
 
 /**
@@ -23,15 +24,16 @@ public final class CommandMappings {
 	}
 
 	/**
-	 * Returns the {@link Command} with the specified name.
+	 * Returns the {@link Command} with the specified name. If no command is found,
+	 * then {@link Command#$NOOP} is returned.
 	 *
-	 * @param command The name of the command.
+	 * @param commandStr The name of the command.
 	 *
-	 * @return The {@link Command} with the specified name.
+	 * @return The {@link Command} with the specified name, or {@link Command#$NOOP} if no
+	 * command is found.
 	 */
-	public static Command getCommand(String command) {
-		return Optional.ofNullable(commands.getOrDefault(command, null))
-		               .orElseThrow(() -> new CommandUnavailableException("Command " + command + " is not available."));
+	public static Command getCommand(String commandStr) {
+		return commands.getOrDefault(commandStr, $NOOP);
 	}
 
 	/**
@@ -40,14 +42,15 @@ public final class CommandMappings {
 	public static String getAvailableCommandsWithDescriptionAndUsage() {
 		StringBuilder sb = new StringBuilder("##");
 
-		commands.forEach((command, strategy) -> sb.append(command)
+		commands.forEach((commandStr, command) -> sb.append(commandStr)
 		                                          .append(" - ")
-		                                          .append(strategy.description())
+		                                          .append(command.description())
 		                                          .append(" Usage: ")
-		                                          .append(strategy.usage())
+		                                          .append(command.usage())
 		                                          .append("##")
 		);
 
-		return sb.replace(sb.length() - 2, sb.length(), "").toString();
+		int length = sb.length();
+		return sb.replace(length - 2, length, "").toString();
 	}
 }

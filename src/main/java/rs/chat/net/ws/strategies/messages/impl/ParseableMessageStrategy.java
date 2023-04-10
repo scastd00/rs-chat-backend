@@ -12,10 +12,12 @@ import rs.chat.net.ws.strategies.commands.Command;
 import rs.chat.net.ws.strategies.commands.CommandHandlingDTO;
 import rs.chat.net.ws.strategies.commands.CommandMappings;
 import rs.chat.net.ws.strategies.commands.parser.MessageParser;
+import rs.chat.net.ws.strategies.commands.parser.Params;
 import rs.chat.net.ws.strategies.commands.parser.ParsedData;
 import rs.chat.net.ws.strategies.messages.MessageHandlingDTO;
 import rs.chat.net.ws.strategies.messages.events.CommandMessageEvent;
 import rs.chat.net.ws.strategies.messages.events.MentionMessageEvent;
+import rs.chat.observability.metrics.Metrics;
 import rs.chat.utils.Utils;
 
 import java.io.IOException;
@@ -33,10 +35,13 @@ import static rs.chat.utils.Utils.createMessage;
 @Slf4j
 public class ParseableMessageStrategy extends GenericMessageStrategy {
 	private final ApplicationEventPublisher eventPublisher;
+	private final Metrics metrics;
 
-	public ParseableMessageStrategy(ChatManagement chatManagement, ApplicationEventPublisher eventPublisher) {
+	public ParseableMessageStrategy(ChatManagement chatManagement, ApplicationEventPublisher eventPublisher,
+	                                Metrics metrics) {
 		super(chatManagement);
 		this.eventPublisher = eventPublisher;
+		this.metrics = metrics;
 	}
 
 	@Override
@@ -104,6 +109,7 @@ public class ParseableMessageStrategy extends GenericMessageStrategy {
 		event.setCallback(badgeCallback(handlingDTO));
 
 		this.eventPublisher.publishEvent(event);
+		this.metrics.incrementMentionedUsers();
 	}
 
 	/**
@@ -115,7 +121,7 @@ public class ParseableMessageStrategy extends GenericMessageStrategy {
 	 */
 	private void runCommand(MessageHandlingDTO handlingDTO, ParsedData parsedData, AtomicBoolean messageContentSent) {
 		Command command = CommandMappings.getCommand(parsedData.data());
-		handlingDTO.otherData().put("commandParams", parsedData.params());
+		handlingDTO.otherData().put(Params.class.getSimpleName(), parsedData.params());
 
 		try {
 			// If the command message could be sent to others, send it.
@@ -132,6 +138,7 @@ public class ParseableMessageStrategy extends GenericMessageStrategy {
 			event.setCommand(command.command());
 
 			this.eventPublisher.publishEvent(event);
+			this.metrics.incrementCommandsExecuted(command.command());
 		} catch (IOException e) {
 			throw new CommandFailureException(e.getMessage());
 		}

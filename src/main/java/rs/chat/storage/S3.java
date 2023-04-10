@@ -8,18 +8,15 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.core.exception.SdkException;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.core.sync.ResponseTransformer;
-import software.amazon.awssdk.http.SdkHttpResponse;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.CORSRule;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.HeadBucketRequest;
-import software.amazon.awssdk.services.s3.model.HeadBucketResponse;
 import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.io.Closeable;
 import java.io.File;
@@ -82,31 +79,33 @@ public final class S3 implements Closeable {
 	}
 
 	/**
-	 * Checks if the S3 bucket exists.
+	 * Checks the connectivity to the S3 bucket and creates it if it does not exist.
 	 *
-	 * @throws SdkException if the bucket does not exist or there is an error.
+	 * @throws SdkException if there is an error while creating the bucket or setting the CORS rules.
 	 */
 	public void checkS3BucketConnectivity() {
-		HeadBucketResponse headBucketResponse;
-
-		try {
-			headBucketResponse = this.s3Client.headBucket(
-					HeadBucketRequest.builder()
-					                 .bucket(S3_BUCKET_NAME)
-					                 .build()
-			);
-		} catch (S3Exception e) {
+		if (!this.existsBucket()) {
 			this.s3Client.createBucket(b -> b.bucket(S3_BUCKET_NAME));
-			return;
+			log.debug("Created S3 bucket {}", S3_BUCKET_NAME);
 		}
 
-		SdkHttpResponse response = headBucketResponse.sdkHttpResponse();
+		// Set CORS rules for the bucket.
+		this.configureCorsInBucket();
+	}
 
-		if (response.isSuccessful()) {
-			log.debug("Successful HeadBucketResponse. Status code: {}", response.statusCode());
-		} else {
-			log.error("HeadBucketResponse failed. Status code: {}", response.statusCode());
-			throw SdkException.create("HeadBucketResponse failed. Status code: " + response.statusCode(), null);
+	/**
+	 * Checks if the S3 bucket exists.
+	 *
+	 * @return {@code true} if the bucket exists, {@code false} otherwise.
+	 */
+	private boolean existsBucket() {
+		try {
+			return this.s3Client.listBuckets()
+			                    .buckets()
+			                    .stream()
+			                    .anyMatch(b -> b.name().equals(S3_BUCKET_NAME));
+		} catch (SdkException e) {
+			return false;
 		}
 	}
 
@@ -281,5 +280,24 @@ public final class S3 implements Closeable {
 				RandomStringUtils.randomAlphanumeric(15),
 				fileName
 		);
+	}
+
+	/**
+	 * Configures CORS in S3 bucket. This is needed for the web client to be able to access
+	 * the files in S3 bucket.
+	 */
+	private void configureCorsInBucket() {
+		CORSRule corsRule = CORSRule.builder()
+		                            .allowedHeaders("*")
+		                            .allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD")
+		                            .allowedOrigins("*")
+		                            .id("RSChat-AllowAllOrigins")
+		                            .build();
+
+		this.s3Client.putBucketCors(
+				b -> b.bucket(S3_BUCKET_NAME).corsConfiguration(builder -> builder.corsRules(corsRule))
+		);
+
+		log.debug("Configured CORS in S3 bucket {}", S3_BUCKET_NAME);
 	}
 }

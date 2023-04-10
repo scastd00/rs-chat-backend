@@ -8,6 +8,7 @@ import edu.stanford.nlp.sentiment.SentimentCoreAnnotations;
 import edu.stanford.nlp.trees.Tree;
 import edu.stanford.nlp.util.CoreMap;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Properties;
@@ -46,7 +47,7 @@ public final class EightBall {
 	record Sentiment(String name, int value, String sentence) {
 	}
 
-	public static String getReply(String question) {
+	public static String getReply(@NotNull String question) {
 		List<Sentiment> sentiments = analyze(question);
 		Readings readings;
 

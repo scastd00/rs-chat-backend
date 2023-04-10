@@ -104,7 +104,7 @@ public class AuthController {
 		JsonObject allChatsOfUserGroupedByType = this.chatService.getAllChatsOfUserGroupedByType(user);
 
 		// Remove the source IP from the session.
-		savedSession.setSrcIp("");
+		savedSession.setSrcIp(""); // Todo: send it to recognize what session is the user using.
 
 		HttpResponseBody responseBody = new HttpResponseBody("session", this.sessionMapper.toDto(savedSession));
 		responseBody.add("user", this.userMapper.toDto(user));
