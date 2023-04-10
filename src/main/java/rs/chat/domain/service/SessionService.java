@@ -96,12 +96,11 @@ public class SessionService {
 	 *
 	 * @return the found sessions.
 	 */
-	public List<String> getSrcIpOfUserSessions(String username) {
+	public List<Session> getSessionsByUsername(String username) {
 		return this.userRepository.findByUsername(username)
 		                          .stream()
 		                          .map(User::getSessions)
 		                          .flatMap(Set::stream)
-		                          .map(Session::getSrcIp)
 		                          .toList();
 	}
 

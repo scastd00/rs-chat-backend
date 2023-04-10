@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import rs.chat.domain.entity.User;
+import rs.chat.domain.entity.dtos.OpenedSessionDTO;
+import rs.chat.domain.entity.mappers.OpenedSessionMapper;
 import rs.chat.domain.service.ChatService;
 import rs.chat.domain.service.GroupService;
 import rs.chat.domain.service.SessionService;
@@ -43,6 +45,7 @@ public class UserController {
 	private final SessionService sessionService;
 	private final GroupService groupService;
 	private final ChatService chatService;
+	private final OpenedSessionMapper openedSessionMapper;
 
 	/**
 	 * Returns all users.
@@ -113,7 +116,10 @@ public class UserController {
 	 */
 	@GetMapping(OPENED_SESSIONS_OF_USER_URL)
 	public void openedSessions(HttpServletResponse res, @PathVariable String username) throws IOException {
-		List<String> sessionsOfUser = this.sessionService.getSrcIpOfUserSessions(username);
+		List<OpenedSessionDTO> sessionsOfUser = this.sessionService.getSessionsByUsername(username)
+		                                                           .stream()
+		                                                           .map(this.openedSessionMapper::toDto)
+		                                                           .toList();
 
 		new HttpResponse(res).ok().send(sessionsOfUser);
 	}

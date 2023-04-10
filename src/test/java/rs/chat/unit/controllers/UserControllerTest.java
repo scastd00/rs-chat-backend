@@ -15,6 +15,7 @@ import rs.chat.domain.entity.Group;
 import rs.chat.domain.entity.Session;
 import rs.chat.domain.entity.User;
 import rs.chat.domain.entity.dtos.UserDto;
+import rs.chat.domain.entity.mappers.OpenedSessionMapper;
 import rs.chat.domain.service.ChatService;
 import rs.chat.domain.service.GroupService;
 import rs.chat.domain.service.SessionService;
@@ -55,6 +56,7 @@ class UserControllerTest {
 	@MockBean private SessionService sessionService;
 	@MockBean private GroupService groupService;
 	@MockBean private ChatService chatService;
+	@MockBean private OpenedSessionMapper openedSessionMapper;
 
 	@Test
 	@WithMockStudent
@@ -177,13 +179,12 @@ class UserControllerTest {
 	void openedSessionsSingleSession() throws Exception {
 		// Given
 		User user = DefaultFactory.INSTANCE.createUser(1L, Constants.STUDENT_ROLE);
-		List<String> ips = Stream.of(DefaultFactory.INSTANCE.createSession(1L, user),
-		                             DefaultFactory.INSTANCE.createSession(2L, user),
-		                             DefaultFactory.INSTANCE.createSession(3L, user))
-		                         .map(Session::getSrcIp)
-		                         .toList();
+		List<Session> ips = Stream.of(DefaultFactory.INSTANCE.createSession(1L, user),
+		                              DefaultFactory.INSTANCE.createSession(2L, user),
+		                              DefaultFactory.INSTANCE.createSession(3L, user))
+		                          .toList();
 
-		given(sessionService.getSrcIpOfUserSessions(any(String.class))).willReturn(ips);
+		given(sessionService.getSessionsByUsername(any(String.class))).willReturn(ips);
 
 		// When
 		MockHttpServletResponse response =
@@ -194,7 +195,9 @@ class UserControllerTest {
 
 		// Then
 		assertThat(response.getContentAsString())
-				.isEqualTo(TEST_OBJECT_MAPPER.writeValueAsString(ips));
+				.isEqualTo(TEST_OBJECT_MAPPER.writeValueAsString(
+						ips.stream().map(this.openedSessionMapper::toDto).toList())
+				);
 	}
 
 	@Test
@@ -202,9 +205,9 @@ class UserControllerTest {
 	void openedSessionsNoSessions() throws Exception {
 		// Given
 		User user = DefaultFactory.INSTANCE.createUser(1L, Constants.STUDENT_ROLE);
-		List<String> ips = List.of();
+		List<Session> ips = List.of();
 
-		given(sessionService.getSrcIpOfUserSessions(any(String.class))).willReturn(ips);
+		given(sessionService.getSessionsByUsername(any(String.class))).willReturn(ips);
 
 		// When
 		MockHttpServletResponse response =
