@@ -21,6 +21,7 @@ import rs.chat.net.ws.strategies.commands.impl.ModeCommandStrategy;
 import rs.chat.net.ws.strategies.commands.impl.MsgCommandStrategy;
 import rs.chat.net.ws.strategies.commands.impl.NamesCommandStrategy;
 import rs.chat.net.ws.strategies.commands.impl.NickCommandStrategy;
+import rs.chat.net.ws.strategies.commands.impl.NoOpCommandStrategy;
 import rs.chat.net.ws.strategies.commands.impl.OpCommandStrategy;
 import rs.chat.net.ws.strategies.commands.impl.PingCommandStrategy;
 import rs.chat.net.ws.strategies.commands.impl.QuitCommandStrategy;
@@ -94,6 +95,8 @@ public record Command(
 	public static final Command $DICE = new Command("/dice", NORMAL, "Rolls a dice (or challenges another user).", "/dice (<user>)", new DiceCommandStrategy(), true, "user");
 	public static final Command $8_BALL = new Command("/8ball", NORMAL, "Asks the magic 8-ball a question.", "/8ball <question>", new EightBallCommandStrategy(), true, "question");
 	public static final Command $FLIP = new Command("/flip", NORMAL, "Flips a coin.", "/flip", new FlipCommandStrategy(), true);
+
+	public static final Command $NOOP = new Command("", NORMAL, "", "", new NoOpCommandStrategy(), false);
 
 	public static final List<Command> ALL_COMMANDS = Arrays.asList(
 			$HELP, $CLEAR, $ME, $NICK, $JOIN, $LEAVE, $MSG, $WHOIS, $INVITE, $KICK, $BAN, $UNBAN,

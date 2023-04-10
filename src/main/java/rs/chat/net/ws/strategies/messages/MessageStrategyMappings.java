@@ -1,7 +1,6 @@
 package rs.chat.net.ws.strategies.messages;
 
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import rs.chat.net.ws.ChatManagement;
@@ -26,6 +25,7 @@ import rs.chat.net.ws.strategies.messages.impl.UserLeftStrategy;
 import rs.chat.net.ws.strategies.messages.impl.UserStoppedTypingStrategy;
 import rs.chat.net.ws.strategies.messages.impl.UserTypingStrategy;
 import rs.chat.net.ws.strategies.messages.impl.VideoMessageStrategy;
+import rs.chat.observability.metrics.Metrics;
 import rs.chat.rate.RateLimiter;
 
 import java.util.HashMap;
@@ -70,12 +70,14 @@ public final class MessageStrategyMappings {
 	private final ChatManagement chatManagement;
 	private final RateLimiter rateLimiter;
 	private final ApplicationEventPublisher eventPublisher;
+	private final Metrics metrics;
 
-	@Autowired
-	public MessageStrategyMappings(ChatManagement chatManagement, RateLimiter rateLimiter, ApplicationEventPublisher eventPublisher) {
+	public MessageStrategyMappings(ChatManagement chatManagement, RateLimiter rateLimiter,
+	                               ApplicationEventPublisher eventPublisher, Metrics metrics) {
 		this.chatManagement = chatManagement;
 		this.rateLimiter = rateLimiter;
 		this.eventPublisher = eventPublisher;
+		this.metrics = metrics;
 		this.initStrategies();
 	}
 
@@ -106,7 +108,7 @@ public final class MessageStrategyMappings {
 		strategies.put(VIDEO_MESSAGE.type(), new VideoMessageStrategy(this.chatManagement, this.eventPublisher));
 		strategies.put(PDF_MESSAGE.type(), new PdfMessageStrategy(this.chatManagement, this.eventPublisher));
 		strategies.put(TEXT_DOC_MESSAGE.type(), new TextDocMessageStrategy(this.chatManagement, this.eventPublisher));
-		strategies.put(PARSEABLE_MESSAGE.type(), new ParseableMessageStrategy(this.chatManagement, this.eventPublisher)); // Mentions and commands
+		strategies.put(PARSEABLE_MESSAGE.type(), new ParseableMessageStrategy(this.chatManagement, this.eventPublisher, this.metrics)); // Mentions and commands
 
 		strategies.put(ACTIVE_USERS_MESSAGE.type(), new ActiveUsersStrategy(this.chatManagement));
 		strategies.put(GET_HISTORY_MESSAGE.type(), new GetHistoryStrategy());

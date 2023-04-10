@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static rs.chat.net.ws.strategies.commands.Command.$NOOP;
 import static rs.chat.net.ws.strategies.commands.Command.ALL_COMMANDS;
 
 /**
@@ -23,15 +24,16 @@ public final class CommandMappings {
 	}
 
 	/**
-	 * Returns the {@link Command} with the specified name.
+	 * Returns the {@link Command} with the specified name. If no command is found,
+	 * then {@link Command#$NOOP} is returned.
 	 *
 	 * @param commandStr The name of the command.
 	 *
-	 * @return The {@link Command} with the specified name.
+	 * @return The {@link Command} with the specified name, or {@link Command#$NOOP} if no
+	 * command is found.
 	 */
 	public static Command getCommand(String commandStr) {
-		return Optional.ofNullable(commands.getOrDefault(commandStr, null))
-		               .orElseThrow(() -> new CommandUnavailableException("Command " + commandStr + " is not available."));
+		return commands.getOrDefault(commandStr, $NOOP);
 	}
 
 	/**

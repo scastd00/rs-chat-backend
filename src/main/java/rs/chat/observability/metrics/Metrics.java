@@ -59,4 +59,15 @@ public class Metrics {
 	public void incrementBlockedUsers() {
 		this.registry.counter("chat.blocked.users").increment();
 	}
+
+	/**
+	 * Increments the commands executed counter for the given command name and the
+	 * total commands executed counter in the application.
+	 *
+	 * @param command The command name.
+	 */
+	public void incrementCommandsExecuted(String command) {
+		this.registry.counter("chat.commands.executed", "command", command).increment();
+		this.registry.counter("chat.commands.executed.total").increment();
+	}
 }

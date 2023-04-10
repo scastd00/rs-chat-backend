@@ -58,21 +58,22 @@ public class MessageParser {
 	 * @return a {@link ParsedData} containing the command and its params.
 	 */
 	private static ParsedData parseCommand(String[] parts, int pos) {
-		Command command = CommandMappings.getCommand(parts[pos]);
+		String commandSignature = parts[pos];
+		Command command = CommandMappings.getCommand(commandSignature);
 		int parameters = command.paramNames().length;
+		Params params = Params.forCommand(command);
 
 		// Command without parameters
 		if (parts.length - 1 == 0) {
-			return new ParsedData(parts[pos], Params.NONE, COMMAND);
+			return new ParsedData(commandSignature, params, COMMAND);
 		}
 
 		// Check if the command has more parameters than needed
 		if (pos + parameters >= parts.length) {
-			throw new IllegalArgumentException("Wrong number of parameters for command " + parts[pos]);
+			throw new IllegalArgumentException("Wrong number of parameters for command " + commandSignature);
 		}
 
 		// Save the parameters
-		Params params = new Params(command.paramNames());
 		for (int i = 0; i < parameters; i++) {
 			// Todo: check that the parameter is valid.
 			String paramName = command.paramNames()[i];
@@ -86,7 +87,7 @@ public class MessageParser {
 			params.put(paramName, paramValue);
 		}
 
-		return new ParsedData(parts[pos], params, COMMAND);
+		return new ParsedData(commandSignature, params, COMMAND);
 	}
 
 	/**
