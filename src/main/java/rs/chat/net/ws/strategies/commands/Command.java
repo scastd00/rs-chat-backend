@@ -69,7 +69,8 @@ public record Command(
 	public static final Command $LEAVE = new Command("/leave", NORMAL, "Leaves a channel.", "/leave <channel>", new LeaveCommandStrategy(), false, "channel");
 	public static final Command $MSG = new Command("/msg", NORMAL, "Sends a private message to a user.", "/msg <user> <message>", new MsgCommandStrategy(), true, "user", "message");
 	public static final Command $WHOIS = new Command("/whois", NORMAL, "Displays information about a user.", "/whois <user>", new WhoIsCommandStrategy(), false, "user");
-	public static final Command $INVITE = new Command("/invite", NORMAL, "Invites a user to a channel.", "/invite <user> <channel>", new InviteCommandStrategy(), true, "user", "channel");
+	@Deprecated(forRemoval = true)
+	public static final Command $INVITE = new Command("/invite", NORMAL, "Invites a user to a channel.", "/invite <user> <channel>", new InviteCommandStrategy(), false, "user", "channel");
 	public static final Command $KICK = new Command("/kick", TEACHER, "Kicks a user from a channel.", "/kick <user> <channel>", new KickCommandStrategy(), true, "user", "channel");
 	public static final Command $BAN = new Command("/ban", TEACHER, "Bans a user from a channel.", "/ban <user> <channel>", new BanCommandStrategy(), true, "user", "channel");
 	public static final Command $UNBAN = new Command("/unban", TEACHER, "Unbans a user from a channel.", "/unban <user> <channel>", new UnbanCommandStrategy(), true, "user", "channel");

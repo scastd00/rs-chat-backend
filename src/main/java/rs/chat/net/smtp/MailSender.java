@@ -15,6 +15,7 @@ import rs.chat.tasks.TaskScheduler;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.Properties;
 
 import static rs.chat.tasks.Task.TaskStatus;
@@ -57,8 +58,7 @@ public class MailSender {
 								to,
 								"Welcome to RSChat!",
 								"src/main/resources/templates/email/welcome/rs-chat-welcome-email.html",
-								"{{username}}",
-								username
+								Map.of("{{username}}", username)
 						));
 					} catch (MessagingException | IOException e) {
 						throw new TaskExecutionException(
@@ -87,8 +87,7 @@ public class MailSender {
 								to,
 								"Reset your password",
 								"src/main/resources/templates/email/resetPassword/rs-chat-reset-password-email.html",
-								"{{code}}",
-								code
+								Map.of("{{code}}", code)
 						));
 					} catch (MessagingException | IOException e) {
 						throw new TaskExecutionException(
@@ -103,33 +102,56 @@ public class MailSender {
 		);
 	}
 
+	public static void sendInvitationEmailBackground(String from, String to, String chatName, String code) {
+		TaskScheduler.executeTaskSecure(
+				() -> {
+					try {
+						SENDER.send(getMimeMessage(
+								to,
+								"Invitation to join %s".formatted(chatName),
+								"src/main/resources/templates/email/invite/rs-chat-invite-email.html",
+								Map.of("{{code}}", code, "{{from}}", from, "{{chatName}}", chatName)
+						));
+					} catch (MessagingException | IOException e) {
+						throw new TaskExecutionException(
+								new TaskStatus(TaskStatus.FAILURE, e.getMessage())
+						);
+					}
+				},
+				exception -> {
+					log.error("Failed to send invite code email to {}", to, exception);
+					return null;
+				}
+		);
+	}
+
 	/**
 	 * Creates a MimeMessage object that can be used to send an email.
 	 *
-	 * @param to       the recipient's email address.
-	 * @param subject  the subject of the email.
-	 * @param fileName the name of the file that contains the email's content.
-	 * @param target   the target string to replace in the email's content.
-	 * @param value    the value to replace the target string with.
+	 * @param to                the recipient's email address.
+	 * @param subject           the subject of the email.
+	 * @param fileName          the name of the file that contains the email's content.
+	 * @param targetReplacement the target string to replace (with the value) in the email's content.
 	 *
 	 * @return a {@link MimeMessage} object that can be used to send an email.
 	 *
 	 * @throws MessagingException if an error occurs while creating the MimeMessage object.
 	 * @throws IOException        if an error occurs while reading the email's content.
 	 */
-	private static MimeMessage getMimeMessage(String to, String subject, String fileName, String target,
-	                                          String value) throws MessagingException, IOException {
+	private static MimeMessage getMimeMessage(String to, String subject, String fileName,
+	                                          Map<String, String> targetReplacement) throws MessagingException, IOException {
 		MimeMessage message = SENDER.createMimeMessage();
-
 		message.setFrom(FROM);
 		message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
 		message.setSubject(subject);
-		message.setText(
-				IOUtils.toString(new FileReader(fileName)).replace(target, value),
-				StandardCharsets.UTF_8.name(),
-				"html"
-		);
 
+		String content = IOUtils.toString(new FileReader(fileName));
+
+		for (var entry : targetReplacement.entrySet()) {
+			content = content.replace(entry.getKey(), entry.getValue());
+		}
+
+		message.setText(content, StandardCharsets.UTF_8.name(), "html");
 		return message;
 	}
 }

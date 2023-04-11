@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import rs.chat.domain.entity.Chat;
 import rs.chat.domain.entity.User;
 import rs.chat.domain.entity.dtos.OpenedSessionDTO;
 import rs.chat.domain.entity.mappers.OpenedSessionMapper;
@@ -32,6 +33,7 @@ import static rs.chat.router.Routes.GetRoute.USERS_URL;
 import static rs.chat.router.Routes.GetRoute.USER_ID_BY_USERNAME_URL;
 import static rs.chat.router.Routes.GetRoute.USER_STATS_URL;
 import static rs.chat.router.Routes.PostRoute.DELETE_USER_URL;
+import static rs.chat.router.Routes.PostRoute.USER_INVITE_URL;
 import static rs.chat.router.Routes.PostRoute.USER_SAVE_URL;
 
 /**
@@ -156,5 +158,27 @@ public class UserController {
 		JsonObject stats = ControllerUtils.performActionThatMayThrowException(response, () -> this.userService.getUserStats(username));
 
 		response.ok().send(stats);
+	}
+
+	@PostMapping(USER_INVITE_URL)
+	public void inviteUser(HttpRequest request, HttpServletResponse res) throws IOException {
+		HttpResponse response = new HttpResponse(res);
+
+		JsonObject body = request.body();
+		String username = body.get("username").getAsString();
+		String invitesTo = body.get("invitesTo").getAsString();
+		String chatName = body.get("chatName").getAsString();
+		String chatCode = this.chatService.getByName(chatName).getInvitationCode();
+		User invitee = this.userService.getUserByUsername(username);
+		Chat chat = this.chatService.getByName(chatName);
+
+		ControllerUtils.performActionThatMayThrowException(response, () -> {
+			this.chatService.addUserToChat(invitee.getId(), chat.getId());
+			return null;
+		});
+
+		MailSender.sendInvitationEmailBackground(username, invitesTo, chatName, chatCode);
+
+		response.ok().send();
 	}
 }
