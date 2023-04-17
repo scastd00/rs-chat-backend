@@ -167,17 +167,16 @@ public class UserController {
 		JsonObject body = request.body();
 		String username = body.get("username").getAsString();
 		String invitesTo = body.get("invitesTo").getAsString();
-		String chatName = body.get("chatName").getAsString();
-		String chatCode = this.chatService.getByName(chatName).getInvitationCode();
-		User invitee = this.userService.getUserByUsername(username);
-		Chat chat = this.chatService.getByName(chatName);
+		String chatKey = body.get("chatKey").getAsString();
 
-		ControllerUtils.performActionThatMayThrowException(response, () -> {
+		Chat chat1 = ControllerUtils.performActionThatMayThrowException(response, () -> {
+			Chat chat = this.chatService.getChatByKey(chatKey);
+			User invitee = this.userService.getUserByUsername(invitesTo);
 			this.chatService.addUserToChat(invitee.getId(), chat.getId());
-			return null;
+			return chat;
 		});
 
-		MailSender.sendInvitationEmailBackground(username, invitesTo, chatName, chatCode);
+		MailSender.sendInvitationEmailBackground(username, invitesTo, chat1.getName(), chat1.getInvitationCode());
 
 		response.ok().send();
 	}
