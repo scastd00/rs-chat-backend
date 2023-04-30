@@ -9,8 +9,8 @@ import rs.chat.net.ws.ChatManagement;
 import java.util.concurrent.TimeUnit;
 
 import static rs.chat.net.ws.Message.RESTART_MESSAGE;
-import static rs.chat.utils.Constants.SERVER_CHAT_ID;
-import static rs.chat.utils.Utils.createMessage;
+import static rs.chat.Constants.SERVER_CHAT_ID;
+import static rs.chat.net.ws.JsonMessageWrapper.createMessage;
 
 /**
  * Task for shutting down the server.

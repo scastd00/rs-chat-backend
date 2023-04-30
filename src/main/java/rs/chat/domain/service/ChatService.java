@@ -20,7 +20,7 @@ import rs.chat.exceptions.NotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static rs.chat.utils.Constants.USER;
+import static rs.chat.Constants.USER;
 
 @Service
 @RequiredArgsConstructor

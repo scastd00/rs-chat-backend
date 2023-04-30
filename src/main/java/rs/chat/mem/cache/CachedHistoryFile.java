@@ -1,10 +1,10 @@
-package rs.chat.cache;
+package rs.chat.mem.cache;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import rs.chat.storage.S3;
-import rs.chat.utils.Constants;
+import rs.chat.Constants;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static rs.chat.utils.Constants.HISTORY_PAGE_SIZE;
+import static rs.chat.Constants.HISTORY_PAGE_SIZE;
 
 /**
  * Class for caching the history file in memory. This file is cached in memory to

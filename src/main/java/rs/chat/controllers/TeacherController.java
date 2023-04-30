@@ -25,8 +25,8 @@ import static rs.chat.router.Routes.GetRoute.TEACHERS_URL;
 import static rs.chat.router.Routes.GetRoute.TEACHER_DEGREES_URL;
 import static rs.chat.router.Routes.GetRoute.TEACHER_SUBJECTS_URL;
 import static rs.chat.router.Routes.PostRoute.ADD_TEACHER_TO_SUBJECT_URL;
-import static rs.chat.utils.Constants.DEGREE;
-import static rs.chat.utils.Constants.SUBJECT;
+import static rs.chat.Constants.DEGREE;
+import static rs.chat.Constants.SUBJECT;
 
 /**
  * Controller for the teacher functionality.

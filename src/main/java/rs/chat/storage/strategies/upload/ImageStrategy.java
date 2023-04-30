@@ -10,7 +10,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URI;
 
-import static rs.chat.utils.Utils.bytesToUnit;
+import static rs.chat.mem.UnitConversion.bytesToUnit;
 
 public class ImageStrategy implements FileUploadStrategy {
 	@Override

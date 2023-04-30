@@ -1,14 +1,16 @@
 package rs.chat.net.ws;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import rs.chat.utils.Builder;
-import rs.chat.utils.Utils;
+import rs.chat.json.JsonParser;
+import rs.chat.builder.Builder;
 
+import static rs.chat.Constants.OBJECT_MAPPER;
 import static rs.chat.net.ws.Message.MEDIA_MESSAGES;
 
 /**
@@ -42,7 +44,34 @@ public class JsonMessageWrapper {
 	 */
 	public JsonMessageWrapper(String rawPayload) {
 		this.rawPayload = rawPayload;
-		this.parsedPayload = Utils.parseJson(rawPayload);
+		this.parsedPayload = JsonParser.parseJson(rawPayload);
+	}
+
+	/**
+	 * Creates a {@link String} message containing a server message.
+	 *
+	 * @param content the message to send.
+	 * @param type    the type of the message.
+	 * @param chatId  the chatId to send the message to.
+	 *
+	 * @return the {@link String} message containing the server message.
+	 */
+	public static String createMessage(String content, String type, String chatId) {
+		try {
+			return OBJECT_MAPPER.writeValueAsString(
+					builder()
+							/* Headers */
+							.username("Server")
+							.chatId(chatId)
+							.type(type)
+							.date(System.currentTimeMillis())
+							/* Body */
+							.content(content)
+							.build()
+			);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**

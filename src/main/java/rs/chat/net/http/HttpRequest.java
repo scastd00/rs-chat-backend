@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpServletRequestWrapper;
 import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
 import org.springframework.util.StreamUtils;
-import rs.chat.utils.Utils;
+import rs.chat.json.JsonParser;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -39,7 +39,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
 	public HttpRequest(HttpServletRequest request) throws IOException {
 		super(request);
 		this.cachedBody = StreamUtils.copyToByteArray(request.getInputStream());
-		this.parsedBody = Utils.parseJson(IOUtils.toString(this.getReader()));
+		this.parsedBody = JsonParser.parseJson(IOUtils.toString(this.getReader()));
 	}
 
 	/**

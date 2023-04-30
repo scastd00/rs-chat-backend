@@ -15,8 +15,8 @@ import rs.chat.observability.metrics.Metrics;
 import java.time.Clock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static rs.chat.utils.Constants.DEFAULT_BLOCK_DURATION_MILLIS;
-import static rs.chat.utils.Constants.MINIMUM_NSFW_TO_BLOCK;
+import static rs.chat.Constants.DEFAULT_BLOCK_DURATION_MILLIS;
+import static rs.chat.Constants.MINIMUM_NSFW_TO_BLOCK;
 
 @Component
 @RequiredArgsConstructor

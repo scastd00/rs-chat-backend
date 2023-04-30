@@ -1,4 +1,4 @@
-package rs.chat.utils.ref;
+package rs.chat.mem.ref;
 
 import lombok.NonNull;
 

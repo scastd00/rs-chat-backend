@@ -25,7 +25,7 @@ import rs.chat.net.http.HttpResponse;
 import rs.chat.net.http.HttpResponse.HttpResponseBody;
 import rs.chat.net.smtp.MailSender;
 import rs.chat.policies.Policies;
-import rs.chat.utils.Constants;
+import rs.chat.Constants;
 
 import java.io.IOException;
 import java.time.Clock;
@@ -41,8 +41,8 @@ import static rs.chat.router.Routes.PostRoute.FORGOT_PASSWORD_URL;
 import static rs.chat.router.Routes.PostRoute.LOGIN_URL;
 import static rs.chat.router.Routes.PostRoute.LOGOUT_URL;
 import static rs.chat.router.Routes.PostRoute.REGISTER_URL;
-import static rs.chat.utils.Constants.JWT_TOKEN_PREFIX;
-import static rs.chat.utils.Constants.STUDENT_ROLE;
+import static rs.chat.Constants.JWT_TOKEN_PREFIX;
+import static rs.chat.Constants.STUDENT_ROLE;
 
 /**
  * Controller that manages all credential-related requests.

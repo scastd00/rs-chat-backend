@@ -7,6 +7,7 @@ import rs.chat.exceptions.CommandFailureException;
 import rs.chat.exceptions.CommandUnavailableException;
 import rs.chat.exceptions.WebSocketException;
 import rs.chat.net.ws.ChatManagement;
+import rs.chat.net.ws.JsonMessageWrapper;
 import rs.chat.net.ws.Message;
 import rs.chat.net.ws.strategies.commands.Command;
 import rs.chat.net.ws.strategies.commands.CommandHandlingDTO;
@@ -18,7 +19,6 @@ import rs.chat.net.ws.strategies.messages.MessageHandlingDTO;
 import rs.chat.net.ws.strategies.messages.events.CommandMessageEvent;
 import rs.chat.net.ws.strategies.messages.events.MentionMessageEvent;
 import rs.chat.observability.metrics.Metrics;
-import rs.chat.utils.Utils;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -26,8 +26,8 @@ import java.util.function.Predicate;
 
 import static rs.chat.net.ws.Message.ERROR_MESSAGE;
 import static rs.chat.net.ws.Message.MENTION_MESSAGE;
-import static rs.chat.utils.Constants.SERVER_CHAT_ID;
-import static rs.chat.utils.Utils.createMessage;
+import static rs.chat.Constants.SERVER_CHAT_ID;
+import static rs.chat.net.ws.JsonMessageWrapper.createMessage;
 
 /**
  * Strategy for handling {@link Message#PARSEABLE_MESSAGE} messages.
@@ -63,7 +63,7 @@ public class ParseableMessageStrategy extends GenericMessageStrategy {
 		} catch (CommandUnavailableException | IllegalArgumentException e) {
 			log.error("Error while parsing message", e);
 			handlingDTO.getSession().sendMessage(new TextMessage(
-					Utils.createMessage(
+					JsonMessageWrapper.createMessage(
 							"An error occurred while parsing the message, %s".formatted(e.getMessage()),
 							ERROR_MESSAGE.type(),
 							SERVER_CHAT_ID

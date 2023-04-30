@@ -10,8 +10,8 @@ import java.io.IOException;
 import java.util.Optional;
 
 import static rs.chat.net.ws.Message.COMMAND_RESPONSE;
-import static rs.chat.utils.Constants.SECURE_RANDOM;
-import static rs.chat.utils.Utils.createMessage;
+import static rs.chat.Constants.SECURE_RANDOM;
+import static rs.chat.net.ws.JsonMessageWrapper.createMessage;
 
 @Slf4j
 public class DiceCommandStrategy implements CommandStrategy {

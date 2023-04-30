@@ -6,9 +6,9 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 import rs.chat.net.ws.ChatManagement;
-import rs.chat.utils.Utils;
+import rs.chat.net.ws.JsonMessageWrapper;
 
-import static rs.chat.utils.Constants.SERVER_CHAT_ID;
+import static rs.chat.Constants.SERVER_CHAT_ID;
 
 @Component
 @RequiredArgsConstructor
@@ -23,7 +23,7 @@ public class NotificationEventListener implements ApplicationListener<Notificati
 
 		log.info("Sending notification to user with username={}, message={}", username, message);
 
-		this.chatManagement.sendNotificationTo(username, Utils.createMessage(
+		this.chatManagement.sendNotificationTo(username, JsonMessageWrapper.createMessage(
 				message, event.getNotificationType(), SERVER_CHAT_ID
 		));
 	}

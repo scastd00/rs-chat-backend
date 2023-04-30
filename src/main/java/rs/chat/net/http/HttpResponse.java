@@ -8,18 +8,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import rs.chat.Constants;
 import rs.chat.exceptions.InternalServerException;
-import rs.chat.utils.Constants;
+import rs.chat.json.JsonGenerator;
 
 import java.io.IOException;
 import java.net.URI;
 
 import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static rs.chat.utils.Constants.DATA_JSON_KEY;
-import static rs.chat.utils.Constants.ERROR_JSON_KEY;
-import static rs.chat.utils.Constants.GSON;
-import static rs.chat.utils.Constants.OBJECT_MAPPER;
+import static rs.chat.Constants.DATA_JSON_KEY;
+import static rs.chat.Constants.ERROR_JSON_KEY;
+import static rs.chat.Constants.OBJECT_MAPPER;
 
 /**
  * Class that simplifies the management of the response to the client.
@@ -203,7 +203,7 @@ public class HttpResponse extends HttpServletResponseWrapper {
 		 * @return this response body with the element added.
 		 */
 		public HttpResponseBody add(String key, Object value) {
-			this.data.add(key, GSON.toJsonTree(value));
+			this.data.add(key, JsonGenerator.jsonTree(value));
 			return this;
 		}
 

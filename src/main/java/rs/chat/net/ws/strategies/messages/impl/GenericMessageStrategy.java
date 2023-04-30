@@ -10,7 +10,6 @@ import rs.chat.net.ws.ClientID;
 import rs.chat.net.ws.JsonMessageWrapper;
 import rs.chat.net.ws.strategies.messages.MessageHandlingDTO;
 import rs.chat.net.ws.strategies.messages.MessageStrategy;
-import rs.chat.utils.Utils;
 
 import java.io.IOException;
 import java.util.function.Function;
@@ -66,7 +65,7 @@ public class GenericMessageStrategy implements MessageStrategy {
 		return badgeTitle -> {
 			try {
 				handlingDTO.getSession().sendMessage(new TextMessage(
-						Utils.createMessage(
+						JsonMessageWrapper.createMessage(
 								"You have received a badge (%s)".formatted(badgeTitle),
 								BADGE_EARNED_MESSAGE.type(),
 								handlingDTO.getClientID().chatId()

@@ -10,7 +10,7 @@ import rs.chat.domain.entity.File;
 import rs.chat.domain.entity.User;
 import rs.chat.domain.repository.FileRepository;
 import rs.chat.domain.repository.UserRepository;
-import rs.chat.utils.Constants;
+import rs.chat.Constants;
 import rs.chat.utils.factories.DefaultFactory;
 
 import java.time.Instant;

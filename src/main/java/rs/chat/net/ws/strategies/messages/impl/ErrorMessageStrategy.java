@@ -10,7 +10,7 @@ import rs.chat.net.ws.strategies.messages.MessageStrategy;
 import java.io.IOException;
 
 import static rs.chat.net.ws.Message.ERROR_MESSAGE;
-import static rs.chat.utils.Utils.createMessage;
+import static rs.chat.net.ws.JsonMessageWrapper.createMessage;
 
 /**
  * Strategy for handling {@link Message#ERROR_MESSAGE} messages.

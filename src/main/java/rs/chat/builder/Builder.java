@@ -1,4 +1,4 @@
-package rs.chat.utils;
+package rs.chat.builder;
 
 public interface Builder {
 	/**
