@@ -201,7 +201,7 @@ public class JsonMessageWrapper {
 	 * Builder implementation for the message wrapper.
 	 */
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
-	public static class BuilderImpl implements Builder {
+	public static class BuilderImpl implements Builder<JsonObject> {
 		private final JsonObject headers = new JsonObject();
 		private final JsonObject body = new JsonObject();
 
@@ -209,7 +209,7 @@ public class JsonMessageWrapper {
 		 * {@inheritDoc}
 		 */
 		@Override
-		public Object build() {
+		public JsonObject build() {
 			JsonObject result = new JsonObject();
 			result.add("headers", this.headers);
 			result.add("body", this.body);
