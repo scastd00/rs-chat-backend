@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Objects;
 
-import static rs.chat.utils.Constants.LOCAL_FILES_PATH;
+import static rs.chat.Constants.LOCAL_FILES_PATH;
 
 /**
  * Record that specifies properties of the messages.

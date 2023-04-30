@@ -1,4 +1,4 @@
-package rs.chat.utils;
+package rs.chat;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;

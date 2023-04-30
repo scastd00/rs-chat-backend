@@ -3,8 +3,8 @@ package rs.chat.net.ws;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
-import rs.chat.cache.CachedHistoryFile;
-import rs.chat.cache.HistoryFilesCache;
+import rs.chat.mem.cache.CachedHistoryFile;
+import rs.chat.mem.cache.HistoryFilesCache;
 import rs.chat.storage.S3;
 
 import java.util.List;

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.TextMessage;
 import rs.chat.exceptions.WebSocketException;
 import rs.chat.net.ws.ChatManagement;
+import rs.chat.net.ws.JsonMessageWrapper;
 import rs.chat.net.ws.Message;
 import rs.chat.net.ws.strategies.messages.MessageHandlingDTO;
 import rs.chat.tasks.DefaultTasks;
@@ -11,7 +12,6 @@ import rs.chat.tasks.ShutdownServerTask;
 import rs.chat.tasks.Task.TaskStatus;
 import rs.chat.tasks.TaskExecutionException;
 import rs.chat.tasks.TaskScheduler;
-import rs.chat.utils.Utils;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -19,7 +19,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;
 
 import static rs.chat.net.ws.Message.INFO_MESSAGE;
-import static rs.chat.utils.Constants.SERVER_CHAT_ID;
+import static rs.chat.Constants.SERVER_CHAT_ID;
 
 /**
  * Strategy for handling {@link Message#RESTART_MESSAGE} messages.
@@ -52,7 +52,7 @@ public class RestartMessageStrategy extends GenericScheduledMessageStrategy {
 		TaskScheduler.executeTaskSecure(shutdownTask, exception -> {
 			try {
 				handlingDTO.getSession().sendMessage(new TextMessage(
-						Utils.createMessage(
+						JsonMessageWrapper.createMessage(
 								"An error occurred while shutting down the server (%s)".formatted(exception.getStatus().message()),
 								INFO_MESSAGE.type(),
 								SERVER_CHAT_ID

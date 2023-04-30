@@ -8,16 +8,16 @@ import org.springframework.web.socket.WebSocketSession;
 import rs.chat.exceptions.WebSocketException;
 import rs.chat.net.ws.ChatManagement;
 import rs.chat.net.ws.ClientID;
+import rs.chat.net.ws.JsonMessageWrapper;
 import rs.chat.net.ws.Message;
 import rs.chat.net.ws.strategies.messages.MessageHandlingDTO;
 import rs.chat.net.ws.strategies.messages.MessageStrategy;
-import rs.chat.utils.Utils;
 
 import java.io.IOException;
 import java.util.List;
 
 import static rs.chat.net.ws.Message.ACTIVE_USERS_MESSAGE;
-import static rs.chat.utils.Constants.SERVER_CHAT_ID;
+import static rs.chat.Constants.SERVER_CHAT_ID;
 
 /**
  * Strategy for handling {@link Message#ACTIVE_USERS_MESSAGE} messages.
@@ -54,6 +54,6 @@ public class ActiveUsersStrategy implements MessageStrategy {
 	private String createActiveUsersMessage(List<String> usernames) {
 		JsonArray usersArray = new JsonArray();
 		usernames.forEach(usersArray::add);
-		return Utils.createMessage(usersArray.toString(), ACTIVE_USERS_MESSAGE.type(), SERVER_CHAT_ID);
+		return JsonMessageWrapper.createMessage(usersArray.toString(), ACTIVE_USERS_MESSAGE.type(), SERVER_CHAT_ID);
 	}
 }

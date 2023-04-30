@@ -20,9 +20,9 @@ import rs.chat.storage.S3;
 
 import java.util.List;
 
-import static rs.chat.utils.Constants.CHAT_KEY_FORMAT;
-import static rs.chat.utils.Constants.DEGREE;
-import static rs.chat.utils.Constants.SUBJECT;
+import static rs.chat.Constants.CHAT_KEY_FORMAT;
+import static rs.chat.Constants.DEGREE;
+import static rs.chat.Constants.SUBJECT;
 
 @Service
 @RequiredArgsConstructor

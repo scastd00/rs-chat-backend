@@ -8,9 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import rs.chat.ai.nsfw.NSFWResponse.ClassificationClass;
+import rs.chat.json.JsonParser;
 
-import static rs.chat.utils.Constants.GSON;
-import static rs.chat.utils.Constants.NSFW_API_URL;
+import static rs.chat.Constants.NSFW_API_URL;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
@@ -26,7 +26,7 @@ public class NSFWService {
 					String.class
 			);
 
-			JsonObject responseObject = GSON.fromJson(response.getBody(), JsonObject.class);
+			JsonObject responseObject = JsonParser.parseJson(response.getBody());
 			NSFWResponse nsfwResponse = new NSFWResponse(responseObject);
 
 			return isVerySexyOrHentaiOrPorn(nsfwResponse);

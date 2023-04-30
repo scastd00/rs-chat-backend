@@ -2,7 +2,7 @@ package rs.chat.rate;
 
 import lombok.extern.slf4j.Slf4j;
 import rs.chat.tasks.TaskScheduler;
-import rs.chat.utils.ref.Ref;
+import rs.chat.mem.ref.Ref;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

@@ -29,7 +29,7 @@ import java.time.Instant;
 import java.util.Base64;
 
 import static rs.chat.router.Routes.PostRoute.UPLOAD_URL;
-import static rs.chat.utils.Constants.MAX_FILE_BYTES;
+import static rs.chat.Constants.MAX_FILE_BYTES;
 
 /**
  * Controller that manages all chat-related requests.

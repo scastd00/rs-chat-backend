@@ -8,8 +8,8 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import rs.chat.router.Routes;
 
-import static rs.chat.utils.Constants.ACCEPTED_ORIGINS;
-import static rs.chat.utils.Constants.STRING_ARRAY;
+import static rs.chat.Constants.ACCEPTED_ORIGINS;
+import static rs.chat.Constants.STRING_ARRAY;
 
 /**
  * Class that configures the CORS for the application.

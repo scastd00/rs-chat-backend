@@ -21,7 +21,7 @@ import rs.chat.domain.repository.TeacherSubjectRepository;
 import rs.chat.domain.repository.UserRepository;
 import rs.chat.exceptions.BadRequestException;
 import rs.chat.exceptions.NotFoundException;
-import rs.chat.utils.Constants;
+import rs.chat.Constants;
 
 import java.util.List;
 import java.util.Optional;

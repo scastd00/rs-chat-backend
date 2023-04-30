@@ -3,6 +3,7 @@ package rs.chat.storage;
 import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
+import rs.chat.Constants;
 import rs.chat.exceptions.CouldNotUploadFileException;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.core.exception.SdkException;
@@ -30,9 +31,9 @@ import java.util.Map;
 
 import static rs.chat.net.ws.Message.GET_HISTORY_MESSAGE;
 import static rs.chat.net.ws.Message.TEXT_MESSAGE;
-import static rs.chat.utils.Constants.S3_BUCKET_NAME;
-import static rs.chat.utils.Constants.S3_ENDPOINT_URI;
-import static rs.chat.utils.Constants.S3_ENDPOINT_URI_FOR_FILES;
+import static rs.chat.Constants.S3_BUCKET_NAME;
+import static rs.chat.Constants.S3_ENDPOINT_URI;
+import static rs.chat.Constants.S3_ENDPOINT_URI_FOR_FILES;
 
 /**
  * Class that provides utility methods to work with S3.
@@ -217,7 +218,7 @@ public final class S3 implements Closeable {
 
 	/**
 	 * Creates a new {@link URI} for the specified S3 key. See
-	 * {@link rs.chat.utils.Constants#S3_ENDPOINT_URI_FOR_FILES} to see the base URI.
+	 * {@link Constants#S3_ENDPOINT_URI_FOR_FILES} to see the base URI.
 	 *
 	 * @param s3Key the S3 key to create the {@link URI} for.
 	 *

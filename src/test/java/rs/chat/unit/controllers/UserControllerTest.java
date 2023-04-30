@@ -22,7 +22,7 @@ import rs.chat.domain.service.SessionService;
 import rs.chat.domain.service.UserService;
 import rs.chat.exceptions.BadRequestException;
 import rs.chat.exceptions.NotFoundException;
-import rs.chat.utils.Constants;
+import rs.chat.Constants;
 import rs.chat.utils.factories.DefaultFactory;
 import rs.chat.utils.security.annotations.WithMockAdmin;
 import rs.chat.utils.security.annotations.WithMockStudent;

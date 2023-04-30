@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import static rs.chat.net.ws.Message.COMMAND_RESPONSE;
-import static rs.chat.utils.Utils.createMessage;
+import static rs.chat.net.ws.JsonMessageWrapper.createMessage;
 
 public class TimeCommandStrategy implements CommandStrategy {
 	@Override
