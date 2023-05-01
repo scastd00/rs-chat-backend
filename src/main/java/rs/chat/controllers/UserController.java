@@ -4,6 +4,8 @@ import com.google.gson.JsonObject;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jooq.lambda.tuple.Tuple;
+import org.jooq.lambda.tuple.Tuple2;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -169,14 +171,21 @@ public class UserController {
 		String invitesTo = body.get("invitesTo").getAsString();
 		String chatKey = body.get("chatKey").getAsString();
 
-		Chat chat1 = ControllerUtils.performActionThatMayThrowException(response, () -> {
+		Tuple2<Chat, User> chatUserTuple = ControllerUtils.performActionThatMayThrowException(response, () -> {
 			Chat chat = this.chatService.getChatByKey(chatKey);
 			User invitee = this.userService.getUserByUsername(invitesTo);
+
 			this.chatService.addUserToChat(invitee.getId(), chat.getId());
-			return chat;
+
+			return Tuple.tuple(chat, invitee);
 		});
 
-		MailSender.sendInvitationEmailBackground(username, invitesTo, chat1.getName(), chat1.getInvitationCode());
+		MailSender.sendInvitationEmailBackground(
+				username, // Inviter username
+				chatUserTuple.v2().getEmail(), // Invitee email
+				chatUserTuple.v1().getName(), // Chat name
+				chatUserTuple.v1().getKey() // Chat key
+		);
 
 		response.ok().send();
 	}
