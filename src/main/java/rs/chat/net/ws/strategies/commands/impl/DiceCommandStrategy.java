@@ -21,9 +21,9 @@ public class DiceCommandStrategy implements CommandStrategy {
 		String messageContent;
 		String userToChallenge = Optional.ofNullable(handlingDTO.getParams())
 		                                 .map(params -> params.get("user"))
-		                                 .orElse(null);
+		                                 .orElse("");
 
-		if (userToChallenge != null) {
+		if (!userToChallenge.equals("")) {
 			messageContent = String.format("@%s has challenged @%s to a dice game!", clientID.username(), userToChallenge);
 		} else {
 			messageContent = String.format("@%s has rolled a dice and got %d!", clientID.username(), this.rollDice());
