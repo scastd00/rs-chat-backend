@@ -4,11 +4,14 @@ import com.google.gson.JsonObject;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jooq.lambda.tuple.Tuple;
+import org.jooq.lambda.tuple.Tuple2;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import rs.chat.domain.entity.Chat;
 import rs.chat.domain.entity.User;
 import rs.chat.domain.entity.dtos.OpenedSessionDTO;
 import rs.chat.domain.entity.mappers.OpenedSessionMapper;
@@ -32,6 +35,7 @@ import static rs.chat.router.Routes.GetRoute.USERS_URL;
 import static rs.chat.router.Routes.GetRoute.USER_ID_BY_USERNAME_URL;
 import static rs.chat.router.Routes.GetRoute.USER_STATS_URL;
 import static rs.chat.router.Routes.PostRoute.DELETE_USER_URL;
+import static rs.chat.router.Routes.PostRoute.USER_INVITE_URL;
 import static rs.chat.router.Routes.PostRoute.USER_SAVE_URL;
 
 /**
@@ -156,5 +160,33 @@ public class UserController {
 		JsonObject stats = ControllerUtils.performActionThatMayThrowException(response, () -> this.userService.getUserStats(username));
 
 		response.ok().send(stats);
+	}
+
+	@PostMapping(USER_INVITE_URL)
+	public void inviteUser(HttpRequest request, HttpServletResponse res) throws IOException {
+		HttpResponse response = new HttpResponse(res);
+
+		JsonObject body = request.body();
+		String username = body.get("username").getAsString();
+		String invitesTo = body.get("invitesTo").getAsString();
+		String chatKey = body.get("chatKey").getAsString();
+
+		Tuple2<Chat, User> chatUserTuple = ControllerUtils.performActionThatMayThrowException(response, () -> {
+			Chat chat = this.chatService.getChatByKey(chatKey);
+			User invitee = this.userService.getUserByUsername(invitesTo);
+
+			this.chatService.addUserToChat(invitee.getId(), chat.getId());
+
+			return Tuple.tuple(chat, invitee);
+		});
+
+		MailSender.sendInvitationEmailBackground(
+				username, // Inviter username
+				chatUserTuple.v2().getEmail(), // Invitee email
+				chatUserTuple.v1().getName(), // Chat name
+				chatUserTuple.v1().getKey() // Chat key
+		);
+
+		response.ok().send();
 	}
 }

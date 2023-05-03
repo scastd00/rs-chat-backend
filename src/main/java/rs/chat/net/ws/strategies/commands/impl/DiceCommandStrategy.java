@@ -10,8 +10,8 @@ import java.io.IOException;
 import java.util.Optional;
 
 import static rs.chat.net.ws.Message.COMMAND_RESPONSE;
-import static rs.chat.utils.Constants.SECURE_RANDOM;
-import static rs.chat.utils.Utils.createMessage;
+import static rs.chat.Constants.SECURE_RANDOM;
+import static rs.chat.net.ws.JsonMessageWrapper.createMessage;
 
 @Slf4j
 public class DiceCommandStrategy implements CommandStrategy {
@@ -21,9 +21,9 @@ public class DiceCommandStrategy implements CommandStrategy {
 		String messageContent;
 		String userToChallenge = Optional.ofNullable(handlingDTO.getParams())
 		                                 .map(params -> params.get("user"))
-		                                 .orElse(null);
+		                                 .orElse("");
 
-		if (userToChallenge != null) {
+		if (!userToChallenge.equals("")) {
 			messageContent = String.format("@%s has challenged @%s to a dice game!", clientID.username(), userToChallenge);
 		} else {
 			messageContent = String.format("@%s has rolled a dice and got %d!", clientID.username(), this.rollDice());

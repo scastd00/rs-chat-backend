@@ -3,18 +3,18 @@ package rs.chat.net.ws.strategies.messages.impl;
 import com.google.gson.JsonArray;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.TextMessage;
-import rs.chat.cache.CachedHistoryFile;
-import rs.chat.cache.HistoryFilesCache;
+import rs.chat.json.JsonParser;
+import rs.chat.mem.cache.CachedHistoryFile;
+import rs.chat.mem.cache.HistoryFilesCache;
 import rs.chat.exceptions.WebSocketException;
 import rs.chat.net.ws.Message;
 import rs.chat.net.ws.strategies.messages.MessageHandlingDTO;
 import rs.chat.net.ws.strategies.messages.MessageStrategy;
-import rs.chat.utils.Utils;
 
 import java.io.IOException;
 
 import static rs.chat.net.ws.Message.GET_HISTORY_MESSAGE;
-import static rs.chat.utils.Utils.createMessage;
+import static rs.chat.net.ws.JsonMessageWrapper.createMessage;
 
 /**
  * Strategy for handling {@link Message#GET_HISTORY_MESSAGE} messages.
@@ -36,7 +36,7 @@ public class GetHistoryStrategy implements MessageStrategy {
 
 		JsonArray lastMessages = historyFile.getMoreMessagesFromOffset(numberOfReceivedMessagesByClient)
 		                                    .stream()
-		                                    .map(Utils::parseJson)
+		                                    .map(JsonParser::parseJson)
 		                                    .collect(JsonArray::new, JsonArray::add, JsonArray::addAll);
 
 		handlingDTO.getSession().sendMessage(new TextMessage(

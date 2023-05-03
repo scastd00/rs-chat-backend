@@ -32,7 +32,7 @@ import static rs.chat.router.Routes.PostRoute.LOGIN_URL;
 import static rs.chat.router.Routes.PostRoute.REGISTER_URL;
 import static rs.chat.router.Routes.TEST_URL;
 import static rs.chat.router.Routes.WS_CHAT_ENDPOINT;
-import static rs.chat.utils.Constants.JWT_TOKEN_PREFIX;
+import static rs.chat.Constants.JWT_TOKEN_PREFIX;
 
 /**
  * Filter that checks if the user is authorized to access the resource.

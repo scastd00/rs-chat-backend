@@ -20,7 +20,7 @@ import rs.chat.exceptions.NotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static rs.chat.utils.Constants.USER;
+import static rs.chat.Constants.USER;
 
 @Service
 @RequiredArgsConstructor
@@ -128,12 +128,12 @@ public class ChatService {
 	 * @param chatId id of the chat.
 	 */
 	public void addUserToChat(Long userId, Long chatId) {
-		if (this.userAlreadyBelongsToChat(userId, chatId)) {
-			throw new BadRequestException("User with id=%d already belongs to chat with id=%d".formatted(userId, chatId));
-		}
-
 		User user = this.userRepository.findById(userId).orElseThrow(() -> new BadRequestException("User with id=%d does not exist".formatted(userId)));
 		Chat chat = this.chatRepository.findById(chatId).orElseThrow(() -> new BadRequestException("Chat with id=%d does not exist".formatted(chatId)));
+
+		if (this.userAlreadyBelongsToChat(userId, chatId)) {
+			throw new BadRequestException("User '%s' already belongs to chat '%s'".formatted(user.getUsername(), chat.getName()));
+		}
 
 		this.userChatRepository.save(new UserChat(new UserChatId(userId, chatId), user, chat));
 	}

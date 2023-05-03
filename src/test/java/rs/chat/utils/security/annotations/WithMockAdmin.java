@@ -1,6 +1,6 @@
 package rs.chat.utils.security.annotations;
 
-import rs.chat.utils.Constants;
+import rs.chat.Constants;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

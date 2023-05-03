@@ -8,8 +8,8 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 import rs.chat.net.ws.WebSocketHandler;
 
 import static rs.chat.router.Routes.WS_CHAT_ENDPOINT;
-import static rs.chat.utils.Constants.ACCEPTED_ORIGINS;
-import static rs.chat.utils.Constants.STRING_ARRAY;
+import static rs.chat.Constants.ACCEPTED_ORIGINS;
+import static rs.chat.Constants.STRING_ARRAY;
 
 /**
  * Adds the handler that is used to handle web socket requests.

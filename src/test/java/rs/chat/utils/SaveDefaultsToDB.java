@@ -1,6 +1,7 @@
 package rs.chat.utils;
 
 import lombok.NoArgsConstructor;
+import rs.chat.Constants;
 import rs.chat.domain.entity.Chat;
 import rs.chat.domain.entity.Group;
 import rs.chat.domain.entity.Session;

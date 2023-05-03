@@ -7,7 +7,7 @@ import rs.chat.storage.S3;
 import java.io.IOException;
 import java.net.URI;
 
-import static rs.chat.utils.Utils.bytesToUnit;
+import static rs.chat.mem.UnitConversion.bytesToUnit;
 
 public class TextStrategy implements FileUploadStrategy {
 	@Override

@@ -25,7 +25,7 @@ import static rs.chat.router.Routes.GetRoute.CHAT_INFO_URL;
 import static rs.chat.router.Routes.PostRoute.CONNECT_TO_CHAT_URL;
 import static rs.chat.router.Routes.PostRoute.JOIN_CHAT_URL;
 import static rs.chat.router.Routes.PostRoute.LEAVE_CHAT_URL;
-import static rs.chat.utils.Constants.GROUP;
+import static rs.chat.Constants.GROUP;
 
 /**
  * Controller that manages all chat-related requests.

@@ -11,7 +11,7 @@ import rs.chat.net.ws.strategies.messages.MessageStrategy;
 import rs.chat.rate.RateLimiter;
 
 import static rs.chat.net.ws.Message.USER_LEFT;
-import static rs.chat.utils.Utils.createMessage;
+import static rs.chat.net.ws.JsonMessageWrapper.createMessage;
 
 /**
  * Strategy for handling {@link Message#USER_LEFT} messages.

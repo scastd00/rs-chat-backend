@@ -9,15 +9,15 @@ import rs.chat.domain.entity.Chat;
 
 import java.util.LinkedHashSet;
 
-import static rs.chat.utils.Constants.CHAT_KEY_FORMAT;
-import static rs.chat.utils.Constants.DEGREE;
-import static rs.chat.utils.Constants.DEGREE_CHAT_S3_FOLDER_PREFIX;
-import static rs.chat.utils.Constants.GROUP;
-import static rs.chat.utils.Constants.GROUP_CHAT_S3_FOLDER_PREFIX;
-import static rs.chat.utils.Constants.SUBJECT;
-import static rs.chat.utils.Constants.SUBJECT_CHAT_S3_FOLDER_PREFIX;
-import static rs.chat.utils.Constants.USER;
-import static rs.chat.utils.Constants.USER_CHAT_S3_FOLDER_PREFIX;
+import static rs.chat.Constants.CHAT_KEY_FORMAT;
+import static rs.chat.Constants.DEGREE;
+import static rs.chat.Constants.DEGREE_CHAT_S3_FOLDER_PREFIX;
+import static rs.chat.Constants.GROUP;
+import static rs.chat.Constants.GROUP_CHAT_S3_FOLDER_PREFIX;
+import static rs.chat.Constants.SUBJECT;
+import static rs.chat.Constants.SUBJECT_CHAT_S3_FOLDER_PREFIX;
+import static rs.chat.Constants.USER;
+import static rs.chat.Constants.USER_CHAT_S3_FOLDER_PREFIX;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DomainUtils {

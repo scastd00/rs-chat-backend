@@ -9,7 +9,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
-import rs.chat.utils.Constants;
+import rs.chat.Constants;
 
 import java.security.Key;
 import java.time.Clock;
@@ -18,8 +18,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.function.Function;
 
-import static rs.chat.utils.Constants.TOKEN_EXPIRATION_DURATION_EXTENDED;
-import static rs.chat.utils.Constants.TOKEN_EXPIRATION_DURATION_NORMAL;
+import static rs.chat.Constants.TOKEN_EXPIRATION_DURATION_EXTENDED;
+import static rs.chat.Constants.TOKEN_EXPIRATION_DURATION_NORMAL;
 
 /**
  * Class that handles JWT tokens.

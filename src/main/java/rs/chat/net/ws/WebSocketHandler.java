@@ -28,9 +28,9 @@ import static rs.chat.net.ws.Message.PING_MESSAGE;
 import static rs.chat.net.ws.Message.TOO_FAST_MESSAGE;
 import static rs.chat.net.ws.Message.USER_CONNECTED;
 import static rs.chat.net.ws.Message.USER_DISCONNECTED;
-import static rs.chat.utils.Constants.JWT_TOKEN_PREFIX;
-import static rs.chat.utils.Constants.SCHEDULE_STRING;
-import static rs.chat.utils.Utils.createMessage;
+import static rs.chat.Constants.JWT_TOKEN_PREFIX;
+import static rs.chat.Constants.SCHEDULE_STRING;
+import static rs.chat.net.ws.JsonMessageWrapper.createMessage;
 
 /**
  * WebSocket handler for the application.

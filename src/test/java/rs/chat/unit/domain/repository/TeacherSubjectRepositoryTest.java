@@ -16,7 +16,7 @@ import rs.chat.domain.repository.DegreeRepository;
 import rs.chat.domain.repository.SubjectRepository;
 import rs.chat.domain.repository.TeacherSubjectRepository;
 import rs.chat.domain.repository.UserRepository;
-import rs.chat.utils.Constants;
+import rs.chat.Constants;
 import rs.chat.utils.factories.DefaultFactory;
 
 import java.util.LinkedHashSet;
