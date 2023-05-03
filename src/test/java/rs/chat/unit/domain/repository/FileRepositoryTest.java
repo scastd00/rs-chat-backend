@@ -14,6 +14,7 @@ import rs.chat.Constants;
 import rs.chat.utils.factories.DefaultFactory;
 
 import java.time.Instant;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static rs.chat.utils.TestConstants.TEST_COMPARISON_CONFIG;
@@ -48,11 +49,12 @@ class FileRepositoryTest {
 		this.underTest.save(this.file);
 
 		// When
-		File expected = this.underTest.findByName(this.file.getName());
+		Optional<File> expected = this.underTest.findByName(this.file.getName());
 
 		// Then
 		assertThat(expected)
 				.isNotNull()
+				.get()
 				.usingRecursiveComparison(TEST_COMPARISON_CONFIG)
 				.isEqualTo(this.file);
 	}
@@ -61,9 +63,9 @@ class FileRepositoryTest {
 	void itShouldNotFindByName() {
 		// Given
 		// When
-		File expected = this.underTest.findByName(this.file.getName());
+		Optional<File> expected = this.underTest.findByName(this.file.getName());
 
 		// Then
-		assertThat(expected).isNull();
+		assertThat(expected).isEmpty();
 	}
 }
