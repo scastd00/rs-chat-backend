@@ -27,6 +27,10 @@ public class NSFWMessageEventListener implements ApplicationListener<NSFWUploadE
 	private final Metrics metrics;
 	private final ApplicationEventPublisher publisher;
 	private final SessionService sessionService;
+
+	/**
+	 * Lock used to synchronize the access to the user's NSFW count in the database.
+	 */
 	private final ReentrantLock lock = new ReentrantLock();
 
 	@Override
@@ -34,6 +38,7 @@ public class NSFWMessageEventListener implements ApplicationListener<NSFWUploadE
 		this.lock.lock();
 		User user = this.userService.getUserById(event.getUserId());
 
+		// If the user is already blocked, we don't need to do anything.
 		if (user.getBlockUntil() != null && user.getBlockUntil().isAfter(this.clock.instant())) {
 			this.lock.unlock();
 			return;

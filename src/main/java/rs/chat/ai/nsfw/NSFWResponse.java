@@ -11,7 +11,7 @@ public record NSFWResponse(JsonObject predictions) {
 	/**
 	 * Represents the classification classes returned by the NSFW API.
 	 */
-	public enum ClassificationClass {
+	public enum NSFWClass {
 		NEUTRAL,
 		DRAWINGS,
 		SEXY,
@@ -23,7 +23,7 @@ public record NSFWResponse(JsonObject predictions) {
 	 * Returns the probability of the given classification class. If the given
 	 * classification class is not found, 0.0 is returned.
 	 *
-	 * @param classificationClass The classification class to get the probability of.
+	 * @param nsfwClass The classification class to get the probability of.
 	 *
 	 * @return The probability of the given classification class.
 	 *
@@ -31,12 +31,12 @@ public record NSFWResponse(JsonObject predictions) {
 	 * enum values are contained in it, so we can just convert the enum
 	 * value to lowercase and use it as a key.
 	 */
-	public double probabilityOfClass(ClassificationClass classificationClass) {
-		for (ClassificationClass value : ClassificationClass.values()) {
+	public double probabilityOfClass(NSFWClass nsfwClass) {
+		for (NSFWClass value : NSFWClass.values()) {
 			String predictionName = value.name().toLowerCase();
 			double probability = this.predictions.get(predictionName).getAsDouble();
 
-			if (value.equals(classificationClass)) {
+			if (value.equals(nsfwClass)) {
 				return probability;
 			}
 		}
