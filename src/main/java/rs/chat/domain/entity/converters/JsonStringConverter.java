@@ -14,6 +14,6 @@ public class JsonStringConverter implements AttributeConverter<JsonObject, Strin
 
 	@Override
 	public JsonObject convertToEntityAttribute(String dbData) {
-		return JsonParser.parseJson(dbData);
+		return JsonParser.gsonParse(dbData);
 	}
 }

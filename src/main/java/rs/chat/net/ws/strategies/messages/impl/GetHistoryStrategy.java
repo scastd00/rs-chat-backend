@@ -36,7 +36,7 @@ public class GetHistoryStrategy implements MessageStrategy {
 
 		JsonArray lastMessages = historyFile.getMoreMessagesFromOffset(numberOfReceivedMessagesByClient)
 		                                    .stream()
-		                                    .map(JsonParser::parseJson)
+		                                    .map(JsonParser::gsonParse)
 		                                    .collect(JsonArray::new, JsonArray::add, JsonArray::addAll);
 
 		handlingDTO.getSession().sendMessage(new TextMessage(

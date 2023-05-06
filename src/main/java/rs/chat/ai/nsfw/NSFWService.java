@@ -26,7 +26,7 @@ public class NSFWService {
 					String.class
 			);
 
-			JsonObject responseObject = JsonParser.parseJson(response.getBody());
+			JsonObject responseObject = JsonParser.gsonParse(response.getBody());
 			NSFWResponse nsfwResponse = new NSFWResponse(responseObject);
 
 			return isVerySexyOrHentaiOrPorn(nsfwResponse);

@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import static rs.chat.Constants.GSON;
+import static rs.chat.json.JsonConstants.GSON;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class JsonParser {
@@ -15,7 +15,7 @@ public final class JsonParser {
 	 *
 	 * @return the {@link JsonObject} parsed from the JSON string.
 	 */
-	public static JsonObject parseJson(String jsonString) {
+	public static JsonObject gsonParse(String jsonString) {
 		return GSON.fromJson(jsonString, JsonObject.class);
 	}
 }

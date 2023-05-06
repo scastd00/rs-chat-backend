@@ -39,7 +39,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
 	public HttpRequest(HttpServletRequest request) throws IOException {
 		super(request);
 		this.cachedBody = StreamUtils.copyToByteArray(request.getInputStream());
-		this.parsedBody = JsonParser.parseJson(IOUtils.toString(this.getReader()));
+		this.parsedBody = JsonParser.gsonParse(IOUtils.toString(this.getReader()));
 	}
 
 	/**
