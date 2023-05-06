@@ -8,7 +8,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import rs.chat.tasks.Task;
 import rs.chat.tasks.TaskExecutionException;
 import rs.chat.tasks.TaskScheduler;
 
@@ -17,6 +19,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Properties;
+import java.util.function.Function;
 
 import static rs.chat.tasks.Task.TaskStatus;
 
@@ -52,24 +55,13 @@ public class MailSender {
 	 */
 	public static void sendRegistrationEmailBackground(String to, String username) {
 		TaskScheduler.executeTaskSecure(
-				() -> {
-					try {
-						SENDER.send(getMimeMessage(
-								to,
-								"Welcome to RSChat!",
-								"src/main/resources/templates/email/welcome/rs-chat-welcome-email.html",
-								Map.of("{{username}}", username)
-						));
-					} catch (MessagingException | IOException e) {
-						throw new TaskExecutionException(
-								new TaskStatus(TaskStatus.FAILURE, e.getMessage())
-						);
-					}
-				},
-				exception -> {
-					log.error("Failed to send registration email to {}", to, exception);
-					return null;
-				}
+				createSendTask(
+						to,
+						"Welcome to RSChat!",
+						"src/main/resources/templates/email/welcome/rs-chat-welcome-email.html",
+						Map.of("{{username}}", username)
+				),
+				exceptionHandler("Failed to send registration email to {}", to)
 		);
 	}
 
@@ -81,47 +73,33 @@ public class MailSender {
 	 */
 	public static void sendResetPasswordEmailBackground(String to, String code) {
 		TaskScheduler.executeTaskSecure(
-				() -> {
-					try {
-						SENDER.send(getMimeMessage(
-								to,
-								"Reset your password",
-								"src/main/resources/templates/email/resetPassword/rs-chat-reset-password-email.html",
-								Map.of("{{code}}", code)
-						));
-					} catch (MessagingException | IOException e) {
-						throw new TaskExecutionException(
-								new TaskStatus(TaskStatus.FAILURE, e.getMessage())
-						);
-					}
-				},
-				exception -> {
-					log.error("Failed to send reset password email to {}", to, exception);
-					return null;
-				}
+				createSendTask(
+						to,
+						"Reset your password",
+						"src/main/resources/templates/email/resetPassword/rs-chat-reset-password-email.html",
+						Map.of("{{code}}", code)
+				),
+				exceptionHandler("Failed to send reset password email to {}", to)
 		);
 	}
 
+	/**
+	 * Sends an email to the specified recipient that has been invited to join a chat.
+	 *
+	 * @param from     user that sent the invitation.
+	 * @param to       user that received the invitation.
+	 * @param chatName name of the chat.
+	 * @param code     invitation code.
+	 */
 	public static void sendInvitationEmailBackground(String from, String to, String chatName, String code) {
 		TaskScheduler.executeTaskSecure(
-				() -> {
-					try {
-						SENDER.send(getMimeMessage(
-								to,
-								"Invitation to join %s".formatted(chatName),
-								"src/main/resources/templates/email/invite/rs-chat-invite-email.html",
-								Map.of("{{code}}", code, "{{from}}", from, "{{chatName}}", chatName)
-						));
-					} catch (MessagingException | IOException e) {
-						throw new TaskExecutionException(
-								new TaskStatus(TaskStatus.FAILURE, e.getMessage())
-						);
-					}
-				},
-				exception -> {
-					log.error("Failed to send invite code email to {}", to, exception);
-					return null;
-				}
+				createSendTask(
+						to,
+						"Invitation to join %s".formatted(chatName),
+						"src/main/resources/templates/email/invite/rs-chat-invite-email.html",
+						Map.of("{{code}}", code, "{{from}}", from, "{{chatName}}", chatName)
+				),
+				exceptionHandler("Failed to send invite code email to {}", to)
 		);
 	}
 
@@ -153,5 +131,49 @@ public class MailSender {
 
 		message.setText(content, StandardCharsets.UTF_8.name(), "html");
 		return message;
+	}
+
+	/**
+	 * Generates a task that sends an email to the specified recipient.
+	 *
+	 * @param to           email address of the recipient.
+	 * @param subject      subject of the email.
+	 * @param fileName     name of the file that contains the email's content.
+	 * @param replacements target string to replace (with the value) in the email's content.
+	 *
+	 * @return a task that sends an email to the specified recipient.
+	 */
+	@NotNull
+	private static Task createSendTask(String to, String subject, String fileName, Map<String, String> replacements) {
+		return () -> {
+			try {
+				SENDER.send(getMimeMessage(
+						to,
+						subject,
+						fileName,
+						replacements
+				));
+			} catch (MessagingException | IOException e) {
+				throw new TaskExecutionException(
+						new TaskStatus(TaskStatus.FAILURE, e.getMessage())
+				);
+			}
+		};
+	}
+
+	/**
+	 * Creates a new task exception handler with the specified format and format variables.
+	 *
+	 * @param format     the format of the exception message.
+	 * @param formatVars the format variables.
+	 *
+	 * @return an exception handler with the specified format and format variables.
+	 */
+	@NotNull
+	private static Function<TaskExecutionException, Void> exceptionHandler(String format, String... formatVars) {
+		return exception -> {
+			log.error(format, formatVars, exception);
+			return null;
+		};
 	}
 }
