@@ -7,8 +7,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import rs.chat.json.JsonParser;
 import rs.chat.builder.Builder;
+import rs.chat.json.JsonParser;
 
 import static rs.chat.Constants.OBJECT_MAPPER;
 import static rs.chat.net.ws.Message.MEDIA_MESSAGES;

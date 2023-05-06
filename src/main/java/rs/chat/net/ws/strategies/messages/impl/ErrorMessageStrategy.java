@@ -9,8 +9,8 @@ import rs.chat.net.ws.strategies.messages.MessageStrategy;
 
 import java.io.IOException;
 
-import static rs.chat.net.ws.Message.ERROR_MESSAGE;
 import static rs.chat.net.ws.JsonMessageWrapper.createMessage;
+import static rs.chat.net.ws.Message.ERROR_MESSAGE;
 
 /**
  * Strategy for handling {@link Message#ERROR_MESSAGE} messages.

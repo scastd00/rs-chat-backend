@@ -3,18 +3,18 @@ package rs.chat.net.ws.strategies.messages.impl;
 import com.google.gson.JsonArray;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.TextMessage;
+import rs.chat.exceptions.WebSocketException;
 import rs.chat.json.JsonParser;
 import rs.chat.mem.cache.CachedHistoryFile;
 import rs.chat.mem.cache.HistoryFilesCache;
-import rs.chat.exceptions.WebSocketException;
 import rs.chat.net.ws.Message;
 import rs.chat.net.ws.strategies.messages.MessageHandlingDTO;
 import rs.chat.net.ws.strategies.messages.MessageStrategy;
 
 import java.io.IOException;
 
-import static rs.chat.net.ws.Message.GET_HISTORY_MESSAGE;
 import static rs.chat.net.ws.JsonMessageWrapper.createMessage;
+import static rs.chat.net.ws.Message.GET_HISTORY_MESSAGE;
 
 /**
  * Strategy for handling {@link Message#GET_HISTORY_MESSAGE} messages.

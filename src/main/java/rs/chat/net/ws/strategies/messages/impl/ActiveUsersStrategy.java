@@ -16,8 +16,8 @@ import rs.chat.net.ws.strategies.messages.MessageStrategy;
 import java.io.IOException;
 import java.util.List;
 
-import static rs.chat.net.ws.Message.ACTIVE_USERS_MESSAGE;
 import static rs.chat.Constants.SERVER_CHAT_ID;
+import static rs.chat.net.ws.Message.ACTIVE_USERS_MESSAGE;
 
 /**
  * Strategy for handling {@link Message#ACTIVE_USERS_MESSAGE} messages.

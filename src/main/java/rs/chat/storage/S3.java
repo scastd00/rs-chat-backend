@@ -29,11 +29,11 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
-import static rs.chat.net.ws.Message.GET_HISTORY_MESSAGE;
-import static rs.chat.net.ws.Message.TEXT_MESSAGE;
 import static rs.chat.Constants.S3_BUCKET_NAME;
 import static rs.chat.Constants.S3_ENDPOINT_URI;
 import static rs.chat.Constants.S3_ENDPOINT_URI_FOR_FILES;
+import static rs.chat.net.ws.Message.GET_HISTORY_MESSAGE;
+import static rs.chat.net.ws.Message.TEXT_MESSAGE;
 
 /**
  * Class that provides utility methods to work with S3.

@@ -38,7 +38,7 @@ public class TeaSubjId implements Serializable {
 		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
 		TeaSubjId entity = (TeaSubjId) o;
 		return Objects.equals(this.teacherId, entity.teacherId) &&
-		       Objects.equals(this.subjectId, entity.subjectId);
+				Objects.equals(this.subjectId, entity.subjectId);
 	}
 
 	@Override

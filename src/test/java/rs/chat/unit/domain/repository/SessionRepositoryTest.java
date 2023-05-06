@@ -7,11 +7,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import rs.chat.Constants;
 import rs.chat.domain.entity.Session;
 import rs.chat.domain.entity.User;
 import rs.chat.domain.repository.SessionRepository;
 import rs.chat.domain.repository.UserRepository;
-import rs.chat.Constants;
 import rs.chat.utils.factories.DefaultFactory;
 
 import java.util.List;

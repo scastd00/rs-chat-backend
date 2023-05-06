@@ -9,9 +9,9 @@ import rs.chat.net.ws.strategies.messages.MessageStrategy;
 
 import java.io.IOException;
 
-import static rs.chat.net.ws.Message.USER_CONNECTED;
 import static rs.chat.Constants.SERVER_CHAT_ID;
 import static rs.chat.net.ws.JsonMessageWrapper.createMessage;
+import static rs.chat.net.ws.Message.USER_CONNECTED;
 
 /**
  * Strategy for handling {@link Message#USER_CONNECTED} messages.

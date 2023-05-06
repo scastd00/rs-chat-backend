@@ -8,8 +8,8 @@ import rs.chat.net.ws.strategies.commands.CommandStrategy;
 
 import java.io.IOException;
 
-import static rs.chat.net.ws.Message.ACTIVE_USERS_MESSAGE;
 import static rs.chat.net.ws.JsonMessageWrapper.createMessage;
+import static rs.chat.net.ws.Message.ACTIVE_USERS_MESSAGE;
 
 public class BackCommandStrategy implements CommandStrategy {
 	@Override

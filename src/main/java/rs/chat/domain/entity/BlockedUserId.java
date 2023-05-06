@@ -38,7 +38,7 @@ public class BlockedUserId implements Serializable {
 		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
 		BlockedUserId entity = (BlockedUserId) o;
 		return Objects.equals(this.userId, entity.userId) &&
-		       Objects.equals(this.blockedId, entity.blockedId);
+				Objects.equals(this.blockedId, entity.blockedId);
 	}
 
 	@Override

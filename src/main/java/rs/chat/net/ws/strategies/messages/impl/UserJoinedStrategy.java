@@ -13,9 +13,9 @@ import rs.chat.net.ws.strategies.messages.MessageStrategy;
 
 import java.io.IOException;
 
-import static rs.chat.net.ws.Message.USER_JOINED;
 import static rs.chat.Constants.MAX_FILE_BYTES;
 import static rs.chat.net.ws.JsonMessageWrapper.createMessage;
+import static rs.chat.net.ws.Message.USER_JOINED;
 
 /**
  * Strategy for handling {@link Message#USER_JOINED} messages.

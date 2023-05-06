@@ -3,8 +3,8 @@ package rs.chat.mem.cache;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import rs.chat.storage.S3;
 import rs.chat.Constants;
+import rs.chat.storage.S3;
 
 import java.io.BufferedWriter;
 import java.io.File;

@@ -2,11 +2,9 @@ package rs.chat.net.ws.strategies.commands;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import rs.chat.exceptions.CommandUnavailableException;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static rs.chat.net.ws.strategies.commands.Command.$NOOP;
 import static rs.chat.net.ws.strategies.commands.Command.ALL_COMMANDS;
@@ -43,11 +41,11 @@ public final class CommandMappings {
 		StringBuilder sb = new StringBuilder("##");
 
 		commands.forEach((commandStr, command) -> sb.append(commandStr)
-		                                          .append(" - ")
-		                                          .append(command.description())
-		                                          .append(" Usage: ")
-		                                          .append(command.usage())
-		                                          .append("##")
+		                                            .append(" - ")
+		                                            .append(command.description())
+		                                            .append(" Usage: ")
+		                                            .append(command.usage())
+		                                            .append("##")
 		);
 
 		int length = sb.length();

@@ -9,8 +9,8 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import static rs.chat.net.ws.Message.COMMAND_RESPONSE;
 import static rs.chat.net.ws.JsonMessageWrapper.createMessage;
+import static rs.chat.net.ws.Message.COMMAND_RESPONSE;
 
 public class TimeCommandStrategy implements CommandStrategy {
 	@Override

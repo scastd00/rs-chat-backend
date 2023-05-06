@@ -18,8 +18,8 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;
 
-import static rs.chat.net.ws.Message.INFO_MESSAGE;
 import static rs.chat.Constants.SERVER_CHAT_ID;
+import static rs.chat.net.ws.Message.INFO_MESSAGE;
 
 /**
  * Strategy for handling {@link Message#RESTART_MESSAGE} messages.

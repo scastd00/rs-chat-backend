@@ -7,12 +7,12 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import rs.chat.Constants;
 import rs.chat.domain.entity.User;
 import rs.chat.domain.entity.mappers.UserMapper;
 import rs.chat.domain.repository.UserRepository;
 import rs.chat.domain.service.UserService;
 import rs.chat.exceptions.BadRequestException;
-import rs.chat.Constants;
 import rs.chat.utils.factories.DefaultFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;

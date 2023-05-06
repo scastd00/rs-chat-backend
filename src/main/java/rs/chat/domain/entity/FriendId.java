@@ -38,7 +38,7 @@ public class FriendId implements Serializable {
 		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
 		FriendId entity = (FriendId) o;
 		return Objects.equals(this.friendOfUserId, entity.friendOfUserId) &&
-		       Objects.equals(this.userId, entity.userId);
+				Objects.equals(this.userId, entity.userId);
 	}
 
 	@Override

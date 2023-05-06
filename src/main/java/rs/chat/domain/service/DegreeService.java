@@ -49,6 +49,7 @@ public class DegreeService {
 	 * Finds a degree by id.
 	 *
 	 * @param degreeId the id of the degree.
+	 *
 	 * @return the {@link Degree} with the given id.
 	 */
 	public Degree getById(Long degreeId) {

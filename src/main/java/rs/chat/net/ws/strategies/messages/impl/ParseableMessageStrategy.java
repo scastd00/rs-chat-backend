@@ -24,10 +24,10 @@ import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 
-import static rs.chat.net.ws.Message.ERROR_MESSAGE;
-import static rs.chat.net.ws.Message.MENTION_MESSAGE;
 import static rs.chat.Constants.SERVER_CHAT_ID;
 import static rs.chat.net.ws.JsonMessageWrapper.createMessage;
+import static rs.chat.net.ws.Message.ERROR_MESSAGE;
+import static rs.chat.net.ws.Message.MENTION_MESSAGE;
 
 /**
  * Strategy for handling {@link Message#PARSEABLE_MESSAGE} messages.

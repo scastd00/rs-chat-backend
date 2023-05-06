@@ -34,13 +34,15 @@ public class UserBadgeId implements Serializable {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o)
+		if (this == o) {
 			return true;
-		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o))
+		}
+		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
 			return false;
+		}
 		UserBadgeId entity = (UserBadgeId) o;
 		return Objects.equals(this.badgeId, entity.badgeId) &&
-		       Objects.equals(this.userId, entity.userId);
+				Objects.equals(this.userId, entity.userId);
 	}
 
 	@Override

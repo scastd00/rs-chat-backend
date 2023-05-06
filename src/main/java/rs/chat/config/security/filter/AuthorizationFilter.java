@@ -23,6 +23,7 @@ import java.util.Collections;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static rs.chat.Constants.JWT_TOKEN_PREFIX;
 import static rs.chat.router.Routes.ACTUATOR_URL;
 import static rs.chat.router.Routes.GetRoute.HEALTH_URL;
 import static rs.chat.router.Routes.PostRoute.CREATE_PASSWORD_URL;
@@ -32,7 +33,6 @@ import static rs.chat.router.Routes.PostRoute.LOGIN_URL;
 import static rs.chat.router.Routes.PostRoute.REGISTER_URL;
 import static rs.chat.router.Routes.TEST_URL;
 import static rs.chat.router.Routes.WS_CHAT_ENDPOINT;
-import static rs.chat.Constants.JWT_TOKEN_PREFIX;
 
 /**
  * Filter that checks if the user is authorized to access the resource.

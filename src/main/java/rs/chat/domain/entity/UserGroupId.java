@@ -38,7 +38,7 @@ public class UserGroupId implements Serializable {
 		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
 		UserGroupId entity = (UserGroupId) o;
 		return Objects.equals(this.groupId, entity.groupId) &&
-		       Objects.equals(this.userId, entity.userId);
+				Objects.equals(this.userId, entity.userId);
 	}
 
 	@Override

@@ -224,7 +224,7 @@ public class Chat {
 	 * Sends a notification to the specified user.
 	 *
 	 * @param username username of the user to send the notification to.
-	 * @param message message to send.
+	 * @param message  message to send.
 	 */
 	public void sendNotificationTo(String username, String message) {
 		this.availableClientsStream()

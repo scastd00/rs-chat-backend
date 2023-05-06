@@ -10,8 +10,8 @@ import rs.chat.net.ws.strategies.commands.parser.Params;
 
 import java.io.IOException;
 
-import static rs.chat.net.ws.Message.COMMAND_RESPONSE;
 import static rs.chat.net.ws.JsonMessageWrapper.createMessage;
+import static rs.chat.net.ws.Message.COMMAND_RESPONSE;
 
 @Slf4j
 public class EightBallCommandStrategy implements CommandStrategy {

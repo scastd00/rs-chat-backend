@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import rs.chat.Constants;
 import rs.chat.domain.entity.Degree;
 import rs.chat.domain.entity.Subject;
 import rs.chat.domain.entity.TeaSubj;
@@ -16,7 +17,6 @@ import rs.chat.domain.repository.DegreeRepository;
 import rs.chat.domain.repository.SubjectRepository;
 import rs.chat.domain.repository.TeacherSubjectRepository;
 import rs.chat.domain.repository.UserRepository;
-import rs.chat.Constants;
 import rs.chat.utils.factories.DefaultFactory;
 
 import java.util.LinkedHashSet;

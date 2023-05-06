@@ -13,6 +13,10 @@ import rs.chat.config.security.filter.AuthenticationFilter;
 import rs.chat.config.security.filter.AuthorizationFilter;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
+import static rs.chat.Constants.LOW_TIER_ROLES;
+import static rs.chat.Constants.MEDIUM_TIER_ROLES;
+import static rs.chat.Constants.STRING_ARRAY;
+import static rs.chat.Constants.TOP_TIER_ROLES;
 import static rs.chat.router.Routes.ACTUATOR_URL;
 import static rs.chat.router.Routes.DeleteRoute;
 import static rs.chat.router.Routes.GetRoute;
@@ -28,10 +32,6 @@ import static rs.chat.router.Routes.PutRoute;
 import static rs.chat.router.Routes.ROOT_URL;
 import static rs.chat.router.Routes.TEST_URL;
 import static rs.chat.router.Routes.WS_CHAT_ENDPOINT;
-import static rs.chat.Constants.LOW_TIER_ROLES;
-import static rs.chat.Constants.MEDIUM_TIER_ROLES;
-import static rs.chat.Constants.STRING_ARRAY;
-import static rs.chat.Constants.TOP_TIER_ROLES;
 
 // https://youtu.be/VVn9OG9nfH0?t=2983
 // Refresh token -> 1:10:00 approximately.

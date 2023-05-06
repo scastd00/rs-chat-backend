@@ -38,7 +38,7 @@ public class StuSubjId implements Serializable {
 		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
 		StuSubjId entity = (StuSubjId) o;
 		return Objects.equals(this.studentId, entity.studentId) &&
-		       Objects.equals(this.subjectId, entity.subjectId);
+				Objects.equals(this.subjectId, entity.subjectId);
 	}
 
 	@Override
