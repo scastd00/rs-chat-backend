@@ -76,35 +76,32 @@ public class UserController {
 		HttpResponse response = new HttpResponse(res);
 		JsonObject user = (JsonObject) request.body().get("user");
 
-		User savedUser = ControllerUtils.performActionThatMayThrowException(response, () -> {
-			Policies.checkRegister(user);
-
-			return this.userService.createUser(
-					new User(
-							null, // id
-							user.get("username").getAsString().trim(), // username
-							user.get("password").getAsString().trim(), // password
-							user.get("email").getAsString().trim(), // email
-							user.get("fullName").getAsString().trim(), // fullName
-							null, // age
-							null, // birthdate
-							user.get("role").getAsString().trim(), // role
-							null, // blockUntil
-							null, // passwordCode
-							new JsonObject(), // messageCountByType
-							emptySet(), // teacherSubjects
-							Set.of(this.groupService.getGroupByName("Global")), // groups
-							emptySet(), // sessions
-							emptySet(), // files
-							Set.of(this.chatService.getByName("Global")), // chats
-							emptySet(), // studentSubjects
-							emptySet(), // badges
-							emptySet(), // friends
-							emptySet(), // blockedUsers
-							(byte) 0 // nsfwCount
-					)
-			);
-		});
+		Policies.checkRegister(user);
+		User savedUser = this.userService.createUser(
+				new User(
+						null, // id
+						user.get("username").getAsString().trim(), // username
+						user.get("password").getAsString().trim(), // password
+						user.get("email").getAsString().trim(), // email
+						user.get("fullName").getAsString().trim(), // fullName
+						null, // age
+						null, // birthdate
+						user.get("role").getAsString().trim(), // role
+						null, // blockUntil
+						null, // passwordCode
+						new JsonObject(), // messageCountByType
+						emptySet(), // teacherSubjects
+						Set.of(this.groupService.getGroupByName("Global")), // groups
+						emptySet(), // sessions
+						emptySet(), // files
+						Set.of(this.chatService.getByName("Global")), // chats
+						emptySet(), // studentSubjects
+						emptySet(), // badges
+						emptySet(), // friends
+						emptySet(), // blockedUsers
+						(byte) 0 // nsfwCount
+				)
+		);
 
 		response.created(USER_SAVE_URL).send();
 		MailSender.sendRegistrationEmailBackground(savedUser.getEmail(), savedUser.getUsername());
@@ -132,9 +129,7 @@ public class UserController {
 	public void getIdByUsername(HttpServletResponse res, @PathVariable String username) throws IOException {
 		HttpResponse response = new HttpResponse(res);
 
-		User user = ControllerUtils.performActionThatMayThrowException(
-				response, () -> this.userService.getUserByUsername(username)
-		);
+		User user = this.userService.getUserByUsername(username);
 
 		response.ok().send(user.getId());
 	}
@@ -143,11 +138,8 @@ public class UserController {
 	public void deleteUser(HttpServletResponse res, @PathVariable Long id) throws IOException {
 		HttpResponse response = new HttpResponse(res);
 
-		ControllerUtils.performActionThatMayThrowException(response, () -> {
-			this.userService.deleteUser(id);
-			log.info("User with id {} deleted.", id);
-			return null;
-		});
+		this.userService.deleteUser(id);
+		log.info("User with id {} deleted.", id);
 
 		response.sendStatus(OK);
 	}
@@ -157,7 +149,7 @@ public class UserController {
 		HttpResponse response = new HttpResponse(res);
 
 		// If not executed with this utility method, the exception is not caught in the test.
-		JsonObject stats = ControllerUtils.performActionThatMayThrowException(response, () -> this.userService.getUserStats(username));
+		JsonObject stats = this.userService.getUserStats(username);
 
 		response.ok().send(stats);
 	}
@@ -171,20 +163,16 @@ public class UserController {
 		String invitesTo = body.get("invitesTo").getAsString();
 		String chatKey = body.get("chatKey").getAsString();
 
-		Tuple2<Chat, User> chatUserTuple = ControllerUtils.performActionThatMayThrowException(response, () -> {
-			Chat chat = this.chatService.getChatByKey(chatKey);
-			User invitee = this.userService.getUserByUsername(invitesTo);
+		Chat chat = this.chatService.getChatByKey(chatKey);
+		User invitee = this.userService.getUserByUsername(invitesTo);
 
-			this.chatService.addUserToChat(invitee.getId(), chat.getId());
-
-			return Tuple.tuple(chat, invitee);
-		});
+		this.chatService.addUserToChat(invitee.getId(), chat.getId());
 
 		MailSender.sendInvitationEmailBackground(
 				username, // Inviter username
-				chatUserTuple.v2().getEmail(), // Invitee email
-				chatUserTuple.v1().getName(), // Chat name
-				chatUserTuple.v1().getKey() // Chat key
+				invitee.getEmail(), // Invitee email
+				chat.getName(), // Chat name
+				chat.getKey() // Chat key
 		);
 
 		response.ok().send();

@@ -4,11 +4,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
-import rs.chat.ai.eightball.EightBall;
-import rs.chat.net.http.HttpRequest;
-import rs.chat.net.http.HttpResponse;
+import rs.chat.exceptions.NotFoundException;
 
 import java.io.IOException;
 
@@ -30,6 +27,12 @@ public class TestingController {
 	 */
 	@GetMapping(TEST_URL)
 	public void test(HttpServletResponse res) throws IOException {
-		new HttpResponse(res).ok().send("Hello world!");
+		log.info("testException before");
+		testException();
+		log.info("testException after");
+	}
+
+	private void testException() {
+		throw new NotFoundException("Test exception");
 	}
 }

@@ -78,9 +78,7 @@ public class AuthController {
 		boolean isExtendedToken = request.body().get("remember").getAsBoolean();
 
 		// Get all data from db
-		User user = ControllerUtils.performActionThatMayThrowException(
-				response, () -> this.userService.getUserByUsername(username)
-		);
+		User user = this.userService.getUserByUsername(username);
 
 		if (user.getBlockUntil() != null && user.getBlockUntil().isAfter(this.clock.instant())) {
 			response.badRequest().send("You are blocked until " + user.getBlockUntil()
@@ -132,34 +130,30 @@ public class AuthController {
 		Group globalGroup = this.groupService.getGroupByName("Global");
 
 		// Check if all the body contains all the necessary fields.
-		User savedUser = ControllerUtils.performActionThatMayThrowException(response, () -> {
-			Policies.checkRegister(body);
-
-			// Register the user and the session.
-			return this.userService.createUser(new User(
-					null, // id
-					body.get("username").getAsString().trim(), // username
-					body.get("password").getAsString().trim(), // password
-					body.get("email").getAsString().trim(), // email
-					body.get("fullName").getAsString().trim(), // fullName
-					null, // age
-					null, // birthdate
-					STUDENT_ROLE, // role
-					null, // blockUntil
-					null, // passwordCode
-					new JsonObject(), // messageCountByType
-					emptySet(), // teacherSubjects
-					Set.of(globalGroup), // groups
-					emptySet(), // sessions
-					emptySet(), // files
-					Set.of(globalChat), // chats
-					emptySet(), // studentSubjects
-					emptySet(), // badges
-					emptySet(), // friends
-					emptySet(), // blockedUsers
-					(byte) 0 // nsfwCount
-			));
-		});
+		Policies.checkRegister(body);
+		User savedUser = this.userService.createUser(new User(
+				null, // id
+				body.get("username").getAsString().trim(), // username
+				body.get("password").getAsString().trim(), // password
+				body.get("email").getAsString().trim(), // email
+				body.get("fullName").getAsString().trim(), // fullName
+				null, // age
+				null, // birthdate
+				STUDENT_ROLE, // role
+				null, // blockUntil
+				null, // passwordCode
+				new JsonObject(), // messageCountByType
+				emptySet(), // teacherSubjects
+				Set.of(globalGroup), // groups
+				emptySet(), // sessions
+				emptySet(), // files
+				Set.of(globalChat), // chats
+				emptySet(), // studentSubjects
+				emptySet(), // badges
+				emptySet(), // friends
+				emptySet(), // blockedUsers
+				(byte) 0 // nsfwCount
+		));
 
 		// Generate tokens
 		String token = this.jwtService.generateToken(
@@ -264,12 +258,9 @@ public class AuthController {
 		JsonObject body = request.body();
 		String email = body.get("email").getAsString();
 
-		User user = ControllerUtils.performActionThatMayThrowException(response, () -> {
-			// Check if the email is correct.
-			Policies.checkEmail(body);
-
-			return this.userService.getUserByEmail(email);
-		});
+		// Check if the email is correct.
+		Policies.checkEmail(body);
+		User user = this.userService.getUserByEmail(email);
 
 		if (user.getBlockUntil() != null && user.getBlockUntil().isAfter(Instant.now(this.clock))) {
 			response.badRequest().send("You are blocked until " + user.getBlockUntil()
@@ -300,13 +291,9 @@ public class AuthController {
 		JsonObject body = request.body();
 		String code = body.get("code").getAsString();
 
-		// Check if the code exists
-		User user = ControllerUtils.performActionThatMayThrowException(response, () -> {
-			// Check if the passwords are correct.
-			Policies.checkPasswords(body);
-
-			return this.userService.getUserByCode(code);
-		});
+		// Check if the passwords are correct.
+		Policies.checkPasswords(body);
+		User user = this.userService.getUserByCode(code);
 
 		user.setPassword(body.get("password").getAsString());
 		user.setPasswordCode(null); // Remove the password code.

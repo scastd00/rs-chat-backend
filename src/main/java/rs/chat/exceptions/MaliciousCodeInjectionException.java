@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import java.util.List;
 
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-public class MaliciousCodeInjectionException extends RuntimeException {
+public class MaliciousCodeInjectionException extends RSChatRuntimeException {
 	/**
 	 * Creates a new Exception with a default message.
 	 *

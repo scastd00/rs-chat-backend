@@ -64,43 +64,41 @@ public class FileController {
 		String[] mimeTypes = mimeType.split("/");
 		String encodedData = file.get("data").getAsString().split(",")[1];
 
-		FileDto fileDto = ControllerUtils.performActionThatMayThrowException(response, () -> {
-			byte[] fileBytes = Base64.getDecoder().decode(encodedData);
+		byte[] fileBytes = Base64.getDecoder().decode(encodedData);
 
-			if (fileBytes.length == 0) {
-				throw new BadRequestException("File is empty");
-			} else if (fileBytes.length > MAX_FILE_BYTES) {
-				throw new BadRequestException("File is too big");
-			}
+		if (fileBytes.length == 0) {
+			throw new BadRequestException("File is empty");
+		} else if (fileBytes.length > MAX_FILE_BYTES) {
+			throw new BadRequestException("File is too big (maximum allowed size is " + MAX_FILE_BYTES + " bytes)");
+		}
 
-			try {
-				checkForNSFWOfImageOrGif(fileName, encodedData, mimeTypes[1]);
-			} catch (NSFWContentException e) {
-				this.eventPublisher.publishEvent(new NSFWUploadEvent(this, userId));
-				throw e; // Throw the exception so that the file is not uploaded
-			}
+		try {
+			checkForNSFWOfImageOrGif(fileName, encodedData, mimeTypes[1]);
+		} catch (NSFWContentException e) {
+			this.eventPublisher.publishEvent(new NSFWUploadEvent(this, userId));
+			throw e; // Throw the exception so that the file is not uploaded nor saved
+		}
 
-			File fileToSave = new File(
-					null,
-					fileName,
-					Instant.now(this.clock),
-					fileBytes.length,
-					"",
-					new JsonObject(),
-					mimeTypes[0],
-					this.userService.getUserById(userId)
-			);
+		File fileToSave = new File(
+				null,
+				fileName,
+				Instant.now(this.clock),
+				fileBytes.length,
+				"",
+				new JsonObject(),
+				mimeTypes[0],
+				this.userService.getUserById(userId)
+		);
 
-			try {
-				FileUploadStrategy strategy = UploadMappings.getStrategy(mimeType);
-				log.info("Uploading file ({}) with strategy ({})", fileName, strategy.getClass().getSimpleName());
-				strategy.handle(new MediaUploadDTO(fileBytes, mimeTypes[1], fileToSave)); // Modifies the fileToSave object
-			} catch (IOException e) {
-				throw new CouldNotUploadFileException(e.getMessage());
-			}
+		try {
+			FileUploadStrategy strategy = UploadMappings.getStrategy(mimeType);
+			log.info("Uploading file ({}) with strategy ({})", fileName, strategy.getClass().getSimpleName());
+			strategy.handle(new MediaUploadDTO(fileBytes, mimeTypes[1], fileToSave)); // Modifies the fileToSave object
+		} catch (IOException e) {
+			throw new CouldNotUploadFileException(e.getMessage());
+		}
 
-			return this.fileService.save(fileToSave);
-		});
+		FileDto fileDto = this.fileService.save(fileToSave);
 
 		response.ok().send(fileDto);
 		log.info("File ({}) uploaded successfully", fileName);
