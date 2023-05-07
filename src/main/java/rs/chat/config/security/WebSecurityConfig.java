@@ -23,7 +23,6 @@ import static rs.chat.router.Routes.GetRoute;
 import static rs.chat.router.Routes.GetRoute.HEALTH_URL;
 import static rs.chat.router.Routes.PostRoute;
 import static rs.chat.router.Routes.PostRoute.CREATE_PASSWORD_URL;
-import static rs.chat.router.Routes.PostRoute.EIGHT_BALL_URL;
 import static rs.chat.router.Routes.PostRoute.FORGOT_PASSWORD_URL;
 import static rs.chat.router.Routes.PostRoute.LOGIN_URL;
 import static rs.chat.router.Routes.PostRoute.LOGOUT_URL;
@@ -133,8 +132,7 @@ public class WebSecurityConfig {
 				    LOGOUT_URL, REGISTER_URL,
 				    WS_CHAT_ENDPOINT, FORGOT_PASSWORD_URL,
 				    CREATE_PASSWORD_URL, HEALTH_URL,
-				    ACTUATOR_URL, TEST_URL,
-				    EIGHT_BALL_URL
+				    ACTUATOR_URL, TEST_URL
 		    )
 		    .permitAll();
 	}

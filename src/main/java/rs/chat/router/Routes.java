@@ -106,9 +106,6 @@ public class Routes {
 		public static final String FRIEND_SWITCH_URL = V_1 + "/user/friend";
 		public static final String USER_INVITE_URL = V_1 + "/user/invite";
 
-		@Deprecated
-		public static final String EIGHT_BALL_URL = V_1 + "/8ball"; //? REMOVE THIS
-
 		/**
 		 * @return an array containing all POST routes allowed to low tier users.
 		 */
