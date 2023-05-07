@@ -61,22 +61,18 @@ public class TeacherController {
 		long teacherId = body.get("teacherId").getAsLong();
 		long subjectId = body.get("subjectId").getAsLong();
 
-		ControllerUtils.performActionThatMayThrowException(response, () -> {
-			this.teacherService.addTeacherToSubject(teacherId, subjectId);
+		this.teacherService.addTeacherToSubject(teacherId, subjectId);
 
-			Subject subject = this.subjectService.getById(subjectId);
-			Chat chat = this.chatService.getChatByKey(DomainUtils.getChatKey(SUBJECT, Long.toString(subjectId)));
+		Subject subject = this.subjectService.getById(subjectId);
+		Chat chat = this.chatService.getChatByKey(DomainUtils.getChatKey(SUBJECT, Long.toString(subjectId)));
+		this.chatService.addUserToChat(teacherId, chat.getId());
+
+
+		// If the user already belongs to the degree chat, do not add again.
+		if (!this.chatService.userAlreadyBelongsToChat(teacherId, subject.getDegree().getId())) {
+			chat = this.chatService.getChatByKey(DomainUtils.getChatKey(DEGREE, subject.getDegree().getId().toString()));
 			this.chatService.addUserToChat(teacherId, chat.getId());
-
-
-			// If the user already belongs to the degree chat, do not add again.
-			if (!this.chatService.userAlreadyBelongsToChat(teacherId, subject.getDegree().getId())) {
-				chat = this.chatService.getChatByKey(DomainUtils.getChatKey(DEGREE, subject.getDegree().getId().toString()));
-				this.chatService.addUserToChat(teacherId, chat.getId());
-			}
-
-			return null;
-		});
+		}
 
 		response.sendStatus(OK);
 	}

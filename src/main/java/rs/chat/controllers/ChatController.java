@@ -52,7 +52,7 @@ public class ChatController {
 	                                           @PathVariable String username) throws IOException {
 		HttpResponse response = new HttpResponse(res);
 
-		User user = ControllerUtils.performActionThatMayThrowException(response, () -> this.userService.getUserByUsername(username));
+		User user = this.userService.getUserByUsername(username);
 
 		response.ok().send(this.chatService.getAllChatsOfUserGroupedByType(user));
 	}
@@ -70,9 +70,7 @@ public class ChatController {
 	public void getChatInformation(HttpServletResponse res, @PathVariable String chatKey) throws IOException {
 		HttpResponse response = new HttpResponse(res);
 
-		Chat chat = ControllerUtils.performActionThatMayThrowException(response, () ->
-				this.chatService.getChatByKey(chatKey)
-		);
+		Chat chat = this.chatService.getChatByKey(chatKey);
 
 		response.ok().send(this.chatMapper.toDto(chat));
 	}
@@ -89,9 +87,7 @@ public class ChatController {
 	public void getAllUsersOfChat(HttpServletResponse res, @PathVariable String chatKey) throws IOException {
 		HttpResponse response = new HttpResponse(res);
 
-		Chat chat = ControllerUtils.performActionThatMayThrowException(response, () ->
-				this.chatService.getChatByKey(chatKey)
-		);
+		Chat chat = this.chatService.getChatByKey(chatKey);
 
 		response.ok().send(this.chatService.getAllUsersOfChat(chat.getId()));
 	}
@@ -115,7 +111,7 @@ public class ChatController {
 			return;
 		}
 
-		Chat chat = ControllerUtils.performActionThatMayThrowException(response, () -> this.chatService.getChatByCode(code));
+		Chat chat = this.chatService.getChatByCode(code);
 		Long userId = request.body().get("userId").getAsLong();
 
 		if (this.chatService.userAlreadyBelongsToChat(userId, chat.getId())) {

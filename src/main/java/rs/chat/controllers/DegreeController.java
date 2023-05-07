@@ -72,9 +72,7 @@ public class DegreeController {
 	public void getDegreeByName(HttpServletResponse res, @PathVariable String degreeName) throws IOException {
 		HttpResponse response = new HttpResponse(res);
 
-		Degree degree = ControllerUtils.performActionThatMayThrowException(
-				response, () -> this.degreeService.getByName(degreeName)
-		);
+		Degree degree = this.degreeService.getByName(degreeName);
 
 		response.ok().send(this.degreeMapper.toDto(degree));
 	}
@@ -98,10 +96,8 @@ public class DegreeController {
 			return;
 		}
 
-		Degree degree = ControllerUtils.performActionThatMayThrowException(
-				response, () -> this.degreeService.saveDegree(
-						new Degree(null, degreeName, emptySet())
-				)
+		Degree degree = this.degreeService.saveDegree(
+				new Degree(null, degreeName, emptySet())
 		);
 
 		response.created(DEGREE_SAVE_URL).send(this.getDegreeWithInvitationCodeToChat(degree));
@@ -122,9 +118,7 @@ public class DegreeController {
 		String oldName = body.get("oldName").getAsString();
 		String newName = body.get("newName").getAsString();
 
-		Degree degree = ControllerUtils.performActionThatMayThrowException(
-				response, () -> this.degreeService.changeDegreeName(oldName, newName)
-		);
+		Degree degree = this.degreeService.changeDegreeName(oldName, newName);
 
 		response.ok().send(this.degreeMapper.toDto(degree));
 	}
@@ -142,12 +136,7 @@ public class DegreeController {
 	public void deleteDegree(HttpServletResponse res, @PathVariable Long id) throws IOException {
 		HttpResponse response = new HttpResponse(res);
 
-		ControllerUtils.performActionThatMayThrowException(
-				response, () -> {
-					this.degreeService.deleteById(id);
-					return null;
-				}
-		);
+		this.degreeService.deleteById(id);
 
 		response.sendStatus(OK);
 	}
