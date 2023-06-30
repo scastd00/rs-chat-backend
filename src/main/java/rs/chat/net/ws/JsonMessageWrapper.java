@@ -6,7 +6,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import rs.chat.builder.Builder;
+import rs.chat.builder.GenericBuilder;
 import rs.chat.json.JsonGenerator;
 import rs.chat.json.JsonParser;
 
@@ -188,15 +188,31 @@ public class JsonMessageWrapper {
 	 *
 	 * @return the builder.
 	 */
-	public static BuilderImpl builder() {
+	public static Builder builder() {
 		return new BuilderImpl();
+	}
+
+	public interface Builder extends GenericBuilder<JsonObject> {
+		Builder username(String value);
+
+		Builder chatId(String value);
+
+		Builder sessionId(long value);
+
+		Builder type(String value);
+
+		Builder date(long value);
+
+		Builder token(String value);
+
+		Builder content(String value);
 	}
 
 	/**
 	 * Builder implementation for the message wrapper.
 	 */
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
-	public static class BuilderImpl implements Builder<JsonObject> {
+	public static class BuilderImpl implements Builder {
 		private final JsonObject headers = new JsonObject();
 		private final JsonObject body = new JsonObject();
 
@@ -218,7 +234,8 @@ public class JsonMessageWrapper {
 		 *
 		 * @return the builder.
 		 */
-		public BuilderImpl username(String value) {
+		@Override
+		public Builder username(String value) {
 			this.headers.addProperty("username", value);
 			return this;
 		}
@@ -230,7 +247,8 @@ public class JsonMessageWrapper {
 		 *
 		 * @return the builder.
 		 */
-		public BuilderImpl chatId(String value) {
+		@Override
+		public Builder chatId(String value) {
 			this.headers.addProperty("chatId", value);
 			return this;
 		}
@@ -242,7 +260,8 @@ public class JsonMessageWrapper {
 		 *
 		 * @return the builder.
 		 */
-		public BuilderImpl sessionId(long value) {
+		@Override
+		public Builder sessionId(long value) {
 			this.headers.addProperty("sessionId", value);
 			return this;
 		}
@@ -254,7 +273,8 @@ public class JsonMessageWrapper {
 		 *
 		 * @return the builder.
 		 */
-		public BuilderImpl type(String value) {
+		@Override
+		public Builder type(String value) {
 			this.headers.addProperty("type", value);
 			return this;
 		}
@@ -266,7 +286,8 @@ public class JsonMessageWrapper {
 		 *
 		 * @return the builder.
 		 */
-		public BuilderImpl date(long value) {
+		@Override
+		public Builder date(long value) {
 			this.headers.addProperty("date", value);
 			return this;
 		}
@@ -278,7 +299,8 @@ public class JsonMessageWrapper {
 		 *
 		 * @return the builder.
 		 */
-		public BuilderImpl token(String value) {
+		@Override
+		public Builder token(String value) {
 			this.headers.addProperty("token", value);
 			return this;
 		}
@@ -290,7 +312,8 @@ public class JsonMessageWrapper {
 		 *
 		 * @return the builder.
 		 */
-		public BuilderImpl content(String value) {
+		@Override
+		public Builder content(String value) {
 			this.body.addProperty("content", value);
 			return this;
 		}

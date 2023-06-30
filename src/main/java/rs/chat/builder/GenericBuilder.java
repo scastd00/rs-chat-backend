@@ -5,7 +5,7 @@ package rs.chat.builder;
  *
  * @param <T> the type of the object to build.
  */
-public interface Builder<T> {
+public interface GenericBuilder<T> {
 	/**
 	 * Builds the object.
 	 *
