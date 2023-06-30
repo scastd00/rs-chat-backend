@@ -1,0 +1,3 @@
+- Falta hacer merge de hotfix del frontend a la rama dev.
+- Falla el envío de un mensaje global (token inválido, no sé cómo pasa, revisar).
+-
