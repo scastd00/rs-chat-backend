@@ -112,7 +112,7 @@ class AuthIntegrationTest {
 	void testLoginUserBlocked() throws Exception {
 		// Given
 		User user = DefaultFactory.INSTANCE.createUser(null, Constants.STUDENT_ROLE);
-		user.setBlockUntil(this.clock.instant().plus(10, ChronoUnit.MINUTES));
+		user.setBlockUntil(this.clock.instant().plus(10, ChronoUnit.MINUTES)); // Block the user
 		userService.createUser(user); // Save the user to DB to be able to log in
 
 		// When

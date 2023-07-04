@@ -2,8 +2,10 @@ package rs.chat.unit.domain.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Sort;
 import rs.chat.domain.entity.Degree;
@@ -26,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
-@DataJpaTest
+@ExtendWith(MockitoExtension.class)
 class DegreeServiceTest {
 
 	@Mock private DegreeRepository degreeRepository;
